@@ -9,6 +9,34 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # ── Authentication ──
+  get    "login",  to: "sessions#new"
+  post   "login",  to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+
+  # ── Admin ──
+  namespace :admin do
+    root "dashboard#index"
+
+    resources :sensor_stations, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :alerts, only: [:index, :show, :new, :create] do
+      member do
+        patch :acknowledge
+        patch :resolve
+      end
+    end
+    resources :risk_zones, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
+  end
+
+  # ── Public ──
+  root "public/home#index"
+
+  scope module: :public do
+    get "mapa",      to: "risk_map#index",    as: :risk_map
+    get "alertas",   to: "alerts#index",      as: :public_alerts
+    get "bairros",   to: "neighborhoods#index", as: :neighborhoods
+    get "bairros/:code", to: "neighborhoods#show", as: :neighborhood
+    get "seguranca", to: "safety#index",      as: :safety
+  end
 end

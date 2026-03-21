@@ -1,0 +1,144 @@
+<% content_for(:title, "Naila — Painel de Monitoramento") %>
+
+<%# ── Summary Cards ── %>
+<div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores Online</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @sensors_online %></div>
+  </div>
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas em Risco</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention"><%= @zones_at_risk %></div>
+  </div>
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Alertas Ativos</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high"><%= @active_alerts.size %></div>
+  </div>
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas Monitoradas</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent"><%= @risk_zones.size %></div>
+  </div>
+</div>
+
+<%# ── Map ── %>
+<div class="mb-6 overflow-hidden rounded-xl border border-naila-border bg-naila-surface"
+     data-controller="admin--map"
+     data-admin--map-risk-zones-value="<%= @risk_zones.map { |z|
+       {
+         id: z.id,
+         name: z.name,
+         risk_level: z.current_risk_level,
+         zone_type: z.zone_type,
+         geometry: z.geometry ? RGeo::GeoJSON.encode(z.geometry) : nil
+       }
+     }.to_json %>"
+     data-admin--map-center-value="[-49.2733, -25.4284]"
+     data-admin--map-zoom-value="12">
+  <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Mapa de Risco — Curitiba</h2>
+    <div class="flex items-center gap-3 text-xs text-naila-text-muted">
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-normal"></span> Normal</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-attention"></span> Atenção</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> Alerta</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-high"></span> Alerta Máx</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-emergency"></span> Emergência</span>
+    </div>
+  </div>
+  <div data-admin--map-target="canvas" class="h-[480px] w-full"></div>
+</div>
+
+<%# ── Bottom panels ── %>
+<div class="grid gap-6 lg:grid-cols-2">
+  <%# Active Alerts %>
+  <div class="rounded-xl border border-naila-border bg-naila-surface">
+    <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+      <h2 class="text-sm font-semibold text-naila-text">Alertas Ativos</h2>
+      <span class="text-xs text-naila-text-muted"><%= @active_alerts.size %> alerta(s)</span>
+    </div>
+    <div class="divide-y divide-naila-border">
+      <% if @active_alerts.empty? %>
+        <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+          Nenhum alerta ativo no momento.
+        </div>
+      <% else %>
+        <% @active_alerts.each do |alert| %>
+          <div class="flex items-start gap-3 px-4 py-3">
+            <%# Severity indicator %>
+            <% severity_color = case alert.severity
+                                when 4 then "bg-risk-emergency glow-emergency"
+                                when 3 then "bg-risk-high glow-high"
+                                when 2 then "bg-risk-alert glow-alert"
+                                else "bg-risk-attention glow-attention"
+                                end %>
+            <div class="mt-1 h-3 w-3 flex-shrink-0 rounded-full <%= severity_color %>"></div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-naila-text truncate"><%= alert.title %></span>
+                <% severity_label = case alert.severity
+                                    when 4 then "Emergência"
+                                    when 3 then "Alerta Máximo"
+                                    when 2 then "Alerta"
+                                    else "Atenção"
+                                    end %>
+                <span class="flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-medium
+                  <%= case alert.severity
+                      when 4 then 'bg-risk-emergency/20 text-risk-emergency'
+                      when 3 then 'bg-risk-high/20 text-risk-high'
+                      when 2 then 'bg-risk-alert/20 text-risk-alert'
+                      else 'bg-risk-attention/20 text-risk-attention'
+                      end %>">
+                  <%= severity_label %>
+                </span>
+              </div>
+              <p class="mt-0.5 text-xs text-naila-text-muted truncate"><%= alert.description %></p>
+              <div class="mt-1 text-xs text-naila-text-muted">
+                <%= time_ago_in_words(alert.created_at) %> atrás
+                <% if alert.risk_zone %>
+                  · <span class="text-naila-accent"><%= alert.risk_zone.name %></span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Recent Readings %>
+  <div class="rounded-xl border border-naila-border bg-naila-surface">
+    <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+      <h2 class="text-sm font-semibold text-naila-text">Leituras Recentes</h2>
+      <span class="text-xs text-naila-text-muted">Últimas 10</span>
+    </div>
+    <div class="divide-y divide-naila-border">
+      <% if @recent_readings.empty? %>
+        <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+          Nenhuma leitura recente disponível.
+        </div>
+      <% else %>
+        <% @recent_readings.each do |reading| %>
+          <div class="flex items-center justify-between px-4 py-2.5">
+            <div class="flex items-center gap-3 min-w-0">
+              <% reading_icon = case reading.reading_type
+                                when "precipitation" then "💧"
+                                when "river_level" then "🌊"
+                                when "temperature" then "🌡️"
+                                when "humidity" then "💨"
+                                else "📡"
+                                end %>
+              <span class="text-sm"><%= reading_icon %></span>
+              <div class="min-w-0">
+                <div class="text-sm font-medium text-naila-text truncate"><%= reading.sensor_station&.name || "—" %></div>
+                <div class="text-xs text-naila-text-muted"><%= reading.reading_type&.humanize %></div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 ml-3">
+              <div class="text-sm font-semibold tabular-nums text-naila-text"><%= number_with_precision(reading.value, precision: 1) %> <span class="text-naila-text-muted font-normal"><%= reading.unit %></span></div>
+              <div class="text-xs text-naila-text-muted tabular-nums"><%= reading.recorded_at&.strftime("%H:%M") %></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
