@@ -1,0 +1,21 @@
+module Admin
+  class BaseController < ApplicationController
+    include Pundit::Authorization
+
+    before_action :authenticate!
+
+    layout "admin"
+
+    rescue_from Pundit::NotAuthorizedError, with: :not_authorized
+
+    private
+
+    def pundit_user
+      current_user
+    end
+
+    def not_authorized
+      redirect_to admin_root_path, alert: "Voce nao tem permissao para realizar esta acao."
+    end
+  end
+end
