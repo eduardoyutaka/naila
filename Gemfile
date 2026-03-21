@@ -18,7 +18,7 @@ gem "stimulus-rails"
 gem "tailwindcss-rails"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -40,6 +40,35 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Geospatial — PostGIS adapter and geometry operations [https://github.com/seuros/activerecord-postgis]
+gem "activerecord-postgis", "~> 0.4"
+gem "rgeo", "~> 3.0"
+gem "rgeo-geojson", "~> 2.0"
+
+# Authorization — policy-based access control [https://github.com/varvet/pundit]
+gem "pundit", "~> 2.4"
+
+# HTTP clients for external API data ingestion [https://github.com/lostisland/faraday]
+gem "faraday", "~> 2.0"
+gem "faraday-retry", "~> 2.0"
+
+# Notifications — polymorphic notification system [https://github.com/excid3/noticed]
+gem "noticed", "~> 2.0"
+# Web Push API for browser notifications [https://github.com/pushpad/web-push]
+gem "web-push", "~> 3.0"
+# SMS via Twilio [https://github.com/twilio/twilio-ruby]
+gem "twilio-ruby", "~> 7.0"
+
+# MQTT client for IoT sensor data ingestion [https://github.com/njh/ruby-mqtt]
+gem "mqtt", "~> 0.6"
+
+# Pagination [https://github.com/ddnexus/pagy]
+gem "pagy", "~> 9.0"
+# Charts [https://github.com/ankane/chartkick]
+gem "chartkick", "~> 5.0"
+# Time-series grouping [https://github.com/ankane/groupdate]
+gem "groupdate", "~> 6.0"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -52,9 +81,34 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Testing framework [https://github.com/rspec/rspec-rails]
+  gem "rspec-rails", "~> 7.0"
+  # Test fixtures replacement [https://github.com/thoughtbot/factory_bot_rails]
+  gem "factory_bot_rails", "~> 6.0"
+  # Fake data generator [https://github.com/faker-ruby/faker]
+  gem "faker", "~> 3.0"
+  # One-liner matchers [https://github.com/thoughtbot/shoulda-matchers]
+  gem "shoulda-matchers", "~> 6.0"
+end
+
+group :test do
+  # System testing [https://github.com/teamcapybara/capybara]
+  gem "capybara", "~> 3.0"
+  gem "selenium-webdriver", "~> 4.0"
+  # HTTP request stubbing [https://github.com/bblimke/webmock]
+  gem "webmock", "~> 3.0"
+  # Record HTTP interactions [https://github.com/vcr/vcr]
+  gem "vcr", "~> 6.0"
+  # Code coverage [https://github.com/simplecov-ruby/simplecov]
+  gem "simplecov", require: false
+  # Database cleaning between tests [https://github.com/DatabaseCleaner/database_cleaner]
+  gem "database_cleaner-active_record", "~> 2.0"
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  # N+1 query detection [https://github.com/flyerhzm/bullet]
+  gem "bullet", "~> 8.0"
 end
