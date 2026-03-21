@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(python3:*)",
+      "Bash(ruby --version)",
+      "Bash(rails --version)",
+      "Bash(gem list:*)"
+    ]
+  }
+}
