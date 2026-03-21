@@ -1,0 +1,48 @@
+<%
+  nav_items = [
+    { label: "Painel",    path: admin_root_path,         icon: "chart-bar" },
+    { label: "Sensores",  path: admin_sensor_stations_path, icon: "signal" },
+    { label: "Alertas",   path: admin_alerts_path,       icon: "bell-alert" },
+    { label: "Zonas",     path: admin_risk_zones_path,   icon: "map" },
+    { label: "Relatorios", path: admin_risk_zones_path,  icon: "document-chart-bar" },
+    { label: "Usuarios",  path: admin_users_path,        icon: "users" },
+  ]
+%>
+
+<nav data-controller="sidebar"
+     class="hidden lg:flex w-56 flex-col border-r border-naila-border bg-naila-surface"
+     data-sidebar-target="menu">
+  <div class="flex flex-1 flex-col gap-1 p-3">
+    <% nav_items.each do |item| %>
+      <%= link_to item[:path],
+            class: "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+              #{current_page?(item[:path]) ?
+                'bg-naila-accent/10 text-naila-accent' :
+                'text-naila-text-muted hover:bg-naila-elevated hover:text-naila-text'}" do %>
+        <%= render "shared/icons/#{item[:icon]}" %>
+        <span><%= item[:label] %></span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# Bottom section: system status %>
+  <div class="border-t border-naila-border p-3">
+    <div class="rounded-lg bg-naila-elevated p-3">
+      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Status do Sistema</div>
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-naila-text-muted">Sensores Online</span>
+          <span class="tabular-nums text-sensor-online"><%= SensorStation.online.count %></span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-naila-text-muted">Zonas em Risco</span>
+          <span class="tabular-nums text-risk-attention"><%= RiskZone.at_risk.count %></span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-naila-text-muted">Alertas Ativos</span>
+          <span class="tabular-nums text-risk-high"><%= Alert.active.count %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <title><%= content_for(:title) || "Naila — Painel" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Naila">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-naila-bg text-naila-text font-sans antialiased">
+    <%= render "shared/admin/topbar" %>
+
+    <div class="flex h-[calc(100vh-3.5rem)]">
+      <%= render "shared/admin/sidebar" %>
+
+      <main class="flex-1 overflow-y-auto p-6">
+        <% if notice %>
+          <div class="mb-4 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-green-400 animate-fade-in">
+            <%= notice %>
+          </div>
+        <% end %>
+        <% if alert %>
+          <div class="mb-4 rounded-lg border border-risk-high/30 bg-risk-high/10 px-4 py-3 text-risk-high animate-fade-in">
+            <%= alert %>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>
