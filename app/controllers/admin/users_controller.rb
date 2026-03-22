@@ -5,7 +5,7 @@ module Admin
     before_action -> { authorize @user }, only: [:edit, :update, :destroy]
 
     def index
-      @users = User.order(:name)
+      @users = User.order(:name).includes(:sessions)
     end
 
     def new
@@ -54,8 +54,9 @@ module Admin
 
     def user_params
       params.require(:user).permit(
-        :name, :email, :role, :department, :phone,
-        :password, :password_confirmation
+        :name, :email_address, :role, :department, :phone_number,
+        :password, :password_confirmation,
+        :active, :receives_sms_alerts
       )
     end
   end
