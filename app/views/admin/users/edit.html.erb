@@ -1,0 +1,11 @@
+<% content_for(:title, "Naila — Editar #{@user.name}") %>
+
+<div class="mx-auto max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Editar Usuário</h1>
+  </div>
+
+  <%= form_with model: [:admin, @user] do |f| %>
+    <%= render "form", form: f, user: @user %>
+  <% end %>
+</div>
