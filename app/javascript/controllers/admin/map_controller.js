@@ -36,9 +36,12 @@ export default class extends Controller {
     zoom: { type: Number, default: 12 },
   }
 
-  async connect() {
-    const ol = await import("ol")
-    this.ol = ol
+  connect() {
+    this.ol = window.ol
+    if (!this.ol) {
+      console.error("OpenLayers not loaded")
+      return
+    }
 
     this.initMap()
     this.addRiskZones()
