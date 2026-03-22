@@ -1,0 +1,31 @@
+admin:
+  name: Ana Silva
+  email_address: admin@naila.test
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  role: admin
+  department: Defesa Civil
+  active: true
+
+coordinator:
+  name: Bruno Costa
+  email_address: coordinator@naila.test
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  role: coordinator
+  department: Defesa Civil
+  active: true
+
+operator:
+  name: Carla Souza
+  email_address: operator@naila.test
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  role: operator
+  department: Defesa Civil
+  active: true
+
+inactive:
+  name: Diego Lima
+  email_address: inactive@naila.test
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  role: operator
+  department: Defesa Civil
+  active: false
