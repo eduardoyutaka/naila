@@ -1,0 +1,112 @@
+<div class="rounded-xl border border-naila-border bg-naila-surface">
+  <div class="border-b border-naila-border px-6 py-4">
+    <h2 class="text-sm font-semibold text-naila-text">
+      <%= user.persisted? ? "Editar Usuário" : "Novo Usuário" %>
+    </h2>
+  </div>
+
+  <div class="p-6 space-y-5">
+    <% if user.errors.any? %>
+      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+        <p class="text-sm font-medium text-red-400">
+          <%= user.errors.count %> erro(s) impediu(iram) o salvamento:
+        </p>
+        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
+          <% user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%# Nome %>
+    <div>
+      <%= form.label :name, "Nome", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.text_field :name, required: true,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "Nome completo" %>
+    </div>
+
+    <%# Email %>
+    <div>
+      <%= form.label :email_address, "Email", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.email_field :email_address, required: true,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "usuario@exemplo.com" %>
+    </div>
+
+    <%# Departamento + Telefone (side by side) %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :department, "Departamento", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.text_field :department,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "Defesa Civil" %>
+      </div>
+      <div>
+        <%= form.label :phone_number, "Telefone", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.telephone_field :phone_number,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "+5541999000000" %>
+      </div>
+    </div>
+
+    <%# Cargo %>
+    <div>
+      <%= form.label :role, "Cargo", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.select :role,
+            [["Operador", "operator"], ["Coordenador", "coordinator"], ["Administrador", "admin"]],
+            {},
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+    </div>
+
+    <%# Senha + Confirmar Senha %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :password, "Senha", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.password_field :password,
+              required: !user.persisted?,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "••••••••" %>
+        <% if user.persisted? %>
+          <p class="mt-1 text-xs text-naila-text-muted">Deixe em branco para manter a senha atual.</p>
+        <% end %>
+      </div>
+      <div>
+        <%= form.label :password_confirmation, "Confirmar Senha", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.password_field :password_confirmation,
+              required: !user.persisted?,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "••••••••" %>
+      </div>
+    </div>
+
+    <%# Toggles %>
+    <div class="flex flex-col gap-4 rounded-lg border border-naila-border bg-naila-elevated p-4">
+      <div class="flex items-center gap-3">
+        <%= form.check_box :active,
+              { disabled: user == current_user, class: "h-4 w-4 rounded border-naila-border bg-naila-bg text-naila-accent focus:ring-naila-accent focus:ring-offset-naila-bg" },
+              "true", "false" %>
+        <%= form.label :active, class: "text-sm text-naila-text" do %>
+          Usuário ativo
+          <% if user == current_user %>
+            <span class="text-xs text-naila-text-muted ml-1">(você não pode desativar seu próprio usuário)</span>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="flex items-center gap-3">
+        <%= form.check_box :receives_sms_alerts,
+              { class: "h-4 w-4 rounded border-naila-border bg-naila-bg text-naila-accent focus:ring-naila-accent focus:ring-offset-naila-bg" },
+              "true", "false" %>
+        <%= form.label :receives_sms_alerts, "Recebe alertas por SMS", class: "text-sm text-naila-text" %>
+      </div>
+    </div>
+  </div>
+
+  <%# Actions %>
+  <div class="flex items-center justify-end gap-3 border-t border-naila-border px-6 py-4">
+    <%= link_to "Cancelar", admin_users_path, class: "text-sm text-naila-text-muted hover:text-naila-text transition-colors" %>
+    <%= form.submit user.persisted? ? "Salvar Alterações" : "Criar Usuário",
+          class: "rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg cursor-pointer" %>
+  </div>
+</div>
