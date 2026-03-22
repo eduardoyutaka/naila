@@ -68,6 +68,7 @@ External sources → [Solid Queue jobs] → SensorReading/WeatherObservation
 
 ## Conventions
 
+- **TDD workflow**: write failing tests first, then implement the code to make them pass. Run tests before and after implementation to confirm the red-green cycle. Use Minitest (not RSpec).
 - All UI text in **pt-BR** (Portuguese). Variable names and code in English.
 - Git messages use **conventional commits** format: `feat(scope):`, `fix(scope):`, `chore(scope):`.
 - Commit after each completed task, not batched.
