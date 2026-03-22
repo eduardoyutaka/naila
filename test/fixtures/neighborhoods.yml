@@ -1,1 +1,13 @@
-# empty
+centro:
+  name: Centro
+  code: CEN
+  region: centro
+  current_risk_level: 0
+  population: 37000
+
+batel:
+  name: Batel
+  code: BAT
+  region: centro
+  current_risk_level: 1
+  population: 11000

@@ -1,1 +1,7 @@
-# empty
+belem:
+  name: Rio Belém
+  drainage_basin: bacia_belem
+  normal_level_m: 0.8
+  alert_level_m: 1.5
+  flood_level_m: 2.5
+  overflow_level_m: 3.0

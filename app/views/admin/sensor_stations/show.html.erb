@@ -1,0 +1,137 @@
+<%= turbo_frame_tag "sensor_detail" do %>
+  <%# ── Header ── %>
+  <div class="sticky top-0 z-10 flex items-center justify-between border-b border-naila-border bg-naila-surface px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text truncate"><%= @sensor_station.name %></h2>
+    <button data-action="admin--side-sheet#close"
+            class="flex h-6 w-6 items-center justify-center rounded text-naila-text-muted hover:bg-naila-elevated hover:text-naila-text"
+            title="Fechar">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="space-y-5 p-4">
+    <%# ── Station Info ── %>
+    <div>
+      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Informações</div>
+      <div class="space-y-2">
+        <% type_label = case @sensor_station.station_type
+                        when "pluviometer" then "Pluviômetro"
+                        when "river_gauge" then "Fluviômetro"
+                        when "weather_station" then "Estação Meteorológica"
+                        end %>
+        <% type_color = case @sensor_station.station_type
+                        when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
+                        when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
+                        when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
+                        end %>
+        <div class="flex items-center gap-2">
+          <span class="rounded px-2 py-0.5 text-xs font-medium <%= type_color %>"><%= type_label %></span>
+          <% status_label = case @sensor_station.status
+                            when "active" then "Ativo"
+                            when "maintenance" then "Manutenção"
+                            when "inactive" then "Inativo"
+                            end %>
+          <% status_color = case @sensor_station.status
+                            when "active" then "text-sensor-online"
+                            when "maintenance" then "text-sensor-degraded"
+                            when "inactive" then "text-sensor-offline"
+                            end %>
+          <span class="flex items-center gap-1 text-xs <%= status_color %>">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
+            <%= status_label %>
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <span class="text-naila-text-muted">ID Externo</span>
+            <div class="font-mono text-naila-text"><%= @sensor_station.external_id %></div>
+          </div>
+          <div>
+            <span class="text-naila-text-muted">Fonte</span>
+            <div class="text-naila-text"><%= @sensor_station.data_source.upcase %></div>
+          </div>
+          <% if @sensor_station.elevation_m %>
+            <div>
+              <span class="text-naila-text-muted">Elevação</span>
+              <div class="tabular-nums text-naila-text"><%= number_with_precision(@sensor_station.elevation_m, precision: 0) %> m</div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Location ── %>
+    <div>
+      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Localização</div>
+      <div class="space-y-1 text-xs">
+        <% if @sensor_station.neighborhood %>
+          <div class="flex justify-between">
+            <span class="text-naila-text-muted">Bairro</span>
+            <span class="text-naila-text"><%= @sensor_station.neighborhood.name %></span>
+          </div>
+        <% end %>
+        <% if @sensor_station.river %>
+          <div class="flex justify-between">
+            <span class="text-naila-text-muted">Rio</span>
+            <span class="text-naila-text"><%= @sensor_station.river.name %></span>
+          </div>
+        <% end %>
+        <% if @sensor_station.location %>
+          <div class="flex justify-between">
+            <span class="text-naila-text-muted">Coordenadas</span>
+            <span class="font-mono tabular-nums text-naila-text">
+              <%= number_with_precision(@sensor_station.location.y, precision: 4) %>,
+              <%= number_with_precision(@sensor_station.location.x, precision: 4) %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── Last Reading ── %>
+    <% if @sensor_station.last_reading_value && @sensor_station.last_reading_at %>
+      <div class="rounded-lg bg-naila-elevated p-3">
+        <div class="text-xs text-naila-text-muted">Última Leitura</div>
+        <div class="mt-1 text-2xl font-semibold tabular-nums text-naila-text">
+          <%= number_with_precision(@sensor_station.last_reading_value, precision: 1) %>
+        </div>
+        <div class="text-xs text-naila-text-muted">
+          <%= time_ago_in_words(@sensor_station.last_reading_at) %> atrás
+        </div>
+      </div>
+    <% end %>
+
+    <%# ── Recent Readings ── %>
+    <div>
+      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Leituras Recentes</div>
+      <div data-testid="readings-list" class="divide-y divide-naila-border rounded-lg border border-naila-border">
+        <% if @recent_readings.empty? %>
+          <div class="px-3 py-4 text-center text-xs text-naila-text-muted">
+            Nenhuma leitura disponível.
+          </div>
+        <% else %>
+          <% @recent_readings.each do |reading| %>
+            <div class="flex items-center justify-between px-3 py-2">
+              <div class="text-xs text-naila-text-muted"><%= reading.reading_type.humanize %></div>
+              <div class="text-xs tabular-nums text-naila-text">
+                <span class="font-medium"><%= number_with_precision(reading.value, precision: 1) %></span>
+                <span class="text-naila-text-muted"><%= reading.unit %></span>
+              </div>
+              <div class="text-xs tabular-nums text-naila-text-muted"><%= reading.recorded_at.strftime("%d/%m %H:%M") %></div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── Full Details Link ── %>
+    <div class="pt-1">
+      <%= link_to "Ver detalhes completos", admin_sensor_station_path(@sensor_station),
+            data: { turbo_frame: "_top" },
+            class: "block w-full rounded-lg bg-naila-accent px-4 py-2 text-center text-sm font-medium text-white hover:bg-naila-accent/90 transition-colors" %>
+    </div>
+  </div>
+<% end %>

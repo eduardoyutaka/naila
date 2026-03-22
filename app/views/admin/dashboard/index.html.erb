@@ -32,19 +32,52 @@
          geometry: z.geometry ? RGeo::GeoJSON.encode(z.geometry) : nil
        }
      }.to_json %>"
+     data-admin--map-sensors-value="<%= @sensor_stations.map { |s|
+       {
+         id: s.id,
+         name: s.name,
+         station_type: s.station_type,
+         status: s.status,
+         lat: s.location&.y,
+         lng: s.location&.x,
+         neighborhood: s.neighborhood&.name,
+         river: s.river&.name,
+         last_reading_at: s.last_reading_at&.iso8601,
+         last_reading_value: s.last_reading_value
+       }
+     }.to_json %>"
      data-admin--map-center-value="[-49.2733, -25.4284]"
-     data-admin--map-zoom-value="12">
-  <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+     data-admin--map-zoom-value="12"
+     data-admin--map-admin--side-sheet-outlet="#sensor-side-sheet">
+  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-naila-border px-4 py-3">
     <h2 class="text-sm font-semibold text-naila-text">Mapa de Risco — Curitiba</h2>
-    <div class="flex items-center gap-3 text-xs text-naila-text-muted">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-naila-text-muted">
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-normal"></span> Normal</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-attention"></span> Atenção</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> Alerta</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-high"></span> Alerta Máx</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-emergency"></span> Emergência</span>
+      <span class="text-naila-border">|</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-[#3b82f6]"></span> Pluviômetro</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-[#06b6d4]"></span> Fluviômetro</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-[#8b5cf6]"></span> Meteorológica</span>
     </div>
   </div>
   <div data-admin--map-target="canvas" class="h-[480px] w-full"></div>
+</div>
+
+<%# ── Sensor Side Sheet ── %>
+<div id="sensor-side-sheet"
+     data-controller="admin--side-sheet"
+     data-action="keydown.esc@document->admin--side-sheet#close"
+     class="hidden">
+  <div data-action="click->admin--side-sheet#close"
+       class="fixed inset-0 z-40 bg-black/30"></div>
+  <div data-admin--side-sheet-target="panel"
+       class="fixed right-0 top-14 bottom-0 z-50 w-96 overflow-y-auto border-l border-naila-border bg-naila-surface shadow-2xl animate-slide-in-right">
+    <turbo-frame id="sensor_detail" data-admin--side-sheet-target="frame" loading="lazy">
+    </turbo-frame>
+  </div>
 </div>
 
 <%# ── Bottom panels ── %>

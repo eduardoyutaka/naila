@@ -6,6 +6,7 @@ module Admin
       @recent_readings = SensorReading.recent.limit(10)
       @sensors_online = SensorStation.online.count
       @zones_at_risk = RiskZone.at_risk.count
+      @sensor_stations = SensorStation.where.not(location: nil).includes(:neighborhood, :river)
     end
   end
 end

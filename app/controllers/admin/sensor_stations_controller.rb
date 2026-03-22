@@ -47,7 +47,7 @@ module Admin
     private
 
     def set_sensor_station
-      @sensor_station = SensorStation.find(params[:id])
+      @sensor_station = SensorStation.includes(:neighborhood, :river).find(params[:id])
     end
 
     def sensor_station_params

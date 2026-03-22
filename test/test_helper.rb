@@ -8,3 +8,12 @@ module ActiveSupport
     fixtures :all
   end
 end
+
+class ActionDispatch::IntegrationTest
+  private
+
+  def sign_in_as(user)
+    post login_path, params: { email_address: user.email_address, password: "password123" }
+    follow_redirect!
+  end
+end

@@ -1,1 +1,47 @@
-# empty
+pluv_centro_rain_1:
+  sensor_station: pluv_centro
+  value: 12.5
+  unit: mm
+  reading_type: precipitation
+  recorded_at: <%= 10.minutes.ago.iso8601 %>
+  quality_flag: ok
+
+pluv_centro_rain_2:
+  sensor_station: pluv_centro
+  value: 8.2
+  unit: mm
+  reading_type: precipitation
+  recorded_at: <%= 40.minutes.ago.iso8601 %>
+  quality_flag: ok
+
+pluv_centro_rain_3:
+  sensor_station: pluv_centro
+  value: 3.1
+  unit: mm
+  reading_type: precipitation
+  recorded_at: <%= 70.minutes.ago.iso8601 %>
+  quality_flag: ok
+
+fluv_belem_level_1:
+  sensor_station: fluv_belem
+  value: 1.2
+  unit: m
+  reading_type: river_level
+  recorded_at: <%= 5.minutes.ago.iso8601 %>
+  quality_flag: ok
+
+fluv_belem_level_2:
+  sensor_station: fluv_belem
+  value: 1.1
+  unit: m
+  reading_type: river_level
+  recorded_at: <%= 35.minutes.ago.iso8601 %>
+  quality_flag: ok
+
+meteo_batel_temp:
+  sensor_station: meteo_batel
+  value: 22.3
+  unit: °C
+  reading_type: temperature
+  recorded_at: <%= 1.hour.ago.iso8601 %>
+  quality_flag: ok
