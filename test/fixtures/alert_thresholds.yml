@@ -1,1 +1,21 @@
-# empty
+precipitation_high:
+  parameter: precipitation
+  threshold_type: accumulated_3h
+  severity: 3
+  value: 60.0
+  unit: mm
+  comparison: gte
+  active: true
+  cooldown_minutes: 120
+  risk_zone: zona_centro
+
+river_level_alert:
+  parameter: river_level
+  threshold_type: instant
+  severity: 2
+  value: 1.5
+  unit: m
+  comparison: gte
+  active: true
+  cooldown_minutes: 60
+  river: belem

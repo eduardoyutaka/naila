@@ -1,1 +1,14 @@
-# empty
+attention_to_alert:
+  from_severity: 1
+  to_severity: 2
+  escalation_after_minutes: 30
+  notify_supervisor: false
+  active: true
+
+alert_to_high:
+  from_severity: 2
+  to_severity: 3
+  escalation_after_minutes: 15
+  notify_supervisor: true
+  supervisor_contact: "coordenador@defesacivil.curitiba.pr.gov.br"
+  active: true
