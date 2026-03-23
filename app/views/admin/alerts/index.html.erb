@@ -1,0 +1,135 @@
+<% content_for(:title, "Naila — Alertas") %>
+
+<%
+  active_alerts = @alerts.select { |a| a.status == "active" }
+  unacknowledged_alerts = active_alerts.select { |a| a.acknowledged_at.nil? }
+  resolved_today = @alerts.select { |a| a.status == "resolved" && a.resolved_at&.today? }
+%>
+
+<%# ── Summary Cards ── %>
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Alertas Ativos</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high" data-testid="summary-active-count"><%= active_alerts.size %></div>
+  </div>
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sem Reconhecimento</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-alert" data-testid="summary-unacknowledged-count"><%= unacknowledged_alerts.size %></div>
+  </div>
+  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Resolvidos Hoje</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-normal"><%= resolved_today.size %></div>
+  </div>
+</div>
+
+<%# ── Alerts Table ── %>
+<div class="rounded-xl border border-naila-border bg-naila-surface">
+  <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Alertas</h2>
+    <%= link_to new_admin_alert_path,
+          class: "inline-flex items-center gap-1.5 rounded-lg bg-naila-accent px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-naila-accent/90" do %>
+      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Novo Alerta
+    <% end %>
+  </div>
+
+  <% if @alerts.empty? %>
+    <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+      Nenhum alerta cadastrado.
+    </div>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-naila-border">
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Severidade</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Título</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Tipo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Status</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Local</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Criado em</th>
+            <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-naila-text-muted">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-naila-border">
+          <% @alerts.each do |alert| %>
+            <tr class="hover:bg-naila-elevated/50 transition-colors">
+              <%# Severidade %>
+              <td class="px-4 py-3">
+                <% severity_classes = case alert.severity
+                                      when 4 then "bg-risk-emergency/20 text-risk-emergency"
+                                      when 3 then "bg-risk-high/20 text-risk-high"
+                                      when 2 then "bg-risk-alert/20 text-risk-alert"
+                                      else "bg-risk-attention/20 text-risk-attention"
+                                      end %>
+                <% severity_label = case alert.severity
+                                    when 4 then "Emergência"
+                                    when 3 then "Alerta Máximo"
+                                    when 2 then "Alerta"
+                                    else "Atenção"
+                                    end %>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_classes %>">
+                  <%= severity_label %>
+                </span>
+              </td>
+
+              <%# Título %>
+              <td class="px-4 py-3">
+                <div class="text-sm font-medium text-naila-text"><%= alert.title %></div>
+                <div class="text-xs text-naila-text-muted truncate max-w-xs"><%= truncate(alert.description, length: 60) %></div>
+              </td>
+
+              <%# Tipo %>
+              <td class="px-4 py-3">
+                <span class="text-xs text-naila-text-muted">
+                  <%= alert.alert_type == "automatic" ? "Automático" : "Manual" %>
+                </span>
+              </td>
+
+              <%# Status %>
+              <td class="px-4 py-3">
+                <% status_classes = case alert.status
+                                    when "active" then "bg-risk-high/20 text-risk-high"
+                                    when "acknowledged" then "bg-risk-attention/20 text-risk-attention"
+                                    when "resolved" then "bg-risk-normal/20 text-risk-normal"
+                                    end %>
+                <% status_label = case alert.status
+                                  when "active" then "Ativo"
+                                  when "acknowledged" then "Reconhecido"
+                                  when "resolved" then "Resolvido"
+                                  end %>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= status_classes %>">
+                  <%= status_label %>
+                </span>
+              </td>
+
+              <%# Local %>
+              <td class="px-4 py-3 text-sm text-naila-text-muted">
+                <%= alert.risk_zone&.name || alert.neighborhood&.name || alert.river&.name || "—" %>
+              </td>
+
+              <%# Criado em %>
+              <td class="px-4 py-3 text-sm tabular-nums text-naila-text-muted">
+                <%= alert.created_at.strftime("%d/%m %H:%M") %>
+              </td>
+
+              <%# Ações %>
+              <td class="px-4 py-3 text-right">
+                <%= link_to admin_alert_path(alert),
+                      class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-naila-accent transition-colors",
+                      title: "Ver detalhes" do %>
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>
