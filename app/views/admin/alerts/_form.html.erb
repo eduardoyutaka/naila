@@ -1,0 +1,88 @@
+<div class="rounded-xl border border-naila-border bg-naila-surface">
+  <div class="border-b border-naila-border px-6 py-4">
+    <h2 class="text-sm font-semibold text-naila-text">Dados do Alerta</h2>
+  </div>
+
+  <div class="p-6 space-y-5">
+    <% if alert.errors.any? %>
+      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+        <p class="text-sm font-medium text-red-400">
+          <%= alert.errors.count %> erro(s) impediu(iram) o salvamento:
+        </p>
+        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
+          <% alert.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%# Título %>
+    <div>
+      <%= form.label :title, "Título", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.text_field :title, required: true,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "Ex: Risco de alagamento no bairro Centro" %>
+    </div>
+
+    <%# Descrição %>
+    <div>
+      <%= form.label :description, "Descrição", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.text_area :description, required: true, rows: 4,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "Descreva a situação de risco..." %>
+    </div>
+
+    <%# Severidade %>
+    <div>
+      <%= form.label :severity, "Severidade", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.select :severity,
+            [["Atenção (1)", 1], ["Alerta (2)", 2], ["Alerta Máximo (3)", 3], ["Emergência (4)", 4]],
+            { prompt: "Selecione a severidade" },
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+    </div>
+
+    <%# Instruções %>
+    <div>
+      <%= form.label :instructions, "Instruções", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.text_area :instructions, rows: 3,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "Instruções para a população durante o alerta (opcional)" %>
+      <p class="mt-1 text-xs text-naila-text-muted">Orientações que serão exibidas para a população.</p>
+    </div>
+
+    <%# Zona de Risco + Bairro (side by side) %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :risk_zone_id, "Zona de Risco", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :risk_zone_id,
+              RiskZone.active.order(:name).pluck(:name, :id),
+              { include_blank: "Nenhuma" },
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+      </div>
+      <div>
+        <%= form.label :neighborhood_id, "Bairro", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :neighborhood_id,
+              Neighborhood.order(:name).pluck(:name, :id),
+              { include_blank: "Nenhum" },
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+      </div>
+    </div>
+
+    <%# Rio %>
+    <div>
+      <%= form.label :river_id, "Rio", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.select :river_id,
+            River.order(:name).pluck(:name, :id),
+            { include_blank: "Nenhum" },
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+    </div>
+  </div>
+
+  <%# Actions %>
+  <div class="flex items-center justify-end gap-3 border-t border-naila-border px-6 py-4">
+    <%= link_to "Cancelar", admin_alerts_path, class: "text-sm text-naila-text-muted hover:text-naila-text transition-colors" %>
+    <%= form.submit "Criar Alerta",
+          class: "rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg cursor-pointer" %>
+  </div>
+</div>

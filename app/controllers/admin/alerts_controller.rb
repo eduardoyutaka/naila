@@ -49,7 +49,7 @@ module Admin
 
     def alert_params
       params.require(:alert).permit(
-        :title, :description, :severity,
+        :title, :description, :instructions, :severity,
         :risk_zone_id, :neighborhood_id, :river_id
       )
     end

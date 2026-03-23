@@ -83,4 +83,71 @@ class Admin::AlertsControllerTest < ActionDispatch::IntegrationTest
     get admin_alert_path(alerts(:resolved_alert))
     assert_select "form[action='#{resolve_admin_alert_path(alerts(:resolved_alert))}']", count: 0
   end
+
+  # ── New ──
+
+  test "new renders successfully" do
+    get new_admin_alert_path
+    assert_response :success
+  end
+
+  test "new displays form fields" do
+    get new_admin_alert_path
+    assert_select "form" do
+      assert_select "input[name='alert[title]']"
+      assert_select "textarea[name='alert[description]']"
+      assert_select "select[name='alert[severity]']"
+      assert_select "textarea[name='alert[instructions]']"
+    end
+  end
+
+  # ── Create ──
+
+  test "create with valid params creates alert and redirects" do
+    assert_difference "Alert.count", 1 do
+      post admin_alerts_path, params: {
+        alert: {
+          title: "Novo alerta manual",
+          description: "Descrição do novo alerta.",
+          severity: 2
+        }
+      }
+    end
+    assert_redirected_to admin_alert_path(Alert.last)
+  end
+
+  test "create sets alert_type to manual, status to active, and created_by" do
+    post admin_alerts_path, params: {
+      alert: {
+        title: "Alerta manual",
+        description: "Teste de criação.",
+        severity: 1
+      }
+    }
+    alert = Alert.last
+    assert_equal "manual", alert.alert_type
+    assert_equal "active", alert.status
+    assert_equal users(:admin), alert.created_by
+  end
+
+  test "create with invalid params renders new with 422" do
+    assert_no_difference "Alert.count" do
+      post admin_alerts_path, params: {
+        alert: { title: "", description: "", severity: nil }
+      }
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "operator cannot create alerts" do
+    sign_in_as users(:operator)
+    post admin_alerts_path, params: {
+      alert: {
+        title: "Alerta proibido",
+        description: "Operador tentando criar.",
+        severity: 1
+      }
+    }
+    assert_redirected_to admin_root_path
+  end
 end

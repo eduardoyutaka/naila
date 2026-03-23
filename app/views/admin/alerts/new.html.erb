@@ -1,0 +1,11 @@
+<% content_for(:title, "Naila — Novo Alerta") %>
+
+<div class="mx-auto max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Novo Alerta Manual</h1>
+  </div>
+
+  <%= form_with model: [:admin, @alert] do |f| %>
+    <%= render "form", form: f, alert: @alert %>
+  <% end %>
+</div>
