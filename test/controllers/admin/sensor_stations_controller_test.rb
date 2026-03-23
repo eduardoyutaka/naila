@@ -28,4 +28,18 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
       assert_select "[data-testid='readings-list']"
     end
   end
+
+  test "show renders precipitation chart for station with precipitation data" do
+    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+    assert_select "turbo-frame#sensor_detail" do
+      assert_select "[data-testid='precipitation-chart']"
+    end
+  end
+
+  test "show does not render precipitation chart for station without precipitation data" do
+    get admin_sensor_station_path(sensor_stations(:fluv_belem))
+    assert_select "turbo-frame#sensor_detail" do
+      assert_select "[data-testid='precipitation-chart']", count: 0
+    end
+  end
 end
