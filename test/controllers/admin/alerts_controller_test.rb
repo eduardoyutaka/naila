@@ -150,4 +150,55 @@ class Admin::AlertsControllerTest < ActionDispatch::IntegrationTest
     }
     assert_redirected_to admin_root_path
   end
+
+  # ── Acknowledge ──
+
+  test "acknowledge changes status and redirects" do
+    alert = alerts(:active_high)
+    patch acknowledge_admin_alert_path(alert)
+    assert_redirected_to admin_alert_path(alert)
+
+    alert.reload
+    assert_equal "acknowledged", alert.status
+    assert_not_nil alert.acknowledged_at
+  end
+
+  test "operator can acknowledge alerts" do
+    sign_in_as users(:operator)
+    alert = alerts(:active_attention)
+    patch acknowledge_admin_alert_path(alert)
+    assert_redirected_to admin_alert_path(alert)
+
+    alert.reload
+    assert_equal "acknowledged", alert.status
+  end
+
+  # ── Resolve ──
+
+  test "resolve changes status and sets resolved_by" do
+    alert = alerts(:active_high)
+    patch resolve_admin_alert_path(alert)
+    assert_redirected_to admin_alert_path(alert)
+
+    alert.reload
+    assert_equal "resolved", alert.status
+    assert_equal users(:admin), alert.resolved_by
+    assert_not_nil alert.resolved_at
+  end
+
+  test "coordinator can resolve alerts" do
+    sign_in_as users(:coordinator)
+    alert = alerts(:active_attention)
+    patch resolve_admin_alert_path(alert)
+    assert_redirected_to admin_alert_path(alert)
+
+    alert.reload
+    assert_equal "resolved", alert.status
+  end
+
+  test "operator cannot resolve alerts" do
+    sign_in_as users(:operator)
+    patch resolve_admin_alert_path(alerts(:active_high))
+    assert_redirected_to admin_root_path
+  end
 end
