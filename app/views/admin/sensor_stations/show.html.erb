@@ -104,6 +104,22 @@
       </div>
     <% end %>
 
+    <%# ── Precipitation Chart ── %>
+    <% if @precipitation_readings.any? %>
+      <div>
+        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Precipitação 24h</div>
+        <div data-testid="precipitation-chart"
+             data-controller="admin--precipitation-timeline"
+             data-admin--precipitation-timeline-readings-value="<%= @precipitation_readings.map { |r|
+               [r.recorded_at.iso8601, r.value]
+             }.to_json %>"
+             data-admin--precipitation-timeline-unit-value="mm">
+          <div data-admin--precipitation-timeline-target="chart"
+               class="h-40 w-full rounded-lg bg-naila-elevated"></div>
+        </div>
+      </div>
+    <% end %>
+
     <%# ── Recent Readings ── %>
     <div>
       <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Leituras Recentes</div>

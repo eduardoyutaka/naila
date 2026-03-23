@@ -8,6 +8,10 @@ module Admin
 
     def show
       @recent_readings = @sensor_station.sensor_readings.recent.limit(20)
+      @precipitation_readings = @sensor_station.sensor_readings
+                                               .by_type("precipitation")
+                                               .since(24.hours.ago)
+                                               .order(recorded_at: :asc)
     end
 
     def new
