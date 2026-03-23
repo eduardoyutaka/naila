@@ -104,44 +104,36 @@
       </div>
     <% end %>
 
-    <%# ── Precipitation Chart ── %>
-    <% if @precipitation_readings.any? %>
+    <%# ── Reading Charts ── %>
+    <% chart_config = {
+         "precipitation" => { type: "bar", color: "#3b82f6", label: "Precipitação 24h" },
+         "river_level"   => { type: "line", color: "#06b6d4", label: "Nível do Rio 24h" },
+         "temperature"   => { type: "line", color: "#8b5cf6", label: "Temperatura 24h" },
+       } %>
+    <% if @readings_by_type.any? %>
+      <% @readings_by_type.each do |reading_type, readings| %>
+        <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
+        <div>
+          <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted"><%= config[:label] %></div>
+          <div data-testid="reading-chart-<%= reading_type %>"
+               data-controller="admin--reading-chart"
+               data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
+               data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
+               data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
+               data-admin--reading-chart-color-value="<%= config[:color] %>">
+            <div data-admin--reading-chart-target="chart"
+                 class="h-40 w-full rounded-lg bg-naila-elevated"></div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
       <div>
-        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Precipitação 24h</div>
-        <div data-testid="precipitation-chart"
-             data-controller="admin--precipitation-timeline"
-             data-admin--precipitation-timeline-readings-value="<%= @precipitation_readings.map { |r|
-               [r.recorded_at.iso8601, r.value]
-             }.to_json %>"
-             data-admin--precipitation-timeline-unit-value="mm">
-          <div data-admin--precipitation-timeline-target="chart"
-               class="h-40 w-full rounded-lg bg-naila-elevated"></div>
+        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Leituras 24h</div>
+        <div class="rounded-lg border border-naila-border px-3 py-4 text-center text-xs text-naila-text-muted">
+          Nenhuma leitura disponível.
         </div>
       </div>
     <% end %>
-
-    <%# ── Recent Readings ── %>
-    <div>
-      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Leituras Recentes</div>
-      <div data-testid="readings-list" class="divide-y divide-naila-border rounded-lg border border-naila-border">
-        <% if @recent_readings.empty? %>
-          <div class="px-3 py-4 text-center text-xs text-naila-text-muted">
-            Nenhuma leitura disponível.
-          </div>
-        <% else %>
-          <% @recent_readings.each do |reading| %>
-            <div class="flex items-center justify-between px-3 py-2">
-              <div class="text-xs text-naila-text-muted"><%= reading.reading_type.humanize %></div>
-              <div class="text-xs tabular-nums text-naila-text">
-                <span class="font-medium"><%= number_with_precision(reading.value, precision: 1) %></span>
-                <span class="text-naila-text-muted"><%= reading.unit %></span>
-              </div>
-              <div class="text-xs tabular-nums text-naila-text-muted"><%= reading.recorded_at.strftime("%d/%m %H:%M") %></div>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
 
     <%# ── Full Details Link ── %>
     <div class="pt-1">
