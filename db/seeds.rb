@@ -342,17 +342,17 @@ puts "  Creating sample sensor readings..."
 
 now = Time.current
 
-# River level readings (every 15 min for last 6 hours)
+# River level readings (every 15 min for last 24 hours)
 river_stations = stations.values.select(&:station_type_river_gauge?)
 river_stations.each do |station|
   river = station.river
   next unless river
 
   base_level = river.normal_level_m
-  24.times do |i|
-    time = now - (24 - i) * 15.minutes
+  96.times do |i|
+    time = now - (96 - i) * 15.minutes
     # Simulate gradually rising levels
-    variation = Math.sin(i * 0.3) * 0.3 + (i > 16 ? (i - 16) * 0.08 : 0)
+    variation = Math.sin(i * 0.3) * 0.3 + (i > 80 ? (i - 80) * 0.08 : 0)
     value = (base_level + variation).round(2).clamp(0, river.overflow_level_m)
 
     SensorReading.find_or_create_by!(
@@ -366,14 +366,14 @@ river_stations.each do |station|
   end
 end
 
-# Precipitation readings (every 10 min for last 6 hours)
+# Precipitation readings (every 10 min for last 24 hours)
 pluvio_stations = stations.values.select(&:station_type_pluviometer?)
 pluvio_stations.each do |station|
-  36.times do |i|
-    time = now - (36 - i) * 10.minutes
-    # Simulate rain event starting ~3 hours ago
-    value = if i > 18
-              (rand(0.5..8.0) + (i - 18) * 0.2).round(1)
+  144.times do |i|
+    time = now - (144 - i) * 10.minutes
+    # Simulate rain event starting ~6 hours ago
+    value = if i > 108
+              (rand(0.5..8.0) + (i - 108) * 0.2).round(1)
             else
               rand(0.0..1.0).round(1)
             end
@@ -385,6 +385,28 @@ pluvio_stations.each do |station|
     ) do |r|
       r.value = value
       r.unit = "mm"
+    end
+  end
+end
+
+# Temperature readings (every 15 min for last 24 hours)
+weather_stations = stations.values.select(&:station_type_weather_station?)
+weather_stations.each do |station|
+  96.times do |i|
+    time = now - (96 - i) * 15.minutes
+    # Simulate daily temperature curve (cooler at night, warmer midday)
+    hour = time.hour + time.min / 60.0
+    base_temp = 18.0
+    variation = 6.0 * Math.sin((hour - 6) * Math::PI / 12.0)
+    value = (base_temp + variation + rand(-0.5..0.5)).round(1)
+
+    SensorReading.find_or_create_by!(
+      sensor_station: station,
+      reading_type: "temperature",
+      recorded_at: time
+    ) do |r|
+      r.value = value
+      r.unit = "°C"
     end
   end
 end
