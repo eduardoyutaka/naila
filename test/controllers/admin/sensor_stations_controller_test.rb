@@ -22,24 +22,38 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "show displays recent readings" do
+  test "show renders precipitation chart for pluviometer" do
     get admin_sensor_station_path(sensor_stations(:pluv_centro))
     assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='readings-list']"
+      assert_select "[data-testid='reading-chart-precipitation']"
     end
   end
 
-  test "show renders precipitation chart for station with precipitation data" do
-    get admin_sensor_station_path(sensor_stations(:pluv_centro))
-    assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='precipitation-chart']"
-    end
-  end
-
-  test "show does not render precipitation chart for station without precipitation data" do
+  test "show does not render precipitation chart for river gauge" do
     get admin_sensor_station_path(sensor_stations(:fluv_belem))
     assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='precipitation-chart']", count: 0
+      assert_select "[data-testid='reading-chart-precipitation']", count: 0
+    end
+  end
+
+  test "show renders river level chart for river gauge" do
+    get admin_sensor_station_path(sensor_stations(:fluv_belem))
+    assert_select "turbo-frame#sensor_detail" do
+      assert_select "[data-testid='reading-chart-river_level']"
+    end
+  end
+
+  test "show does not render river level chart for pluviometer" do
+    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+    assert_select "turbo-frame#sensor_detail" do
+      assert_select "[data-testid='reading-chart-river_level']", count: 0
+    end
+  end
+
+  test "show renders temperature chart for weather station" do
+    get admin_sensor_station_path(sensor_stations(:meteo_batel))
+    assert_select "turbo-frame#sensor_detail" do
+      assert_select "[data-testid='reading-chart-temperature']"
     end
   end
 end

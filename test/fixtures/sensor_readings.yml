@@ -62,6 +62,30 @@ fluv_belem_level_2:
   recorded_at: <%= 35.minutes.ago.iso8601 %>
   quality_flag: ok
 
+fluv_belem_level_3:
+  sensor_station: fluv_belem
+  value: 0.9
+  unit: m
+  reading_type: river_level
+  recorded_at: <%= 2.hours.ago.iso8601 %>
+  quality_flag: ok
+
+fluv_belem_level_4:
+  sensor_station: fluv_belem
+  value: 0.7
+  unit: m
+  reading_type: river_level
+  recorded_at: <%= 6.hours.ago.iso8601 %>
+  quality_flag: ok
+
+fluv_belem_level_5:
+  sensor_station: fluv_belem
+  value: 0.8
+  unit: m
+  reading_type: river_level
+  recorded_at: <%= 12.hours.ago.iso8601 %>
+  quality_flag: ok
+
 meteo_batel_temp:
   sensor_station: meteo_batel
   value: 22.3
