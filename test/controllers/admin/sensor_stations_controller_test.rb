@@ -5,6 +5,46 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as users(:admin)
   end
 
+  # ── Index ──
+
+  test "index renders successfully" do
+    get admin_sensor_stations_path
+    assert_response :success
+  end
+
+  test "index displays sensor station names" do
+    get admin_sensor_stations_path
+    assert_select "td", text: /Pluviômetro Centro/
+    assert_select "td", text: /Fluviômetro Rio Belém/
+  end
+
+  test "index shows summary cards with counts" do
+    get admin_sensor_stations_path
+    assert_select "[data-testid='summary-total-count']"
+    assert_select "[data-testid='summary-online-count']"
+    assert_select "[data-testid='summary-maintenance-count']"
+  end
+
+  test "index shows station type badges" do
+    get admin_sensor_stations_path
+    assert_select "span", text: "Pluviômetro"
+    assert_select "span", text: "Fluviômetro"
+  end
+
+  test "index shows status indicators" do
+    get admin_sensor_stations_path
+    assert_select "span", text: "Ativo"
+    assert_select "span", text: "Manutenção"
+  end
+
+  test "index shows empty state when no stations exist" do
+    SensorStation.destroy_all
+    get admin_sensor_stations_path
+    assert_select "div", text: /Nenhuma estação cadastrada/
+  end
+
+  # ── Show ──
+
   test "show renders successfully" do
     get admin_sensor_station_path(sensor_stations(:pluv_centro))
     assert_response :success
