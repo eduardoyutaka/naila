@@ -1,0 +1,51 @@
+{
+  "lat": -25.4284,
+  "lon": -49.2733,
+  "timezone": "America/Sao_Paulo",
+  "timezone_offset": -10800,
+  "current": {
+    "dt": 1742900400,
+    "temp": 22.5,
+    "humidity": 78,
+    "pressure": 1015,
+    "wind_speed": 3.2,
+    "wind_deg": 180,
+    "weather": [{"id": 500, "main": "Rain", "description": "chuva leve"}],
+    "rain": {"1h": 1.5}
+  },
+  "hourly": [
+    {
+      "dt": 1742900400,
+      "temp": 22.5,
+      "humidity": 78,
+      "pressure": 1015,
+      "wind_speed": 3.2,
+      "wind_deg": 180,
+      "pop": 0.7,
+      "rain": {"1h": 1.5},
+      "weather": [{"id": 500, "main": "Rain", "description": "chuva leve"}]
+    },
+    {
+      "dt": 1742904000,
+      "temp": 21.8,
+      "humidity": 82,
+      "pressure": 1014,
+      "wind_speed": 2.8,
+      "wind_deg": 190,
+      "pop": 0.85,
+      "rain": {"1h": 3.2},
+      "weather": [{"id": 501, "main": "Rain", "description": "chuva moderada"}]
+    },
+    {
+      "dt": 1742907600,
+      "temp": 21.0,
+      "humidity": 88,
+      "pressure": 1013,
+      "wind_speed": 2.5,
+      "wind_deg": 200,
+      "pop": 0.6,
+      "rain": {"1h": 0.8},
+      "weather": [{"id": 500, "main": "Rain", "description": "chuva leve"}]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "estacoes": [
+    {
+      "codEstacao": "410690701A",
+      "nome": "Curitiba - Centro",
+      "latitude": -25.4284,
+      "longitude": -49.2733,
+      "medicoes": [
+        {
+          "dataHora": "2026-03-23 12:00:00",
+          "valor": 2.4
+        },
+        {
+          "dataHora": "2026-03-23 11:50:00",
+          "valor": 1.8
+        },
+        {
+          "dataHora": "2026-03-23 11:40:00",
+          "valor": 0.0
+        }
+      ]
+    }
+  ]
+}
