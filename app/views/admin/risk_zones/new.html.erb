@@ -1,0 +1,11 @@
+<% content_for(:title, "Naila — Nova Zona de Risco") %>
+
+<div class="mx-auto max-w-3xl">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Nova Zona de Risco</h1>
+  </div>
+
+  <%= form_with model: [:admin, @risk_zone] do |f| %>
+    <%= render "form", form: f, risk_zone: @risk_zone %>
+  <% end %>
+</div>
