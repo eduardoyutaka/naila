@@ -1,0 +1,2 @@
+class InmetClient < BaseClient
+end

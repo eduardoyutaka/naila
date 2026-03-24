@@ -1,0 +1,2 @@
+class CemadenClient < BaseClient
+end

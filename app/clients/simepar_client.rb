@@ -1,0 +1,2 @@
+class SimeparClient < BaseClient
+end

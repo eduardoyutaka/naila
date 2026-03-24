@@ -1,0 +1,2 @@
+class OpenWeatherMapClient < BaseClient
+end
