@@ -38,6 +38,32 @@ meteo_batel:
   last_reading_at: <%= 1.hour.ago.iso8601 %>
   last_reading_value: 22.3
 
+inmet_curitiba:
+  external_id: A807
+  name: Estação INMET Curitiba
+  station_type: weather_station
+  data_source: INMET
+  status: active
+  location: POINT(-49.2733 -25.4284)
+  elevation_m: 923.0
+  neighborhood: centro
+  drainage_basin: bacia_belem
+  last_reading_at: <%= 15.minutes.ago.iso8601 %>
+  last_reading_value: 22.5
+
+cemaden_centro:
+  external_id: "410690701A"
+  name: Pluviômetro CEMADEN Centro
+  station_type: pluviometer
+  data_source: CEMADEN
+  status: active
+  location: POINT(-49.2733 -25.4284)
+  elevation_m: 934.0
+  neighborhood: centro
+  drainage_basin: bacia_belem
+  last_reading_at: <%= 10.minutes.ago.iso8601 %>
+  last_reading_value: 2.4
+
 inactive_sensor:
   external_id: PLUV-002
   name: Pluviômetro Desativado
