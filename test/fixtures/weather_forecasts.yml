@@ -1,1 +1,32 @@
-# empty
+open_meteo_current:
+  source: "open_meteo"
+  issued_at: <%= 30.minutes.ago.iso8601 %>
+  valid_from: <%= 1.hour.ago.iso8601 %>
+  valid_until: <%= 2.hours.from_now.iso8601 %>
+  precipitation_mm: 15.0
+  precipitation_probability: 80.0
+  temperature_max_c: 22.0
+  temperature_min_c: 18.0
+  raw_data: '{"soil_moisture_avg": 0.35}'
+
+open_meteo_future:
+  source: "open_meteo"
+  issued_at: <%= 30.minutes.ago.iso8601 %>
+  valid_from: <%= 2.hours.from_now.iso8601 %>
+  valid_until: <%= 5.hours.from_now.iso8601 %>
+  precipitation_mm: 25.0
+  precipitation_probability: 90.0
+  temperature_max_c: 20.0
+  temperature_min_c: 17.0
+  raw_data: '{"soil_moisture_avg": 0.38}'
+
+open_meteo_expired:
+  source: "open_meteo"
+  issued_at: <%= 6.hours.ago.iso8601 %>
+  valid_from: <%= 6.hours.ago.iso8601 %>
+  valid_until: <%= 3.hours.ago.iso8601 %>
+  precipitation_mm: 5.0
+  precipitation_probability: 40.0
+  temperature_max_c: 23.0
+  temperature_min_c: 19.0
+  raw_data: '{}'
