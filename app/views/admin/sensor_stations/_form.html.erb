@@ -1,0 +1,125 @@
+<div class="rounded-xl border border-naila-border bg-naila-surface">
+  <div class="border-b border-naila-border px-6 py-4">
+    <h2 class="text-sm font-semibold text-naila-text">Dados da Estação</h2>
+  </div>
+
+  <div class="p-6 space-y-5">
+    <% if sensor_station.errors.any? %>
+      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+        <p class="text-sm font-medium text-red-400">
+          <%= sensor_station.errors.count %> erro(s) impediu(iram) o salvamento:
+        </p>
+        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
+          <% sensor_station.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%# Nome %>
+    <div>
+      <%= form.label :name, "Nome", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.text_field :name, required: true,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "Ex: Pluviômetro Centro" %>
+    </div>
+
+    <%# ID Externo + Fonte de Dados %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :external_id, "ID Externo", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.text_field :external_id, required: true,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 font-mono text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "Ex: PLUV-001" %>
+      </div>
+      <div>
+        <%= form.label :data_source, "Fonte de Dados", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.text_field :data_source, required: true,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "Ex: cemaden, ana, inmet" %>
+      </div>
+    </div>
+
+    <%# Tipo + Status %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :station_type, "Tipo", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :station_type,
+              [["Pluviômetro", "pluviometer"], ["Fluviômetro", "river_gauge"], ["Estação Meteorológica", "weather_station"]],
+              { prompt: "Selecione o tipo" },
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+      </div>
+      <div>
+        <%= form.label :status, "Status", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :status,
+              [["Ativo", "active"], ["Inativo", "inactive"], ["Manutenção", "maintenance"]],
+              {},
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+      </div>
+    </div>
+
+    <%# Latitude + Longitude %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :latitude, "Latitude", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.text_field :latitude,
+              value: sensor_station.location&.y,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 tabular-nums text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "Ex: -25.4284",
+              inputmode: "decimal" %>
+      </div>
+      <div>
+        <%= form.label :longitude, "Longitude", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.text_field :longitude,
+              value: sensor_station.location&.x,
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 tabular-nums text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+              placeholder: "Ex: -49.2733",
+              inputmode: "decimal" %>
+      </div>
+    </div>
+
+    <%# Elevação %>
+    <div>
+      <%= form.label :elevation_m, "Elevação (m)", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.text_field :elevation_m,
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 tabular-nums text-naila-text placeholder-naila-text-muted/50 outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            placeholder: "Ex: 934",
+            inputmode: "decimal" %>
+    </div>
+
+    <%# Bairro + Bacia Hidrográfica %>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :neighborhood_id, "Bairro", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :neighborhood_id,
+              Neighborhood.order(:name).pluck(:name, :id),
+              { include_blank: "Nenhum" },
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+      </div>
+      <div>
+        <%= form.label :drainage_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :drainage_basin_id,
+              DrainageBasin.order(:name).pluck(:name, :id),
+              { include_blank: "Nenhuma" },
+              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+      </div>
+    </div>
+
+    <%# Rio %>
+    <div>
+      <%= form.label :river_id, "Rio", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.select :river_id,
+            River.order(:name).pluck(:name, :id),
+            { include_blank: "Nenhum" },
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+    </div>
+  </div>
+
+  <%# Actions %>
+  <div class="flex items-center justify-end gap-3 border-t border-naila-border px-6 py-4">
+    <%= link_to "Cancelar", admin_sensor_stations_path, class: "text-sm text-naila-text-muted hover:text-naila-text transition-colors" %>
+    <%= form.submit sensor_station.persisted? ? "Salvar" : "Criar Estação",
+          class: "rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg cursor-pointer" %>
+  </div>
+</div>

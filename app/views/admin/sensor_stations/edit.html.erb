@@ -1,0 +1,11 @@
+<% content_for(:title, "Naila — Editar Estação") %>
+
+<div class="mx-auto max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Editar Estação</h1>
+  </div>
+
+  <%= form_with model: [:admin, @sensor_station] do |f| %>
+    <%= render "form", form: f, sensor_station: @sensor_station %>
+  <% end %>
+</div>
