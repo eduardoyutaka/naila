@@ -2,6 +2,16 @@ class RiskAssessmentJob < ApplicationJob
   queue_as :risk_assessment
 
   def perform(scope)
-    # Will be implemented in Step 19
+    zones = if scope == "all"
+      RiskZone.active
+    else
+      RiskZone.where(id: scope)
+    end
+
+    zones.find_each do |zone|
+      assessment = RiskEngine.assess(zone)
+      alerts = AlertEvaluator.evaluate(assessment)
+      alerts.each { |alert| AlertNotifier.dispatch(alert) }
+    end
   end
 end
