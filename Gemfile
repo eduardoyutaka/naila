@@ -57,7 +57,7 @@ gem "noticed", "~> 2.0"
 # Web Push API for browser notifications [https://github.com/pushpad/web-push]
 gem "web-push", "~> 3.0"
 # SMS via Twilio [https://github.com/twilio/twilio-ruby]
-gem "twilio-ruby", "~> 7.0"
+gem "twilio-ruby", "~> 7.10"
 
 # MQTT client for IoT sensor data ingestion [https://github.com/njh/ruby-mqtt]
 gem "mqtt", "~> 0.6"
