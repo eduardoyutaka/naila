@@ -439,7 +439,8 @@ CREATE TABLE public.risk_zones (
     risk_updated_at timestamp(6) without time zone,
     active boolean DEFAULT true,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    description text
 );
 
 
@@ -1855,6 +1856,20 @@ ALTER TABLE ONLY public.weather_observations
 
 
 --
+-- Name: idx_weather_fc_dedup; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_weather_fc_dedup ON public.weather_forecasts USING btree (source, valid_from, valid_until);
+
+
+--
+-- Name: idx_weather_obs_dedup; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_weather_obs_dedup ON public.weather_observations USING btree (source, station_code, observed_at);
+
+
+--
 -- Name: index_alert_notifications_on_alert_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2205,24 +2220,10 @@ CREATE INDEX index_weather_forecasts_on_location ON public.weather_forecasts USI
 
 
 --
--- Name: index_weather_forecasts_on_source_and_valid_from; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_weather_forecasts_on_source_and_valid_from ON public.weather_forecasts USING btree (source, valid_from);
-
-
---
 -- Name: index_weather_observations_on_location; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_weather_observations_on_location ON public.weather_observations USING gist (location);
-
-
---
--- Name: index_weather_observations_on_source_and_observed_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_weather_observations_on_source_and_observed_at ON public.weather_observations USING btree (source, observed_at);
 
 
 --
@@ -3568,6 +3569,8 @@ ALTER TABLE ONLY public.alert_notifications
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260324205844'),
+('20260324000233'),
 ('20260321000024'),
 ('20260321000023'),
 ('20260321000022'),
