@@ -1,19 +1,24 @@
 <% content_for(:title, "Naila — Painel de Monitoramento") %>
 
 <%# ── Summary Cards ── %>
-<div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+<div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
   <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
     <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores Online</div>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @sensors_online %></div>
   </div>
-  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas em Risco</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention"><%= @zones_at_risk %></div>
-  </div>
-  <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Alertas Ativos</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high"><%= @active_alerts.size %></div>
-  </div>
+  <% [
+    [1, "Atenção",       "text-risk-attention"],
+    [2, "Alerta",        "text-risk-alert"],
+    [3, "Alerta Máximo", "text-risk-high"],
+    [4, "Emergência",    "text-risk-emergency"],
+  ].each do |severity, label, color| %>
+    <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
+      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted"><%= label %></div>
+      <div class="mt-2 text-3xl font-semibold tabular-nums <%= color %>">
+        <%= @alerts_by_severity.fetch(severity, 0) %>
+      </div>
+    </div>
+  <% end %>
   <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
     <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas Monitoradas</div>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent"><%= @risk_zones.size %></div>
