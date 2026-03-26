@@ -14,6 +14,7 @@ class Alert < ApplicationRecord
   scope :active, -> { where(status: "active") }
   scope :unacknowledged, -> { where(status: "active", acknowledged_at: nil) }
   scope :by_severity, -> { order(severity: :desc) }
+  scope :automatic_active, -> { where(alert_type: "automatic", status: %w[active acknowledged]) }
 
   def acknowledged?
     acknowledged_at.present?
@@ -29,5 +30,33 @@ class Alert < ApplicationRecord
 
   def resolve!(user = nil)
     update!(status: "resolved", resolved_by: user, resolved_at: Time.current)
+  end
+
+  def update_severity!(new_severity, threshold, current_value:, risk_assessment: nil)
+    return self if severity == new_severity
+
+    history = (trigger_data["severity_changes"] || [])
+    history << {
+      "from" => severity,
+      "to" => new_severity,
+      "changed_at" => Time.current.iso8601,
+      "threshold_id" => threshold.id,
+      "threshold_value" => threshold.value,
+      "current_value" => current_value,
+      "risk_score" => risk_assessment&.risk_score
+    }
+
+    update!(
+      severity: new_severity,
+      alert_threshold: threshold,
+      trigger_data: trigger_data.merge(
+        "severity_changes" => history,
+        "threshold_id" => threshold.id,
+        "threshold_value" => threshold.value,
+        "current_value" => current_value,
+        "last_severity_change_at" => Time.current.iso8601
+      )
+    )
+    self
   end
 end

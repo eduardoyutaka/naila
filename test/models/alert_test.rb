@@ -116,6 +116,70 @@ class AlertTest < ActiveSupport::TestCase
     assert_not_nil alert.resolved_at
   end
 
+  # ── automatic_active scope ──
+
+  test "automatic_active returns automatic alerts that are active or acknowledged" do
+    scope = Alert.automatic_active
+    assert_includes scope, alerts(:active_high)
+    assert_includes scope, alerts(:active_attention)
+    assert_not_includes scope, alerts(:acknowledged_alert)  # manual
+    assert_not_includes scope, alerts(:resolved_alert)      # resolved
+  end
+
+  # ── update_severity! ──
+
+  test "update_severity! changes severity and records history in trigger_data" do
+    alert = alerts(:active_high)
+    threshold = alert_thresholds(:river_level_alert)
+
+    alert.update_severity!(2, threshold, current_value: 1.6)
+
+    assert_equal 2, alert.severity
+    changes = alert.trigger_data["severity_changes"]
+    assert_equal 1, changes.length
+    assert_equal 3, changes.first["from"]
+    assert_equal 2, changes.first["to"]
+    assert_equal threshold.id, changes.first["threshold_id"]
+    assert_in_delta 1.6, changes.first["current_value"]
+  end
+
+  test "update_severity! is a no-op when severity is unchanged" do
+    alert = alerts(:active_high)
+    threshold = alert_thresholds(:precipitation_high)
+    original_updated_at = alert.updated_at
+
+    travel 1.second do
+      alert.update_severity!(alert.severity, threshold, current_value: 70.0)
+    end
+
+    assert_equal original_updated_at, alert.reload.updated_at
+    assert_nil alert.trigger_data["severity_changes"]
+  end
+
+  test "update_severity! accumulates multiple changes in history" do
+    alert = alerts(:active_high)
+    threshold = alert_thresholds(:river_level_alert)
+
+    alert.update_severity!(2, threshold, current_value: 1.6)
+    alert.update_severity!(1, threshold, current_value: 1.3)
+
+    changes = alert.trigger_data["severity_changes"]
+    assert_equal 2, changes.length
+    assert_equal 3, changes.first["from"]
+    assert_equal 2, changes.first["to"]
+    assert_equal 2, changes.second["from"]
+    assert_equal 1, changes.second["to"]
+  end
+
+  test "update_severity! updates alert_threshold association" do
+    alert = alerts(:active_high)
+    threshold = alert_thresholds(:river_level_alert)
+
+    alert.update_severity!(2, threshold, current_value: 1.6)
+
+    assert_equal threshold, alert.reload.alert_threshold
+  end
+
   # ── Associations ──
 
   test "belongs to river basin optionally" do
