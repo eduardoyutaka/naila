@@ -1,74 +1,42 @@
-pluv_centro:
-  external_id: PLUV-001
-  name: Pluviômetro Centro
-  station_type: pluviometer
-  data_source: cemaden
-  status: active
-  location: POINT(-49.2733 -25.4284)
-  elevation_m: 934.0
-  neighborhood: centro
-  river_basin: bacia_belem
-  last_reading_at: <%= 10.minutes.ago.iso8601 %>
-  last_reading_value: 12.5
-
-fluv_belem:
-  external_id: FLUV-001
-  name: Fluviômetro Rio Belém
-  station_type: river_gauge
-  data_source: ana
-  status: active
-  location: POINT(-49.2650 -25.4350)
-  elevation_m: 890.0
-  neighborhood: centro
-  river_basin: bacia_belem
-  river: belem
-  last_reading_at: <%= 5.minutes.ago.iso8601 %>
-  last_reading_value: 1.2
-
-meteo_batel:
-  external_id: METEO-001
-  name: Estação Meteorológica Batel
-  station_type: weather_station
-  data_source: inmet
-  status: maintenance
-  location: POINT(-49.2900 -25.4400)
-  elevation_m: 920.0
-  neighborhood: batel
-  river_basin: bacia_belem
-  last_reading_at: <%= 1.hour.ago.iso8601 %>
-  last_reading_value: 22.3
-
 inmet_curitiba:
   external_id: A807
   name: Estação INMET Curitiba
-  station_type: weather_station
   data_source: INMET
   status: active
   location: POINT(-49.2733 -25.4284)
-  elevation_m: 923.0
   neighborhood: centro
   river_basin: bacia_belem
-  last_reading_at: <%= 15.minutes.ago.iso8601 %>
-  last_reading_value: 22.5
 
 cemaden_centro:
   external_id: "410690701A"
-  name: Pluviômetro CEMADEN Centro
-  station_type: pluviometer
+  name: Estação CEMADEN Centro
   data_source: CEMADEN
   status: active
   location: POINT(-49.2733 -25.4284)
-  elevation_m: 934.0
   neighborhood: centro
   river_basin: bacia_belem
-  last_reading_at: <%= 10.minutes.ago.iso8601 %>
-  last_reading_value: 2.4
 
-inactive_sensor:
-  external_id: PLUV-002
-  name: Pluviômetro Desativado
-  station_type: pluviometer
-  data_source: cemaden
-  status: inactive
-  neighborhood: batel
+estacao_belem:
+  external_id: EST-BELEM-01
+  name: Estação Belém — Centro Cívico
+  data_source: SIMEPAR
+  status: active
+  location: POINT(-49.2700 -25.4050)
+  elevation_m: 910.0
+  neighborhood: centro
   river_basin: bacia_belem
+  river: belem
+  last_reading_at: <%= 10.minutes.ago.iso8601 %>
+  last_reading_value: 12.5
+
+estacao_barigui:
+  external_id: EST-BARIGUI-01
+  name: Estação Barigui — Parque Barigui
+  data_source: SIMEPAR
+  status: maintenance
+  location: POINT(-49.3150 -25.4000)
+  elevation_m: 920.0
+  neighborhood: batel
+  river_basin: bacia_barigui
+  last_reading_at: <%= 1.hour.ago.iso8601 %>
+  last_reading_value: 22.3

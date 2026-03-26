@@ -14,8 +14,8 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
 
   test "index displays sensor station names" do
     get admin_sensor_stations_path
-    assert_select "td", text: /Pluviômetro Centro/
-    assert_select "td", text: /Fluviômetro Rio Belém/
+    assert_select "td", text: /Estação Belém/
+    assert_select "td", text: /Estação Barigui/
   end
 
   test "index shows summary cards with counts" do
@@ -25,7 +25,7 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='summary-maintenance-count']"
   end
 
-  test "index shows station type badges" do
+  test "index shows sensor type badges" do
     get admin_sensor_stations_path
     assert_select "span", text: "Pluviômetro"
     assert_select "span", text: "Fluviômetro"
@@ -55,7 +55,6 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form" do
       assert_select "input[name='sensor_station[name]']"
       assert_select "input[name='sensor_station[external_id]']"
-      assert_select "select[name='sensor_station[station_type]']"
       assert_select "input[name='sensor_station[data_source]']"
       assert_select "select[name='sensor_station[status]']"
       assert_select "input[name='sensor_station[latitude]']"
@@ -67,6 +66,11 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "new form does not include station_type field" do
+    get new_admin_sensor_station_path
+    assert_select "select[name='sensor_station[station_type]']", count: 0
+  end
+
   # ── Create ──
 
   test "create with valid params creates station and redirects" do
@@ -75,8 +79,8 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
         sensor_station: {
           name: "Nova Estação Teste",
           external_id: "TEST-001",
-          station_type: "pluviometer",
-          data_source: "cemaden"
+          data_source: "cemaden",
+          river_basin_id: river_basins(:bacia_belem).id
         }
       }
     end
@@ -88,8 +92,8 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
       sensor_station: {
         name: "Estação com Coordenadas",
         external_id: "GEO-001",
-        station_type: "river_gauge",
         data_source: "ana",
+        river_basin_id: river_basins(:bacia_belem).id,
         latitude: "-25.4284",
         longitude: "-49.2733"
       }
@@ -102,7 +106,7 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
   test "create with invalid params renders new with 422" do
     assert_no_difference "SensorStation.count" do
       post admin_sensor_stations_path, params: {
-        sensor_station: { name: "", external_id: "", station_type: "", data_source: "" }
+        sensor_station: { name: "", external_id: "", data_source: "" }
       }
     end
     assert_response :unprocessable_entity
@@ -114,8 +118,8 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
       sensor_station: {
         name: "Proibida",
         external_id: "NOPE-001",
-        station_type: "pluviometer",
-        data_source: "cemaden"
+        data_source: "cemaden",
+        river_basin_id: river_basins(:bacia_belem).id
       }
     }
     assert_redirected_to admin_root_path
@@ -124,54 +128,49 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
   # ── Show ──
 
   test "show renders successfully" do
-    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_response :success
   end
 
   test "show contains turbo frame for side sheet extraction" do
-    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_select "turbo-frame#sensor_detail"
   end
 
   test "show displays sensor name" do
-    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_select "turbo-frame#sensor_detail" do
-      assert_select "h2", text: /Pluviômetro Centro/
+      assert_select "h2", text: /Estação Belém/
     end
   end
 
-  test "show renders precipitation chart for pluviometer" do
-    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+  test "show renders precipitation chart" do
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_select "turbo-frame#sensor_detail" do
       assert_select "[data-testid='reading-chart-precipitation']"
     end
   end
 
-  test "show does not render precipitation chart for river gauge" do
-    get admin_sensor_station_path(sensor_stations(:fluv_belem))
-    assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='reading-chart-precipitation']", count: 0
-    end
-  end
-
-  test "show renders river level chart for river gauge" do
-    get admin_sensor_station_path(sensor_stations(:fluv_belem))
+  test "show renders river level chart" do
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_select "turbo-frame#sensor_detail" do
       assert_select "[data-testid='reading-chart-river_level']"
     end
   end
 
-  test "show does not render river level chart for pluviometer" do
-    get admin_sensor_station_path(sensor_stations(:pluv_centro))
+  test "show renders temperature chart" do
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='reading-chart-river_level']", count: 0
+      assert_select "[data-testid='reading-chart-temperature']"
     end
   end
 
-  test "show renders temperature chart for weather station" do
-    get admin_sensor_station_path(sensor_stations(:meteo_batel))
+  test "show lists sensors section" do
+    get admin_sensor_station_path(sensor_stations(:estacao_belem))
     assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='reading-chart-temperature']"
+      assert_select "span", text: "Pluviômetro"
+      assert_select "span", text: "Fluviômetro"
+      assert_select "span", text: "Estação Meteorológica"
     end
   end
 end

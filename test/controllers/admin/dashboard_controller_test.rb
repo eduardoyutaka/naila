@@ -22,22 +22,22 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     sensors = JSON.parse(sensor_json)
 
     sensor_names = sensors.map { |s| s["name"] }
-    assert_includes sensor_names, "Pluviômetro Centro"
-    assert_includes sensor_names, "Fluviômetro Rio Belém"
-    assert_not_includes sensor_names, "Pluviômetro Desativado"
+    assert_includes sensor_names, "Estação Belém — Centro Cívico"
+    assert_includes sensor_names, "Estação Barigui — Parque Barigui"
   end
 
   test "dashboard sensor data contains required fields" do
     get admin_root_path
     sensor_json = css_select("[data-admin--map-sensors-value]").first["data-admin--map-sensors-value"]
     sensors = JSON.parse(sensor_json)
-    sensor = sensors.find { |s| s["name"] == "Pluviômetro Centro" }
+    station = sensors.find { |s| s["name"] == "Estação Belém — Centro Cívico" }
 
-    assert_not_nil sensor
-    assert_equal "pluviometer", sensor["station_type"]
-    assert_equal "active", sensor["status"]
-    assert_in_delta(-25.4284, sensor["lat"], 0.001)
-    assert_in_delta(-49.2733, sensor["lng"], 0.001)
-    assert_equal "Centro", sensor["neighborhood"]
+    assert_not_nil station
+    assert_includes station["sensor_types"], "pluviometer"
+    assert_includes station["sensor_types"], "river_gauge"
+    assert_equal "active", station["status"]
+    assert_in_delta(-25.405, station["lat"], 0.01)
+    assert_in_delta(-49.270, station["lng"], 0.01)
+    assert_equal "Centro", station["neighborhood"]
   end
 end

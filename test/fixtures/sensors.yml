@@ -1,0 +1,37 @@
+pluv_cemaden_centro:
+  sensor_station: cemaden_centro
+  sensor_type: pluviometer
+  external_id: PLUV-CEMADEN-CENTRO-01
+  unit: mm
+  reading_type: precipitation
+  status: active
+
+pluv_belem:
+  sensor_station: estacao_belem
+  sensor_type: pluviometer
+  external_id: PLUV-BELEM-01
+  unit: mm
+  reading_type: precipitation
+  status: active
+  last_reading_at: <%= 10.minutes.ago.iso8601 %>
+  last_reading_value: 12.5
+
+fluv_belem:
+  sensor_station: estacao_belem
+  sensor_type: river_gauge
+  external_id: FLUV-BELEM-01
+  unit: m
+  reading_type: river_level
+  status: active
+  last_reading_at: <%= 5.minutes.ago.iso8601 %>
+  last_reading_value: 1.2
+
+meteo_belem:
+  sensor_station: estacao_belem
+  sensor_type: weather_station
+  external_id: METEO-BELEM-01
+  unit: "°C"
+  reading_type: temperature
+  status: maintenance
+  last_reading_at: <%= 1.hour.ago.iso8601 %>
+  last_reading_value: 22.3

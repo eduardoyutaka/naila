@@ -33,9 +33,9 @@ class AlertEvaluatorTest < ActiveSupport::TestCase
   end
 
   test "creates alert when river level threshold is breached" do
-    station = sensor_stations(:fluv_belem)
+    sensor = sensors(:fluv_belem)
     SensorReading.create!(
-      sensor_station: station,
+      sensor: sensor,
       value: 1.6,
       unit: "m",
       reading_type: "river_level",

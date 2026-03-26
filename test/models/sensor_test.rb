@@ -1,0 +1,79 @@
+require "test_helper"
+
+class SensorTest < ActiveSupport::TestCase
+  # ── Validations ──
+
+  test "valid with all required attributes" do
+    sensor = Sensor.new(
+      sensor_station: sensor_stations(:estacao_belem),
+      sensor_type: "pluviometer",
+      external_id: "TEST-PLUV-001"
+    )
+    assert sensor.valid?
+  end
+
+  test "invalid without external_id" do
+    sensor = Sensor.new(sensor_station: sensor_stations(:estacao_belem), sensor_type: "pluviometer")
+    assert_not sensor.valid?
+    assert_includes sensor.errors[:external_id], "can't be blank"
+  end
+
+  test "invalid without sensor_type" do
+    sensor = Sensor.new(sensor_station: sensor_stations(:estacao_belem), external_id: "TEST-001")
+    assert_not sensor.valid?
+    assert_includes sensor.errors[:sensor_type], "can't be blank"
+  end
+
+  test "invalid without sensor_station" do
+    sensor = Sensor.new(sensor_type: "pluviometer", external_id: "TEST-001")
+    assert_not sensor.valid?
+  end
+
+  test "external_id must be unique" do
+    existing = sensors(:pluv_belem)
+    duplicate = Sensor.new(
+      sensor_station: sensor_stations(:estacao_belem),
+      sensor_type: "pluviometer",
+      external_id: existing.external_id
+    )
+    assert_not duplicate.valid?
+    assert_includes duplicate.errors[:external_id], "has already been taken"
+  end
+
+  # ── Associations ──
+
+  test "belongs to sensor_station" do
+    assert_equal sensor_stations(:estacao_belem), sensors(:pluv_belem).sensor_station
+  end
+
+  test "has many sensor_readings" do
+    assert_respond_to sensors(:pluv_belem), :sensor_readings
+  end
+
+  # ── Enums ──
+
+  test "sensor_type enum values" do
+    assert sensors(:pluv_belem).sensor_type_pluviometer?
+    assert sensors(:fluv_belem).sensor_type_river_gauge?
+    assert sensors(:meteo_belem).sensor_type_weather_station?
+  end
+
+  test "status enum values" do
+    assert sensors(:pluv_belem).status_active?
+    assert sensors(:meteo_belem).status_maintenance?
+  end
+
+  # ── Scopes ──
+
+  test "online scope returns active sensors" do
+    active_ids = Sensor.online.pluck(:id)
+    assert_includes active_ids, sensors(:pluv_belem).id
+    assert_not_includes active_ids, sensors(:meteo_belem).id
+  end
+
+  test "by_type scope filters by sensor_type" do
+    pluviometers = Sensor.by_type("pluviometer")
+    assert_includes pluviometers, sensors(:pluv_belem)
+    assert_not_includes pluviometers, sensors(:fluv_belem)
+  end
+end

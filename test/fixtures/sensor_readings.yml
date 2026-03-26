@@ -1,5 +1,5 @@
 pluv_centro_rain_1:
-  sensor_station: pluv_centro
+  sensor: pluv_belem
   value: 12.5
   unit: mm
   reading_type: precipitation
@@ -7,7 +7,7 @@ pluv_centro_rain_1:
   quality_flag: ok
 
 pluv_centro_rain_2:
-  sensor_station: pluv_centro
+  sensor: pluv_belem
   value: 8.2
   unit: mm
   reading_type: precipitation
@@ -15,7 +15,7 @@ pluv_centro_rain_2:
   quality_flag: ok
 
 pluv_centro_rain_3:
-  sensor_station: pluv_centro
+  sensor: pluv_belem
   value: 3.1
   unit: mm
   reading_type: precipitation
@@ -23,7 +23,7 @@ pluv_centro_rain_3:
   quality_flag: ok
 
 pluv_centro_rain_4:
-  sensor_station: pluv_centro
+  sensor: pluv_belem
   value: 5.7
   unit: mm
   reading_type: precipitation
@@ -31,7 +31,7 @@ pluv_centro_rain_4:
   quality_flag: ok
 
 pluv_centro_rain_5:
-  sensor_station: pluv_centro
+  sensor: pluv_belem
   value: 15.3
   unit: mm
   reading_type: precipitation
@@ -39,7 +39,7 @@ pluv_centro_rain_5:
   quality_flag: ok
 
 pluv_centro_rain_6:
-  sensor_station: pluv_centro
+  sensor: pluv_belem
   value: 2.0
   unit: mm
   reading_type: precipitation
@@ -47,7 +47,7 @@ pluv_centro_rain_6:
   quality_flag: ok
 
 fluv_belem_level_1:
-  sensor_station: fluv_belem
+  sensor: fluv_belem
   value: 1.2
   unit: m
   reading_type: river_level
@@ -55,7 +55,7 @@ fluv_belem_level_1:
   quality_flag: ok
 
 fluv_belem_level_2:
-  sensor_station: fluv_belem
+  sensor: fluv_belem
   value: 1.1
   unit: m
   reading_type: river_level
@@ -63,7 +63,7 @@ fluv_belem_level_2:
   quality_flag: ok
 
 fluv_belem_level_3:
-  sensor_station: fluv_belem
+  sensor: fluv_belem
   value: 0.9
   unit: m
   reading_type: river_level
@@ -71,7 +71,7 @@ fluv_belem_level_3:
   quality_flag: ok
 
 fluv_belem_level_4:
-  sensor_station: fluv_belem
+  sensor: fluv_belem
   value: 0.7
   unit: m
   reading_type: river_level
@@ -79,7 +79,7 @@ fluv_belem_level_4:
   quality_flag: ok
 
 fluv_belem_level_5:
-  sensor_station: fluv_belem
+  sensor: fluv_belem
   value: 0.8
   unit: m
   reading_type: river_level
@@ -87,9 +87,9 @@ fluv_belem_level_5:
   quality_flag: ok
 
 meteo_batel_temp:
-  sensor_station: meteo_batel
+  sensor: meteo_belem
   value: 22.3
-  unit: °C
+  unit: "°C"
   reading_type: temperature
   recorded_at: <%= 1.hour.ago.iso8601 %>
   quality_flag: ok
