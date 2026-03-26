@@ -1,0 +1,2 @@
+class AlertThresholdPolicy < ApplicationPolicy
+end

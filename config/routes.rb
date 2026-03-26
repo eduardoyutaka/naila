@@ -25,6 +25,7 @@ Rails.application.routes.draw do
         patch :resolve
       end
     end
+    resources :alert_thresholds
     resources :river_basins, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
   end
