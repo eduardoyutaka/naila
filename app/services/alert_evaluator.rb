@@ -19,18 +19,40 @@ class AlertEvaluator
   end
 
   def evaluate
-    alerts = []
+    results = []
 
-    thresholds = applicable_thresholds
-    thresholds.each do |threshold|
-      next unless threshold_breached?(threshold)
-      next if cooldown_active?(threshold)
+    group_thresholds(applicable_thresholds).each do |group_key, thresholds|
+      _parameter, _threshold_type, _basin_id, river_id = group_key
 
-      alert = create_alert(threshold)
-      alerts << alert if alert
+      breached = thresholds.select { |t| threshold_breached?(t) }.sort_by(&:severity)
+      highest_breached = breached.last
+
+      existing = find_existing_alert(group_key)
+
+      if highest_breached
+        current_val = current_value_for(highest_breached)
+
+        if existing
+          if existing.severity != highest_breached.severity
+            from_severity = existing.severity
+            existing.update_severity!(highest_breached.severity, highest_breached, current_value: current_val, risk_assessment: @assessment)
+            results << { alert: existing, action: :updated, from_severity: from_severity }
+          end
+          # severity unchanged — no action
+        else
+          next if recently_resolved?(group_key, thresholds)
+
+          alert = create_alert(highest_breached, current_val)
+          results << { alert: alert, action: :created }
+        end
+      elsif existing
+        from_severity = existing.severity
+        existing.resolve!
+        results << { alert: existing, action: :resolved, from_severity: from_severity }
+      end
     end
 
-    alerts
+    results
   end
 
   private
@@ -43,14 +65,41 @@ class AlertEvaluator
     (basin_thresholds + river_thresholds + global_thresholds).uniq
   end
 
+  def group_thresholds(thresholds)
+    thresholds.group_by { |t| [ t.parameter, t.threshold_type, @river_basin.id, t.river_id ] }
+  end
+
+  def find_existing_alert(group_key)
+    parameter, threshold_type, _basin_id, river_id = group_key
+
+    Alert.automatic_active
+         .joins(:alert_threshold)
+         .where(river_basin: @river_basin, river_id: river_id)
+         .where(alert_thresholds: { parameter: parameter, threshold_type: threshold_type })
+         .order(severity: :desc)
+         .first
+  end
+
+  def recently_resolved?(group_key, thresholds)
+    parameter, threshold_type, _basin_id, river_id = group_key
+    max_cooldown = thresholds.map(&:cooldown_minutes).max
+
+    Alert.where(alert_type: "automatic", status: "resolved")
+         .where(river_basin: @river_basin, river_id: river_id)
+         .joins(:alert_threshold)
+         .where(alert_thresholds: { parameter: parameter, threshold_type: threshold_type })
+         .where("alerts.resolved_at > ?", max_cooldown.minutes.ago)
+         .exists?
+  end
+
   def threshold_breached?(threshold)
     current_value = current_value_for(threshold)
     return false unless current_value
 
     case threshold.comparison
-    when "gt" then current_value > threshold.value
+    when "gt"  then current_value > threshold.value
     when "gte" then current_value >= threshold.value
-    when "lt" then current_value < threshold.value
+    when "lt"  then current_value < threshold.value
     when "lte" then current_value <= threshold.value
     else false
     end
@@ -59,17 +108,11 @@ class AlertEvaluator
   def current_value_for(threshold)
     case threshold.parameter
     when "precipitation", "precipitation_1h"
-      if threshold.threshold_type&.include?("3h")
-        precipitation_3h
-      else
-        precipitation_1h
-      end
+      threshold.threshold_type&.include?("3h") ? precipitation_3h : precipitation_1h
     when "precipitation_3h"
       precipitation_3h
     when "river_level"
       latest_river_level(threshold.river)
-    else
-      nil
     end
   end
 
@@ -113,16 +156,9 @@ class AlertEvaluator
                  &.value
   end
 
-  def cooldown_active?(threshold)
-    Alert.where(alert_threshold: threshold, river_basin: @river_basin)
-         .where(status: %w[active acknowledged])
-         .where("created_at > ?", threshold.cooldown_minutes.minutes.ago)
-         .exists?
-  end
-
-  def create_alert(threshold)
+  def create_alert(threshold, current_val = nil)
+    current_val ||= current_value_for(threshold)
     river = threshold.river
-    current_val = current_value_for(threshold)
 
     title = PARAMETER_TITLES[threshold.parameter] ||
             "Limiar de #{threshold.parameter} excedido"
@@ -176,7 +212,6 @@ class AlertEvaluator
         return ids if ids.any?
       end
 
-      # Fallback: match by river basin
       Sensor.joins(:sensor_station)
             .where(sensor_type: :pluviometer, status: :active)
             .where(sensor_stations: { river_basin_id: @river_basin.id })
