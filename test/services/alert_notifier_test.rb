@@ -66,4 +66,53 @@ class AlertNotifierTest < ActiveSupport::TestCase
 
     assert_enqueued_jobs 4, only: SendAlertNotificationJob
   end
+
+  # ── notify_severity_change ──
+
+  test "escalation from sev 1 to 3 notifies newly added channels plus websocket" do
+    alert = create_alert(severity: 3)
+
+    AlertNotifier.notify_severity_change(alert, from_severity: 1, to_severity: 3)
+
+    channels = alert.alert_notifications.pluck(:channel).sort
+    assert_equal %w[email push sms websocket], channels
+  end
+
+  test "escalation from sev 2 to 4 notifies only newly added channels plus websocket" do
+    alert = create_alert(severity: 4)
+
+    AlertNotifier.notify_severity_change(alert, from_severity: 2, to_severity: 4)
+
+    channels = alert.alert_notifications.pluck(:channel).sort
+    # sms and push already existed at sev 2; email and civil_defense are new
+    assert_equal %w[civil_defense email websocket], channels
+  end
+
+  test "de-escalation notifies websocket only" do
+    alert = create_alert(severity: 1)
+
+    AlertNotifier.notify_severity_change(alert, from_severity: 3, to_severity: 1)
+
+    channels = alert.alert_notifications.pluck(:channel)
+    assert_equal %w[websocket], channels
+  end
+
+  test "severity change notifications record metadata with from/to severity" do
+    alert = create_alert(severity: 2)
+
+    AlertNotifier.notify_severity_change(alert, from_severity: 1, to_severity: 2)
+
+    notification = alert.alert_notifications.find_by(channel: "websocket")
+    assert_equal "severity_change", notification.metadata["type"]
+    assert_equal 1, notification.metadata["from_severity"]
+    assert_equal 2, notification.metadata["to_severity"]
+  end
+
+  test "severity change enqueues SendAlertNotificationJob for each notification" do
+    alert = create_alert(severity: 3)
+
+    AlertNotifier.notify_severity_change(alert, from_severity: 1, to_severity: 3)
+
+    assert_enqueued_jobs 4, only: SendAlertNotificationJob
+  end
 end
