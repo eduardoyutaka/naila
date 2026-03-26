@@ -9,11 +9,77 @@ precipitation_high:
   cooldown_minutes: 120
   river_basin: bacia_belem
 
+precipitation_attention:
+  parameter: precipitation
+  threshold_type: accumulated_3h
+  severity: 1
+  value: 20.0
+  unit: mm
+  comparison: gte
+  active: true
+  cooldown_minutes: 120
+  river_basin: bacia_belem
+
+precipitation_alert:
+  parameter: precipitation
+  threshold_type: accumulated_3h
+  severity: 2
+  value: 40.0
+  unit: mm
+  comparison: gte
+  active: true
+  cooldown_minutes: 120
+  river_basin: bacia_belem
+
+precipitation_emergency:
+  parameter: precipitation
+  threshold_type: accumulated_3h
+  severity: 4
+  value: 80.0
+  unit: mm
+  comparison: gte
+  active: true
+  cooldown_minutes: 120
+  river_basin: bacia_belem
+
 river_level_alert:
   parameter: river_level
   threshold_type: instant
   severity: 2
   value: 1.5
+  unit: m
+  comparison: gte
+  active: true
+  cooldown_minutes: 60
+  river: belem
+
+river_level_attention:
+  parameter: river_level
+  threshold_type: instant
+  severity: 1
+  value: 1.2
+  unit: m
+  comparison: gte
+  active: true
+  cooldown_minutes: 60
+  river: belem
+
+river_level_high:
+  parameter: river_level
+  threshold_type: instant
+  severity: 3
+  value: 2.5
+  unit: m
+  comparison: gte
+  active: true
+  cooldown_minutes: 60
+  river: belem
+
+river_level_emergency:
+  parameter: river_level
+  threshold_type: instant
+  severity: 4
+  value: 3.0
   unit: m
   comparison: gte
   active: true
