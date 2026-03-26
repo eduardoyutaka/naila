@@ -51,12 +51,12 @@
       <p class="mt-1 text-xs text-naila-text-muted">Orientações que serão exibidas para a população.</p>
     </div>
 
-    <%# Zona de Risco + Bairro (side by side) %>
+    <%# Bacia Hidrográfica + Bairro (side by side) %>
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <div>
-        <%= form.label :risk_zone_id, "Zona de Risco", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-        <%= form.select :risk_zone_id,
-              RiskZone.active.order(:name).pluck(:name, :id),
+        <%= form.label :river_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :river_basin_id,
+              RiverBasin.active.order(:name).pluck(:name, :id),
               { include_blank: "Nenhuma" },
               class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
       </div>

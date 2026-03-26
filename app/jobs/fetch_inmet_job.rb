@@ -6,7 +6,7 @@ class FetchInmetJob < ApplicationJob
     client = InmetClient.new(data_source)
 
     stations = SensorStation.where(data_source: "INMET").where(status: "active")
-    affected_zone_ids = Set.new
+    affected_basin_ids = Set.new
 
     stations.find_each do |station|
       observations = client.call(station_code: station.external_id)
@@ -23,11 +23,11 @@ class FetchInmetJob < ApplicationJob
         end
       end
 
-      affected_zone_ids.merge(station.nearby_risk_zone_ids)
+      affected_basin_ids.merge(station.nearby_river_basin_ids)
     end
 
-    affected_zone_ids.each do |zone_id|
-      RiskAssessmentJob.perform_later(zone_id)
+    affected_basin_ids.each do |basin_id|
+      RiskAssessmentJob.perform_later(basin_id)
     end
   end
 end

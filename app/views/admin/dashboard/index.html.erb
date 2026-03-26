@@ -20,21 +20,20 @@
     </div>
   <% end %>
   <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas Monitoradas</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent"><%= @risk_zones.size %></div>
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bacias Monitoradas</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent"><%= @river_basins.size %></div>
   </div>
 </div>
 
 <%# ── Map ── %>
 <div class="mb-6 overflow-hidden rounded-xl border border-naila-border bg-naila-surface"
      data-controller="admin--map"
-     data-admin--map-risk-zones-value="<%= @risk_zones.map { |z|
+     data-admin--map-river-basins-value="<%= @river_basins.map { |b|
        {
-         id: z.id,
-         name: z.name,
-         risk_level: z.current_risk_level,
-         zone_type: z.zone_type,
-         geometry: z.geometry ? RGeo::GeoJSON.encode(z.geometry) : nil
+         id: b.id,
+         name: b.name,
+         risk_level: b.current_risk_level,
+         geometry: b.geometry ? RGeo::GeoJSON.encode(b.geometry) : nil
        }
      }.to_json %>"
      data-admin--map-sensors-value="<%= @sensor_stations.map { |s|
@@ -131,8 +130,8 @@
               <p class="mt-0.5 text-xs text-naila-text-muted truncate"><%= alert.description %></p>
               <div class="mt-1 text-xs text-naila-text-muted">
                 <%= time_ago_in_words(alert.created_at) %> atrás
-                <% if alert.risk_zone %>
-                  · <span class="text-naila-accent"><%= alert.risk_zone.name %></span>
+                <% if alert.river_basin %>
+                  · <span class="text-naila-accent"><%= alert.river_basin.name %></span>
                 <% end %>
               </div>
             </div>

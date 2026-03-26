@@ -3,7 +3,7 @@ module Admin
     before_action :set_alert, only: [:show, :acknowledge, :resolve]
 
     def index
-      @alerts = Alert.includes(:risk_zone, :neighborhood, :river)
+      @alerts = Alert.includes(:river_basin, :neighborhood, :river)
                      .order(severity: :desc, created_at: :desc)
     end
 
@@ -50,7 +50,7 @@ module Admin
     def alert_params
       params.require(:alert).permit(
         :title, :description, :instructions, :severity,
-        :risk_zone_id, :neighborhood_id, :river_id
+        :river_basin_id, :neighborhood_id, :river_id
       )
     end
   end

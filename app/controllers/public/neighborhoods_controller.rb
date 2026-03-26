@@ -7,7 +7,7 @@ module Public
 
     def show
       @neighborhood = Neighborhood.find_by!(code: params[:code])
-      @risk_zones = @neighborhood.risk_zones.active
+      @active_river_basins = RiverBasin.at_risk
       @active_alerts = @neighborhood.alerts.active.by_severity
     end
   end

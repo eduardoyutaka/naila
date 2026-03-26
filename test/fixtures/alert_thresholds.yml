@@ -7,7 +7,7 @@ precipitation_high:
   comparison: gte
   active: true
   cooldown_minutes: 120
-  risk_zone: zona_centro
+  river_basin: bacia_belem
 
 river_level_alert:
   parameter: river_level

@@ -4,8 +4,8 @@
 # Run with: bin/rails db:seed
 #
 # This seed creates realistic demo data including Curitiba's administrative
-# regions, key neighborhoods, drainage basins, rivers with real threshold
-# levels, risk zones, sensor stations, sample readings, alerts, and users.
+# regions, key neighborhoods, river basins with polygon boundaries, rivers
+# with real threshold levels, sensor stations, sample readings, alerts, and users.
 
 puts "Seeding Naila..."
 
@@ -113,22 +113,68 @@ neighborhoods = neighborhoods_data.map do |data|
 end.index_by(&:code)
 
 # ============================================================
-# 3. Drainage Basins
+# 3. River Basins (with polygon boundaries)
 # ============================================================
-puts "  Creating drainage basins..."
+puts "  Creating river basins..."
 
 basins_data = [
-  { name: "Bacia do Rio Iguaçu",   area: 308.0 },
-  { name: "Bacia do Rio Barigui",   area: 131.0 },
-  { name: "Bacia do Rio Belém",     area: 87.8 },
-  { name: "Bacia do Rio Atuba",     area: 127.6 },
-  { name: "Bacia do Rio Passaúna",  area: 216.0 },
-  { name: "Bacia do Rio Ribeirão dos Padilhas", area: 33.0 },
+  {
+    name: "Bacia do Rio Iguaçu", area: 308.0, risk: :attention, score: 0.35,
+    coords: [
+      [-49.32, -25.44], [-49.28, -25.44], [-49.24, -25.44], [-49.20, -25.45],
+      [-49.20, -25.47], [-49.22, -25.49], [-49.26, -25.50], [-49.30, -25.50],
+      [-49.32, -25.49], [-49.33, -25.47], [-49.32, -25.44]
+    ]
+  },
+  {
+    name: "Bacia do Rio Barigui", area: 131.0, risk: :attention, score: 0.32,
+    coords: [
+      [-49.36, -25.35], [-49.33, -25.35], [-49.31, -25.37], [-49.29, -25.40],
+      [-49.29, -25.43], [-49.30, -25.45], [-49.31, -25.47], [-49.34, -25.47],
+      [-49.36, -25.45], [-49.37, -25.42], [-49.37, -25.38], [-49.36, -25.35]
+    ]
+  },
+  {
+    name: "Bacia do Rio Belém", area: 87.8, risk: :normal, score: 0.15,
+    coords: [
+      [-49.28, -25.38], [-49.26, -25.38], [-49.25, -25.40], [-49.25, -25.42],
+      [-49.25, -25.44], [-49.26, -25.46], [-49.28, -25.46], [-49.29, -25.44],
+      [-49.29, -25.42], [-49.29, -25.40], [-49.28, -25.38]
+    ]
+  },
+  {
+    name: "Bacia do Rio Atuba", area: 127.6, risk: :alert, score: 0.48,
+    coords: [
+      [-49.24, -25.34], [-49.21, -25.35], [-49.19, -25.37], [-49.19, -25.40],
+      [-49.20, -25.42], [-49.22, -25.44], [-49.25, -25.44], [-49.26, -25.42],
+      [-49.26, -25.39], [-49.25, -25.36], [-49.24, -25.34]
+    ]
+  },
+  {
+    name: "Bacia do Rio Passaúna", area: 216.0, risk: :normal, score: 0.10,
+    coords: [
+      [-49.40, -25.37], [-49.37, -25.37], [-49.36, -25.39], [-49.36, -25.42],
+      [-49.37, -25.45], [-49.38, -25.47], [-49.41, -25.47], [-49.42, -25.44],
+      [-49.42, -25.41], [-49.41, -25.38], [-49.40, -25.37]
+    ]
+  },
+  {
+    name: "Bacia do Ribeirão dos Padilhas", area: 33.0, risk: :attention, score: 0.30,
+    coords: [
+      [-49.33, -25.48], [-49.31, -25.48], [-49.29, -25.49], [-49.28, -25.51],
+      [-49.30, -25.52], [-49.32, -25.52], [-49.34, -25.51], [-49.34, -25.49],
+      [-49.33, -25.48]
+    ]
+  },
 ]
 
 basins = basins_data.map do |data|
-  DrainageBasin.find_or_create_by!(name: data[:name]) do |b|
+  RiverBasin.find_or_create_by!(name: data[:name]) do |b|
     b.area_km2 = data[:area]
+    b.current_risk_level = data[:risk]
+    b.current_risk_score = data[:score]
+    b.geometry = polygon(data[:coords])
+    b.active = true
   end
 end.index_by(&:name)
 
@@ -177,7 +223,7 @@ rivers_data = [
 
 rivers = rivers_data.map do |data|
   River.find_or_create_by!(name: data[:name]) do |r|
-    r.drainage_basin = basins[data[:basin]]
+    r.river_basin = basins[data[:basin]]
     r.length_km = data[:length]
     r.normal_level_m = data[:normal]
     r.alert_level_m = data[:alert]
@@ -188,95 +234,7 @@ rivers = rivers_data.map do |data|
 end.index_by(&:name)
 
 # ============================================================
-# 5. Risk Zones
-# ============================================================
-puts "  Creating risk zones..."
-
-risk_zones_data = [
-  # Flood plains along rivers
-  {
-    name: "Planície Rio Iguaçu — Boqueirão",
-    type: :flood_plain, neighborhood: "boqueirao",
-    basin: "Bacia do Rio Iguaçu", risk: :attention, score: 0.35,
-    coords: [[-49.29, -25.47], [-49.27, -25.47], [-49.27, -25.46], [-49.29, -25.46], [-49.29, -25.47]]
-  },
-  {
-    name: "Planície Rio Iguaçu — Ganchinho",
-    type: :flood_plain, neighborhood: "ganchinho",
-    basin: "Bacia do Rio Iguaçu", risk: :alert, score: 0.52,
-    coords: [[-49.28, -25.49], [-49.26, -25.49], [-49.26, -25.48], [-49.28, -25.48], [-49.28, -25.49]]
-  },
-  {
-    name: "Planície Rio Barigui — CIC",
-    type: :flood_plain, neighborhood: "cic",
-    basin: "Bacia do Rio Barigui", risk: :attention, score: 0.32,
-    coords: [[-49.34, -25.43], [-49.32, -25.43], [-49.32, -25.41], [-49.34, -25.41], [-49.34, -25.43]]
-  },
-  {
-    name: "Planície Rio Barigui — Pinheirinho",
-    type: :flood_plain, neighborhood: "pinheirinho",
-    basin: "Bacia do Rio Barigui", risk: :attention, score: 0.28,
-    coords: [[-49.31, -25.45], [-49.29, -25.45], [-49.29, -25.44], [-49.31, -25.44], [-49.31, -25.45]]
-  },
-  {
-    name: "Planície Rio Belém — Centro",
-    type: :urban_drainage, neighborhood: "centro",
-    basin: "Bacia do Rio Belém", risk: :normal, score: 0.15,
-    coords: [[-49.28, -25.43], [-49.26, -25.43], [-49.26, -25.42], [-49.28, -25.42], [-49.28, -25.43]]
-  },
-  {
-    name: "Planície Rio Atuba — Cajuru",
-    type: :flood_plain, neighborhood: "cajuru",
-    basin: "Bacia do Rio Atuba", risk: :alert, score: 0.48,
-    coords: [[-49.24, -25.41], [-49.22, -25.41], [-49.22, -25.39], [-49.24, -25.39], [-49.24, -25.41]]
-  },
-  {
-    name: "Planície Rio Atuba — Atuba",
-    type: :flood_plain, neighborhood: "atuba",
-    basin: "Bacia do Rio Atuba", risk: :attention, score: 0.35,
-    coords: [[-49.23, -25.38], [-49.21, -25.38], [-49.21, -25.37], [-49.23, -25.37], [-49.23, -25.38]]
-  },
-  # Urban drainage problem areas
-  {
-    name: "Drenagem Urbana — Rebouças",
-    type: :urban_drainage, neighborhood: "reboucas",
-    basin: "Bacia do Rio Belém", risk: :attention, score: 0.22,
-    coords: [[-49.28, -25.44], [-49.26, -25.44], [-49.26, -25.43], [-49.28, -25.43], [-49.28, -25.44]]
-  },
-  {
-    name: "Drenagem Urbana — Uberaba",
-    type: :urban_drainage, neighborhood: "uberaba",
-    basin: "Bacia do Rio Iguaçu", risk: :attention, score: 0.25,
-    coords: [[-49.25, -25.45], [-49.23, -25.45], [-49.23, -25.44], [-49.25, -25.44], [-49.25, -25.45]]
-  },
-  {
-    name: "Encosta — Tatuquara",
-    type: :slope, neighborhood: "tatuquara",
-    basin: "Bacia do Rio Ribeirão dos Padilhas", risk: :attention, score: 0.30,
-    coords: [[-49.33, -25.50], [-49.31, -25.50], [-49.31, -25.49], [-49.33, -25.49], [-49.33, -25.50]]
-  },
-  {
-    name: "Planície Rio Iguaçu — Sítio Cercado",
-    type: :flood_plain, neighborhood: "sitio-cercado",
-    basin: "Bacia do Rio Iguaçu", risk: :attention, score: 0.33,
-    coords: [[-49.30, -25.50], [-49.28, -25.50], [-49.28, -25.49], [-49.30, -25.49], [-49.30, -25.50]]
-  },
-]
-
-risk_zones = risk_zones_data.map do |data|
-  RiskZone.find_or_create_by!(name: data[:name]) do |z|
-    z.zone_type = data[:type]
-    z.neighborhood = neighborhoods[data[:neighborhood]]
-    z.drainage_basin = basins[data[:basin]]
-    z.current_risk_level = data[:risk]
-    z.current_risk_score = data[:score]
-    z.geometry = polygon(data[:coords])
-    z.active = true
-  end
-end.index_by(&:name)
-
-# ============================================================
-# 6. Sensor Stations
+# 5. Sensor Stations
 # ============================================================
 puts "  Creating sensor stations..."
 
@@ -329,14 +287,14 @@ stations = stations_data.map do |data|
     s.data_source = data[:source]
     s.neighborhood = neighborhoods[data[:neighborhood]]
     s.river = rivers[data[:river]] if data[:river]
-    s.drainage_basin = basins[data[:basin]] if data[:basin]
+    s.river_basin = basins[data[:basin]] if data[:basin]
     s.location = point(data[:lon], data[:lat])
     s.status = "active"
   end
 end.index_by { |s| s.external_id }
 
 # ============================================================
-# 7. Sample Sensor Readings (last 24 hours)
+# 6. Sample Sensor Readings (last 24 hours)
 # ============================================================
 puts "  Creating sample sensor readings..."
 
@@ -412,7 +370,7 @@ weather_stations.each do |station|
 end
 
 # ============================================================
-# 8. Active Alerts
+# 7. Active Alerts
 # ============================================================
 puts "  Creating sample alerts..."
 
@@ -421,7 +379,7 @@ puts "  Creating sample alerts..."
     title: "Nível do Rio Atuba acima do nível de alerta",
     description: "O Rio Atuba na estação Cajuru registrou 3.2m às #{(now - 45.minutes).strftime('%H:%M')}, acima do nível de alerta de 2.8m. Monitoramento intensificado.",
     severity: 2, status: "active", alert_type: "automatic",
-    risk_zone: "Planície Rio Atuba — Cajuru",
+    basin: "Bacia do Rio Atuba",
     neighborhood: "cajuru", river: "Rio Atuba",
     created_at: now - 45.minutes
   },
@@ -429,7 +387,7 @@ puts "  Creating sample alerts..."
     title: "Precipitação intensa no Boqueirão",
     description: "Acumulado de 42mm nas últimas 2 horas na região do Boqueirão. Taxa atual de 15mm/h. Risco de alagamento em áreas baixas.",
     severity: 2, status: "active", alert_type: "automatic",
-    risk_zone: "Planície Rio Iguaçu — Boqueirão",
+    basin: "Bacia do Rio Iguaçu",
     neighborhood: "boqueirao",
     created_at: now - 30.minutes
   },
@@ -437,7 +395,7 @@ puts "  Creating sample alerts..."
     title: "Risco elevado de enchente no Ganchinho",
     description: "Combinação de chuva intensa (38mm/2h) e nível do Rio Iguaçu em 4.2m (nível de enchente: 4.5m). Equipes de resposta em prontidão.",
     severity: 3, status: "active", alert_type: "automatic",
-    risk_zone: "Planície Rio Iguaçu — Ganchinho",
+    basin: "Bacia do Rio Iguaçu",
     neighborhood: "ganchinho", river: "Rio Iguaçu",
     created_at: now - 20.minutes
   },
@@ -445,7 +403,7 @@ puts "  Creating sample alerts..."
     title: "Atenção: Solo saturado no Tatuquara",
     description: "Imagens de satélite indicam solo saturado na encosta do Tatuquara. Monitoramento preventivo ativado.",
     severity: 1, status: "active", alert_type: "automatic",
-    risk_zone: "Encosta — Tatuquara",
+    basin: "Bacia do Ribeirão dos Padilhas",
     neighborhood: "tatuquara",
     created_at: now - 2.hours
   },
@@ -463,7 +421,7 @@ puts "  Creating sample alerts..."
     a.severity = data[:severity]
     a.status = data[:status]
     a.alert_type = data[:alert_type]
-    a.risk_zone = risk_zones[data[:risk_zone]] if data[:risk_zone]
+    a.river_basin = basins[data[:basin]] if data[:basin]
     a.neighborhood = neighborhoods[data[:neighborhood]] if data[:neighborhood]
     a.river = rivers[data[:river]] if data[:river]
     a.created_at = data[:created_at]
@@ -472,7 +430,7 @@ puts "  Creating sample alerts..."
 end
 
 # ============================================================
-# 9. Alert Thresholds
+# 8. Alert Thresholds
 # ============================================================
 puts "  Creating alert thresholds..."
 
@@ -522,7 +480,7 @@ end
 end
 
 # ============================================================
-# 10. Escalation Rules
+# 9. Escalation Rules
 # ============================================================
 puts "  Creating escalation rules..."
 
@@ -538,7 +496,7 @@ puts "  Creating escalation rules..."
 end
 
 # ============================================================
-# 11. Users
+# 10. Users
 # ============================================================
 puts "  Creating users..."
 
@@ -562,7 +520,7 @@ puts "  Creating users..."
 end
 
 # ============================================================
-# 12. Data Sources
+# 11. Data Sources
 # ============================================================
 puts "  Creating data sources..."
 
@@ -587,9 +545,8 @@ end
 puts "Seeding complete!"
 puts "  #{Region.count} regions"
 puts "  #{Neighborhood.count} neighborhoods"
-puts "  #{DrainageBasin.count} drainage basins"
+puts "  #{RiverBasin.count} river basins"
 puts "  #{River.count} rivers"
-puts "  #{RiskZone.count} risk zones"
 puts "  #{SensorStation.count} sensor stations"
 puts "  #{SensorReading.count} sensor readings"
 puts "  #{Alert.count} alerts"

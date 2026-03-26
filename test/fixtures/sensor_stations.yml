@@ -7,7 +7,7 @@ pluv_centro:
   location: POINT(-49.2733 -25.4284)
   elevation_m: 934.0
   neighborhood: centro
-  drainage_basin: bacia_belem
+  river_basin: bacia_belem
   last_reading_at: <%= 10.minutes.ago.iso8601 %>
   last_reading_value: 12.5
 
@@ -20,7 +20,7 @@ fluv_belem:
   location: POINT(-49.2650 -25.4350)
   elevation_m: 890.0
   neighborhood: centro
-  drainage_basin: bacia_belem
+  river_basin: bacia_belem
   river: belem
   last_reading_at: <%= 5.minutes.ago.iso8601 %>
   last_reading_value: 1.2
@@ -34,7 +34,7 @@ meteo_batel:
   location: POINT(-49.2900 -25.4400)
   elevation_m: 920.0
   neighborhood: batel
-  drainage_basin: bacia_belem
+  river_basin: bacia_belem
   last_reading_at: <%= 1.hour.ago.iso8601 %>
   last_reading_value: 22.3
 
@@ -47,7 +47,7 @@ inmet_curitiba:
   location: POINT(-49.2733 -25.4284)
   elevation_m: 923.0
   neighborhood: centro
-  drainage_basin: bacia_belem
+  river_basin: bacia_belem
   last_reading_at: <%= 15.minutes.ago.iso8601 %>
   last_reading_value: 22.5
 
@@ -60,7 +60,7 @@ cemaden_centro:
   location: POINT(-49.2733 -25.4284)
   elevation_m: 934.0
   neighborhood: centro
-  drainage_basin: bacia_belem
+  river_basin: bacia_belem
   last_reading_at: <%= 10.minutes.ago.iso8601 %>
   last_reading_value: 2.4
 
@@ -71,4 +71,4 @@ inactive_sensor:
   data_source: cemaden
   status: inactive
   neighborhood: batel
-  drainage_basin: bacia_belem
+  river_basin: bacia_belem

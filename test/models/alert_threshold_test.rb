@@ -78,7 +78,7 @@ class AlertThresholdTest < ActiveSupport::TestCase
     assert_includes active, alert_thresholds(:river_level_alert)
   end
 
-  test "global scope returns thresholds without risk_zone or river" do
+  test "global scope returns thresholds without river_basin or river" do
     global = AlertThreshold.global
     assert_not_includes global, alert_thresholds(:precipitation_high)
     assert_not_includes global, alert_thresholds(:river_level_alert)
@@ -86,9 +86,9 @@ class AlertThresholdTest < ActiveSupport::TestCase
 
   # ── Associations ──
 
-  test "belongs to risk zone optionally" do
-    assert_equal risk_zones(:zona_centro), alert_thresholds(:precipitation_high).risk_zone
-    assert_nil alert_thresholds(:river_level_alert).risk_zone
+  test "belongs to river basin optionally" do
+    assert_equal river_basins(:bacia_belem), alert_thresholds(:precipitation_high).river_basin
+    assert_nil alert_thresholds(:river_level_alert).river_basin
   end
 
   test "belongs to river optionally" do

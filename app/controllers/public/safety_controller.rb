@@ -1,7 +1,7 @@
 module Public
   class SafetyController < BaseController
     def index
-      @evacuation_routes = EvacuationRoute.includes(:risk_zone).where(active: true)
+      @evacuation_routes = EvacuationRoute.includes(:river_basin).where(active: true)
     end
   end
 end

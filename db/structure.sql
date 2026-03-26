@@ -78,7 +78,7 @@ CREATE TABLE public.alert_thresholds (
     value double precision NOT NULL,
     unit character varying NOT NULL,
     comparison character varying NOT NULL,
-    risk_zone_id bigint,
+    river_basin_id bigint,
     river_id bigint,
     active boolean DEFAULT true,
     cooldown_minutes integer DEFAULT 60,
@@ -118,7 +118,7 @@ CREATE TABLE public.alerts (
     severity integer NOT NULL,
     alert_type character varying NOT NULL,
     status character varying DEFAULT 'active'::character varying,
-    risk_zone_id bigint,
+    river_basin_id bigint,
     neighborhood_id bigint,
     river_id bigint,
     alert_threshold_id bigint,
@@ -206,39 +206,6 @@ ALTER SEQUENCE public.data_sources_id_seq OWNED BY public.data_sources.id;
 
 
 --
--- Name: drainage_basins; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.drainage_basins (
-    id bigint NOT NULL,
-    name character varying NOT NULL,
-    boundary public.geometry(Polygon,4326),
-    area_km2 double precision,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: drainage_basins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.drainage_basins_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: drainage_basins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.drainage_basins_id_seq OWNED BY public.drainage_basins.id;
-
-
---
 -- Name: escalation_rules; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -283,7 +250,7 @@ CREATE TABLE public.evacuation_routes (
     name character varying NOT NULL,
     description text,
     path public.geometry(LineString,4326),
-    risk_zone_id bigint,
+    river_basin_id bigint,
     destination_name character varying,
     destination_point public.geometry(Point,4326),
     active boolean DEFAULT true,
@@ -387,7 +354,7 @@ ALTER SEQUENCE public.regions_id_seq OWNED BY public.regions.id;
 
 CREATE TABLE public.risk_assessments (
     id bigint NOT NULL,
-    risk_zone_id bigint NOT NULL,
+    river_basin_id bigint NOT NULL,
     assessed_at timestamp(6) without time zone NOT NULL,
     risk_level integer NOT NULL,
     risk_score double precision NOT NULL,
@@ -422,16 +389,13 @@ ALTER SEQUENCE public.risk_assessments_id_seq OWNED BY public.risk_assessments.i
 
 
 --
--- Name: risk_zones; Type: TABLE; Schema: public; Owner: -
+-- Name: river_basins; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.risk_zones (
+CREATE TABLE public.river_basins (
     id bigint NOT NULL,
     name character varying NOT NULL,
-    zone_type character varying NOT NULL,
     geometry public.geometry(Polygon,4326),
-    drainage_basin_id bigint,
-    neighborhood_id bigint,
     base_risk_level integer DEFAULT 0,
     current_risk_level integer DEFAULT 0,
     current_risk_score double precision,
@@ -440,15 +404,16 @@ CREATE TABLE public.risk_zones (
     active boolean DEFAULT true,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    description text
+    description text,
+    area_km2 double precision
 );
 
 
 --
--- Name: risk_zones_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: river_basins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.risk_zones_id_seq
+CREATE SEQUENCE public.river_basins_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -457,10 +422,10 @@ CREATE SEQUENCE public.risk_zones_id_seq
 
 
 --
--- Name: risk_zones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: river_basins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.risk_zones_id_seq OWNED BY public.risk_zones.id;
+ALTER SEQUENCE public.river_basins_id_seq OWNED BY public.river_basins.id;
 
 
 --
@@ -471,7 +436,7 @@ CREATE TABLE public.rivers (
     id bigint NOT NULL,
     name character varying NOT NULL,
     course public.geometry(LineString,4326),
-    drainage_basin_id bigint,
+    river_basin_id bigint,
     length_km double precision,
     normal_level_m double precision,
     alert_level_m double precision,
@@ -1006,7 +971,7 @@ CREATE TABLE public.sensor_stations (
     location public.geometry(Point,4326),
     elevation_m double precision,
     neighborhood_id bigint,
-    drainage_basin_id bigint,
+    river_basin_id bigint,
     river_id bigint,
     status character varying DEFAULT 'active'::character varying,
     last_reading_at timestamp(6) without time zone,
@@ -1391,13 +1356,6 @@ ALTER TABLE ONLY public.data_sources ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: drainage_basins id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.drainage_basins ALTER COLUMN id SET DEFAULT nextval('public.drainage_basins_id_seq'::regclass);
-
-
---
 -- Name: escalation_rules id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1433,10 +1391,10 @@ ALTER TABLE ONLY public.risk_assessments ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- Name: risk_zones id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: river_basins id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.risk_zones ALTER COLUMN id SET DEFAULT nextval('public.risk_zones_id_seq'::regclass);
+ALTER TABLE ONLY public.river_basins ALTER COLUMN id SET DEFAULT nextval('public.river_basins_id_seq'::regclass);
 
 
 --
@@ -1536,14 +1494,6 @@ ALTER TABLE ONLY public.data_sources
 
 
 --
--- Name: drainage_basins drainage_basins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.drainage_basins
-    ADD CONSTRAINT drainage_basins_pkey PRIMARY KEY (id);
-
-
---
 -- Name: escalation_rules escalation_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1584,11 +1534,11 @@ ALTER TABLE ONLY public.risk_assessments
 
 
 --
--- Name: risk_zones risk_zones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: river_basins river_basins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.risk_zones
-    ADD CONSTRAINT risk_zones_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.river_basins
+    ADD CONSTRAINT river_basins_pkey PRIMARY KEY (id);
 
 
 --
@@ -1891,10 +1841,10 @@ CREATE INDEX index_alert_notifications_on_status ON public.alert_notifications U
 
 
 --
--- Name: index_alert_thresholds_on_risk_zone_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_alert_thresholds_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_alert_thresholds_on_risk_zone_id ON public.alert_thresholds USING btree (risk_zone_id);
+CREATE INDEX index_alert_thresholds_on_river_basin_id ON public.alert_thresholds USING btree (river_basin_id);
 
 
 --
@@ -1940,10 +1890,10 @@ CREATE INDEX index_alerts_on_resolved_by_id ON public.alerts USING btree (resolv
 
 
 --
--- Name: index_alerts_on_risk_zone_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_alerts_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_alerts_on_risk_zone_id ON public.alerts USING btree (risk_zone_id);
+CREATE INDEX index_alerts_on_river_basin_id ON public.alerts USING btree (river_basin_id);
 
 
 --
@@ -1975,13 +1925,6 @@ CREATE INDEX index_alerts_on_status_and_severity ON public.alerts USING btree (s
 
 
 --
--- Name: index_drainage_basins_on_boundary; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_drainage_basins_on_boundary ON public.drainage_basins USING gist (boundary);
-
-
---
 -- Name: index_evacuation_routes_on_path; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1989,10 +1932,10 @@ CREATE INDEX index_evacuation_routes_on_path ON public.evacuation_routes USING g
 
 
 --
--- Name: index_evacuation_routes_on_risk_zone_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_evacuation_routes_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_evacuation_routes_on_risk_zone_id ON public.evacuation_routes USING btree (risk_zone_id);
+CREATE INDEX index_evacuation_routes_on_river_basin_id ON public.evacuation_routes USING btree (river_basin_id);
 
 
 --
@@ -2045,52 +1988,31 @@ CREATE INDEX index_risk_assessments_on_risk_level ON public.risk_assessments USI
 
 
 --
--- Name: index_risk_assessments_on_risk_zone_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_risk_assessments_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_risk_assessments_on_risk_zone_id ON public.risk_assessments USING btree (risk_zone_id);
-
-
---
--- Name: index_risk_assessments_on_risk_zone_id_and_assessed_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_risk_assessments_on_risk_zone_id_and_assessed_at ON public.risk_assessments USING btree (risk_zone_id, assessed_at);
+CREATE INDEX index_risk_assessments_on_river_basin_id ON public.risk_assessments USING btree (river_basin_id);
 
 
 --
--- Name: index_risk_zones_on_current_risk_level; Type: INDEX; Schema: public; Owner: -
+-- Name: index_risk_assessments_on_river_basin_id_and_assessed_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_risk_zones_on_current_risk_level ON public.risk_zones USING btree (current_risk_level);
-
-
---
--- Name: index_risk_zones_on_drainage_basin_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_risk_zones_on_drainage_basin_id ON public.risk_zones USING btree (drainage_basin_id);
+CREATE INDEX index_risk_assessments_on_river_basin_id_and_assessed_at ON public.risk_assessments USING btree (river_basin_id, assessed_at);
 
 
 --
--- Name: index_risk_zones_on_geometry; Type: INDEX; Schema: public; Owner: -
+-- Name: index_river_basins_on_current_risk_level; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_risk_zones_on_geometry ON public.risk_zones USING gist (geometry);
-
-
---
--- Name: index_risk_zones_on_neighborhood_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_risk_zones_on_neighborhood_id ON public.risk_zones USING btree (neighborhood_id);
+CREATE INDEX index_river_basins_on_current_risk_level ON public.river_basins USING btree (current_risk_level);
 
 
 --
--- Name: index_risk_zones_on_zone_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_river_basins_on_geometry; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_risk_zones_on_zone_type ON public.risk_zones USING btree (zone_type);
+CREATE INDEX index_river_basins_on_geometry ON public.river_basins USING gist (geometry);
 
 
 --
@@ -2101,10 +2023,10 @@ CREATE INDEX index_rivers_on_course ON public.rivers USING gist (course);
 
 
 --
--- Name: index_rivers_on_drainage_basin_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_rivers_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_rivers_on_drainage_basin_id ON public.rivers USING btree (drainage_basin_id);
+CREATE INDEX index_rivers_on_river_basin_id ON public.rivers USING btree (river_basin_id);
 
 
 --
@@ -2143,13 +2065,6 @@ CREATE INDEX index_sensor_readings_on_sensor_station_id_and_recorded_at ON ONLY 
 
 
 --
--- Name: index_sensor_stations_on_drainage_basin_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_sensor_stations_on_drainage_basin_id ON public.sensor_stations USING btree (drainage_basin_id);
-
-
---
 -- Name: index_sensor_stations_on_external_id_and_data_source; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2168,6 +2083,13 @@ CREATE INDEX index_sensor_stations_on_location ON public.sensor_stations USING g
 --
 
 CREATE INDEX index_sensor_stations_on_neighborhood_id ON public.sensor_stations USING btree (neighborhood_id);
+
+
+--
+-- Name: index_sensor_stations_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sensor_stations_on_river_basin_id ON public.sensor_stations USING btree (river_basin_id);
 
 
 --
@@ -3419,11 +3341,11 @@ ALTER TABLE ONLY public.alert_thresholds
 
 
 --
--- Name: alerts fk_rails_3cc0444dd4; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: evacuation_routes fk_rails_40017d9618; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_3cc0444dd4 FOREIGN KEY (risk_zone_id) REFERENCES public.risk_zones(id);
+ALTER TABLE ONLY public.evacuation_routes
+    ADD CONSTRAINT fk_rails_40017d9618 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
 --
@@ -3435,27 +3357,11 @@ ALTER TABLE ONLY public.sensor_stations
 
 
 --
--- Name: risk_zones fk_rails_44d2493fb9; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: alert_thresholds fk_rails_4dd5cfd18f; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.risk_zones
-    ADD CONSTRAINT fk_rails_44d2493fb9 FOREIGN KEY (drainage_basin_id) REFERENCES public.drainage_basins(id);
-
-
---
--- Name: risk_zones fk_rails_4670268678; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.risk_zones
-    ADD CONSTRAINT fk_rails_4670268678 FOREIGN KEY (neighborhood_id) REFERENCES public.neighborhoods(id);
-
-
---
--- Name: risk_assessments fk_rails_4b6e6ee003; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.risk_assessments
-    ADD CONSTRAINT fk_rails_4b6e6ee003 FOREIGN KEY (risk_zone_id) REFERENCES public.risk_zones(id);
+ALTER TABLE ONLY public.alert_thresholds
+    ADD CONSTRAINT fk_rails_4dd5cfd18f FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
 --
@@ -3475,14 +3381,6 @@ ALTER TABLE ONLY public.alerts
 
 
 --
--- Name: alert_thresholds fk_rails_640a120a78; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_thresholds
-    ADD CONSTRAINT fk_rails_640a120a78 FOREIGN KEY (risk_zone_id) REFERENCES public.risk_zones(id);
-
-
---
 -- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3491,11 +3389,11 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- Name: evacuation_routes fk_rails_77cb9d63e0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: sensor_stations fk_rails_83953127ac; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.evacuation_routes
-    ADD CONSTRAINT fk_rails_77cb9d63e0 FOREIGN KEY (risk_zone_id) REFERENCES public.risk_zones(id);
+ALTER TABLE ONLY public.sensor_stations
+    ADD CONSTRAINT fk_rails_83953127ac FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
 --
@@ -3507,11 +3405,27 @@ ALTER TABLE ONLY public.alerts
 
 
 --
+-- Name: rivers fk_rails_86c7a5cf9d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rivers
+    ADD CONSTRAINT fk_rails_86c7a5cf9d FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
+
+
+--
 -- Name: alerts fk_rails_955ec70dfc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT fk_rails_955ec70dfc FOREIGN KEY (neighborhood_id) REFERENCES public.neighborhoods(id);
+
+
+--
+-- Name: alerts fk_rails_97d953eac8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT fk_rails_97d953eac8 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
 --
@@ -3531,19 +3445,11 @@ ALTER TABLE ONLY public.alerts
 
 
 --
--- Name: sensor_stations fk_rails_d71bf021d8; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: risk_assessments fk_rails_dfc4c4b3ee; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sensor_stations
-    ADD CONSTRAINT fk_rails_d71bf021d8 FOREIGN KEY (drainage_basin_id) REFERENCES public.drainage_basins(id);
-
-
---
--- Name: rivers fk_rails_e7462130cb; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.rivers
-    ADD CONSTRAINT fk_rails_e7462130cb FOREIGN KEY (drainage_basin_id) REFERENCES public.drainage_basins(id);
+ALTER TABLE ONLY public.risk_assessments
+    ADD CONSTRAINT fk_rails_dfc4c4b3ee FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
 --
@@ -3569,6 +3475,7 @@ ALTER TABLE ONLY public.alert_notifications
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260325234909'),
 ('20260324205844'),
 ('20260324000233'),
 ('20260321000024'),

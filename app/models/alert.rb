@@ -1,5 +1,5 @@
 class Alert < ApplicationRecord
-  belongs_to :risk_zone, optional: true
+  belongs_to :river_basin, optional: true
   belongs_to :neighborhood, optional: true
   belongs_to :river, optional: true
   belongs_to :alert_threshold, optional: true

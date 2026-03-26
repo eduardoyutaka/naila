@@ -1,8 +1,8 @@
-<% content_for(:title, "Naila — Zonas de Risco") %>
+<% content_for(:title, "Naila — Bacias Hidrográficas") %>
 
 <%
-  active_zones = @risk_zones.select(&:active?)
-  at_risk_zones = @risk_zones.reject(&:risk_normal?)
+  active_basins = @river_basins.select(&:active?)
+  at_risk_basins = @river_basins.reject(&:risk_normal?)
 
   risk_label = {
     "normal"     => "Normal",
@@ -18,53 +18,42 @@
     "high_alert" => "bg-risk-high/20 text-risk-high",
     "emergency"  => "bg-risk-emergency/20 text-risk-emergency"
   }
-
-  zone_type_label = {
-    "flood_plain"    => "Planície de Inundação",
-    "slope"          => "Encosta",
-    "urban_drainage" => "Drenagem Urbana"
-  }
-  zone_type_color = {
-    "flood_plain"    => "bg-[#3b82f6]/20 text-[#3b82f6]",
-    "slope"          => "bg-[#f97316]/20 text-[#f97316]",
-    "urban_drainage" => "bg-[#06b6d4]/20 text-[#06b6d4]"
-  }
 %>
 
 <%# ── Summary Cards ── %>
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
   <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total de Zonas</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-text" data-testid="summary-total-count"><%= @risk_zones.size %></div>
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total de Bacias</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-text" data-testid="summary-total-count"><%= @river_basins.size %></div>
   </div>
   <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas Ativas</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent" data-testid="summary-active-count"><%= active_zones.size %></div>
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bacias Ativas</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent" data-testid="summary-active-count"><%= active_basins.size %></div>
   </div>
   <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Zonas em Risco</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention" data-testid="summary-at-risk-count"><%= at_risk_zones.size %></div>
+    <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bacias em Risco</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention" data-testid="summary-at-risk-count"><%= at_risk_basins.size %></div>
   </div>
 </div>
 
-<%# ── Risk Zones Table ── %>
+<%# ── River Basins Table ── %>
 <div class="rounded-xl border border-naila-border bg-naila-surface">
   <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
-    <h2 class="text-sm font-semibold text-naila-text">Zonas de Risco</h2>
-    <% if policy(RiskZone).create? %>
-      <%= link_to new_admin_risk_zone_path,
+    <h2 class="text-sm font-semibold text-naila-text">Bacias Hidrográficas</h2>
+    <% if policy(RiverBasin).create? %>
+      <%= link_to new_admin_river_basin_path,
             class: "inline-flex items-center gap-1.5 rounded-lg bg-naila-accent px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-naila-accent/90" do %>
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        Nova Zona
+        Nova Bacia
       <% end %>
     <% end %>
   </div>
 
-  <% if @risk_zones.empty? %>
+  <% if @river_basins.empty? %>
     <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
-      Nenhuma zona de risco cadastrada.
+      Nenhuma bacia hidrográfica cadastrada.
     </div>
   <% else %>
     <div class="overflow-x-auto">
@@ -73,46 +62,38 @@
           <tr class="border-b border-naila-border">
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Nível</th>
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Nome</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Tipo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bairro</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Área (km²)</th>
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Score</th>
             <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-naila-text-muted">Ações</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-naila-border">
-          <% @risk_zones.each do |zone| %>
+          <% @river_basins.each do |basin| %>
             <tr class="hover:bg-naila-elevated/50 transition-colors">
               <%# Nível de Risco %>
               <td class="px-4 py-3">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= risk_color[zone.current_risk_level] %>">
-                  <%= risk_label[zone.current_risk_level] %>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= risk_color[basin.current_risk_level] %>">
+                  <%= risk_label[basin.current_risk_level] %>
                 </span>
               </td>
 
               <%# Nome %>
               <td class="px-4 py-3">
-                <div class="text-sm font-medium text-naila-text"><%= zone.name %></div>
-                <% if zone.description.present? %>
-                  <div class="text-xs text-naila-text-muted truncate max-w-xs"><%= zone.description %></div>
+                <div class="text-sm font-medium text-naila-text"><%= basin.name %></div>
+                <% if basin.description.present? %>
+                  <div class="text-xs text-naila-text-muted truncate max-w-xs"><%= basin.description %></div>
                 <% end %>
               </td>
 
-              <%# Tipo %>
-              <td class="px-4 py-3">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= zone_type_color[zone.zone_type] %>">
-                  <%= zone_type_label[zone.zone_type] %>
-                </span>
-              </td>
-
-              <%# Bairro %>
-              <td class="px-4 py-3 text-sm text-naila-text-muted">
-                <%= zone.neighborhood&.name || "—" %>
+              <%# Área %>
+              <td class="px-4 py-3 text-sm tabular-nums text-naila-text-muted">
+                <%= basin.area_km2 ? number_with_precision(basin.area_km2, precision: 1) : "—" %>
               </td>
 
               <%# Score %>
               <td class="px-4 py-3 text-sm tabular-nums text-naila-text-muted">
-                <% if zone.current_risk_score %>
-                  <%= number_to_percentage(zone.current_risk_score * 100, precision: 0) %>
+                <% if basin.current_risk_score %>
+                  <%= number_to_percentage(basin.current_risk_score * 100, precision: 0) %>
                 <% else %>
                   —
                 <% end %>
@@ -121,7 +102,7 @@
               <%# Ações %>
               <td class="px-4 py-3 text-right">
                 <div class="inline-flex items-center gap-1">
-                  <%= link_to admin_risk_zone_path(zone),
+                  <%= link_to admin_river_basin_path(basin),
                         class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-naila-accent transition-colors",
                         title: "Ver detalhes" do %>
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -129,8 +110,8 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
                   <% end %>
-                  <% if policy(zone).update? %>
-                    <%= link_to edit_admin_risk_zone_path(zone),
+                  <% if policy(basin).update? %>
+                    <%= link_to edit_admin_river_basin_path(basin),
                           class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-naila-accent transition-colors",
                           title: "Editar" do %>
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -138,12 +119,12 @@
                       </svg>
                     <% end %>
                   <% end %>
-                  <% if policy(zone).destroy? %>
-                    <%= button_to admin_risk_zone_path(zone),
+                  <% if policy(basin).destroy? %>
+                    <%= button_to admin_river_basin_path(basin),
                           method: :delete,
                           class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-risk-high transition-colors",
                           title: "Remover",
-                          form: { data: { turbo_confirm: "Tem certeza que deseja remover esta zona de risco?" } } do %>
+                          form: { data: { turbo_confirm: "Tem certeza que deseja remover esta bacia hidrográfica?" } } do %>
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                       </svg>

@@ -5,7 +5,7 @@ active_high:
   severity: 3
   alert_type: automatic
   status: active
-  risk_zone: zona_centro
+  river_basin: bacia_belem
   neighborhood: centro
   river: belem
   activated_at: <%= 2.hours.ago.iso8601 %>
@@ -30,7 +30,7 @@ acknowledged_alert:
   severity: 2
   alert_type: manual
   status: acknowledged
-  risk_zone: zona_centro
+  river_basin: bacia_belem
   neighborhood: centro
   created_by: coordinator
   acknowledged_at: <%= 30.minutes.ago.iso8601 %>
@@ -44,7 +44,7 @@ resolved_alert:
   severity: 2
   alert_type: automatic
   status: resolved
-  risk_zone: zona_centro
+  river_basin: bacia_belem
   river: belem
   resolved_by: admin
   resolved_at: <%= 1.day.ago.iso8601 %>

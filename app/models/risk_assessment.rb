@@ -1,5 +1,5 @@
 class RiskAssessment < ApplicationRecord
-  belongs_to :risk_zone
+  belongs_to :river_basin
 
   validates :assessed_at, :risk_level, :risk_score, presence: true
   validates :risk_score, numericality: { in: 0.0..1.0 }

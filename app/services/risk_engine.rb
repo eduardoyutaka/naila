@@ -10,18 +10,18 @@ class RiskEngine
   FORECAST_REFERENCE_MM = 50.0
   SEARCH_RADIUS_M = 5000
 
-  attr_reader :risk_zone
+  attr_reader :river_basin
 
-  def initialize(risk_zone)
-    @risk_zone = risk_zone
+  def initialize(river_basin)
+    @river_basin = river_basin
   end
 
-  def self.assess(risk_zone)
-    new(risk_zone).assess
+  def self.assess(river_basin)
+    new(river_basin).assess
   end
 
   def self.assess_all
-    RiskZone.active.find_each { |zone| assess(zone) }
+    RiverBasin.active.find_each { |basin| assess(basin) }
   end
 
   def assess
@@ -37,7 +37,7 @@ class RiskEngine
     level = score_to_level(weighted_score)
 
     assessment = create_assessment(scores, weighted_score, level)
-    update_risk_zone(weighted_score, level, scores)
+    update_river_basin(weighted_score, level, scores)
     assessment
   end
 
@@ -165,7 +165,7 @@ class RiskEngine
 
   def create_assessment(scores, weighted_score, level)
     RiskAssessment.create!(
-      risk_zone: risk_zone,
+      river_basin: river_basin,
       assessed_at: Time.current,
       risk_level: level,
       risk_score: weighted_score,
@@ -178,8 +178,8 @@ class RiskEngine
     )
   end
 
-  def update_risk_zone(weighted_score, level, scores)
-    risk_zone.update!(
+  def update_river_basin(weighted_score, level, scores)
+    river_basin.update!(
       current_risk_level: level,
       current_risk_score: weighted_score,
       risk_factors: scores.transform_values { |v| v.round(4) },
@@ -190,25 +190,21 @@ class RiskEngine
   def build_snapshot
     {
       assessed_at: Time.current.iso8601,
-      risk_zone_id: risk_zone.id
+      river_basin_id: river_basin.id
     }
   end
 
   def nearby_station_ids(station_type)
-    return [] unless risk_zone.geometry
+    return [] unless river_basin.geometry
 
     SensorStation.where(station_type: station_type, status: :active)
-                 .where("ST_DWithin(location::geography, ?::geography, ?)", risk_zone.geometry, SEARCH_RADIUS_M)
+                 .where("ST_DWithin(location::geography, ?::geography, ?)", river_basin.geometry, SEARCH_RADIUS_M)
                  .pluck(:id)
   rescue ActiveRecord::StatementInvalid
     []
   end
 
   def nearby_rivers
-    return [] unless risk_zone.drainage_basin
-
-    risk_zone.drainage_basin.rivers
-  rescue ActiveRecord::StatementInvalid
-    []
+    river_basin.rivers
   end
 end

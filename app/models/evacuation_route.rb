@@ -1,5 +1,5 @@
 class EvacuationRoute < ApplicationRecord
-  belongs_to :risk_zone
+  belongs_to :river_basin
 
   validates :name, presence: true
 

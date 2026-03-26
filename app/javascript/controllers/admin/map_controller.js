@@ -30,8 +30,8 @@ export default class extends Controller {
   static targets = ["canvas"]
   static outlets = ["admin--side-sheet"]
   static values = {
-    riskZones: { type: Array, default: [] },
-    sensors:   { type: Array, default: [] },
+    riverBasins: { type: Array, default: [] },
+    sensors:     { type: Array, default: [] },
     center: { type: Array, default: [-49.2733, -25.4284] },
     zoom: { type: Number, default: 12 },
   }
@@ -44,7 +44,7 @@ export default class extends Controller {
     }
 
     this.initMap()
-    this.addRiskZones()
+    this.addRiverBasins()
     this.addSensors()
   }
 
@@ -67,14 +67,14 @@ export default class extends Controller {
       }),
     })
 
-    // Risk zone vector layer
-    this.riskZoneSource = new ol.source.Vector()
-    this.riskZoneLayer = new ol.layer.Vector({
-      source: this.riskZoneSource,
-      style: (feature) => this.riskZoneStyle(feature),
+    // River basin vector layer
+    this.basinSource = new ol.source.Vector()
+    this.basinLayer = new ol.layer.Vector({
+      source: this.basinSource,
+      style: (feature) => this.basinStyle(feature),
     })
 
-    // Sensor station vector layer (above risk zones)
+    // Sensor station vector layer (above basins)
     this.sensorSource = new ol.source.Vector()
     this.sensorLayer = new ol.layer.Vector({
       source: this.sensorSource,
@@ -85,7 +85,7 @@ export default class extends Controller {
     // Create map
     this.map = new ol.Map({
       target: this.canvasTarget,
-      layers: [this.tileLayer, this.riskZoneLayer, this.sensorLayer],
+      layers: [this.tileLayer, this.basinLayer, this.sensorLayer],
       view: new ol.View({
         center: ol.proj.fromLonLat(this.centerValue),
         zoom: this.zoomValue,
@@ -106,39 +106,38 @@ export default class extends Controller {
     this.map.on("click", (e) => this.handleClick(e))
   }
 
-  // ── Risk Zones ──
+  // ── River Basins ──
 
-  addRiskZones() {
+  addRiverBasins() {
     const ol = this.ol
     const geojsonFormat = new ol.format.GeoJSON()
 
-    this.riskZonesValue.forEach((zone) => {
-      if (!zone.geometry) return
+    this.riverBasinsValue.forEach((basin) => {
+      if (!basin.geometry) return
 
-      const feature = geojsonFormat.readFeature(zone.geometry, {
+      const feature = geojsonFormat.readFeature(basin.geometry, {
         dataProjection: "EPSG:4326",
         featureProjection: "EPSG:3857",
       })
 
-      feature.set("featureType", "riskZone")
-      feature.set("zoneId", zone.id)
-      feature.set("zoneName", zone.name)
-      feature.set("riskLevel", zone.risk_level)
-      feature.set("zoneType", zone.zone_type)
+      feature.set("featureType", "riverBasin")
+      feature.set("basinId", basin.id)
+      feature.set("basinName", basin.name)
+      feature.set("riskLevel", basin.risk_level)
 
-      this.riskZoneSource.addFeature(feature)
+      this.basinSource.addFeature(feature)
     })
 
-    // Fit view to zones if any exist
-    if (this.riskZoneSource.getFeatures().length > 0) {
-      this.map.getView().fit(this.riskZoneSource.getExtent(), {
+    // Fit view to basins if any exist
+    if (this.basinSource.getFeatures().length > 0) {
+      this.map.getView().fit(this.basinSource.getExtent(), {
         padding: [40, 40, 40, 40],
         maxZoom: 14,
       })
     }
   }
 
-  riskZoneStyle(feature) {
+  basinStyle(feature) {
     const ol = this.ol
     const riskLevel = feature.get("riskLevel") || "normal"
     const colors = RISK_COLORS[riskLevel] || RISK_COLORS.normal
@@ -220,8 +219,8 @@ export default class extends Controller {
 
     if (featureType === "sensor") {
       this.showSensorPopup(feature, e.pixel)
-    } else if (featureType === "riskZone") {
-      this.showRiskZonePopup(feature, e.pixel)
+    } else if (featureType === "riverBasin") {
+      this.showBasinPopup(feature, e.pixel)
     } else {
       this.popupEl.style.display = "none"
       this.canvasTarget.style.cursor = ""
@@ -231,10 +230,9 @@ export default class extends Controller {
     this.canvasTarget.style.cursor = "pointer"
   }
 
-  showRiskZonePopup(feature, pixel) {
-    const name = feature.get("zoneName")
+  showBasinPopup(feature, pixel) {
+    const name = feature.get("basinName")
     const riskLevel = feature.get("riskLevel") || "normal"
-    const zoneType = feature.get("zoneType") || ""
 
     const riskLabels = {
       normal: "Normal",
@@ -244,16 +242,9 @@ export default class extends Controller {
       emergency: "Emergência",
     }
 
-    const typeLabels = {
-      flood_plain: "Planície de inundação",
-      slope: "Encosta",
-      urban_drainage: "Drenagem urbana",
-    }
-
     this.popupEl.innerHTML = `
       <strong>${name}</strong><br>
-      Risco: <span style="color: ${(RISK_COLORS[riskLevel] || RISK_COLORS.normal).stroke}">${riskLabels[riskLevel] || riskLevel}</span><br>
-      Tipo: ${typeLabels[zoneType] || zoneType}
+      Risco: <span style="color: ${(RISK_COLORS[riskLevel] || RISK_COLORS.normal).stroke}">${riskLabels[riskLevel] || riskLevel}</span>
     `
     this.showPopupAt(pixel)
   }
@@ -315,10 +306,10 @@ export default class extends Controller {
 
   // ── Value change callbacks ──
 
-  riskZonesValueChanged() {
-    if (!this.map || !this.riskZoneSource) return
-    this.riskZoneSource.clear()
-    this.addRiskZones()
+  riverBasinsValueChanged() {
+    if (!this.map || !this.basinSource) return
+    this.basinSource.clear()
+    this.addRiverBasins()
   }
 
   sensorsValueChanged() {

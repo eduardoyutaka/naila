@@ -25,7 +25,7 @@ Rails.application.routes.draw do
         patch :resolve
       end
     end
-    resources :risk_zones, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :river_basins, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 

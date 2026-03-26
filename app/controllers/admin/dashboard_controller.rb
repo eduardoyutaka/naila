@@ -1,7 +1,7 @@
 module Admin
   class DashboardController < BaseController
     def index
-      @risk_zones = RiskZone.active.includes(:neighborhood)
+      @river_basins = RiverBasin.active
       @active_alerts = Alert.active.by_severity.limit(10)
       @recent_readings = SensorReading.recent.limit(10)
       @sensors_online = SensorStation.online.count

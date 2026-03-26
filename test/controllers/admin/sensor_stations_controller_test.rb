@@ -62,7 +62,7 @@ class Admin::SensorStationsControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[name='sensor_station[longitude]']"
       assert_select "input[name='sensor_station[elevation_m]']"
       assert_select "select[name='sensor_station[neighborhood_id]']"
-      assert_select "select[name='sensor_station[drainage_basin_id]']"
+      assert_select "select[name='sensor_station[river_basin_id]']"
       assert_select "select[name='sensor_station[river_id]']"
     end
   end

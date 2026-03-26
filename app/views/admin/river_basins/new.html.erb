@@ -1,0 +1,11 @@
+<% content_for(:title, "Naila — Nova Bacia Hidrográfica") %>
+
+<div class="mx-auto max-w-3xl">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Nova Bacia Hidrográfica</h1>
+  </div>
+
+  <%= form_with model: [:admin, @river_basin] do |f| %>
+    <%= render "form", form: f, river_basin: @river_basin %>
+  <% end %>
+</div>

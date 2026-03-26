@@ -1,5 +1,5 @@
 class AlertThreshold < ApplicationRecord
-  belongs_to :risk_zone, optional: true
+  belongs_to :river_basin, optional: true
   belongs_to :river, optional: true
   has_many :alerts, dependent: :nullify
 
@@ -8,5 +8,5 @@ class AlertThreshold < ApplicationRecord
   validates :comparison, inclusion: { in: %w[gt gte lt lte] }
 
   scope :active, -> { where(active: true) }
-  scope :global, -> { where(risk_zone_id: nil, river_id: nil) }
+  scope :global, -> { where(river_basin_id: nil, river_id: nil) }
 end

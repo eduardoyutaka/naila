@@ -60,11 +60,11 @@ class AdminRoleAccessTest < ApplicationSystemTestCase
     assert_current_path admin_sensor_stations_path
   end
 
-  test "admin can access risk zones" do
+  test "admin can access river basins" do
     sign_in users(:admin)
-    visit admin_risk_zones_path
+    visit admin_river_basins_path
 
-    assert_current_path admin_risk_zones_path
+    assert_current_path admin_river_basins_path
   end
 
   # ── Coordinator: can manage alerts but not users ──
@@ -107,11 +107,11 @@ class AdminRoleAccessTest < ApplicationSystemTestCase
     assert_current_path admin_sensor_stations_path
   end
 
-  test "coordinator can access risk zones" do
+  test "coordinator can access river basins" do
     sign_in users(:coordinator)
-    visit admin_risk_zones_path
+    visit admin_river_basins_path
 
-    assert_current_path admin_risk_zones_path
+    assert_current_path admin_river_basins_path
   end
 
   # ── Operator: read-only access ──
@@ -146,10 +146,10 @@ class AdminRoleAccessTest < ApplicationSystemTestCase
     assert_current_path admin_sensor_stations_path
   end
 
-  test "operator can access risk zones index" do
+  test "operator can access river basins index" do
     sign_in users(:operator)
-    visit admin_risk_zones_path
+    visit admin_river_basins_path
 
-    assert_current_path admin_risk_zones_path
+    assert_current_path admin_river_basins_path
   end
 end

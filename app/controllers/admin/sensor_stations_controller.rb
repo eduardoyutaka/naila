@@ -60,7 +60,7 @@ module Admin
     def sensor_station_params
       params.require(:sensor_station).permit(
         :external_id, :name, :station_type, :data_source, :status,
-        :elevation_m, :neighborhood_id, :drainage_basin_id,
+        :elevation_m, :neighborhood_id, :river_basin_id,
         :river_id, :metadata
       )
     end

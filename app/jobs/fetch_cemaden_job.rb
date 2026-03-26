@@ -8,7 +8,7 @@ class FetchCemadenJob < ApplicationJob
 
     return if readings.empty?
 
-    affected_zone_ids = Set.new
+    affected_basin_ids = Set.new
 
     readings.each do |attrs|
       station = SensorStation.find_by(external_id: attrs[:station_code], data_source: "CEMADEN")
@@ -24,11 +24,11 @@ class FetchCemadenJob < ApplicationJob
         r.raw_payload = attrs[:raw_data]
       end
 
-      affected_zone_ids.merge(station.nearby_risk_zone_ids)
+      affected_basin_ids.merge(station.nearby_river_basin_ids)
     end
 
-    affected_zone_ids.each do |zone_id|
-      RiskAssessmentJob.perform_later(zone_id)
+    affected_basin_ids.each do |basin_id|
+      RiskAssessmentJob.perform_later(basin_id)
     end
   end
 end

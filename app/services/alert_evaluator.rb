@@ -5,7 +5,7 @@ class AlertEvaluator
   }.freeze
 
   PARAMETER_DESCRIPTIONS = {
-    "precipitation" => "Acúmulo pluviométrico excedeu o limiar configurado na zona de risco %{zone}.",
+    "precipitation" => "Acúmulo pluviométrico excedeu o limiar configurado na bacia %{basin}.",
     "river_level" => "Nível do rio %{river} atingiu %{value}%{unit}, acima do limiar de %{threshold}%{unit}."
   }.freeze
 
@@ -15,7 +15,7 @@ class AlertEvaluator
 
   def initialize(risk_assessment)
     @assessment = risk_assessment
-    @risk_zone = risk_assessment.risk_zone
+    @river_basin = risk_assessment.river_basin
   end
 
   def evaluate
@@ -36,11 +36,11 @@ class AlertEvaluator
   private
 
   def applicable_thresholds
-    zone_thresholds = AlertThreshold.active.where(risk_zone: @risk_zone)
+    basin_thresholds = AlertThreshold.active.where(river_basin: @river_basin)
     river_thresholds = AlertThreshold.active.where(river: rivers)
-    global_thresholds = AlertThreshold.active.where(risk_zone: nil, river: nil)
+    global_thresholds = AlertThreshold.active.where(river_basin: nil, river: nil)
 
-    (zone_thresholds + river_thresholds + global_thresholds).uniq
+    (basin_thresholds + river_thresholds + global_thresholds).uniq
   end
 
   def threshold_breached?(threshold)
@@ -111,7 +111,7 @@ class AlertEvaluator
   end
 
   def cooldown_active?(threshold)
-    Alert.where(alert_threshold: threshold, risk_zone: @risk_zone)
+    Alert.where(alert_threshold: threshold, river_basin: @river_basin)
          .where(status: %w[active acknowledged])
          .where("created_at > ?", threshold.cooldown_minutes.minutes.ago)
          .exists?
@@ -133,11 +133,10 @@ class AlertEvaluator
       alert_type: "automatic",
       status: "active",
       activated_at: Time.current,
-      risk_zone: @risk_zone,
-      neighborhood: @risk_zone.neighborhood,
+      river_basin: @river_basin,
       river: river,
       alert_threshold: threshold,
-      affected_area: @risk_zone.geometry,
+      affected_area: @river_basin.geometry,
       trigger_data: {
         threshold_id: threshold.id,
         threshold_value: threshold.value,
@@ -155,7 +154,7 @@ class AlertEvaluator
                "Parâmetro %{parameter} excedeu o limiar de %{threshold}%{unit}."
 
     format(template,
-      zone: @risk_zone.name,
+      basin: @river_basin.name,
       river: river&.name || "N/A",
       value: current_val&.round(1),
       threshold: threshold.value,
@@ -166,28 +165,22 @@ class AlertEvaluator
 
   def nearby_pluviometer_ids
     @nearby_pluviometer_ids ||= begin
-      if @risk_zone.geometry
+      if @river_basin.geometry
         ids = SensorStation.where(station_type: :pluviometer, status: :active)
-                           .where("ST_DWithin(location::geography, ?::geography, 5000)", @risk_zone.geometry)
+                           .where("ST_DWithin(location::geography, ?::geography, 5000)", @river_basin.geometry)
                            .pluck(:id)
         return ids if ids.any?
       end
 
-      # Fallback: match by neighborhood or drainage basin
+      # Fallback: match by river basin
       scope = SensorStation.where(station_type: :pluviometer, status: :active)
-      if @risk_zone.neighborhood_id
-        scope.where(neighborhood_id: @risk_zone.neighborhood_id).pluck(:id)
-      elsif @risk_zone.drainage_basin_id
-        scope.where(drainage_basin_id: @risk_zone.drainage_basin_id).pluck(:id)
-      else
-        []
-      end
+      scope.where(river_basin_id: @river_basin.id).pluck(:id)
     rescue ActiveRecord::StatementInvalid
       []
     end
   end
 
   def rivers
-    @rivers ||= @risk_zone.drainage_basin&.rivers || River.none
+    @rivers ||= @river_basin.rivers
   end
 end

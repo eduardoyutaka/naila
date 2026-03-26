@@ -2,9 +2,9 @@ require "test_helper"
 
 class AlertEvaluatorTest < ActiveSupport::TestCase
   setup do
-    @zone = risk_zones(:zona_centro)
+    @basin = river_basins(:bacia_belem)
     @assessment = RiskAssessment.create!(
-      risk_zone: @zone,
+      river_basin: @basin,
       assessed_at: Time.current,
       risk_level: 3,
       risk_score: 0.72,
@@ -29,7 +29,7 @@ class AlertEvaluatorTest < ActiveSupport::TestCase
     assert_equal "automatic", alert.alert_type
     assert_equal "active", alert.status
     assert_equal threshold.severity, alert.severity
-    assert_equal @zone, alert.risk_zone
+    assert_equal @basin, alert.river_basin
   end
 
   test "creates alert when river level threshold is breached" do
@@ -60,7 +60,7 @@ class AlertEvaluatorTest < ActiveSupport::TestCase
       severity: threshold.severity,
       alert_type: "automatic",
       status: "active",
-      risk_zone: @zone,
+      river_basin: @basin,
       alert_threshold: threshold,
       activated_at: Time.current
     )

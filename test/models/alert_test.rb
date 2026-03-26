@@ -118,9 +118,9 @@ class AlertTest < ActiveSupport::TestCase
 
   # ── Associations ──
 
-  test "belongs to risk zone optionally" do
-    assert_equal risk_zones(:zona_centro), alerts(:active_high).risk_zone
-    assert_nil alerts(:active_attention).risk_zone
+  test "belongs to river basin optionally" do
+    assert_equal river_basins(:bacia_belem), alerts(:active_high).river_basin
+    assert_nil alerts(:active_attention).river_basin
   end
 
   test "belongs to neighborhood optionally" do

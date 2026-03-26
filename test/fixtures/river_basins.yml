@@ -1,0 +1,11 @@
+bacia_belem:
+  name: Bacia do Rio Belém
+  current_risk_level: 2
+  active: true
+  area_km2: 87.8
+
+bacia_barigui:
+  name: Bacia do Rio Barigui
+  current_risk_level: 0
+  active: true
+  area_km2: 131.0

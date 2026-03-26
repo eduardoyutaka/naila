@@ -3,8 +3,8 @@
     { label: "Painel",    path: admin_root_path,         icon: "chart-bar" },
     { label: "Sensores",  path: admin_sensor_stations_path, icon: "signal" },
     { label: "Alertas",   path: admin_alerts_path,       icon: "bell-alert" },
-    { label: "Zonas",     path: admin_risk_zones_path,   icon: "map" },
-    { label: "Relatorios", path: admin_risk_zones_path,  icon: "document-chart-bar" },
+    { label: "Bacias",    path: admin_river_basins_path,  icon: "map" },
+    { label: "Relatorios", path: admin_river_basins_path, icon: "document-chart-bar" },
     { label: "Usuarios",  path: admin_users_path,        icon: "users" },
   ]
 %>
@@ -35,8 +35,8 @@
           <span class="tabular-nums text-sensor-online"><%= SensorStation.online.count %></span>
         </div>
         <div class="flex items-center justify-between text-xs">
-          <span class="text-naila-text-muted">Zonas em Risco</span>
-          <span class="tabular-nums text-risk-attention"><%= RiskZone.at_risk.count %></span>
+          <span class="text-naila-text-muted">Bacias em Risco</span>
+          <span class="tabular-nums text-risk-attention"><%= RiverBasin.at_risk.count %></span>
         </div>
         <div class="flex items-center justify-between text-xs">
           <span class="text-naila-text-muted">Alertas Ativos</span>

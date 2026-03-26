@@ -40,11 +40,11 @@ bin/importmap audit              # JS dependency audit
 
 - All geographic models use PostGIS spatial types (`st_polygon`, `st_point`, `st_line_string`) with SRID 4326 and GiST indexes.
 - Adapter: `activerecord-postgis` gem (seuros fork, Rails 8 native). RGeo for geometry operations, `rgeo-geojson` for serialization.
-- Key spatial query: `SensorStation#nearby_risk_zone_ids` uses `ST_DWithin`.
+- Key spatial query: `SensorStation#nearby_river_basin_ids` uses `ST_DWithin`.
 
 ### Risk Model
 
-Five risk levels used across `RiskZone` and `Neighborhood`: `normal` (0), `attention` (1), `alert` (2), `high_alert` (3), `emergency` (4). Composite risk score 0.0–1.0 from weighted factors (precipitation, river level, forecast, soil moisture, historical).
+Five risk levels used across `RiverBasin` and `Neighborhood`: `normal` (0), `attention` (1), `alert` (2), `high_alert` (3), `emergency` (4). Composite risk score 0.0–1.0 from weighted factors (precipitation, river level, forecast, soil moisture, historical).
 
 ### Sensor Data
 

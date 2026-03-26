@@ -98,9 +98,9 @@
               class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
       </div>
       <div>
-        <%= form.label :drainage_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-        <%= form.select :drainage_basin_id,
-              DrainageBasin.order(:name).pluck(:name, :id),
+        <%= form.label :river_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.select :river_basin_id,
+              RiverBasin.order(:name).pluck(:name, :id),
               { include_blank: "Nenhuma" },
               class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
       </div>

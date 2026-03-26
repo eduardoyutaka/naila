@@ -1,4 +1,4 @@
-<% content_for(:title, "Naila — #{@risk_zone.name}") %>
+<% content_for(:title, "Naila — #{@river_basin.name}") %>
 
 <%
   risk_label = {
@@ -15,16 +15,6 @@
     "high_alert" => "bg-risk-high/20 text-risk-high",
     "emergency"  => "bg-risk-emergency/20 text-risk-emergency"
   }
-  zone_type_label = {
-    "flood_plain"    => "Planície de Inundação",
-    "slope"          => "Encosta",
-    "urban_drainage" => "Drenagem Urbana"
-  }
-  zone_type_color = {
-    "flood_plain"    => "bg-[#3b82f6]/20 text-[#3b82f6]",
-    "slope"          => "bg-[#f97316]/20 text-[#f97316]",
-    "urban_drainage" => "bg-[#06b6d4]/20 text-[#06b6d4]"
-  }
   assessment_level_label = { 0 => "Normal", 1 => "Atenção", 2 => "Alerta", 3 => "Alerta Máximo", 4 => "Emergência" }
   assessment_level_color = {
     0 => "bg-risk-normal/20 text-risk-normal",
@@ -33,35 +23,32 @@
     3 => "bg-risk-high/20 text-risk-high",
     4 => "bg-risk-emergency/20 text-risk-emergency"
   }
-  geojson_str = @risk_zone.geometry ? RGeo::GeoJSON.encode(@risk_zone.geometry).to_json : ""
+  geojson_str = @river_basin.geometry ? RGeo::GeoJSON.encode(@river_basin.geometry).to_json : ""
 %>
 
 <%# ── Back Link ── %>
 <div class="mb-4">
-  <%= link_to admin_risk_zones_path, class: "inline-flex items-center gap-1 text-sm text-naila-text-muted hover:text-naila-accent transition-colors" do %>
+  <%= link_to admin_river_basins_path, class: "inline-flex items-center gap-1 text-sm text-naila-text-muted hover:text-naila-accent transition-colors" do %>
     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
     </svg>
-    Voltar às zonas de risco
+    Voltar às bacias hidrográficas
   <% end %>
 </div>
 
 <%# ── Header ── %>
 <div class="mb-6">
   <div class="flex flex-wrap items-center gap-2 mb-2">
-    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= risk_color[@risk_zone.current_risk_level] %>">
-      <%= risk_label[@risk_zone.current_risk_level] %>
-    </span>
-    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= zone_type_color[@risk_zone.zone_type] %>">
-      <%= zone_type_label[@risk_zone.zone_type] %>
+    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= risk_color[@river_basin.current_risk_level] %>">
+      <%= risk_label[@river_basin.current_risk_level] %>
     </span>
     <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-naila-elevated text-naila-text-muted">
-      <%= @risk_zone.active? ? "Ativa" : "Inativa" %>
+      <%= @river_basin.active? ? "Ativa" : "Inativa" %>
     </span>
   </div>
-  <h1 class="text-xl font-semibold text-naila-text"><%= @risk_zone.name %></h1>
-  <% if @risk_zone.description.present? %>
-    <p class="mt-1 text-sm text-naila-text-muted"><%= @risk_zone.description %></p>
+  <h1 class="text-xl font-semibold text-naila-text"><%= @river_basin.name %></h1>
+  <% if @river_basin.description.present? %>
+    <p class="mt-1 text-sm text-naila-text-muted"><%= @river_basin.description %></p>
   <% end %>
 </div>
 
@@ -72,46 +59,50 @@
     <%# Map %>
     <div class="rounded-xl border border-naila-border bg-naila-surface">
       <div class="border-b border-naila-border px-4 py-3">
-        <h2 class="text-sm font-semibold text-naila-text">Mapa da Zona</h2>
+        <h2 class="text-sm font-semibold text-naila-text">Mapa da Bacia</h2>
       </div>
       <div class="p-1">
         <div data-controller="admin--polygon-viewer"
              data-admin--polygon-viewer-geometry-value="<%= geojson_str %>"
-             data-admin--polygon-viewer-risk-level-value="<%= @risk_zone.current_risk_level %>"
+             data-admin--polygon-viewer-risk-level-value="<%= @river_basin.current_risk_level %>"
              data-admin--polygon-viewer-target="canvas"
              class="h-[350px] w-full rounded-lg overflow-hidden"></div>
       </div>
     </div>
 
     <%# Details %>
-    <div class="rounded-xl border border-naila-border bg-naila-surface" data-testid="zone-details">
+    <div class="rounded-xl border border-naila-border bg-naila-surface" data-testid="basin-details">
       <div class="border-b border-naila-border px-4 py-3">
         <h2 class="text-sm font-semibold text-naila-text">Detalhes</h2>
       </div>
       <div class="divide-y divide-naila-border">
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Tipo</span>
-          <span class="text-sm text-naila-text"><%= zone_type_label[@risk_zone.zone_type] %></span>
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Área</span>
+          <span class="text-sm tabular-nums text-naila-text">
+            <%= @river_basin.area_km2 ? "#{number_with_precision(@river_basin.area_km2, precision: 1)} km²" : "—" %>
+          </span>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bairro</span>
-          <span class="text-sm text-naila-text"><%= @risk_zone.neighborhood&.name || "—" %></span>
-        </div>
-        <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bacia Hidrográfica</span>
-          <span class="text-sm text-naila-text"><%= @risk_zone.drainage_basin&.name || "—" %></span>
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Rios</span>
+          <span class="text-sm text-naila-text">
+            <% if @river_basin.rivers.any? %>
+              <%= @river_basin.rivers.pluck(:name).join(", ") %>
+            <% else %>
+              —
+            <% end %>
+          </span>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
           <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Score Atual</span>
           <span class="text-sm tabular-nums text-naila-text">
-            <%= @risk_zone.current_risk_score ? number_to_percentage(@risk_zone.current_risk_score * 100, precision: 1) : "—" %>
+            <%= @river_basin.current_risk_score ? number_to_percentage(@river_basin.current_risk_score * 100, precision: 1) : "—" %>
           </span>
         </div>
-        <% if @risk_zone.risk_factors.present? %>
+        <% if @river_basin.risk_factors.present? %>
           <div class="px-4 py-3">
             <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted mb-2">Fatores de Risco</div>
             <div class="grid grid-cols-2 gap-2">
-              <% @risk_zone.risk_factors.each do |factor, score| %>
+              <% @river_basin.risk_factors.each do |factor, score| %>
                 <div class="flex items-center justify-between rounded-md bg-naila-elevated px-2 py-1.5">
                   <span class="text-xs text-naila-text-muted truncate"><%= factor.humanize %></span>
                   <span class="text-xs tabular-nums text-naila-text ml-2"><%= number_to_percentage(score * 100, precision: 0) %></span>
@@ -123,7 +114,7 @@
         <div class="flex items-center justify-between px-4 py-3">
           <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Última Avaliação</span>
           <span class="text-sm text-naila-text">
-            <%= @risk_zone.risk_updated_at ? l(@risk_zone.risk_updated_at, format: :short) : "—" %>
+            <%= @river_basin.risk_updated_at ? l(@river_basin.risk_updated_at, format: :short) : "—" %>
           </span>
         </div>
       </div>
@@ -201,24 +192,24 @@
         <h2 class="text-sm font-semibold text-naila-text">Ações</h2>
       </div>
       <div class="p-4 space-y-3">
-        <% if policy(@risk_zone).update? %>
-          <%= link_to edit_admin_risk_zone_path(@risk_zone),
+        <% if policy(@river_basin).update? %>
+          <%= link_to edit_admin_river_basin_path(@river_basin),
                 class: "flex w-full items-center justify-center gap-2 rounded-lg border border-naila-border bg-naila-elevated px-4 py-2.5 text-sm font-medium text-naila-text transition-colors hover:border-naila-accent hover:text-naila-accent" do %>
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
             </svg>
-            Editar Zona
+            Editar Bacia
           <% end %>
         <% end %>
-        <% if policy(@risk_zone).destroy? %>
-          <%= button_to admin_risk_zone_path(@risk_zone),
+        <% if policy(@river_basin).destroy? %>
+          <%= button_to admin_river_basin_path(@river_basin),
                 method: :delete,
                 class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-high/30 bg-risk-high/10 px-4 py-2.5 text-sm font-medium text-risk-high transition-colors hover:bg-risk-high/20",
-                form: { data: { turbo_confirm: "Tem certeza que deseja remover esta zona de risco? Esta ação não pode ser desfeita." } } do %>
+                form: { data: { turbo_confirm: "Tem certeza que deseja remover esta bacia hidrográfica? Esta ação não pode ser desfeita." } } do %>
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
             </svg>
-            Remover Zona
+            Remover Bacia
           <% end %>
         <% end %>
       </div>
@@ -232,15 +223,15 @@
       <div class="divide-y divide-naila-border">
         <div class="flex items-center justify-between px-4 py-3">
           <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total de Avaliações</span>
-          <span class="text-sm tabular-nums text-naila-text"><%= @risk_zone.risk_assessments.count %></span>
+          <span class="text-sm tabular-nums text-naila-text"><%= @river_basin.risk_assessments.count %></span>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
           <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total de Alertas</span>
-          <span class="text-sm tabular-nums text-naila-text"><%= @risk_zone.alerts.count %></span>
+          <span class="text-sm tabular-nums text-naila-text"><%= @river_basin.alerts.count %></span>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
           <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Criada em</span>
-          <span class="text-sm tabular-nums text-naila-text"><%= @risk_zone.created_at.strftime("%d/%m/%Y") %></span>
+          <span class="text-sm tabular-nums text-naila-text"><%= @river_basin.created_at.strftime("%d/%m/%Y") %></span>
         </div>
       </div>
     </div>

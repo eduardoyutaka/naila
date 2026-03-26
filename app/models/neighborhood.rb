@@ -1,6 +1,5 @@
 class Neighborhood < ApplicationRecord
   belongs_to :region
-  has_many :risk_zones, dependent: :destroy
   has_many :sensor_stations, dependent: :nullify
   has_many :alerts, dependent: :nullify
 

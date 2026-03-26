@@ -1,18 +1,12 @@
-class RiskZone < ApplicationRecord
-  belongs_to :drainage_basin, optional: true
-  belongs_to :neighborhood, optional: true
+class RiverBasin < ApplicationRecord
+  has_many :rivers, dependent: :destroy
+  has_many :sensor_stations, dependent: :nullify
   has_many :risk_assessments, dependent: :destroy
   has_many :alerts, dependent: :nullify
   has_many :alert_thresholds, dependent: :destroy
   has_many :evacuation_routes, dependent: :destroy
 
-  validates :name, :zone_type, presence: true
-
-  enum :zone_type, {
-    flood_plain: "flood_plain",
-    slope: "slope",
-    urban_drainage: "urban_drainage"
-  }, prefix: true
+  validates :name, presence: true
 
   enum :current_risk_level, {
     normal: 0,

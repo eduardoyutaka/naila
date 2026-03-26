@@ -2,14 +2,14 @@ class RiskAssessmentJob < ApplicationJob
   queue_as :risk_assessment
 
   def perform(scope)
-    zones = if scope == "all"
-      RiskZone.active
+    basins = if scope == "all"
+      RiverBasin.active
     else
-      RiskZone.where(id: scope)
+      RiverBasin.where(id: scope)
     end
 
-    zones.find_each do |zone|
-      assessment = RiskEngine.assess(zone)
+    basins.find_each do |basin|
+      assessment = RiskEngine.assess(basin)
       alerts = AlertEvaluator.evaluate(assessment)
       alerts.each { |alert| AlertNotifier.dispatch(alert) }
     end

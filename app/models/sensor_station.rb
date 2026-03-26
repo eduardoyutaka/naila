@@ -1,6 +1,6 @@
 class SensorStation < ApplicationRecord
   belongs_to :neighborhood, optional: true
-  belongs_to :drainage_basin, optional: true
+  belongs_to :river_basin, optional: true
   belongs_to :river, optional: true
   has_many :sensor_readings, dependent: :destroy
 
@@ -21,11 +21,11 @@ class SensorStation < ApplicationRecord
 
   scope :online, -> { where(status: "active") }
 
-  def nearby_risk_zone_ids
+  def nearby_river_basin_ids
     return [] unless location
 
-    RiskZone.active
-            .where("ST_DWithin(geometry::geography, ?::geography, 5000)", location)
-            .pluck(:id)
+    RiverBasin.active
+              .where("ST_DWithin(geometry::geography, ?::geography, 5000)", location)
+              .pluck(:id)
   end
 end
