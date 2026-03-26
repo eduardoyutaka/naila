@@ -10,8 +10,26 @@ class RiskAssessmentJob < ApplicationJob
 
     basins.find_each do |basin|
       assessment = RiskEngine.assess(basin)
-      alerts = AlertEvaluator.evaluate(assessment)
-      alerts.each { |alert| AlertNotifier.dispatch(alert) }
+      results = AlertEvaluator.evaluate(assessment)
+
+      results.each do |result|
+        case result[:action]
+        when :created
+          AlertNotifier.dispatch(result[:alert])
+        when :updated
+          AlertNotifier.notify_severity_change(
+            result[:alert],
+            from_severity: result[:from_severity],
+            to_severity: result[:alert].severity
+          )
+        when :resolved
+          AlertNotifier.notify_severity_change(
+            result[:alert],
+            from_severity: result[:from_severity],
+            to_severity: 0
+          )
+        end
+      end
     end
   end
 end

@@ -28,13 +28,22 @@ class SendAlertNotificationJob < ApplicationJob
 
   def deliver_websocket(notification)
     alert = notification.alert
-    ActionCable.server.broadcast("alerts", {
-      type: "new_alert",
+    event_type = notification.metadata&.dig("type") || "new_alert"
+
+    payload = {
+      type: event_type,
       alert_id: alert.id,
       title: alert.title,
       severity: alert.severity,
       description: alert.description
-    })
+    }
+
+    if event_type == "severity_change"
+      payload[:from_severity] = notification.metadata["from_severity"]
+      payload[:to_severity] = notification.metadata["to_severity"]
+    end
+
+    ActionCable.server.broadcast("alerts", payload)
   end
 
   def deliver_sms(_notification)
