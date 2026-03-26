@@ -44,10 +44,10 @@ class RiskEngine
   private
 
   def compute_precipitation_score
-    station_ids = nearby_station_ids(:pluviometer)
-    return 0.0 if station_ids.empty?
+    sensor_ids = nearby_sensor_ids(:pluviometer)
+    return 0.0 if sensor_ids.empty?
 
-    readings = SensorReading.where(sensor_station_id: station_ids)
+    readings = SensorReading.where(sensor_id: sensor_ids)
                             .by_type("precipitation")
 
     precip_1h = readings.since(1.hour.ago).sum(:value)
@@ -67,10 +67,13 @@ class RiskEngine
     return 0.0 if rivers.empty?
 
     scores = rivers.filter_map do |river|
-      gauge_ids = river.sensor_stations.where(station_type: :river_gauge, status: :active).pluck(:id)
+      gauge_ids = Sensor.joins(:sensor_station)
+                        .where(sensor_stations: { river_id: river.id })
+                        .where(sensor_type: :river_gauge, status: :active)
+                        .pluck(:id)
       next if gauge_ids.empty?
 
-      latest = SensorReading.where(sensor_station_id: gauge_ids)
+      latest = SensorReading.where(sensor_id: gauge_ids)
                             .by_type("river_level")
                             .recent
                             .first
@@ -107,10 +110,10 @@ class RiskEngine
     end
 
     # Fallback: estimate from 72h accumulated precipitation
-    station_ids = nearby_station_ids(:pluviometer)
-    return 0.0 if station_ids.empty?
+    sensor_ids = nearby_sensor_ids(:pluviometer)
+    return 0.0 if sensor_ids.empty?
 
-    precip_72h = SensorReading.where(sensor_station_id: station_ids)
+    precip_72h = SensorReading.where(sensor_id: sensor_ids)
                               .by_type("precipitation")
                               .since(72.hours.ago)
                               .sum(:value)
@@ -194,12 +197,13 @@ class RiskEngine
     }
   end
 
-  def nearby_station_ids(station_type)
+  def nearby_sensor_ids(sensor_type)
     return [] unless river_basin.geometry
 
-    SensorStation.where(station_type: station_type, status: :active)
-                 .where("ST_DWithin(location::geography, ?::geography, ?)", river_basin.geometry, SEARCH_RADIUS_M)
-                 .pluck(:id)
+    Sensor.joins(:sensor_station)
+          .where(sensor_type: sensor_type, status: :active)
+          .where("ST_DWithin(sensor_stations.location::geography, ?::geography, ?)", river_basin.geometry, SEARCH_RADIUS_M)
+          .pluck(:id)
   rescue ActiveRecord::StatementInvalid
     []
   end

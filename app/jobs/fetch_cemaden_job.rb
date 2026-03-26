@@ -14,8 +14,11 @@ class FetchCemadenJob < ApplicationJob
       station = SensorStation.find_by(external_id: attrs[:station_code], data_source: "CEMADEN")
       next unless station
 
+      sensor = station.sensors.find_by(reading_type: attrs[:reading_type])
+      next unless sensor
+
       SensorReading.find_or_create_by!(
-        sensor_station: station,
+        sensor: sensor,
         reading_type: attrs[:reading_type],
         recorded_at: attrs[:recorded_at]
       ) do |r|

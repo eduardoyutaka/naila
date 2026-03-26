@@ -75,10 +75,10 @@ class AlertEvaluator
 
   def precipitation_1h
     @precipitation_1h ||= begin
-      station_ids = nearby_pluviometer_ids
-      return 0.0 if station_ids.empty?
+      sensor_ids = nearby_pluviometer_ids
+      return 0.0 if sensor_ids.empty?
 
-      SensorReading.where(sensor_station_id: station_ids)
+      SensorReading.where(sensor_id: sensor_ids)
                    .by_type("precipitation")
                    .since(1.hour.ago)
                    .sum(:value)
@@ -87,10 +87,10 @@ class AlertEvaluator
 
   def precipitation_3h
     @precipitation_3h ||= begin
-      station_ids = nearby_pluviometer_ids
-      return 0.0 if station_ids.empty?
+      sensor_ids = nearby_pluviometer_ids
+      return 0.0 if sensor_ids.empty?
 
-      SensorReading.where(sensor_station_id: station_ids)
+      SensorReading.where(sensor_id: sensor_ids)
                    .by_type("precipitation")
                    .since(3.hours.ago)
                    .sum(:value)
@@ -100,10 +100,13 @@ class AlertEvaluator
   def latest_river_level(river)
     return nil unless river
 
-    gauge_ids = river.sensor_stations.where(station_type: :river_gauge, status: :active).pluck(:id)
+    gauge_ids = Sensor.joins(:sensor_station)
+                      .where(sensor_stations: { river_id: river.id })
+                      .where(sensor_type: :river_gauge, status: :active)
+                      .pluck(:id)
     return nil if gauge_ids.empty?
 
-    SensorReading.where(sensor_station_id: gauge_ids)
+    SensorReading.where(sensor_id: gauge_ids)
                  .by_type("river_level")
                  .recent
                  .first
@@ -166,15 +169,18 @@ class AlertEvaluator
   def nearby_pluviometer_ids
     @nearby_pluviometer_ids ||= begin
       if @river_basin.geometry
-        ids = SensorStation.where(station_type: :pluviometer, status: :active)
-                           .where("ST_DWithin(location::geography, ?::geography, 5000)", @river_basin.geometry)
-                           .pluck(:id)
+        ids = Sensor.joins(:sensor_station)
+                    .where(sensor_type: :pluviometer, status: :active)
+                    .where("ST_DWithin(sensor_stations.location::geography, ?::geography, 5000)", @river_basin.geometry)
+                    .pluck(:id)
         return ids if ids.any?
       end
 
       # Fallback: match by river basin
-      scope = SensorStation.where(station_type: :pluviometer, status: :active)
-      scope.where(river_basin_id: @river_basin.id).pluck(:id)
+      Sensor.joins(:sensor_station)
+            .where(sensor_type: :pluviometer, status: :active)
+            .where(sensor_stations: { river_basin_id: @river_basin.id })
+            .pluck(:id)
     rescue ActiveRecord::StatementInvalid
       []
     end
