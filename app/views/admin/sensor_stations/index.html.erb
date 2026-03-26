@@ -1,4 +1,4 @@
-<% content_for(:title, "Naila — Sensores") %>
+<% content_for(:title, "Naila — Estações") %>
 
 <%
   online_stations = @sensor_stations.select { |s| s.status == "active" }
@@ -24,7 +24,7 @@
 <%# ── Sensor Stations Table ── %>
 <div class="rounded-xl border border-naila-border bg-naila-surface">
   <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
-    <h2 class="text-sm font-semibold text-naila-text">Estações</h2>
+    <h2 class="text-sm font-semibold text-naila-text">Estações de Monitoramento</h2>
     <% if policy(SensorStation).create? %>
       <%= link_to new_admin_sensor_station_path,
             class: "inline-flex items-center gap-1.5 rounded-lg bg-naila-accent px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-naila-accent/90" do %>
@@ -45,8 +45,8 @@
       <table class="w-full">
         <thead>
           <tr class="border-b border-naila-border">
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Tipo</th>
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Nome</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores</th>
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Status</th>
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Localização</th>
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Última Leitura</th>
@@ -56,27 +56,34 @@
         <tbody class="divide-y divide-naila-border">
           <% @sensor_stations.each do |station| %>
             <tr class="hover:bg-naila-elevated/50 transition-colors">
-              <%# Tipo %>
-              <td class="px-4 py-3">
-                <% type_label = case station.station_type
-                                when "pluviometer" then "Pluviômetro"
-                                when "river_gauge" then "Fluviômetro"
-                                when "weather_station" then "Estação Meteorológica"
-                                end %>
-                <% type_color = case station.station_type
-                                when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
-                                when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
-                                when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
-                                end %>
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= type_color %>">
-                  <%= type_label %>
-                </span>
-              </td>
-
               <%# Nome %>
               <td class="px-4 py-3">
                 <div class="text-sm font-medium text-naila-text"><%= station.name %></div>
                 <div class="text-xs text-naila-text-muted font-mono"><%= station.external_id %></div>
+              </td>
+
+              <%# Sensores %>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-1" data-testid="sensor-badges-<%= station.id %>">
+                  <% station.sensors.each do |sensor| %>
+                    <% type_label = case sensor.sensor_type
+                                    when "pluviometer" then "Pluviômetro"
+                                    when "river_gauge" then "Fluviômetro"
+                                    when "weather_station" then "Meteorológica"
+                                    end %>
+                    <% type_color = case sensor.sensor_type
+                                    when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
+                                    when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
+                                    when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
+                                    end %>
+                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= type_color %>">
+                      <%= type_label %>
+                    </span>
+                  <% end %>
+                  <% if station.sensors.empty? %>
+                    <span class="text-xs text-naila-text-muted">—</span>
+                  <% end %>
+                </div>
               </td>
 
               <%# Status %>

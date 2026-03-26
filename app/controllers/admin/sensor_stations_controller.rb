@@ -3,7 +3,7 @@ module Admin
     before_action :set_sensor_station, only: [:show, :edit, :update, :destroy]
 
     def index
-      @sensor_stations = SensorStation.includes(:neighborhood, :river).order(:name)
+      @sensor_stations = SensorStation.includes(:neighborhood, :river, :sensors).order(:name)
     end
 
     def show
@@ -54,12 +54,12 @@ module Admin
     private
 
     def set_sensor_station
-      @sensor_station = SensorStation.includes(:neighborhood, :river).find(params[:id])
+      @sensor_station = SensorStation.includes(:neighborhood, :river, :sensors).find(params[:id])
     end
 
     def sensor_station_params
       params.require(:sensor_station).permit(
-        :external_id, :name, :station_type, :data_source, :status,
+        :external_id, :name, :data_source, :status,
         :elevation_m, :neighborhood_id, :river_basin_id,
         :river_id, :metadata
       )

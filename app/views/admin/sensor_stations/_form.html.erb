@@ -41,22 +41,13 @@
       </div>
     </div>
 
-    <%# Tipo + Status %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :station_type, "Tipo", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-        <%= form.select :station_type,
-              [["Pluviômetro", "pluviometer"], ["Fluviômetro", "river_gauge"], ["Estação Meteorológica", "weather_station"]],
-              { prompt: "Selecione o tipo" },
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
-      </div>
-      <div>
-        <%= form.label :status, "Status", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-        <%= form.select :status,
-              [["Ativo", "active"], ["Inativo", "inactive"], ["Manutenção", "maintenance"]],
-              {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
-      </div>
+    <%# Status %>
+    <div>
+      <%= form.label :status, "Status", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.select :status,
+            [["Ativo", "active"], ["Inativo", "inactive"], ["Manutenção", "maintenance"]],
+            {},
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
     </div>
 
     <%# Latitude + Longitude %>
@@ -101,7 +92,8 @@
         <%= form.label :river_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
         <%= form.select :river_basin_id,
               RiverBasin.order(:name).pluck(:name, :id),
-              { include_blank: "Nenhuma" },
+              { prompt: "Selecione a bacia" },
+              required: true,
               class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
       </div>
     </div>

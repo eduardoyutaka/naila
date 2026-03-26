@@ -40,7 +40,7 @@
        {
          id: s.id,
          name: s.name,
-         station_type: s.station_type,
+         sensor_types: s.sensors.map(&:sensor_type),
          status: s.status,
          lat: s.location&.y,
          lng: s.location&.x,

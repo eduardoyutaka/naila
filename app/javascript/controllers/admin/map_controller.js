@@ -165,7 +165,7 @@ export default class extends Controller {
       feature.set("featureType", "sensor")
       feature.set("sensorId", sensor.id)
       feature.set("sensorName", sensor.name)
-      feature.set("stationType", sensor.station_type)
+      feature.set("sensorTypes", sensor.sensor_types || [])
       feature.set("status", sensor.status)
       feature.set("neighborhood", sensor.neighborhood)
       feature.set("river", sensor.river)
@@ -178,18 +178,21 @@ export default class extends Controller {
 
   sensorStyle(feature) {
     const ol = this.ol
-    const stationType = feature.get("stationType") || "pluviometer"
+    const sensorTypes = feature.get("sensorTypes") || []
+    // Use primary type for styling (river_gauge > weather_station > pluviometer)
+    const primaryType = sensorTypes.includes("river_gauge") ? "river_gauge"
+                      : sensorTypes.includes("weather_station") ? "weather_station"
+                      : "pluviometer"
     const status = feature.get("status") || "active"
 
-    const fillColor = SENSOR_TYPE_COLORS[stationType] || SENSOR_TYPE_COLORS.pluviometer
+    const fillColor = SENSOR_TYPE_COLORS[primaryType] || SENSOR_TYPE_COLORS.pluviometer
     const strokeColor = SENSOR_STATUS_COLORS[status] || SENSOR_STATUS_COLORS.active
-    const opacity = status === "inactive" ? 0.4 : 1.0
 
     const fill = new ol.style.Fill({ color: fillColor + (status === "inactive" ? "66" : "ff") })
     const stroke = new ol.style.Stroke({ color: strokeColor, width: 2 })
 
     let image
-    switch (stationType) {
+    switch (primaryType) {
       case "river_gauge":
         image = new ol.style.Circle({ radius: 7, fill, stroke })
         break
@@ -251,7 +254,7 @@ export default class extends Controller {
 
   showSensorPopup(feature, pixel) {
     const name = feature.get("sensorName")
-    const stationType = feature.get("stationType")
+    const sensorTypes = feature.get("sensorTypes") || []
     const status = feature.get("status")
     const neighborhood = feature.get("neighborhood")
     const lastValue = feature.get("lastReadingValue")
@@ -260,7 +263,7 @@ export default class extends Controller {
     const typeLabels = {
       pluviometer: "Pluviômetro",
       river_gauge: "Fluviômetro",
-      weather_station: "Estação Meteorológica",
+      weather_station: "Meteorológica",
     }
 
     const statusLabels = {
@@ -270,9 +273,10 @@ export default class extends Controller {
     }
 
     const statusColor = SENSOR_STATUS_COLORS[status] || "#22c55e"
+    const typesDisplay = sensorTypes.map(t => typeLabels[t] || t).join(", ")
 
     let html = `<strong>${name}</strong><br>
-      ${typeLabels[stationType] || stationType} · <span style="color: ${statusColor}">${statusLabels[status] || status}</span>`
+      ${typesDisplay || "—"} · <span style="color: ${statusColor}">${statusLabels[status] || status}</span>`
 
     if (neighborhood) {
       html += `<br>Bairro: ${neighborhood}`

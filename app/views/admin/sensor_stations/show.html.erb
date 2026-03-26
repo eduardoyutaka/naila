@@ -16,18 +16,7 @@
     <div>
       <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Informações</div>
       <div class="space-y-2">
-        <% type_label = case @sensor_station.station_type
-                        when "pluviometer" then "Pluviômetro"
-                        when "river_gauge" then "Fluviômetro"
-                        when "weather_station" then "Estação Meteorológica"
-                        end %>
-        <% type_color = case @sensor_station.station_type
-                        when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
-                        when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
-                        when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
-                        end %>
         <div class="flex items-center gap-2">
-          <span class="rounded px-2 py-0.5 text-xs font-medium <%= type_color %>"><%= type_label %></span>
           <% status_label = case @sensor_station.status
                             when "active" then "Ativo"
                             when "maintenance" then "Manutenção"
@@ -62,6 +51,45 @@
         </div>
       </div>
     </div>
+
+    <%# ── Sensors ── %>
+    <% if @sensor_station.sensors.any? %>
+      <div>
+        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores</div>
+        <div class="space-y-1.5">
+          <% @sensor_station.sensors.each do |sensor| %>
+            <% sensor_type_label = case sensor.sensor_type
+                                   when "pluviometer" then "Pluviômetro"
+                                   when "river_gauge" then "Fluviômetro"
+                                   when "weather_station" then "Estação Meteorológica"
+                                   end %>
+            <% sensor_type_color = case sensor.sensor_type
+                                   when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
+                                   when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
+                                   when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
+                                   end %>
+            <% sensor_status_color = case sensor.status
+                                     when "active" then "text-sensor-online"
+                                     when "maintenance" then "text-sensor-degraded"
+                                     when "inactive" then "text-sensor-offline"
+                                     end %>
+            <div class="flex items-center justify-between rounded-lg bg-naila-elevated px-3 py-2">
+              <div class="flex items-center gap-2">
+                <span class="rounded px-1.5 py-0.5 text-xs font-medium <%= sensor_type_color %>"><%= sensor_type_label %></span>
+                <% if sensor.last_reading_value %>
+                  <span class="tabular-nums text-xs text-naila-text">
+                    <%= number_with_precision(sensor.last_reading_value, precision: 1) %> <%= sensor.unit %>
+                  </span>
+                <% end %>
+              </div>
+              <span class="flex items-center gap-1 text-xs <%= sensor_status_color %>">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
 
     <%# ── Location ── %>
     <div>
