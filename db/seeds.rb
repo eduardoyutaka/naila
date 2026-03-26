@@ -234,63 +234,89 @@ rivers = rivers_data.map do |data|
 end.index_by(&:name)
 
 # ============================================================
-# 5. Sensor Stations
+# 5. Sensor Stations (one per basin) + Sensors
 # ============================================================
-puts "  Creating sensor stations..."
+puts "  Creating sensor stations and sensors..."
 
 stations_data = [
-  # River gauges
-  { eid: "RG-IGUACU-01", name: "Rio Iguaçu — Ponte do Guabirotuba", type: :river_gauge,
-    source: "SIMEPAR", river: "Rio Iguaçu", basin: "Bacia do Rio Iguaçu",
-    neighborhood: "boqueirao", lon: -49.275, lat: -25.465 },
-  { eid: "RG-IGUACU-02", name: "Rio Iguaçu — BR-116", type: :river_gauge,
-    source: "SIMEPAR", river: "Rio Iguaçu", basin: "Bacia do Rio Iguaçu",
-    neighborhood: "uberaba", lon: -49.238, lat: -25.450 },
-  { eid: "RG-BARIGUI-01", name: "Rio Barigui — Parque Barigui", type: :river_gauge,
-    source: "SIMEPAR", river: "Rio Barigui", basin: "Bacia do Rio Barigui",
-    neighborhood: "santa-felicidade", lon: -49.315, lat: -25.400 },
-  { eid: "RG-BARIGUI-02", name: "Rio Barigui — CIC", type: :river_gauge,
-    source: "SIMEPAR", river: "Rio Barigui", basin: "Bacia do Rio Barigui",
-    neighborhood: "cic", lon: -49.330, lat: -25.420 },
-  { eid: "RG-BELEM-01", name: "Rio Belém — Centro Cívico", type: :river_gauge,
-    source: "SIMEPAR", river: "Rio Belém", basin: "Bacia do Rio Belém",
-    neighborhood: "centro-civico", lon: -49.270, lat: -25.405 },
-  { eid: "RG-ATUBA-01", name: "Rio Atuba — Cajuru", type: :river_gauge,
-    source: "SIMEPAR", river: "Rio Atuba", basin: "Bacia do Rio Atuba",
-    neighborhood: "cajuru", lon: -49.230, lat: -25.400 },
-
-  # Pluviometers (CEMADEN + INMET)
-  { eid: "PLV-CEMADEN-01", name: "Pluviômetro Centro", type: :pluviometer,
-    source: "CEMADEN", neighborhood: "centro", lon: -49.270, lat: -25.429 },
-  { eid: "PLV-CEMADEN-02", name: "Pluviômetro Boqueirão", type: :pluviometer,
-    source: "CEMADEN", neighborhood: "boqueirao", lon: -49.265, lat: -25.470 },
-  { eid: "PLV-CEMADEN-03", name: "Pluviômetro Cajuru", type: :pluviometer,
-    source: "CEMADEN", neighborhood: "cajuru", lon: -49.235, lat: -25.405 },
-  { eid: "PLV-CEMADEN-04", name: "Pluviômetro CIC", type: :pluviometer,
-    source: "CEMADEN", neighborhood: "cic", lon: -49.340, lat: -25.430 },
-  { eid: "PLV-INMET-01", name: "Estação INMET Curitiba", type: :pluviometer,
-    source: "INMET", neighborhood: "centro", lon: -49.267, lat: -25.433 },
-  { eid: "PLV-CEMADEN-05", name: "Pluviômetro Sítio Cercado", type: :pluviometer,
-    source: "CEMADEN", neighborhood: "sitio-cercado", lon: -49.290, lat: -25.495 },
-
-  # Weather stations
-  { eid: "WS-INMET-CWB", name: "Estação Meteorológica INMET Curitiba", type: :weather_station,
-    source: "INMET", neighborhood: "centro", lon: -49.267, lat: -25.433 },
-  { eid: "WS-SIMEPAR-01", name: "Estação SIMEPAR Curitiba", type: :weather_station,
-    source: "SIMEPAR", neighborhood: "centro-civico", lon: -49.265, lat: -25.400 },
+  {
+    eid: "EST-IGUACU-01", name: "Estação Iguaçu — Ponte do Guabirotuba",
+    source: "SIMEPAR", basin: "Bacia do Rio Iguaçu", river: "Rio Iguaçu",
+    neighborhood: "boqueirao", lon: -49.275, lat: -25.465,
+    sensors: [
+      { type: :river_gauge,  eid: "FLUV-IGUACU-01",  unit: "m",  reading_type: "river_level" },
+      { type: :pluviometer,  eid: "PLUV-IGUACU-01",  unit: "mm", reading_type: "precipitation" },
+    ]
+  },
+  {
+    eid: "EST-BARIGUI-01", name: "Estação Barigui — Parque Barigui",
+    source: "SIMEPAR", basin: "Bacia do Rio Barigui", river: "Rio Barigui",
+    neighborhood: "santa-felicidade", lon: -49.315, lat: -25.400,
+    sensors: [
+      { type: :river_gauge,  eid: "FLUV-BARIGUI-01", unit: "m",  reading_type: "river_level" },
+      { type: :pluviometer,  eid: "PLUV-BARIGUI-01", unit: "mm", reading_type: "precipitation" },
+    ]
+  },
+  {
+    eid: "EST-BELEM-01", name: "Estação Belém — Centro Cívico",
+    source: "SIMEPAR", basin: "Bacia do Rio Belém", river: "Rio Belém",
+    neighborhood: "centro-civico", lon: -49.270, lat: -25.405,
+    sensors: [
+      { type: :river_gauge,     eid: "FLUV-BELEM-01",  unit: "m",  reading_type: "river_level" },
+      { type: :pluviometer,     eid: "PLUV-BELEM-01",  unit: "mm", reading_type: "precipitation" },
+      { type: :weather_station, eid: "METEO-BELEM-01", unit: "°C", reading_type: "temperature" },
+    ]
+  },
+  {
+    eid: "EST-ATUBA-01", name: "Estação Atuba — Cajuru",
+    source: "SIMEPAR", basin: "Bacia do Rio Atuba", river: "Rio Atuba",
+    neighborhood: "cajuru", lon: -49.230, lat: -25.400,
+    sensors: [
+      { type: :river_gauge,  eid: "FLUV-ATUBA-01",  unit: "m",  reading_type: "river_level" },
+      { type: :pluviometer,  eid: "PLUV-ATUBA-01",  unit: "mm", reading_type: "precipitation" },
+    ]
+  },
+  {
+    eid: "EST-PASSAUNA-01", name: "Estação Passaúna",
+    source: "CEMADEN", basin: "Bacia do Rio Passaúna",
+    neighborhood: "cic", lon: -49.380, lat: -25.430,
+    sensors: [
+      { type: :pluviometer,     eid: "PLUV-PASSAUNA-01",  unit: "mm", reading_type: "precipitation" },
+      { type: :weather_station, eid: "METEO-PASSAUNA-01", unit: "°C", reading_type: "temperature" },
+    ]
+  },
+  {
+    eid: "EST-PADILHAS-01", name: "Estação Ribeirão dos Padilhas",
+    source: "CEMADEN", basin: "Bacia do Ribeirão dos Padilhas",
+    neighborhood: "sitio-cercado", lon: -49.290, lat: -25.495,
+    sensors: [
+      { type: :pluviometer, eid: "PLUV-PADILHAS-01", unit: "mm", reading_type: "precipitation" },
+    ]
+  },
 ]
 
 stations = stations_data.map do |data|
-  SensorStation.find_or_create_by!(external_id: data[:eid]) do |s|
+  station = SensorStation.find_or_create_by!(external_id: data[:eid]) do |s|
     s.name = data[:name]
-    s.station_type = data[:type]
     s.data_source = data[:source]
     s.neighborhood = neighborhoods[data[:neighborhood]]
     s.river = rivers[data[:river]] if data[:river]
-    s.river_basin = basins[data[:basin]] if data[:basin]
+    s.river_basin = basins[data[:basin]]
     s.location = point(data[:lon], data[:lat])
     s.status = "active"
   end
+
+  data[:sensors].each do |sensor_data|
+    Sensor.find_or_create_by!(external_id: sensor_data[:eid]) do |s|
+      s.sensor_station = station
+      s.sensor_type = sensor_data[:type]
+      s.unit = sensor_data[:unit]
+      s.reading_type = sensor_data[:reading_type]
+      s.status = "active"
+    end
+  end
+
+  station
 end.index_by { |s| s.external_id }
 
 # ============================================================
@@ -300,71 +326,66 @@ puts "  Creating sample sensor readings..."
 
 now = Time.current
 
-# River level readings (every 15 min for last 24 hours)
-river_stations = stations.values.select(&:station_type_river_gauge?)
-river_stations.each do |station|
-  river = station.river
-  next unless river
+Sensor.find_each do |sensor|
+  case sensor.sensor_type
+  when "river_gauge"
+    river = sensor.sensor_station.river
+    next unless river
 
-  base_level = river.normal_level_m
-  96.times do |i|
-    time = now - (96 - i) * 15.minutes
-    # Simulate gradually rising levels
-    variation = Math.sin(i * 0.3) * 0.3 + (i > 80 ? (i - 80) * 0.08 : 0)
-    value = (base_level + variation).round(2).clamp(0, river.overflow_level_m)
+    base_level = river.normal_level_m
+    96.times do |i|
+      time = now - (96 - i) * 15.minutes
+      # Simulate gradually rising levels
+      variation = Math.sin(i * 0.3) * 0.3 + (i > 80 ? (i - 80) * 0.08 : 0)
+      value = (base_level + variation).round(2).clamp(0, river.overflow_level_m)
 
-    SensorReading.find_or_create_by!(
-      sensor_station: station,
-      reading_type: "river_level",
-      recorded_at: time
-    ) do |r|
-      r.value = value
-      r.unit = "m"
+      SensorReading.find_or_create_by!(
+        sensor: sensor,
+        reading_type: "river_level",
+        recorded_at: time
+      ) do |r|
+        r.value = value
+        r.unit = "m"
+      end
     end
-  end
-end
 
-# Precipitation readings (every 10 min for last 24 hours)
-pluvio_stations = stations.values.select(&:station_type_pluviometer?)
-pluvio_stations.each do |station|
-  144.times do |i|
-    time = now - (144 - i) * 10.minutes
-    # Simulate rain event starting ~6 hours ago
-    value = if i > 108
-              (rand(0.5..8.0) + (i - 108) * 0.2).round(1)
-            else
-              rand(0.0..1.0).round(1)
-            end
+  when "pluviometer"
+    144.times do |i|
+      time = now - (144 - i) * 10.minutes
+      # Simulate rain event starting ~6 hours ago
+      value = if i > 108
+                (rand(0.5..8.0) + (i - 108) * 0.2).round(1)
+              else
+                rand(0.0..1.0).round(1)
+              end
 
-    SensorReading.find_or_create_by!(
-      sensor_station: station,
-      reading_type: "precipitation",
-      recorded_at: time
-    ) do |r|
-      r.value = value
-      r.unit = "mm"
+      SensorReading.find_or_create_by!(
+        sensor: sensor,
+        reading_type: "precipitation",
+        recorded_at: time
+      ) do |r|
+        r.value = value
+        r.unit = "mm"
+      end
     end
-  end
-end
 
-# Temperature readings (every 15 min for last 24 hours)
-weather_stations = stations.values.select(&:station_type_weather_station?)
-weather_stations.each do |station|
-  96.times do |i|
-    time = now - (96 - i) * 15.minutes
-    # Simulate daily temperature curve (cooler at night, warmer midday)
-    hour = time.hour + time.min / 60.0
-    base_temp = 18.0
-    variation = 6.0 * Math.sin((hour - 6) * Math::PI / 12.0)
-    value = (base_temp + variation + rand(-0.5..0.5)).round(1)
+  when "weather_station"
+    96.times do |i|
+      time = now - (96 - i) * 15.minutes
+      # Simulate daily temperature curve (cooler at night, warmer midday)
+      hour = time.hour + time.min / 60.0
+      base_temp = 18.0
+      variation = 6.0 * Math.sin((hour - 6) * Math::PI / 12.0)
+      value = (base_temp + variation + rand(-0.5..0.5)).round(1)
 
-    SensorReading.find_or_create_by!(
-      sensor_station: station,
-      reading_type: "temperature",
-      recorded_at: time
-    ) do |r|
-      r.value = value
-      r.unit = "°C"
+      SensorReading.find_or_create_by!(
+        sensor: sensor,
+        reading_type: "temperature",
+        recorded_at: time
+      ) do |r|
+        r.value = value
+        r.unit = "°C"
+      end
     end
   end
 end
@@ -548,6 +569,7 @@ puts "  #{Neighborhood.count} neighborhoods"
 puts "  #{RiverBasin.count} river basins"
 puts "  #{River.count} rivers"
 puts "  #{SensorStation.count} sensor stations"
+puts "  #{Sensor.count} sensors"
 puts "  #{SensorReading.count} sensor readings"
 puts "  #{Alert.count} alerts"
 puts "  #{AlertThreshold.count} alert thresholds"
