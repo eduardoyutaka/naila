@@ -1,0 +1,11 @@
+<% content_for(:title, "Naila — Novo Limiar de Alerta") %>
+
+<div class="mx-auto max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Novo Limiar de Alerta</h1>
+  </div>
+
+  <%= form_with model: [:admin, @alert_threshold] do |f| %>
+    <%= render "form", form: f, alert_threshold: @alert_threshold %>
+  <% end %>
+</div>

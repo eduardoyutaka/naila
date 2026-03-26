@@ -1,0 +1,186 @@
+<% content_for(:title, "Naila — Limiar de Alerta") %>
+
+<%
+  parameter_labels = {
+    "precipitation" => "Precipitação",
+    "precipitation_1h" => "Precipitação 1h",
+    "precipitation_3h" => "Precipitação 3h",
+    "river_level" => "Nível do Rio"
+  }
+  comparison_labels = { "gt" => ">", "gte" => "≥", "lt" => "<", "lte" => "≤" }
+
+  severity_classes = case @alert_threshold.severity
+                     when 4 then "bg-risk-emergency/20 text-risk-emergency"
+                     when 3 then "bg-risk-high/20 text-risk-high"
+                     when 2 then "bg-risk-alert/20 text-risk-alert"
+                     else "bg-risk-attention/20 text-risk-attention"
+                     end
+  severity_label = case @alert_threshold.severity
+                   when 4 then "Emergência"
+                   when 3 then "Alerta Máximo"
+                   when 2 then "Alerta"
+                   else "Atenção"
+                   end
+%>
+
+<%# ── Back Link ── %>
+<div class="mb-4">
+  <%= link_to admin_alert_thresholds_path, class: "inline-flex items-center gap-1 text-sm text-naila-text-muted hover:text-naila-accent transition-colors" do %>
+    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+    </svg>
+    Voltar aos limiares
+  <% end %>
+</div>
+
+<%# ── Header ── %>
+<div class="mb-6">
+  <div class="flex flex-wrap items-center gap-2 mb-2">
+    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_classes %>"><%= severity_label %></span>
+    <% if @alert_threshold.active? %>
+      <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-normal/20 text-risk-normal">Ativo</span>
+    <% else %>
+      <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-naila-elevated text-naila-text-muted">Inativo</span>
+    <% end %>
+  </div>
+  <h1 class="text-xl font-semibold text-naila-text">
+    <%= parameter_labels[@alert_threshold.parameter] || @alert_threshold.parameter %>
+    — <%= comparison_labels[@alert_threshold.comparison] %> <%= @alert_threshold.value %> <%= @alert_threshold.unit %>
+  </h1>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <%# ── Left Column (Details) ── %>
+  <div class="lg:col-span-2 space-y-6">
+    <%# Details %>
+    <div class="rounded-xl border border-naila-border bg-naila-surface">
+      <div class="border-b border-naila-border px-4 py-3">
+        <h2 class="text-sm font-semibold text-naila-text">Detalhes</h2>
+      </div>
+      <div class="divide-y divide-naila-border">
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Parâmetro</span>
+          <span class="text-sm text-naila-text"><%= parameter_labels[@alert_threshold.parameter] || @alert_threshold.parameter %></span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Tipo</span>
+          <span class="text-sm text-naila-text"><%= @alert_threshold.threshold_type %></span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Valor</span>
+          <span class="text-sm tabular-nums text-naila-text"><%= comparison_labels[@alert_threshold.comparison] %> <%= @alert_threshold.value %> <%= @alert_threshold.unit %></span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Cooldown</span>
+          <span class="text-sm tabular-nums text-naila-text"><%= @alert_threshold.cooldown_minutes %> minutos</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Criado em</span>
+          <span class="text-sm tabular-nums text-naila-text"><%= @alert_threshold.created_at.strftime("%d/%m/%Y %H:%M") %></span>
+        </div>
+      </div>
+    </div>
+
+    <%# Scope %>
+    <div class="rounded-xl border border-naila-border bg-naila-surface">
+      <div class="border-b border-naila-border px-4 py-3">
+        <h2 class="text-sm font-semibold text-naila-text">Escopo</h2>
+      </div>
+      <div class="divide-y divide-naila-border">
+        <% if @alert_threshold.river_basin %>
+          <div class="flex items-center justify-between px-4 py-3">
+            <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Bacia Hidrográfica</span>
+            <span class="text-sm text-naila-text"><%= @alert_threshold.river_basin.name %></span>
+          </div>
+        <% end %>
+        <% if @alert_threshold.river %>
+          <div class="flex items-center justify-between px-4 py-3">
+            <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Rio</span>
+            <span class="text-sm text-naila-text"><%= @alert_threshold.river.name %></span>
+          </div>
+        <% end %>
+        <% if @alert_threshold.river_basin.nil? && @alert_threshold.river.nil? %>
+          <div class="px-4 py-3 text-sm italic text-naila-text-muted">
+            Limiar global — aplica-se a todas as bacias e rios.
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Linked Alerts %>
+    <div class="rounded-xl border border-naila-border bg-naila-surface">
+      <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+        <h2 class="text-sm font-semibold text-naila-text">Alertas Disparados</h2>
+        <span class="text-xs text-naila-text-muted"><%= @alert_threshold.alerts.count %> total</span>
+      </div>
+      <% if @alerts.empty? %>
+        <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+          Nenhum alerta disparado por este limiar.
+        </div>
+      <% else %>
+        <div class="divide-y divide-naila-border">
+          <% @alerts.each do |alert| %>
+            <div class="flex items-center justify-between px-4 py-2.5">
+              <div class="flex items-center gap-2">
+                <% alert_sev_classes = case alert.severity
+                                       when 4 then "bg-risk-emergency/20 text-risk-emergency"
+                                       when 3 then "bg-risk-high/20 text-risk-high"
+                                       when 2 then "bg-risk-alert/20 text-risk-alert"
+                                       else "bg-risk-attention/20 text-risk-attention"
+                                       end %>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= alert_sev_classes %>">
+                  <%= alert.severity %>
+                </span>
+                <%= link_to alert.title, admin_alert_path(alert),
+                      class: "text-sm text-naila-text hover:text-naila-accent transition-colors truncate max-w-xs" %>
+              </div>
+              <div class="text-xs tabular-nums text-naila-text-muted">
+                <%= alert.created_at.strftime("%d/%m %H:%M") %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Right Column (Actions + Stats) ── %>
+  <div class="space-y-6">
+    <%# Actions %>
+    <div class="rounded-xl border border-naila-border bg-naila-surface">
+      <div class="border-b border-naila-border px-4 py-3">
+        <h2 class="text-sm font-semibold text-naila-text">Ações</h2>
+      </div>
+      <div class="p-4 space-y-3">
+        <% if policy(@alert_threshold).update? %>
+          <%= link_to "Editar Limiar", edit_admin_alert_threshold_path(@alert_threshold),
+                class: "block w-full rounded-lg bg-naila-accent/20 px-4 py-2.5 text-center text-sm font-medium text-naila-accent transition-colors hover:bg-naila-accent/30" %>
+        <% end %>
+
+        <% if policy(@alert_threshold).destroy? %>
+          <%= button_to "Excluir Limiar", admin_alert_threshold_path(@alert_threshold),
+                method: :delete,
+                class: "w-full rounded-lg bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/20",
+                form: { data: { turbo_confirm: "Tem certeza que deseja excluir este limiar? Os alertas existentes serão desvinculados." } } %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Stats %>
+    <div class="rounded-xl border border-naila-border bg-naila-surface">
+      <div class="border-b border-naila-border px-4 py-3">
+        <h2 class="text-sm font-semibold text-naila-text">Estatísticas</h2>
+      </div>
+      <div class="p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-naila-text-muted">Total de Alertas</span>
+          <span class="text-sm font-semibold tabular-nums text-naila-text"><%= @alert_threshold.alerts.count %></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-naila-text-muted">Alertas Ativos</span>
+          <span class="text-sm font-semibold tabular-nums text-risk-high"><%= @alert_threshold.alerts.active.count %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
