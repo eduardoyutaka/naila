@@ -1,17 +1,12 @@
 class SensorStation < ApplicationRecord
   belongs_to :neighborhood, optional: true
-  belongs_to :river_basin, optional: true
+  belongs_to :river_basin
   belongs_to :river, optional: true
-  has_many :sensor_readings, dependent: :destroy
+  has_many :sensors, dependent: :destroy
+  has_many :sensor_readings, through: :sensors
 
-  validates :external_id, :name, :station_type, :data_source, presence: true
+  validates :external_id, :name, :data_source, presence: true
   validates :external_id, uniqueness: { scope: :data_source }
-
-  enum :station_type, {
-    pluviometer: "pluviometer",
-    river_gauge: "river_gauge",
-    weather_station: "weather_station"
-  }, prefix: true
 
   enum :status, {
     active: "active",

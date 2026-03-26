@@ -1,5 +1,6 @@
 class SensorReading < ApplicationRecord
-  belongs_to :sensor_station
+  belongs_to :sensor
+  delegate :sensor_station, to: :sensor
 
   validates :value, :unit, :reading_type, :recorded_at, presence: true
 
