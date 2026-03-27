@@ -279,6 +279,49 @@ ALTER SEQUENCE public.evacuation_routes_id_seq OWNED BY public.evacuation_routes
 
 
 --
+-- Name: monitoring_stations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.monitoring_stations (
+    id bigint NOT NULL,
+    external_id character varying NOT NULL,
+    name character varying NOT NULL,
+    data_source character varying NOT NULL,
+    location public.geometry(Point,4326),
+    elevation_m double precision,
+    neighborhood_id bigint,
+    river_basin_id bigint,
+    river_id bigint,
+    status character varying DEFAULT 'active'::character varying,
+    last_reading_at timestamp(6) without time zone,
+    last_reading_value double precision,
+    metadata jsonb DEFAULT '{}'::jsonb,
+    api_token_digest character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: monitoring_stations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.monitoring_stations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: monitoring_stations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.monitoring_stations_id_seq OWNED BY public.monitoring_stations.id;
+
+
+--
 -- Name: neighborhoods; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -519,14 +562,14 @@ CREATE TABLE public.schema_migrations (
 
 CREATE TABLE public.sensor_readings (
     id bigint NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 )
 PARTITION BY RANGE (recorded_at);
 
@@ -556,14 +599,14 @@ ALTER SEQUENCE public.sensor_readings_id_seq OWNED BY public.sensor_readings.id;
 
 CREATE TABLE public.sensor_readings_2026_01 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -573,14 +616,14 @@ CREATE TABLE public.sensor_readings_2026_01 (
 
 CREATE TABLE public.sensor_readings_2026_02 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -590,14 +633,14 @@ CREATE TABLE public.sensor_readings_2026_02 (
 
 CREATE TABLE public.sensor_readings_2026_03 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -607,14 +650,14 @@ CREATE TABLE public.sensor_readings_2026_03 (
 
 CREATE TABLE public.sensor_readings_2026_04 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -624,14 +667,14 @@ CREATE TABLE public.sensor_readings_2026_04 (
 
 CREATE TABLE public.sensor_readings_2026_05 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -641,14 +684,14 @@ CREATE TABLE public.sensor_readings_2026_05 (
 
 CREATE TABLE public.sensor_readings_2026_06 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -658,14 +701,14 @@ CREATE TABLE public.sensor_readings_2026_06 (
 
 CREATE TABLE public.sensor_readings_2026_07 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -675,14 +718,14 @@ CREATE TABLE public.sensor_readings_2026_07 (
 
 CREATE TABLE public.sensor_readings_2026_08 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -692,14 +735,14 @@ CREATE TABLE public.sensor_readings_2026_08 (
 
 CREATE TABLE public.sensor_readings_2026_09 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -709,14 +752,14 @@ CREATE TABLE public.sensor_readings_2026_09 (
 
 CREATE TABLE public.sensor_readings_2026_10 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -726,14 +769,14 @@ CREATE TABLE public.sensor_readings_2026_10 (
 
 CREATE TABLE public.sensor_readings_2026_11 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -743,14 +786,14 @@ CREATE TABLE public.sensor_readings_2026_11 (
 
 CREATE TABLE public.sensor_readings_2026_12 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -760,14 +803,14 @@ CREATE TABLE public.sensor_readings_2026_12 (
 
 CREATE TABLE public.sensor_readings_2027_01 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -777,14 +820,14 @@ CREATE TABLE public.sensor_readings_2027_01 (
 
 CREATE TABLE public.sensor_readings_2027_02 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -794,14 +837,14 @@ CREATE TABLE public.sensor_readings_2027_02 (
 
 CREATE TABLE public.sensor_readings_2027_03 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -811,14 +854,14 @@ CREATE TABLE public.sensor_readings_2027_03 (
 
 CREATE TABLE public.sensor_readings_2027_04 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -828,14 +871,14 @@ CREATE TABLE public.sensor_readings_2027_04 (
 
 CREATE TABLE public.sensor_readings_2027_05 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -845,14 +888,14 @@ CREATE TABLE public.sensor_readings_2027_05 (
 
 CREATE TABLE public.sensor_readings_2027_06 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -862,14 +905,14 @@ CREATE TABLE public.sensor_readings_2027_06 (
 
 CREATE TABLE public.sensor_readings_2027_07 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -879,14 +922,14 @@ CREATE TABLE public.sensor_readings_2027_07 (
 
 CREATE TABLE public.sensor_readings_2027_08 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -896,14 +939,14 @@ CREATE TABLE public.sensor_readings_2027_08 (
 
 CREATE TABLE public.sensor_readings_2027_09 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -913,14 +956,14 @@ CREATE TABLE public.sensor_readings_2027_09 (
 
 CREATE TABLE public.sensor_readings_2027_10 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -930,14 +973,14 @@ CREATE TABLE public.sensor_readings_2027_10 (
 
 CREATE TABLE public.sensor_readings_2027_11 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
@@ -947,47 +990,42 @@ CREATE TABLE public.sensor_readings_2027_11 (
 
 CREATE TABLE public.sensor_readings_2027_12 (
     id bigint DEFAULT nextval('public.sensor_readings_id_seq'::regclass) NOT NULL,
-    sensor_station_id bigint NOT NULL,
     recorded_at timestamp with time zone NOT NULL,
     value double precision NOT NULL,
     unit character varying(20) NOT NULL,
     reading_type character varying(30) NOT NULL,
     quality_flag character varying(10) DEFAULT 'ok'::character varying,
     raw_payload jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sensor_id bigint NOT NULL
 );
 
 
 --
--- Name: sensor_stations; Type: TABLE; Schema: public; Owner: -
+-- Name: sensors; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.sensor_stations (
+CREATE TABLE public.sensors (
     id bigint NOT NULL,
+    monitoring_station_id bigint NOT NULL,
+    sensor_type character varying NOT NULL,
     external_id character varying NOT NULL,
-    name character varying NOT NULL,
-    station_type character varying NOT NULL,
-    data_source character varying NOT NULL,
-    location public.geometry(Point,4326),
-    elevation_m double precision,
-    neighborhood_id bigint,
-    river_basin_id bigint,
-    river_id bigint,
+    unit character varying(20),
+    reading_type character varying(30),
     status character varying DEFAULT 'active'::character varying,
     last_reading_at timestamp(6) without time zone,
     last_reading_value double precision,
     metadata jsonb DEFAULT '{}'::jsonb,
-    api_token_digest character varying,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
 
 
 --
--- Name: sensor_stations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: sensors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.sensor_stations_id_seq
+CREATE SEQUENCE public.sensors_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -996,10 +1034,10 @@ CREATE SEQUENCE public.sensor_stations_id_seq
 
 
 --
--- Name: sensor_stations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: sensors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.sensor_stations_id_seq OWNED BY public.sensor_stations.id;
+ALTER SEQUENCE public.sensors_id_seq OWNED BY public.sensors.id;
 
 
 --
@@ -1370,6 +1408,13 @@ ALTER TABLE ONLY public.evacuation_routes ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
+-- Name: monitoring_stations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.monitoring_stations ALTER COLUMN id SET DEFAULT nextval('public.monitoring_stations_id_seq'::regclass);
+
+
+--
 -- Name: neighborhoods id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1419,10 +1464,10 @@ ALTER TABLE ONLY public.sensor_readings ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- Name: sensor_stations id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: sensors id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sensor_stations ALTER COLUMN id SET DEFAULT nextval('public.sensor_stations_id_seq'::regclass);
+ALTER TABLE ONLY public.sensors ALTER COLUMN id SET DEFAULT nextval('public.sensors_id_seq'::regclass);
 
 
 --
@@ -1507,6 +1552,14 @@ ALTER TABLE ONLY public.escalation_rules
 
 ALTER TABLE ONLY public.evacuation_routes
     ADD CONSTRAINT evacuation_routes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: monitoring_stations monitoring_stations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.monitoring_stations
+    ADD CONSTRAINT monitoring_stations_pkey PRIMARY KEY (id);
 
 
 --
@@ -1766,11 +1819,11 @@ ALTER TABLE ONLY public.sensor_readings_2027_12
 
 
 --
--- Name: sensor_stations sensor_stations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sensors sensors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sensor_stations
-    ADD CONSTRAINT sensor_stations_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.sensors
+    ADD CONSTRAINT sensors_pkey PRIMARY KEY (id);
 
 
 --
@@ -1939,6 +1992,48 @@ CREATE INDEX index_evacuation_routes_on_river_basin_id ON public.evacuation_rout
 
 
 --
+-- Name: index_monitoring_stations_on_external_id_and_data_source; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_monitoring_stations_on_external_id_and_data_source ON public.monitoring_stations USING btree (external_id, data_source);
+
+
+--
+-- Name: index_monitoring_stations_on_location; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_monitoring_stations_on_location ON public.monitoring_stations USING gist (location);
+
+
+--
+-- Name: index_monitoring_stations_on_neighborhood_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_monitoring_stations_on_neighborhood_id ON public.monitoring_stations USING btree (neighborhood_id);
+
+
+--
+-- Name: index_monitoring_stations_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_monitoring_stations_on_river_basin_id ON public.monitoring_stations USING btree (river_basin_id);
+
+
+--
+-- Name: index_monitoring_stations_on_river_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_monitoring_stations_on_river_id ON public.monitoring_stations USING btree (river_id);
+
+
+--
+-- Name: index_monitoring_stations_on_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_monitoring_stations_on_status ON public.monitoring_stations USING btree (status);
+
+
+--
 -- Name: index_neighborhoods_on_boundary; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2051,66 +2146,45 @@ CREATE INDEX index_sensor_readings_on_reading_type ON ONLY public.sensor_reading
 
 
 --
--- Name: index_sensor_readings_on_sensor_station_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_sensor_readings_on_sensor_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_sensor_readings_on_sensor_station_id ON ONLY public.sensor_readings USING btree (sensor_station_id);
-
-
---
--- Name: index_sensor_readings_on_sensor_station_id_and_recorded_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_sensor_readings_on_sensor_station_id_and_recorded_at ON ONLY public.sensor_readings USING btree (sensor_station_id, recorded_at);
+CREATE INDEX index_sensor_readings_on_sensor_id ON ONLY public.sensor_readings USING btree (sensor_id);
 
 
 --
--- Name: index_sensor_stations_on_external_id_and_data_source; Type: INDEX; Schema: public; Owner: -
+-- Name: index_sensor_readings_on_sensor_id_and_recorded_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_sensor_stations_on_external_id_and_data_source ON public.sensor_stations USING btree (external_id, data_source);
-
-
---
--- Name: index_sensor_stations_on_location; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_sensor_stations_on_location ON public.sensor_stations USING gist (location);
+CREATE INDEX index_sensor_readings_on_sensor_id_and_recorded_at ON ONLY public.sensor_readings USING btree (sensor_id, recorded_at);
 
 
 --
--- Name: index_sensor_stations_on_neighborhood_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_sensors_on_external_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_sensor_stations_on_neighborhood_id ON public.sensor_stations USING btree (neighborhood_id);
-
-
---
--- Name: index_sensor_stations_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_sensor_stations_on_river_basin_id ON public.sensor_stations USING btree (river_basin_id);
+CREATE UNIQUE INDEX index_sensors_on_external_id ON public.sensors USING btree (external_id);
 
 
 --
--- Name: index_sensor_stations_on_river_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_sensors_on_monitoring_station_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_sensor_stations_on_river_id ON public.sensor_stations USING btree (river_id);
-
-
---
--- Name: index_sensor_stations_on_station_type; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_sensor_stations_on_station_type ON public.sensor_stations USING btree (station_type);
+CREATE INDEX index_sensors_on_monitoring_station_id ON public.sensors USING btree (monitoring_station_id);
 
 
 --
--- Name: index_sensor_stations_on_status; Type: INDEX; Schema: public; Owner: -
+-- Name: index_sensors_on_sensor_type; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_sensor_stations_on_status ON public.sensor_stations USING btree (status);
+CREATE INDEX index_sensors_on_sensor_type ON public.sensors USING btree (sensor_type);
+
+
+--
+-- Name: index_sensors_on_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sensors_on_status ON public.sensors USING btree (status);
 
 
 --
@@ -2156,17 +2230,17 @@ CREATE INDEX sensor_readings_2026_01_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_01_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_01_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_01_sensor_station_id_idx ON public.sensor_readings_2026_01 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_01_sensor_id_idx ON public.sensor_readings_2026_01 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_01_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_01_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_01_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_01 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_01_sensor_id_recorded_at_idx ON public.sensor_readings_2026_01 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2177,17 +2251,17 @@ CREATE INDEX sensor_readings_2026_02_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_02_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_02_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_02_sensor_station_id_idx ON public.sensor_readings_2026_02 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_02_sensor_id_idx ON public.sensor_readings_2026_02 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_02_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_02_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_02_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_02 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_02_sensor_id_recorded_at_idx ON public.sensor_readings_2026_02 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2198,17 +2272,17 @@ CREATE INDEX sensor_readings_2026_03_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_03_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_03_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_03_sensor_station_id_idx ON public.sensor_readings_2026_03 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_03_sensor_id_idx ON public.sensor_readings_2026_03 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_03_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_03_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_03_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_03 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_03_sensor_id_recorded_at_idx ON public.sensor_readings_2026_03 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2219,17 +2293,17 @@ CREATE INDEX sensor_readings_2026_04_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_04_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_04_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_04_sensor_station_id_idx ON public.sensor_readings_2026_04 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_04_sensor_id_idx ON public.sensor_readings_2026_04 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_04_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_04_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_04_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_04 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_04_sensor_id_recorded_at_idx ON public.sensor_readings_2026_04 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2240,17 +2314,17 @@ CREATE INDEX sensor_readings_2026_05_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_05_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_05_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_05_sensor_station_id_idx ON public.sensor_readings_2026_05 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_05_sensor_id_idx ON public.sensor_readings_2026_05 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_05_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_05_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_05_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_05 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_05_sensor_id_recorded_at_idx ON public.sensor_readings_2026_05 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2261,17 +2335,17 @@ CREATE INDEX sensor_readings_2026_06_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_06_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_06_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_06_sensor_station_id_idx ON public.sensor_readings_2026_06 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_06_sensor_id_idx ON public.sensor_readings_2026_06 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_06_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_06_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_06_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_06 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_06_sensor_id_recorded_at_idx ON public.sensor_readings_2026_06 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2282,17 +2356,17 @@ CREATE INDEX sensor_readings_2026_07_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_07_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_07_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_07_sensor_station_id_idx ON public.sensor_readings_2026_07 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_07_sensor_id_idx ON public.sensor_readings_2026_07 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_07_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_07_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_07_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_07 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_07_sensor_id_recorded_at_idx ON public.sensor_readings_2026_07 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2303,17 +2377,17 @@ CREATE INDEX sensor_readings_2026_08_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_08_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_08_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_08_sensor_station_id_idx ON public.sensor_readings_2026_08 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_08_sensor_id_idx ON public.sensor_readings_2026_08 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_08_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_08_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_08_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_08 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_08_sensor_id_recorded_at_idx ON public.sensor_readings_2026_08 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2324,17 +2398,17 @@ CREATE INDEX sensor_readings_2026_09_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_09_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_09_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_09_sensor_station_id_idx ON public.sensor_readings_2026_09 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_09_sensor_id_idx ON public.sensor_readings_2026_09 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_09_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_09_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_09_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_09 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_09_sensor_id_recorded_at_idx ON public.sensor_readings_2026_09 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2345,17 +2419,17 @@ CREATE INDEX sensor_readings_2026_10_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_10_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_10_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_10_sensor_station_id_idx ON public.sensor_readings_2026_10 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_10_sensor_id_idx ON public.sensor_readings_2026_10 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_10_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_10_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_10_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_10 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_10_sensor_id_recorded_at_idx ON public.sensor_readings_2026_10 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2366,17 +2440,17 @@ CREATE INDEX sensor_readings_2026_11_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_11_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_11_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_11_sensor_station_id_idx ON public.sensor_readings_2026_11 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_11_sensor_id_idx ON public.sensor_readings_2026_11 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_11_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_11_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_11_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_11 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_11_sensor_id_recorded_at_idx ON public.sensor_readings_2026_11 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2387,17 +2461,17 @@ CREATE INDEX sensor_readings_2026_12_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2026_12_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_12_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_12_sensor_station_id_idx ON public.sensor_readings_2026_12 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2026_12_sensor_id_idx ON public.sensor_readings_2026_12 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2026_12_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2026_12_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2026_12_sensor_station_id_recorded_at_idx ON public.sensor_readings_2026_12 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2026_12_sensor_id_recorded_at_idx ON public.sensor_readings_2026_12 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2408,17 +2482,17 @@ CREATE INDEX sensor_readings_2027_01_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_01_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_01_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_01_sensor_station_id_idx ON public.sensor_readings_2027_01 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_01_sensor_id_idx ON public.sensor_readings_2027_01 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_01_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_01_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_01_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_01 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_01_sensor_id_recorded_at_idx ON public.sensor_readings_2027_01 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2429,17 +2503,17 @@ CREATE INDEX sensor_readings_2027_02_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_02_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_02_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_02_sensor_station_id_idx ON public.sensor_readings_2027_02 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_02_sensor_id_idx ON public.sensor_readings_2027_02 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_02_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_02_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_02_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_02 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_02_sensor_id_recorded_at_idx ON public.sensor_readings_2027_02 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2450,17 +2524,17 @@ CREATE INDEX sensor_readings_2027_03_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_03_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_03_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_03_sensor_station_id_idx ON public.sensor_readings_2027_03 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_03_sensor_id_idx ON public.sensor_readings_2027_03 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_03_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_03_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_03_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_03 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_03_sensor_id_recorded_at_idx ON public.sensor_readings_2027_03 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2471,17 +2545,17 @@ CREATE INDEX sensor_readings_2027_04_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_04_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_04_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_04_sensor_station_id_idx ON public.sensor_readings_2027_04 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_04_sensor_id_idx ON public.sensor_readings_2027_04 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_04_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_04_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_04_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_04 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_04_sensor_id_recorded_at_idx ON public.sensor_readings_2027_04 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2492,17 +2566,17 @@ CREATE INDEX sensor_readings_2027_05_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_05_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_05_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_05_sensor_station_id_idx ON public.sensor_readings_2027_05 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_05_sensor_id_idx ON public.sensor_readings_2027_05 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_05_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_05_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_05_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_05 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_05_sensor_id_recorded_at_idx ON public.sensor_readings_2027_05 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2513,17 +2587,17 @@ CREATE INDEX sensor_readings_2027_06_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_06_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_06_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_06_sensor_station_id_idx ON public.sensor_readings_2027_06 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_06_sensor_id_idx ON public.sensor_readings_2027_06 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_06_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_06_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_06_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_06 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_06_sensor_id_recorded_at_idx ON public.sensor_readings_2027_06 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2534,17 +2608,17 @@ CREATE INDEX sensor_readings_2027_07_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_07_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_07_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_07_sensor_station_id_idx ON public.sensor_readings_2027_07 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_07_sensor_id_idx ON public.sensor_readings_2027_07 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_07_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_07_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_07_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_07 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_07_sensor_id_recorded_at_idx ON public.sensor_readings_2027_07 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2555,17 +2629,17 @@ CREATE INDEX sensor_readings_2027_08_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_08_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_08_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_08_sensor_station_id_idx ON public.sensor_readings_2027_08 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_08_sensor_id_idx ON public.sensor_readings_2027_08 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_08_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_08_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_08_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_08 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_08_sensor_id_recorded_at_idx ON public.sensor_readings_2027_08 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2576,17 +2650,17 @@ CREATE INDEX sensor_readings_2027_09_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_09_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_09_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_09_sensor_station_id_idx ON public.sensor_readings_2027_09 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_09_sensor_id_idx ON public.sensor_readings_2027_09 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_09_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_09_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_09_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_09 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_09_sensor_id_recorded_at_idx ON public.sensor_readings_2027_09 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2597,17 +2671,17 @@ CREATE INDEX sensor_readings_2027_10_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_10_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_10_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_10_sensor_station_id_idx ON public.sensor_readings_2027_10 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_10_sensor_id_idx ON public.sensor_readings_2027_10 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_10_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_10_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_10_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_10 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_10_sensor_id_recorded_at_idx ON public.sensor_readings_2027_10 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2618,17 +2692,17 @@ CREATE INDEX sensor_readings_2027_11_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_11_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_11_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_11_sensor_station_id_idx ON public.sensor_readings_2027_11 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_11_sensor_id_idx ON public.sensor_readings_2027_11 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_11_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_11_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_11_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_11 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_11_sensor_id_recorded_at_idx ON public.sensor_readings_2027_11 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2639,17 +2713,17 @@ CREATE INDEX sensor_readings_2027_12_reading_type_idx ON public.sensor_readings_
 
 
 --
--- Name: sensor_readings_2027_12_sensor_station_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_12_sensor_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_12_sensor_station_id_idx ON public.sensor_readings_2027_12 USING btree (sensor_station_id);
+CREATE INDEX sensor_readings_2027_12_sensor_id_idx ON public.sensor_readings_2027_12 USING btree (sensor_id);
 
 
 --
--- Name: sensor_readings_2027_12_sensor_station_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: sensor_readings_2027_12_sensor_id_recorded_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sensor_readings_2027_12_sensor_station_id_recorded_at_idx ON public.sensor_readings_2027_12 USING btree (sensor_station_id, recorded_at);
+CREATE INDEX sensor_readings_2027_12_sensor_id_recorded_at_idx ON public.sensor_readings_2027_12 USING btree (sensor_id, recorded_at);
 
 
 --
@@ -2667,17 +2741,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_01_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_01_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_01_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_01_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_01_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_01_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_01_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_01_sensor_id_recorded_at_idx;
 
 
 --
@@ -2695,17 +2769,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_02_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_02_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_02_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_02_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_02_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_02_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_02_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_02_sensor_id_recorded_at_idx;
 
 
 --
@@ -2723,17 +2797,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_03_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_03_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_03_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_03_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_03_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_03_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_03_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_03_sensor_id_recorded_at_idx;
 
 
 --
@@ -2751,17 +2825,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_04_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_04_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_04_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_04_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_04_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_04_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_04_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_04_sensor_id_recorded_at_idx;
 
 
 --
@@ -2779,17 +2853,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_05_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_05_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_05_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_05_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_05_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_05_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_05_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_05_sensor_id_recorded_at_idx;
 
 
 --
@@ -2807,17 +2881,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_06_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_06_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_06_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_06_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_06_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_06_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_06_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_06_sensor_id_recorded_at_idx;
 
 
 --
@@ -2835,17 +2909,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_07_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_07_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_07_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_07_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_07_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_07_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_07_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_07_sensor_id_recorded_at_idx;
 
 
 --
@@ -2863,17 +2937,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_08_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_08_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_08_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_08_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_08_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_08_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_08_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_08_sensor_id_recorded_at_idx;
 
 
 --
@@ -2891,17 +2965,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_09_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_09_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_09_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_09_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_09_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_09_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_09_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_09_sensor_id_recorded_at_idx;
 
 
 --
@@ -2919,17 +2993,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_10_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_10_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_10_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_10_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_10_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_10_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_10_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_10_sensor_id_recorded_at_idx;
 
 
 --
@@ -2947,17 +3021,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_11_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_11_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_11_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_11_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_11_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_11_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_11_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_11_sensor_id_recorded_at_idx;
 
 
 --
@@ -2975,17 +3049,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2026_12_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_12_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2026_12_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2026_12_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2026_12_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2026_12_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_12_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2026_12_sensor_id_recorded_at_idx;
 
 
 --
@@ -3003,17 +3077,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_01_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_01_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_01_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_01_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_01_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_01_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_01_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_01_sensor_id_recorded_at_idx;
 
 
 --
@@ -3031,17 +3105,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_02_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_02_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_02_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_02_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_02_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_02_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_02_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_02_sensor_id_recorded_at_idx;
 
 
 --
@@ -3059,17 +3133,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_03_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_03_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_03_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_03_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_03_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_03_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_03_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_03_sensor_id_recorded_at_idx;
 
 
 --
@@ -3087,17 +3161,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_04_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_04_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_04_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_04_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_04_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_04_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_04_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_04_sensor_id_recorded_at_idx;
 
 
 --
@@ -3115,17 +3189,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_05_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_05_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_05_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_05_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_05_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_05_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_05_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_05_sensor_id_recorded_at_idx;
 
 
 --
@@ -3143,17 +3217,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_06_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_06_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_06_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_06_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_06_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_06_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_06_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_06_sensor_id_recorded_at_idx;
 
 
 --
@@ -3171,17 +3245,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_07_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_07_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_07_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_07_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_07_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_07_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_07_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_07_sensor_id_recorded_at_idx;
 
 
 --
@@ -3199,17 +3273,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_08_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_08_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_08_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_08_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_08_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_08_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_08_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_08_sensor_id_recorded_at_idx;
 
 
 --
@@ -3227,17 +3301,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_09_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_09_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_09_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_09_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_09_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_09_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_09_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_09_sensor_id_recorded_at_idx;
 
 
 --
@@ -3255,17 +3329,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_10_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_10_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_10_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_10_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_10_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_10_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_10_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_10_sensor_id_recorded_at_idx;
 
 
 --
@@ -3283,17 +3357,17 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_11_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_11_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_11_sensor_station_id_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_11_sensor_id_idx;
 
 
 --
--- Name: sensor_readings_2027_11_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_11_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_11_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_11_sensor_id_recorded_at_idx;
 
 
 --
@@ -3311,24 +3385,32 @@ ALTER INDEX public.index_sensor_readings_on_reading_type ATTACH PARTITION public
 
 
 --
--- Name: sensor_readings_2027_12_sensor_station_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: sensor_readings_2027_12_sensor_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id ATTACH PARTITION public.sensor_readings_2027_12_sensor_station_id_idx;
-
-
---
--- Name: sensor_readings_2027_12_sensor_station_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.index_sensor_readings_on_sensor_station_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_12_sensor_station_id_recorded_at_idx;
+ALTER INDEX public.index_sensor_readings_on_sensor_id ATTACH PARTITION public.sensor_readings_2027_12_sensor_id_idx;
 
 
 --
--- Name: sensor_stations fk_rails_16c6dcc99e; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: sensor_readings_2027_12_sensor_id_recorded_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sensor_stations
+ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PARTITION public.sensor_readings_2027_12_sensor_id_recorded_at_idx;
+
+
+--
+-- Name: sensors fk_rails_0d0b7ffa32; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sensors
+    ADD CONSTRAINT fk_rails_0d0b7ffa32 FOREIGN KEY (monitoring_station_id) REFERENCES public.monitoring_stations(id);
+
+
+--
+-- Name: monitoring_stations fk_rails_16c6dcc99e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.monitoring_stations
     ADD CONSTRAINT fk_rails_16c6dcc99e FOREIGN KEY (neighborhood_id) REFERENCES public.neighborhoods(id);
 
 
@@ -3349,10 +3431,10 @@ ALTER TABLE ONLY public.evacuation_routes
 
 
 --
--- Name: sensor_stations fk_rails_43d6326617; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: monitoring_stations fk_rails_43d6326617; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sensor_stations
+ALTER TABLE ONLY public.monitoring_stations
     ADD CONSTRAINT fk_rails_43d6326617 FOREIGN KEY (river_id) REFERENCES public.rivers(id);
 
 
@@ -3362,14 +3444,6 @@ ALTER TABLE ONLY public.sensor_stations
 
 ALTER TABLE ONLY public.alert_thresholds
     ADD CONSTRAINT fk_rails_4dd5cfd18f FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
-
-
---
--- Name: sensor_readings fk_rails_5465d7a0be; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE public.sensor_readings
-    ADD CONSTRAINT fk_rails_5465d7a0be FOREIGN KEY (sensor_station_id) REFERENCES public.sensor_stations(id);
 
 
 --
@@ -3389,10 +3463,10 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- Name: sensor_stations fk_rails_83953127ac; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: monitoring_stations fk_rails_83953127ac; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sensor_stations
+ALTER TABLE ONLY public.monitoring_stations
     ADD CONSTRAINT fk_rails_83953127ac FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
@@ -3469,12 +3543,24 @@ ALTER TABLE ONLY public.alert_notifications
 
 
 --
+-- Name: sensor_readings fk_sensor_readings_sensors; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sensor_readings
+    ADD CONSTRAINT fk_sensor_readings_sensors FOREIGN KEY (sensor_id) REFERENCES public.sensors(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260327163247'),
+('20260326221300'),
+('20260326221155'),
+('20260326221041'),
 ('20260325234909'),
 ('20260324205844'),
 ('20260324000233'),
