@@ -5,7 +5,7 @@ class SensorTest < ActiveSupport::TestCase
 
   test "valid with all required attributes" do
     sensor = Sensor.new(
-      sensor_station: sensor_stations(:estacao_belem),
+      monitoring_station: monitoring_stations(:estacao_belem),
       sensor_type: "pluviometer",
       external_id: "TEST-PLUV-001"
     )
@@ -13,18 +13,18 @@ class SensorTest < ActiveSupport::TestCase
   end
 
   test "invalid without external_id" do
-    sensor = Sensor.new(sensor_station: sensor_stations(:estacao_belem), sensor_type: "pluviometer")
+    sensor = Sensor.new(monitoring_station: monitoring_stations(:estacao_belem), sensor_type: "pluviometer")
     assert_not sensor.valid?
     assert_includes sensor.errors[:external_id], "can't be blank"
   end
 
   test "invalid without sensor_type" do
-    sensor = Sensor.new(sensor_station: sensor_stations(:estacao_belem), external_id: "TEST-001")
+    sensor = Sensor.new(monitoring_station: monitoring_stations(:estacao_belem), external_id: "TEST-001")
     assert_not sensor.valid?
     assert_includes sensor.errors[:sensor_type], "can't be blank"
   end
 
-  test "invalid without sensor_station" do
+  test "invalid without monitoring_station" do
     sensor = Sensor.new(sensor_type: "pluviometer", external_id: "TEST-001")
     assert_not sensor.valid?
   end
@@ -32,7 +32,7 @@ class SensorTest < ActiveSupport::TestCase
   test "external_id must be unique" do
     existing = sensors(:pluv_belem)
     duplicate = Sensor.new(
-      sensor_station: sensor_stations(:estacao_belem),
+      monitoring_station: monitoring_stations(:estacao_belem),
       sensor_type: "pluviometer",
       external_id: existing.external_id
     )
@@ -42,8 +42,8 @@ class SensorTest < ActiveSupport::TestCase
 
   # ── Associations ──
 
-  test "belongs to sensor_station" do
-    assert_equal sensor_stations(:estacao_belem), sensors(:pluv_belem).sensor_station
+  test "belongs to monitoring_station" do
+    assert_equal monitoring_stations(:estacao_belem), sensors(:pluv_belem).monitoring_station
   end
 
   test "has many sensor_readings" do

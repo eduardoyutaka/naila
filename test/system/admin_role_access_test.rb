@@ -55,9 +55,9 @@ class AdminRoleAccessTest < ApplicationSystemTestCase
 
   test "admin can access sensor stations" do
     sign_in users(:admin)
-    visit admin_sensor_stations_path
+    visit admin_monitoring_stations_path
 
-    assert_current_path admin_sensor_stations_path
+    assert_current_path admin_monitoring_stations_path
   end
 
   test "admin can access river basins" do
@@ -102,9 +102,9 @@ class AdminRoleAccessTest < ApplicationSystemTestCase
 
   test "coordinator can access sensor stations" do
     sign_in users(:coordinator)
-    visit admin_sensor_stations_path
+    visit admin_monitoring_stations_path
 
-    assert_current_path admin_sensor_stations_path
+    assert_current_path admin_monitoring_stations_path
   end
 
   test "coordinator can access river basins" do
@@ -141,9 +141,9 @@ class AdminRoleAccessTest < ApplicationSystemTestCase
 
   test "operator can access sensor stations index" do
     sign_in users(:operator)
-    visit admin_sensor_stations_path
+    visit admin_monitoring_stations_path
 
-    assert_current_path admin_sensor_stations_path
+    assert_current_path admin_monitoring_stations_path
   end
 
   test "operator can access river basins index" do

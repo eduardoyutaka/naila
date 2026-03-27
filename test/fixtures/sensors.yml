@@ -1,5 +1,5 @@
 pluv_cemaden_centro:
-  sensor_station: cemaden_centro
+  monitoring_station: cemaden_centro
   sensor_type: pluviometer
   external_id: PLUV-CEMADEN-CENTRO-01
   unit: mm
@@ -7,7 +7,7 @@ pluv_cemaden_centro:
   status: active
 
 pluv_belem:
-  sensor_station: estacao_belem
+  monitoring_station: estacao_belem
   sensor_type: pluviometer
   external_id: PLUV-BELEM-01
   unit: mm
@@ -17,7 +17,7 @@ pluv_belem:
   last_reading_value: 12.5
 
 fluv_belem:
-  sensor_station: estacao_belem
+  monitoring_station: estacao_belem
   sensor_type: river_gauge
   external_id: FLUV-BELEM-01
   unit: m
@@ -27,7 +27,7 @@ fluv_belem:
   last_reading_value: 1.2
 
 meteo_belem:
-  sensor_station: estacao_belem
+  monitoring_station: estacao_belem
   sensor_type: weather_station
   external_id: METEO-BELEM-01
   unit: "°C"
