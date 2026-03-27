@@ -26,6 +26,7 @@
 </div>
 
 <%# ── Map ── %>
+<%= turbo_stream_from "basin_alerts" %>
 <div class="mb-6 overflow-hidden rounded-xl border border-naila-border bg-naila-surface"
      data-controller="admin--map"
      data-admin--map-river-basins-value="<%= @river_basins.map { |b|
@@ -33,10 +34,11 @@
          id: b.id,
          name: b.name,
          risk_level: b.current_risk_level,
+         alert_severity: @active_alert_severity_by_basin[b.id],
          geometry: b.geometry ? RGeo::GeoJSON.encode(b.geometry) : nil
        }
      }.to_json %>"
-     data-admin--map-sensors-value="<%= @sensor_stations.map { |s|
+     data-admin--map-sensors-value="<%= @monitoring_stations.map { |s|
        {
          id: s.id,
          name: s.name,
@@ -67,6 +69,10 @@
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-[#8b5cf6]"></span> Meteorológica</span>
     </div>
   </div>
+  <div id="basin-alert-severities"
+       data-admin--map-target="alertSeverities"
+       class="hidden"
+       data-value="<%= @active_alert_severity_by_basin.to_json %>"></div>
   <div data-admin--map-target="canvas" class="h-[480px] w-full"></div>
 </div>
 
@@ -165,7 +171,7 @@
                                 end %>
               <span class="text-sm"><%= reading_icon %></span>
               <div class="min-w-0">
-                <div class="text-sm font-medium text-naila-text truncate"><%= reading.sensor_station&.name || "—" %></div>
+                <div class="text-sm font-medium text-naila-text truncate"><%= reading.monitoring_station&.name || "—" %></div>
                 <div class="text-xs text-naila-text-muted"><%= reading.reading_type&.humanize %></div>
               </div>
             </div>

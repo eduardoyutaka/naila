@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "sensor_detail" do %>
   <%# ── Header ── %>
   <div class="sticky top-0 z-10 flex items-center justify-between border-b border-naila-border bg-naila-surface px-4 py-3">
-    <h2 class="text-sm font-semibold text-naila-text truncate"><%= @sensor_station.name %></h2>
+    <h2 class="text-sm font-semibold text-naila-text truncate"><%= @monitoring_station.name %></h2>
     <button data-action="admin--side-sheet#close"
             class="flex h-6 w-6 items-center justify-center rounded text-naila-text-muted hover:bg-naila-elevated hover:text-naila-text"
             title="Fechar">
@@ -17,12 +17,12 @@
       <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Informações</div>
       <div class="space-y-2">
         <div class="flex items-center gap-2">
-          <% status_label = case @sensor_station.status
+          <% status_label = case @monitoring_station.status
                             when "active" then "Ativo"
                             when "maintenance" then "Manutenção"
                             when "inactive" then "Inativo"
                             end %>
-          <% status_color = case @sensor_station.status
+          <% status_color = case @monitoring_station.status
                             when "active" then "text-sensor-online"
                             when "maintenance" then "text-sensor-degraded"
                             when "inactive" then "text-sensor-offline"
@@ -36,16 +36,16 @@
         <div class="grid grid-cols-2 gap-2 text-xs">
           <div>
             <span class="text-naila-text-muted">ID Externo</span>
-            <div class="font-mono text-naila-text"><%= @sensor_station.external_id %></div>
+            <div class="font-mono text-naila-text"><%= @monitoring_station.external_id %></div>
           </div>
           <div>
             <span class="text-naila-text-muted">Fonte</span>
-            <div class="text-naila-text"><%= @sensor_station.data_source.upcase %></div>
+            <div class="text-naila-text"><%= @monitoring_station.data_source.upcase %></div>
           </div>
-          <% if @sensor_station.elevation_m %>
+          <% if @monitoring_station.elevation_m %>
             <div>
               <span class="text-naila-text-muted">Elevação</span>
-              <div class="tabular-nums text-naila-text"><%= number_with_precision(@sensor_station.elevation_m, precision: 0) %> m</div>
+              <div class="tabular-nums text-naila-text"><%= number_with_precision(@monitoring_station.elevation_m, precision: 0) %> m</div>
             </div>
           <% end %>
         </div>
@@ -53,11 +53,11 @@
     </div>
 
     <%# ── Sensors ── %>
-    <% if @sensor_station.sensors.any? %>
+    <% if @monitoring_station.sensors.any? %>
       <div>
         <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores</div>
         <div class="space-y-1.5">
-          <% @sensor_station.sensors.each do |sensor| %>
+          <% @monitoring_station.sensors.each do |sensor| %>
             <% sensor_type_label = case sensor.sensor_type
                                    when "pluviometer" then "Pluviômetro"
                                    when "river_gauge" then "Fluviômetro"
@@ -95,24 +95,24 @@
     <div>
       <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Localização</div>
       <div class="space-y-1 text-xs">
-        <% if @sensor_station.neighborhood %>
+        <% if @monitoring_station.neighborhood %>
           <div class="flex justify-between">
             <span class="text-naila-text-muted">Bairro</span>
-            <span class="text-naila-text"><%= @sensor_station.neighborhood.name %></span>
+            <span class="text-naila-text"><%= @monitoring_station.neighborhood.name %></span>
           </div>
         <% end %>
-        <% if @sensor_station.river %>
+        <% if @monitoring_station.river %>
           <div class="flex justify-between">
             <span class="text-naila-text-muted">Rio</span>
-            <span class="text-naila-text"><%= @sensor_station.river.name %></span>
+            <span class="text-naila-text"><%= @monitoring_station.river.name %></span>
           </div>
         <% end %>
-        <% if @sensor_station.location %>
+        <% if @monitoring_station.location %>
           <div class="flex justify-between">
             <span class="text-naila-text-muted">Coordenadas</span>
             <span class="font-mono tabular-nums text-naila-text">
-              <%= number_with_precision(@sensor_station.location.y, precision: 4) %>,
-              <%= number_with_precision(@sensor_station.location.x, precision: 4) %>
+              <%= number_with_precision(@monitoring_station.location.y, precision: 4) %>,
+              <%= number_with_precision(@monitoring_station.location.x, precision: 4) %>
             </span>
           </div>
         <% end %>
@@ -120,14 +120,14 @@
     </div>
 
     <%# ── Last Reading ── %>
-    <% if @sensor_station.last_reading_value && @sensor_station.last_reading_at %>
+    <% if @monitoring_station.last_reading_value && @monitoring_station.last_reading_at %>
       <div class="rounded-lg bg-naila-elevated p-3">
         <div class="text-xs text-naila-text-muted">Última Leitura</div>
         <div class="mt-1 text-2xl font-semibold tabular-nums text-naila-text">
-          <%= number_with_precision(@sensor_station.last_reading_value, precision: 1) %>
+          <%= number_with_precision(@monitoring_station.last_reading_value, precision: 1) %>
         </div>
         <div class="text-xs text-naila-text-muted">
-          <%= time_ago_in_words(@sensor_station.last_reading_at) %> atrás
+          <%= time_ago_in_words(@monitoring_station.last_reading_at) %> atrás
         </div>
       </div>
     <% end %>
@@ -148,7 +148,8 @@
                data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
                data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
                data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
-               data-admin--reading-chart-color-value="<%= config[:color] %>">
+               data-admin--reading-chart-color-value="<%= config[:color] %>"
+               data-admin--reading-chart-thresholds-value="<%= (@thresholds_by_param[reading_type] || []).map { |t| { value: t.value, severity: t.severity, label: "#{t.value} #{t.unit}" } }.to_json %>">
             <div data-admin--reading-chart-target="chart"
                  class="h-40 w-full rounded-lg bg-naila-elevated"></div>
           </div>
@@ -165,7 +166,7 @@
 
     <%# ── Full Details Link ── %>
     <div class="pt-1">
-      <%= link_to "Ver detalhes completos", admin_sensor_station_path(@sensor_station),
+      <%= link_to "Ver detalhes completos", admin_monitoring_station_path(@monitoring_station),
             data: { turbo_frame: "_top" },
             class: "block w-full rounded-lg bg-naila-accent px-4 py-2 text-center text-sm font-medium text-white hover:bg-naila-accent/90 transition-colors" %>
     </div>
