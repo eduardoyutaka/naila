@@ -40,7 +40,7 @@ bin/importmap audit              # JS dependency audit
 
 - All geographic models use PostGIS spatial types (`st_polygon`, `st_point`, `st_line_string`) with SRID 4326 and GiST indexes.
 - Adapter: `activerecord-postgis` gem (seuros fork, Rails 8 native). RGeo for geometry operations, `rgeo-geojson` for serialization.
-- Key spatial query: `SensorStation#nearby_river_basin_ids` uses `ST_DWithin`.
+- Key spatial query: `MonitoringStation#nearby_river_basin_ids` uses `ST_DWithin` (used by background jobs). Risk/alert service queries go through `Sensor.joins(:monitoring_station).where("ST_DWithin(monitoring_stations.location::geography, ...)")`.
 
 ### Risk Model
 
@@ -48,23 +48,35 @@ Five risk levels used across `RiverBasin` and `Neighborhood`: `normal` (0), `att
 
 ### Sensor Data
 
-`SensorReading` table uses raw SQL migration for PostgreSQL `PARTITION BY RANGE` (monthly partitions). This is intentional — Rails DSL doesn't support table partitioning.
+Model hierarchy: `RiverBasin (1:1) → MonitoringStation → Sensor (1:many) → SensorReading`
+
+- Each river basin has one monitoring station; each station has multiple sensors (pluviometer, river_gauge, weather_station).
+- `sensor_readings.sensor_id` is the FK — not `monitoring_station_id`. Traverse readings via `station.sensor_readings` (through association) or `sensor.sensor_readings`.
+- `SensorReading` table uses raw SQL migration for PostgreSQL `PARTITION BY RANGE` (monthly partitions). This is intentional — Rails DSL doesn't support table partitioning. Any schema changes to `sensor_readings` must use `execute "ALTER TABLE ..."` raw SQL, not Rails column helpers.
+- The 1:1 RiverBasin↔MonitoringStation relationship is a design convention (enforced in seeds + admin UI), not a DB unique constraint — test fixtures may have multiple stations per basin for job testing.
 
 ### Frontend Stack (no build step)
 
 - **Importmap-rails** for ES modules. No node_modules, no bundler.
 - **OpenLayers 10** and **ECharts 5** loaded via CDN ESM pins in `config/importmap.rb`.
 - **Stimulus controllers** in `app/javascript/controllers/{admin,public,shared}/`. Auto-discovered by `eagerLoadControllersFrom`. Naming convention: `admin--map` maps to `admin/map_controller.js`.
+  - Key admin controllers: `admin--map` (OpenLayers sensor map), `admin--reading-chart` / `admin--timeseries` / `admin--sparkline` / `admin--heatmap` (ECharts wrappers), `admin--polygon-editor` / `admin--polygon-viewer` (basin geometry), `admin--side-sheet` (slide-over panel), `admin--realtime-counter` (live stats).
+  - Shared: `shared--notification` (flash/toast messages).
 - **Tailwind CSS 4** with `@theme` directive in `app/assets/tailwind/application.css`. Custom design tokens: `naila-*` (dark theme), `risk-*` (risk level colors), `sensor-*` (status colors), `public-*` (light theme). Compiled by `tailwindcss:watch` process in `Procfile.dev`.
 
 ### Key data flow
 
 ```
-External sources → [Solid Queue jobs] → SensorReading/WeatherObservation
-  → RiskEngine (services/) → RiskAssessment → AlertThreshold evaluation
-  → Alert creation → AlertNotification dispatch (WebSocket/SMS/Push)
+External sources (CEMADEN, INMET, Open-Meteo, OpenWeatherMap)
+  → FetchCemadenJob / FetchInmetJob / FetchOpenMeteoJob / FetchOpenWeatherMapJob
+  → SensorReading (via Sensor) / WeatherObservation
+  → RiskAssessmentJob → RiskEngine (services/) → RiskAssessment
+  → EscalationCheckJob → AlertThreshold evaluation → Alert creation
+  → SendAlertNotificationJob → AlertNotification dispatch (WebSocket/SMS/Push)
   → ActionCable broadcast → Turbo Stream UI updates
 ```
+
+`WeatherIngestionCycleJob` orchestrates the weather fetch jobs on a schedule.
 
 ## Conventions
 
@@ -73,6 +85,13 @@ External sources → [Solid Queue jobs] → SensorReading/WeatherObservation
 - Git messages use **conventional commits** format: `feat(scope):`, `fix(scope):`, `chore(scope):`.
 - Commit after each completed task, not batched.
 - CSS: dark admin theme uses `bg-naila-bg`, `text-naila-text`, etc. Risk colors: `text-risk-normal`, `bg-risk-emergency`, glow classes: `.glow-high`, `.glow-emergency`.
+- **Test fixtures bypass model validations** — the DB receives values directly. A fixture that would fail a `validates :uniqueness` check still loads fine. Rely on model tests (not fixtures) to verify validation behaviour.
+
+## Gotchas
+
+- **Partitioned table migrations**: `sensor_readings` is `PARTITION BY RANGE (recorded_at)`. All schema changes to this table must use `execute "ALTER TABLE sensor_readings ..."` raw SQL — ActiveRecord column helpers (`add_column`, `change_column_null`, etc.) silently fail or error on partitioned tables.
+- **`destroy_all` vs `delete_all` on associated records**: models with `dependent: :destroy` chains (e.g. `RiverBasin → MonitoringStation → Sensor → SensorReading`) require `destroy_all` to fire callbacks and respect FK constraints. `delete_all` bypasses Rails and will hit FK violations.
+- **Stimulus controller naming**: the directory separator becomes `--` in the identifier. `admin/map_controller.js` → `data-controller="admin--map"`. Values/targets follow the same prefix: `data-admin--map-sensors-value`.
 
 ## Database
 
@@ -82,4 +101,4 @@ External sources → [Solid Queue jobs] → SensorReading/WeatherObservation
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`): Brakeman + bundler-audit scan, importmap audit, RuboCop lint.
+GitHub Actions (`.github/workflows/ci.yml`): Brakeman + bundler-audit scan, importmap audit, RuboCop lint. **Tests are not run in CI** — run `bin/rails test` locally before pushing.
