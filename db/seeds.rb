@@ -296,7 +296,7 @@ stations_data = [
 ]
 
 stations = stations_data.map do |data|
-  station = SensorStation.find_or_create_by!(external_id: data[:eid]) do |s|
+  station = MonitoringStation.find_or_create_by!(external_id: data[:eid]) do |s|
     s.name = data[:name]
     s.data_source = data[:source]
     s.neighborhood = neighborhoods[data[:neighborhood]]
@@ -308,7 +308,7 @@ stations = stations_data.map do |data|
 
   data[:sensors].each do |sensor_data|
     Sensor.find_or_create_by!(external_id: sensor_data[:eid]) do |s|
-      s.sensor_station = station
+      s.monitoring_station = station
       s.sensor_type = sensor_data[:type]
       s.unit = sensor_data[:unit]
       s.reading_type = sensor_data[:reading_type]
@@ -329,7 +329,7 @@ now = Time.current
 Sensor.find_each do |sensor|
   case sensor.sensor_type
   when "river_gauge"
-    river = sensor.sensor_station.river
+    river = sensor.monitoring_station.river
     next unless river
 
     base_level = river.normal_level_m
@@ -568,7 +568,7 @@ puts "  #{Region.count} regions"
 puts "  #{Neighborhood.count} neighborhoods"
 puts "  #{RiverBasin.count} river basins"
 puts "  #{River.count} rivers"
-puts "  #{SensorStation.count} sensor stations"
+puts "  #{MonitoringStation.count} sensor stations"
 puts "  #{Sensor.count} sensors"
 puts "  #{SensorReading.count} sensor readings"
 puts "  #{Alert.count} alerts"
