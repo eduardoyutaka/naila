@@ -1,6 +1,6 @@
 class River < ApplicationRecord
   belongs_to :river_basin
-  has_many :sensor_stations, dependent: :nullify
+  has_many :monitoring_stations, dependent: :nullify
   has_many :alerts, dependent: :nullify
   has_many :alert_thresholds, dependent: :destroy
 

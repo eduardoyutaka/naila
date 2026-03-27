@@ -1,4 +1,4 @@
-class SensorStation < ApplicationRecord
+class MonitoringStation < ApplicationRecord
   belongs_to :neighborhood, optional: true
   belongs_to :river_basin
   belongs_to :river, optional: true

@@ -1,5 +1,5 @@
 class Sensor < ApplicationRecord
-  belongs_to :sensor_station
+  belongs_to :monitoring_station
   has_many :sensor_readings, dependent: :destroy
 
   validates :external_id, presence: true, uniqueness: true

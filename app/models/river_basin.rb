@@ -1,8 +1,8 @@
 class RiverBasin < ApplicationRecord
   has_many :rivers, dependent: :destroy
-  has_many :sensor_stations, dependent: :destroy
-  has_one :sensor_station  # convenience for the intended 1:1 relationship
-  has_many :sensors, through: :sensor_stations
+  has_many :monitoring_stations, dependent: :destroy
+  has_one :monitoring_station  # convenience for the intended 1:1 relationship
+  has_many :sensors, through: :monitoring_stations
   has_many :sensor_readings, through: :sensors
   has_many :risk_assessments, dependent: :destroy
   has_many :alerts, dependent: :nullify
