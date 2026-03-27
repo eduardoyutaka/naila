@@ -143,8 +143,8 @@ class AlertEvaluator
   def latest_river_level(river)
     return nil unless river
 
-    gauge_ids = Sensor.joins(:sensor_station)
-                      .where(sensor_stations: { river_id: river.id })
+    gauge_ids = Sensor.joins(:monitoring_station)
+                      .where(monitoring_stations: { river_id: river.id })
                       .where(sensor_type: :river_gauge, status: :active)
                       .pluck(:id)
     return nil if gauge_ids.empty?
@@ -205,16 +205,16 @@ class AlertEvaluator
   def nearby_pluviometer_ids
     @nearby_pluviometer_ids ||= begin
       if @river_basin.geometry
-        ids = Sensor.joins(:sensor_station)
+        ids = Sensor.joins(:monitoring_station)
                     .where(sensor_type: :pluviometer, status: :active)
-                    .where("ST_DWithin(sensor_stations.location::geography, ?::geography, 5000)", @river_basin.geometry)
+                    .where("ST_DWithin(monitoring_stations.location::geography, ?::geography, 5000)", @river_basin.geometry)
                     .pluck(:id)
         return ids if ids.any?
       end
 
-      Sensor.joins(:sensor_station)
+      Sensor.joins(:monitoring_station)
             .where(sensor_type: :pluviometer, status: :active)
-            .where(sensor_stations: { river_basin_id: @river_basin.id })
+            .where(monitoring_stations: { river_basin_id: @river_basin.id })
             .pluck(:id)
     rescue ActiveRecord::StatementInvalid
       []

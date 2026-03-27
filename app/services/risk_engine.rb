@@ -67,8 +67,8 @@ class RiskEngine
     return 0.0 if rivers.empty?
 
     scores = rivers.filter_map do |river|
-      gauge_ids = Sensor.joins(:sensor_station)
-                        .where(sensor_stations: { river_id: river.id })
+      gauge_ids = Sensor.joins(:monitoring_station)
+                        .where(monitoring_stations: { river_id: river.id })
                         .where(sensor_type: :river_gauge, status: :active)
                         .pluck(:id)
       next if gauge_ids.empty?
@@ -200,9 +200,9 @@ class RiskEngine
   def nearby_sensor_ids(sensor_type)
     return [] unless river_basin.geometry
 
-    Sensor.joins(:sensor_station)
+    Sensor.joins(:monitoring_station)
           .where(sensor_type: sensor_type, status: :active)
-          .where("ST_DWithin(sensor_stations.location::geography, ?::geography, ?)", river_basin.geometry, SEARCH_RADIUS_M)
+          .where("ST_DWithin(monitoring_stations.location::geography, ?::geography, ?)", river_basin.geometry, SEARCH_RADIUS_M)
           .pluck(:id)
   rescue ActiveRecord::StatementInvalid
     []

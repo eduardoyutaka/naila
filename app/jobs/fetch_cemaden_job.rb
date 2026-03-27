@@ -11,7 +11,7 @@ class FetchCemadenJob < ApplicationJob
     affected_basin_ids = Set.new
 
     readings.each do |attrs|
-      station = SensorStation.find_by(external_id: attrs[:station_code], data_source: "CEMADEN")
+      station = MonitoringStation.find_by(external_id: attrs[:station_code], data_source: "CEMADEN")
       next unless station
 
       sensor = station.sensors.find_by(reading_type: attrs[:reading_type])

@@ -5,7 +5,7 @@ class FetchInmetJob < ApplicationJob
     data_source = DataSource.find_by!(name: "INMET")
     client = InmetClient.new(data_source)
 
-    stations = SensorStation.where(data_source: "INMET").where(status: "active")
+    stations = MonitoringStation.where(data_source: "INMET").where(status: "active")
     affected_basin_ids = Set.new
 
     stations.find_each do |station|
