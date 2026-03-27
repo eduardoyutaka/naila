@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["panel", "frame"]
 
   open(sensorId) {
-    this.frameTarget.src = `/admin/sensor_stations/${sensorId}`
+    this.frameTarget.src = `/admin/monitoring_stations/${sensorId}`
     this.element.classList.remove("hidden")
   }
 
