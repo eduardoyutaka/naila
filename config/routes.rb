@@ -18,14 +18,14 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dashboard#index"
 
-    resources :sensor_stations, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :monitoring_stations, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :alerts, only: [:index, :show, :new, :create] do
       member do
         patch :acknowledge
         patch :resolve
       end
     end
-    resources :alert_thresholds
+    resources :alert_thresholds, only: [:new, :create, :edit, :update, :destroy]
     resources :river_basins, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
   end
