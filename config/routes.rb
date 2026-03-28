@@ -14,6 +14,11 @@ Rails.application.routes.draw do
   post   "login",  to: "sessions#create"
   delete "logout", to: "sessions#destroy"
 
+  get   "forgot-password",        to: "password_resets#new",    as: :new_password_reset
+  post  "forgot-password",        to: "password_resets#create"
+  get   "reset-password/:token",  to: "password_resets#edit",   as: :edit_password_reset
+  patch "reset-password/:token",  to: "password_resets#update", as: :password_reset
+
   # ── Admin ──
   namespace :admin do
     root "dashboard#index"
