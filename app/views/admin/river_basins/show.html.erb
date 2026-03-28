@@ -215,6 +215,11 @@
       </div>
     </div>
 
+    <%# Weather Context %>
+    <%= render "admin/river_basins/weather_context",
+        forecast_summary: @forecast_summary,
+        current_weather: @current_weather %>
+
     <%# Quick Stats %>
     <div class="rounded-xl border border-naila-border bg-naila-surface">
       <div class="border-b border-naila-border px-4 py-3">

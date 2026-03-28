@@ -70,6 +70,11 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller='admin--polygon-viewer']"
   end
 
+  test "show displays weather context section" do
+    get admin_river_basin_path(river_basins(:bacia_belem))
+    assert_select "[data-testid='weather-context']"
+  end
+
   # ── New ──
 
   test "new renders successfully" do

@@ -9,6 +9,8 @@ module Admin
     def show
       @recent_assessments = @river_basin.risk_assessments.order(assessed_at: :desc).limit(10)
       @active_alerts = @river_basin.alerts.active.by_severity
+      @forecast_summary = WeatherForecast.aggregate_next_hours(6)
+      @current_weather = WeatherObservation.current_conditions
     end
 
     def new
