@@ -1,0 +1,168 @@
+<% content_for(:title, "Naila — Meteorologia") %>
+
+<div class="mb-6">
+  <h1 class="text-xl font-semibold text-naila-text">Meteorologia</h1>
+  <p class="mt-1 text-sm text-naila-text-muted">Condições atuais e previsão de precipitação para Curitiba</p>
+</div>
+
+<%# ── Section 1: Current Conditions Banner ── %>
+<div class="mb-6 rounded-xl border border-naila-border bg-naila-surface" data-testid="current-conditions">
+  <div class="border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Condições Atuais</h2>
+  </div>
+  <% if @current_conditions %>
+    <div class="grid grid-cols-2 gap-0 divide-x divide-naila-border sm:grid-cols-3 lg:grid-cols-6">
+      <div class="px-4 py-4">
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Temperatura</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-naila-text">
+          <%= @current_conditions.temperature_c ? "#{number_with_precision(@current_conditions.temperature_c, precision: 1)}°C" : "—" %>
+        </div>
+      </div>
+      <div class="px-4 py-4">
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Umidade</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-naila-text">
+          <%= @current_conditions.humidity_pct ? "#{number_with_precision(@current_conditions.humidity_pct, precision: 0)}%" : "—" %>
+        </div>
+      </div>
+      <div class="px-4 py-4">
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Vento</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-naila-text">
+          <%= @current_conditions.wind_speed_ms ? "#{number_with_precision(@current_conditions.wind_speed_ms, precision: 1)} m/s" : "—" %>
+        </div>
+      </div>
+      <div class="px-4 py-4">
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Pressão</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-naila-text">
+          <%= @current_conditions.pressure_hpa ? "#{number_with_precision(@current_conditions.pressure_hpa, precision: 0)} hPa" : "—" %>
+        </div>
+      </div>
+      <div class="px-4 py-4">
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Precipitação</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-naila-text">
+          <%= @current_conditions.precipitation_mm ? "#{number_with_precision(@current_conditions.precipitation_mm, precision: 1)} mm" : "—" %>
+        </div>
+      </div>
+      <div class="px-4 py-4">
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Condição</div>
+        <div class="mt-1.5 text-sm font-medium text-naila-text capitalize">
+          <%= @current_conditions.weather_condition.presence || "—" %>
+        </div>
+        <div class="mt-1 text-xs text-naila-text-muted">
+          <%= l(@current_conditions.observed_at, format: :short) %> · <%= @current_conditions.source %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+      ☁️ Aguardando dados meteorológicos...
+    </div>
+  <% end %>
+</div>
+
+<%# ── Section 2: Precipitation Forecast 24h ── %>
+<div class="mb-6 rounded-xl border border-naila-border bg-naila-surface">
+  <div class="border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Previsão de Precipitação — Próximas 24h</h2>
+  </div>
+  <% if @forecasts_24h.any? %>
+    <%
+      forecast_data = @forecasts_24h.map do |f|
+        {
+          time: f.valid_from.strftime("%d/%m %H:%M"),
+          precipitation_mm: f.precipitation_mm.to_f.round(1),
+          probability: f.precipitation_probability.to_f.round(0)
+        }
+      end
+    %>
+    <div data-controller="admin--forecast-chart"
+         data-admin--forecast-chart-forecasts-value="<%= forecast_data.to_json %>"
+         data-admin--forecast-chart-title-value="">
+      <div data-admin--forecast-chart-target="chart" class="h-[320px] w-full px-2 pb-2"></div>
+    </div>
+  <% else %>
+    <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+      Nenhuma previsão disponível para as próximas 24h.
+    </div>
+  <% end %>
+</div>
+
+<%# ── Section 3: Data Source Health ── %>
+<div class="mb-6 rounded-xl border border-naila-border bg-naila-surface" data-testid="data-source-health">
+  <div class="border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Fontes de Dados</h2>
+  </div>
+  <% if @data_sources.any? %>
+    <div class="grid grid-cols-1 gap-0 divide-y divide-naila-border sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 lg:divide-y-0">
+      <% @data_sources.each do |source| %>
+        <div class="px-4 py-4" data-testid="data-source-card">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-naila-text truncate"><%= source.name %></span>
+            <% status_color = case source.status
+                              when "active"   then "bg-sensor-online"
+                              when "degraded" then "bg-risk-attention"
+                              else "bg-risk-high"
+                              end %>
+            <span class="ml-2 flex-shrink-0 h-2 w-2 rounded-full <%= status_color %>"></span>
+          </div>
+          <% status_label = case source.status
+                            when "active"   then "Online"
+                            when "degraded" then "Degradado"
+                            else "Offline"
+                            end %>
+          <div class="mt-1 text-xs text-naila-text-muted">
+            <%= status_label %>
+            <% if source.consecutive_failures > 0 %>
+              · <%= source.consecutive_failures %> falha(s)
+            <% end %>
+          </div>
+          <div class="mt-2 text-xs text-naila-text-muted">
+            <% if source.last_successful_fetch_at %>
+              Última atualização: <%= time_ago_in_words(source.last_successful_fetch_at) %> atrás
+            <% else %>
+              Nunca atualizado
+            <% end %>
+          </div>
+          <div class="mt-1 text-xs text-naila-text-muted">
+            Intervalo: <%= (source.fetch_interval_seconds / 60.0).round %> min
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+      Nenhuma fonte de dados configurada.
+    </div>
+  <% end %>
+</div>
+
+<%# ── Section 4: Forecast vs Actual (last 24h) ── %>
+<div class="rounded-xl border border-naila-border bg-naila-surface">
+  <div class="border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Previsão vs Observado — Últimas 24h</h2>
+  </div>
+  <% if @recent_observations.any? || @past_forecasts.any? %>
+    <%
+      observed_series = @recent_observations.map do |obs|
+        [obs.observed_at.iso8601, obs.precipitation_mm.to_f.round(1)]
+      end
+
+      forecast_series = @past_forecasts.map do |f|
+        [f.valid_from.iso8601, f.precipitation_mm.to_f.round(1)]
+      end
+
+      comparison_series = [
+        { name: "Observado", data: observed_series, color: "#06b6d4" },
+        { name: "Previsto", data: forecast_series, color: "#3b82f6" }
+      ]
+    %>
+    <div data-controller="admin--timeseries"
+         data-admin--timeseries-series-value="<%= comparison_series.to_json %>"
+         data-admin--timeseries-unit-value="mm">
+      <div data-admin--timeseries-target="chart" class="h-[280px] w-full px-2 pb-2"></div>
+    </div>
+  <% else %>
+    <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+      Sem dados de comparação disponíveis para as últimas 24h.
+    </div>
+  <% end %>
+</div>

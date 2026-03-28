@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     resources :alert_thresholds, only: [:new, :create, :edit, :update, :destroy]
     resources :river_basins, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
+    resource :weather, only: [:show], controller: "weather"
   end
 
   # ── Public ──
