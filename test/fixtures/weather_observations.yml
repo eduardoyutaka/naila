@@ -1,1 +1,24 @@
-# empty
+owm_recent:
+  source: "open_weather_map"
+  observed_at: <%= 15.minutes.ago.iso8601 %>
+  temperature_c: 20.5
+  humidity_pct: 78.0
+  pressure_hpa: 1012.0
+  wind_speed_ms: 3.2
+  wind_direction_deg: 180.0
+  precipitation_mm: 2.4
+  weather_condition: "light rain"
+  raw_data: '{}'
+
+inmet_station:
+  source: "inmet"
+  station_code: "A807"
+  observed_at: <%= 30.minutes.ago.iso8601 %>
+  temperature_c: 19.8
+  humidity_pct: 82.0
+  pressure_hpa: 1010.5
+  wind_speed_ms: 1.8
+  wind_direction_deg: 210.0
+  precipitation_mm: 1.2
+  weather_condition: "overcast"
+  raw_data: '{}'

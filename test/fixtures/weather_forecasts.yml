@@ -30,3 +30,25 @@ open_meteo_expired:
   temperature_max_c: 23.0
   temperature_min_c: 19.0
   raw_data: '{}'
+
+owm_current:
+  source: "open_weather_map"
+  issued_at: <%= 20.minutes.ago.iso8601 %>
+  valid_from: <%= Time.current.iso8601 %>
+  valid_until: <%= 3.hours.from_now.iso8601 %>
+  precipitation_mm: 8.0
+  precipitation_probability: 65.0
+  temperature_max_c: 21.0
+  temperature_min_c: 17.5
+  raw_data: '{}'
+
+owm_future:
+  source: "open_weather_map"
+  issued_at: <%= 20.minutes.ago.iso8601 %>
+  valid_from: <%= 3.hours.from_now.iso8601 %>
+  valid_until: <%= 6.hours.from_now.iso8601 %>
+  precipitation_mm: 0.0
+  precipitation_probability: 20.0
+  temperature_max_c: 19.0
+  temperature_min_c: 16.0
+  raw_data: '{}'
