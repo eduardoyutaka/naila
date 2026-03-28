@@ -84,6 +84,19 @@ class Admin::AlertsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='#{resolve_admin_alert_path(alerts(:resolved_alert))}']", count: 0
   end
 
+  test "show displays thresholds section with related thresholds" do
+    get admin_alert_path(alerts(:active_high))
+    assert_select "[data-testid='thresholds-section']"
+    assert_select "[data-testid='thresholds-section'] table tbody tr"
+  end
+
+  test "show displays new threshold button for coordinator" do
+    sign_in_as users(:coordinator)
+    alert = alerts(:active_high)
+    get admin_alert_path(alert)
+    assert_select "[data-testid='thresholds-section'] a[href*='#{new_admin_alert_threshold_path}']", text: /Novo Limiar/
+  end
+
   # ── New ──
 
   test "new renders successfully" do

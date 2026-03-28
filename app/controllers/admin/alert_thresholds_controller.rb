@@ -1,18 +1,16 @@
 module Admin
   class AlertThresholdsController < BaseController
-    before_action :set_alert_threshold, only: [:show, :edit, :update, :destroy]
-
-    def index
-      @alert_thresholds = AlertThreshold.includes(:river_basin, :river)
-                                        .order(parameter: :asc, severity: :asc)
-    end
-
-    def show
-      @alerts = @alert_threshold.alerts.order(created_at: :desc).limit(10)
-    end
+    before_action :set_alert_threshold, only: [:edit, :update, :destroy]
+    before_action :set_return_alert, only: [:new, :create, :edit, :update, :destroy]
 
     def new
-      @alert_threshold = AlertThreshold.new(active: true, comparison: "gte", cooldown_minutes: 60)
+      @alert_threshold = AlertThreshold.new(
+        active: true,
+        comparison: "gte",
+        cooldown_minutes: 60,
+        river_basin_id: params[:river_basin_id],
+        river_id: params[:river_id]
+      )
     end
 
     def create
@@ -20,7 +18,7 @@ module Admin
       authorize @alert_threshold
 
       if @alert_threshold.save
-        redirect_to admin_alert_threshold_path(@alert_threshold), notice: "Limiar criado com sucesso."
+        redirect_to return_path, notice: "Limiar criado com sucesso."
       else
         render :new, status: :unprocessable_entity
       end
@@ -32,7 +30,7 @@ module Admin
     def update
       authorize @alert_threshold
       if @alert_threshold.update(alert_threshold_params)
-        redirect_to admin_alert_threshold_path(@alert_threshold), notice: "Limiar atualizado com sucesso."
+        redirect_to return_path, notice: "Limiar atualizado com sucesso."
       else
         render :edit, status: :unprocessable_entity
       end
@@ -41,13 +39,21 @@ module Admin
     def destroy
       authorize @alert_threshold
       @alert_threshold.destroy!
-      redirect_to admin_alert_thresholds_path, notice: "Limiar excluído com sucesso."
+      redirect_to return_path, notice: "Limiar excluído com sucesso."
     end
 
     private
 
     def set_alert_threshold
       @alert_threshold = AlertThreshold.find(params[:id])
+    end
+
+    def set_return_alert
+      @return_alert = Alert.find_by(id: params[:alert_id])
+    end
+
+    def return_path
+      @return_alert ? admin_alert_path(@return_alert) : admin_alerts_path
     end
 
     def alert_threshold_params

@@ -9,6 +9,9 @@ const RISK_COLORS = {
   emergency:  { fill: "rgba(168, 85, 247, 0.30)",  stroke: "#a855f7", glow: "rgba(168, 85, 247, 0.50)" },
 }
 
+// Alert severity (1–4) → risk level name
+const SEVERITY_TO_RISK = { 1: "attention", 2: "alert", 3: "high_alert", 4: "emergency" }
+
 // Sensor station type → fill color
 const SENSOR_TYPE_COLORS = {
   pluviometer:     "#3b82f6",
@@ -27,7 +30,7 @@ const SENSOR_STATUS_COLORS = {
 const DARK_TILES_URL = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
 
 export default class extends Controller {
-  static targets = ["canvas"]
+  static targets = ["canvas", "alertSeverities"]
   static outlets = ["admin--side-sheet"]
   static values = {
     riverBasins: { type: Array, default: [] },
@@ -124,6 +127,7 @@ export default class extends Controller {
       feature.set("basinId", basin.id)
       feature.set("basinName", basin.name)
       feature.set("riskLevel", basin.risk_level)
+      feature.set("alertSeverity", basin.alert_severity ?? null)
 
       this.basinSource.addFeature(feature)
     })
@@ -139,14 +143,17 @@ export default class extends Controller {
 
   basinStyle(feature) {
     const ol = this.ol
-    const riskLevel = feature.get("riskLevel") || "normal"
+    const alertSeverity = feature.get("alertSeverity")
+    const riskLevel = alertSeverity != null
+      ? (SEVERITY_TO_RISK[alertSeverity] || "normal")
+      : (feature.get("riskLevel") || "normal")
     const colors = RISK_COLORS[riskLevel] || RISK_COLORS.normal
 
     return new ol.style.Style({
       fill: new ol.style.Fill({ color: colors.fill }),
       stroke: new ol.style.Stroke({
         color: colors.stroke,
-        width: 2,
+        width: alertSeverity != null ? 3 : 2,
       }),
     })
   }
@@ -235,7 +242,10 @@ export default class extends Controller {
 
   showBasinPopup(feature, pixel) {
     const name = feature.get("basinName")
-    const riskLevel = feature.get("riskLevel") || "normal"
+    const alertSeverity = feature.get("alertSeverity")
+    const riskLevel = alertSeverity != null
+      ? (SEVERITY_TO_RISK[alertSeverity] || "normal")
+      : (feature.get("riskLevel") || "normal")
 
     const riskLabels = {
       normal: "Normal",
@@ -245,9 +255,12 @@ export default class extends Controller {
       emergency: "Emergência",
     }
 
+    const label = alertSeverity != null ? "Alerta" : "Risco"
+    const color = (RISK_COLORS[riskLevel] || RISK_COLORS.normal).stroke
+
     this.popupEl.innerHTML = `
       <strong>${name}</strong><br>
-      Risco: <span style="color: ${(RISK_COLORS[riskLevel] || RISK_COLORS.normal).stroke}">${riskLabels[riskLevel] || riskLevel}</span>
+      ${label}: <span style="color: ${color}">${riskLabels[riskLevel] || riskLevel}</span>
     `
     this.showPopupAt(pixel)
   }
@@ -306,6 +319,22 @@ export default class extends Controller {
         this.adminSideSheetOutlet.open(sensorId)
       }
     }
+  }
+
+  // ── Target callbacks ──
+
+  alertSeveritiesTargetConnected(element) {
+    // Skip during initial connect() — alert_severity is already embedded in riverBasinsValue
+    if (!this.basinSource) return
+    const raw = JSON.parse(element.dataset.value || "{}")
+    // Normalize string keys from JSON to integers matching basinId
+    const severities = Object.fromEntries(Object.entries(raw).map(([k, v]) => [parseInt(k, 10), v]))
+    this.basinSource.getFeatures().forEach((feature) => {
+      if (feature.get("featureType") !== "riverBasin") return
+      const severity = severities[feature.get("basinId")] ?? null
+      feature.set("alertSeverity", severity)
+    })
+    this.basinLayer.changed()
   }
 
   // ── Value change callbacks ──

@@ -1,13 +1,17 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Severity → border colour (matches app-wide risk colour scheme)
+const SEVERITY_COLORS = { 1: "#eab308", 2: "#f97316", 3: "#ef4444", 4: "#a855f7" }
+
 // Compact chart for sensor readings over time (bar or line, configurable)
 export default class extends Controller {
   static targets = ["chart"]
   static values = {
-    readings:  { type: Array, default: [] },  // [[iso8601, value], ...]
-    unit:      { type: String, default: "" },
-    chartType: { type: String, default: "bar" }, // "bar" or "line"
-    color:     { type: String, default: "#3b82f6" },
+    readings:   { type: Array, default: [] },  // [[iso8601, value], ...]
+    unit:       { type: String, default: "" },
+    chartType:  { type: String, default: "bar" }, // "bar" or "line"
+    color:      { type: String, default: "#3b82f6" },
+    thresholds: { type: Array, default: [] },  // [{ value, severity, label }]
   }
 
   async connect() {
@@ -33,6 +37,9 @@ export default class extends Controller {
     const isBar = this.chartTypeValue === "bar"
 
     const series = isBar ? this.#barSeries(readings, color) : this.#lineSeries(readings, color)
+    if (this.thresholdsValue.length > 0) {
+      series.markLine = this.#thresholdMarkLines(this.thresholdsValue)
+    }
 
     this.chart.setOption({
       backgroundColor: "transparent",
@@ -112,6 +119,20 @@ export default class extends Controller {
           ],
         },
       },
+    }
+  }
+
+  #thresholdMarkLines(thresholds) {
+    return {
+      silent: true,
+      symbol: ["none", "none"],
+      animation: false,
+      data: thresholds.map((t) => ({
+        name: t.label,
+        yAxis: t.value,
+        lineStyle: { type: "dashed", color: SEVERITY_COLORS[t.severity] || "#94a3b8", width: 1.5, opacity: 0.8 },
+        label: { show: true, position: "end", formatter: t.label, color: SEVERITY_COLORS[t.severity] || "#94a3b8", fontSize: 9 },
+      })),
     }
   }
 

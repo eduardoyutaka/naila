@@ -38,4 +38,7 @@
 !/app/assets/builds/.keep
 
 # Ignore local Claude Code settings.
-.claude/settings.local.json
+.claude/*
+
+# Vim
+*.swp

@@ -9,6 +9,7 @@ module Admin
 
     def show
       @notifications = @alert.alert_notifications.order(created_at: :desc)
+      @thresholds = load_related_thresholds
     end
 
     def new
@@ -45,6 +46,13 @@ module Admin
 
     def set_alert
       @alert = Alert.find(params[:id])
+    end
+
+    def load_related_thresholds
+      conditions = [ AlertThreshold.global ]
+      conditions << AlertThreshold.where(river_basin: @alert.river_basin) if @alert.river_basin
+      conditions << AlertThreshold.where(river: @alert.river) if @alert.river
+      conditions.reduce(:or).includes(:river_basin, :river).order(parameter: :asc, severity: :asc)
     end
 
     def alert_params

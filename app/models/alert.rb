@@ -16,6 +16,10 @@ class Alert < ApplicationRecord
   scope :by_severity, -> { order(severity: :desc) }
   scope :automatic_active, -> { where(alert_type: "automatic", status: %w[active acknowledged]) }
 
+  after_update_commit :broadcast_basin_alert_severity, if: -> {
+    river_basin_id.present? && (saved_change_to_severity? || saved_change_to_status?)
+  }
+
   def acknowledged?
     acknowledged_at.present?
   end
@@ -31,6 +35,24 @@ class Alert < ApplicationRecord
   def resolve!(user = nil)
     update!(status: "resolved", resolved_by: user, resolved_at: Time.current)
   end
+
+  private
+
+  def broadcast_basin_alert_severity
+    severity_by_basin = Alert.active
+                             .where.not(river_basin_id: nil)
+                             .group(:river_basin_id)
+                             .maximum(:severity)
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "basin_alerts",
+      target: "basin-alert-severities",
+      partial: "admin/dashboard/basin_alert_severities",
+      locals: { severity_by_basin: severity_by_basin }
+    )
+  end
+
+  public
 
   def update_severity!(new_severity, threshold, current_value:, risk_assessment: nil)
     return self if severity == new_severity
