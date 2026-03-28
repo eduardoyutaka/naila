@@ -26,6 +26,17 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_includes sensor_names, "Estação Barigui — Parque Barigui"
   end
 
+  test "dashboard shows weather summary section" do
+    get admin_root_path
+    assert_response :success
+    assert_select "[data-testid='weather-summary']"
+  end
+
+  test "dashboard weather summary shows forecast precipitation" do
+    get admin_root_path
+    assert_select "[data-testid='forecast-precipitation']"
+  end
+
   test "dashboard sensor data contains required fields" do
     get admin_root_path
     sensor_json = css_select("[data-admin--map-sensors-value]").first["data-admin--map-sensors-value"]

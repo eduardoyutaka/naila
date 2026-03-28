@@ -11,6 +11,8 @@ module Admin
                                              .where.not(river_basin_id: nil)
                                              .group(:river_basin_id)
                                              .maximum(:severity)
+      @current_weather = WeatherObservation.current_conditions
+      @forecast_summary = WeatherForecast.aggregate_next_hours(6)
     end
   end
 end

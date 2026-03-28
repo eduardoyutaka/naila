@@ -25,6 +25,11 @@
   </div>
 </div>
 
+<%# ── Weather Summary ── %>
+<%= render "admin/dashboard/weather_summary",
+    current_weather: @current_weather,
+    forecast_summary: @forecast_summary %>
+
 <%# ── Map ── %>
 <%= turbo_stream_from "basin_alerts" %>
 <div class="mb-6 overflow-hidden rounded-xl border border-naila-border bg-naila-surface"

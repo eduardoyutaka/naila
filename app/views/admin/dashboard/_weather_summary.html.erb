@@ -1,0 +1,50 @@
+<div class="mb-6 rounded-xl border border-naila-border bg-naila-surface" data-testid="weather-summary">
+  <div class="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
+    <%# Current conditions %>
+    <div class="flex items-center gap-4 min-w-0">
+      <span class="text-xl">🌧️</span>
+      <div>
+        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Condições Atuais</div>
+        <% if current_weather %>
+          <div class="mt-0.5 flex items-center gap-2 text-sm text-naila-text">
+            <% if current_weather.temperature_c %>
+              <span class="font-semibold tabular-nums" data-testid="current-temperature"><%= number_with_precision(current_weather.temperature_c, precision: 1) %>°C</span>
+            <% end %>
+            <% if current_weather.humidity_pct %>
+              <span class="text-naila-text-muted">· <%= number_with_precision(current_weather.humidity_pct, precision: 0) %>% umidade</span>
+            <% end %>
+            <% if current_weather.precipitation_mm&.> 0 %>
+              <span class="text-[#3b82f6]">· <%= number_with_precision(current_weather.precipitation_mm, precision: 1) %> mm</span>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="mt-0.5 text-sm text-naila-text-muted">Sem dados</div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="hidden sm:block h-8 w-px bg-naila-border"></div>
+
+    <%# 6h forecast summary %>
+    <div data-testid="forecast-precipitation">
+      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Previsão 6h</div>
+      <div class="mt-0.5 flex items-center gap-3 text-sm">
+        <span class="font-semibold tabular-nums text-naila-text">
+          💧 <%= number_with_precision(forecast_summary[:total_precipitation_mm], precision: 1) %> mm
+        </span>
+        <% if forecast_summary[:max_probability] > 0 %>
+          <span class="text-naila-text-muted">
+            · <%= number_with_precision(forecast_summary[:max_probability], precision: 0) %>% prob.
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="ml-auto flex-shrink-0">
+      <%= link_to admin_weather_path,
+            class: "text-xs font-medium text-naila-accent hover:text-naila-text transition-colors" do %>
+        Ver detalhes →
+      <% end %>
+    </div>
+  </div>
+</div>
