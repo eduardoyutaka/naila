@@ -1,0 +1,87 @@
+<div class="flex min-h-screen">
+
+  <%# Left decorative panel %>
+  <div class="relative hidden lg:flex lg:w-5/12 flex-col items-center justify-center overflow-hidden bg-naila-surface border-r border-naila-border"
+       style="background-image: radial-gradient(circle, #334155 1px, transparent 1px); background-size: 28px 28px;">
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="absolute rounded-full border border-naila-accent/40"
+           style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 0s;"></div>
+      <div class="absolute rounded-full border border-naila-accent/30"
+           style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 1s;"></div>
+      <div class="absolute rounded-full border border-naila-accent/20"
+           style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 2s;"></div>
+      <div class="absolute w-3 h-3 rounded-full bg-naila-accent" style="box-shadow: 0 0 12px #3b82f6, 0 0 24px #3b82f680;"></div>
+    </div>
+    <div class="relative z-10 text-center px-10">
+      <div class="mb-2 text-5xl font-bold tracking-tight text-naila-accent" style="text-shadow: 0 0 24px #3b82f680;">
+        NAILA
+      </div>
+      <div class="text-sm font-medium text-naila-text-muted tracking-widest uppercase mb-2">
+        Defesa Civil de Curitiba
+      </div>
+      <div class="mx-auto mb-10 h-px w-16 bg-naila-border"></div>
+      <p class="text-sm text-naila-text-muted leading-relaxed max-w-xs">
+        Monitoramento em tempo real de risco de enchentes para a Região Metropolitana de Curitiba.
+      </p>
+    </div>
+  </div>
+
+  <%# Right panel %>
+  <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
+
+    <div class="mb-8 text-center lg:hidden">
+      <div class="text-3xl font-bold tracking-tight text-naila-accent">NAILA</div>
+      <p class="mt-1 text-xs text-naila-text-muted tracking-widest uppercase">Defesa Civil de Curitiba</p>
+    </div>
+
+    <div class="w-full max-w-sm animate-fade-in">
+
+      <div class="mb-8">
+        <h1 class="text-2xl font-semibold text-naila-text">Redefinir senha</h1>
+        <p class="mt-1.5 text-sm text-naila-text-muted">Crie uma nova senha para sua conta.</p>
+      </div>
+
+      <% if @user.errors.any? %>
+        <div class="mb-5 rounded-lg border border-risk-high/30 bg-risk-high/10 px-4 py-3 text-sm text-risk-high animate-fade-in">
+          <ul class="space-y-1">
+            <% @user.errors.full_messages.each do |msg| %>
+              <li class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 flex-shrink-0 mt-0.5">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                </svg>
+                <%= msg %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with url: password_reset_path(params[:token]), method: :patch, class: "space-y-5" do |f| %>
+        <div>
+          <label for="user_password" class="mb-1.5 block text-sm font-medium text-naila-text-muted">Nova senha</label>
+          <input type="password" name="user[password]" id="user_password" required autofocus
+                 class="w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none transition-colors focus:border-naila-accent focus:ring-1 focus:ring-naila-accent"
+                 placeholder="••••••••">
+        </div>
+
+        <div>
+          <label for="user_password_confirmation" class="mb-1.5 block text-sm font-medium text-naila-text-muted">Confirmar nova senha</label>
+          <input type="password" name="user[password_confirmation]" id="user_password_confirmation" required
+                 class="w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none transition-colors focus:border-naila-accent focus:ring-1 focus:ring-naila-accent"
+                 placeholder="••••••••">
+        </div>
+
+        <button type="submit"
+                class="w-full rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg">
+          Redefinir senha
+        </button>
+      <% end %>
+
+    </div>
+
+    <p class="mt-12 text-xs text-naila-text-muted/50">
+      &copy; 2026 Defesa Civil de Curitiba &mdash; Uso restrito
+    </p>
+
+  </div>
+</div>
