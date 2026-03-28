@@ -30,4 +30,9 @@ class User < ApplicationRecord
   def can_manage_alerts?
     admin? || coordinator?
   end
+
+  # Override the default 15-minute expiry from has_secure_password
+  generates_token_for :password_reset, expires_in: 2.hours do
+    password_salt&.last(10)
+  end
 end
