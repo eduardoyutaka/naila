@@ -56,7 +56,7 @@ export default class extends Controller {
         bottom: 0,
         textStyle: { color: "#94a3b8", fontSize: 10 },
       },
-      grid: { top: 44, right: 56, bottom: 48, left: 52 },
+      grid: { top: 44, right: 56, bottom: 72, left: 52 },
       xAxis: {
         type: "category",
         data: times,
