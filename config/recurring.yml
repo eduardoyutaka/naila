@@ -1,7 +1,7 @@
 weather_ingestion:
   class: WeatherIngestionCycleJob
   queue: weather_ingestion
-  schedule: every minute
+  schedule: every hour
 
 escalation_check:
   class: EscalationCheckJob

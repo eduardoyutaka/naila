@@ -4,13 +4,13 @@ class OpenWeatherMapClient < BaseClient
   EMPTY_RESULT = { observations: [], forecasts: [] }.freeze
 
   def call
-    api_key = Rails.application.credentials.dig(:open_weather_map, :api_key) || ""
+    api_key = Rails.application.credentials.dig(:open_weather_map, :api_key)
 
     response = fetch do |conn|
       conn.get("/data/3.0/onecall", {
         lat: LATITUDE,
         lon: LONGITUDE,
-        appid: api_key,
+        APPID: api_key,
         units: "metric",
         lang: "pt_br"
       })
