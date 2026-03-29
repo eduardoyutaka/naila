@@ -13,7 +13,6 @@ module Admin
                                              .maximum(:severity)
       @current_weather = WeatherObservation.current_conditions
       @forecast_summary = WeatherForecast.aggregate_next_hours(6)
-      @forecast_timeline = WeatherForecast.map_timeline(hours: 72)
     end
   end
 end

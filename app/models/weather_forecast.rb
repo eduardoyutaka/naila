@@ -1,8 +1,6 @@
 class WeatherForecast < ApplicationRecord
   validates :source, :issued_at, :valid_from, :valid_until, presence: true
 
-  after_create_commit :broadcast_forecast_timeline
-
   scope :current, -> { where("valid_until >= ?", Time.current) }
   scope :valid_in_next, ->(duration) { where("valid_from <= ? AND valid_until >= ?", duration.from_now, Time.current) }
   scope :by_source, ->(source) { where(source: source) }
@@ -54,14 +52,4 @@ class WeatherForecast < ApplicationRecord
 
   private_class_method :dominant_weather_code, :wmo_severity
 
-  private
-
-  def broadcast_forecast_timeline
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "weather_forecasts",
-      target: "map-forecast-timeline",
-      partial: "admin/dashboard/forecast_timeline",
-      locals: { timeline: self.class.map_timeline(hours: 72) }
-    )
-  end
 end

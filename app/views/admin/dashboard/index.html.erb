@@ -32,7 +32,6 @@
 
 <%# ── Map ── %>
 <%= turbo_stream_from "basin_alerts" %>
-<%= turbo_stream_from "weather_forecasts" %>
 <div class="mb-6 overflow-hidden rounded-xl border border-naila-border bg-naila-surface"
      data-controller="admin--map"
      data-admin--map-river-basins-value="<%= @river_basins.map { |b|
@@ -58,14 +57,6 @@
          last_reading_value: s.last_reading_value
        }
      }.to_json %>"
-     data-admin--map-forecast-timeline-value="<%= @forecast_timeline.to_json %>"
-     data-admin--map-current-weather-value="<%= {
-       temperature_c: @current_weather&.temperature_c&.round(1),
-       humidity_pct: @current_weather&.humidity_pct&.round(0),
-       precipitation_mm: @current_weather&.precipitation_mm&.round(1),
-       weather_condition: @current_weather&.weather_condition,
-       observed_at: @current_weather&.observed_at&.iso8601
-     }.to_json %>"
      data-admin--map-center-value="[-49.2733, -25.4284]"
      data-admin--map-zoom-value="12"
      data-admin--map-admin--side-sheet-outlet="#sensor-side-sheet">
@@ -81,15 +72,12 @@
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-[#3b82f6]"></span> Pluviômetro</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-[#06b6d4]"></span> Fluviômetro</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-[#8b5cf6]"></span> Meteorológica</span>
-      <span class="text-naila-border">|</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-[#3b82f6]/30"></span> Precipitação prevista</span>
     </div>
   </div>
   <div id="basin-alert-severities"
        data-admin--map-target="alertSeverities"
        class="hidden"
        data-value="<%= @active_alert_severity_by_basin.to_json %>"></div>
-  <%= render "admin/dashboard/forecast_timeline", timeline: @forecast_timeline %>
   <div data-admin--map-target="canvas" class="h-[480px] w-full"></div>
 </div>
 

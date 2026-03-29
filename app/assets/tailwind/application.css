@@ -98,29 +98,3 @@
   100% { transform: scale(2.8); opacity: 0; }
 }
 
-/* ============================================
-   Weather forecast overlay on map
-   ============================================ */
-.weather-overlay {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 20;
-  pointer-events: auto;
-  max-width: 260px;
-}
-
-.weather-overlay-step {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-naila-border);
-  transition: background 0.15s, transform 0.15s;
-  cursor: pointer;
-}
-
-.weather-overlay-step.active {
-  background: var(--color-naila-accent);
-  transform: scale(1.4);
-}
