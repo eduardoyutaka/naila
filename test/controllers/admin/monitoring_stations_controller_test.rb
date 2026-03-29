@@ -132,45 +132,59 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # ── Show (side-sheet via Turbo Frame) ──
+
   test "show contains turbo frame for side sheet extraction" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail"
   end
 
-  test "show displays station name" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+  test "show displays station name in side sheet" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail" do
       assert_select "h2", text: /Estação Belém/
     end
   end
 
-  test "show renders precipitation chart" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+  test "show renders precipitation chart in side sheet" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail" do
       assert_select "[data-testid='reading-chart-precipitation']"
     end
   end
 
-  test "show renders river level chart" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+  test "show renders river level chart in side sheet" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail" do
       assert_select "[data-testid='reading-chart-river_level']"
     end
   end
 
-  test "show renders temperature chart" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+  test "show renders temperature chart in side sheet" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail" do
       assert_select "[data-testid='reading-chart-temperature']"
     end
   end
 
-  test "show lists sensors section" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+  test "show lists sensors section in side sheet" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail" do
       assert_select "span", text: "Pluviômetro"
       assert_select "span", text: "Fluviômetro"
       assert_select "span", text: "Estação Meteorológica"
     end
+  end
+
+  # ── Show (full-page layout) ──
+
+  test "show full page displays station name in h1" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+    assert_select "h1", text: /Estação Belém/
+  end
+
+  test "show full page contains back link" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+    assert_select "a", text: /Voltar às estações/
   end
 end
