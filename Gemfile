@@ -54,7 +54,7 @@ gem "faraday", "~> 2.0"
 gem "faraday-retry", "~> 2.0"
 
 # Notifications — polymorphic notification system [https://github.com/excid3/noticed]
-gem "noticed", "~> 2.0"
+gem "noticed", "~> 3.0"
 # Web Push API for browser notifications [https://github.com/pushpad/web-push]
 gem "web-push", "~> 3.0"
 # SMS via Twilio [https://github.com/twilio/twilio-ruby]
