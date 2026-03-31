@@ -64,7 +64,7 @@ gem "twilio-ruby", "~> 7.0"
 gem "mqtt", "~> 0.6"
 
 # Pagination [https://github.com/ddnexus/pagy]
-gem "pagy", "~> 9.0"
+gem "pagy", "~> 43.4"
 # Charts [https://github.com/ankane/chartkick]
 gem "chartkick", "~> 5.0"
 # Time-series grouping [https://github.com/ankane/groupdate]
