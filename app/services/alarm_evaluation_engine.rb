@@ -14,8 +14,16 @@ class AlarmEvaluationEngine
   end
 
   def evaluate
-    return if @alarm.composite?
+    if @alarm.composite?
+      evaluate_composite
+    else
+      evaluate_metric_or_anomaly
+    end
+  end
 
+  private
+
+  def evaluate_metric_or_anomaly
     datapoints = collect_period_datapoints
     new_state = determine_state(datapoints)
 
@@ -27,7 +35,35 @@ class AlarmEvaluationEngine
     @alarm.transition_to!(new_state, reason: build_reason(datapoints, new_state), datapoints: datapoints)
   end
 
-  private
+  def evaluate_composite
+    tree = CompositeRuleParser.parse(@alarm.composite_rule)
+
+    # Build child alarm states map: name → state
+    child_states = {}
+    @alarm.child_alarms.each do |child|
+      # Use fixture name convention: alarm name key for lookup
+      child_states[child.name] = child.state
+    end
+
+    # Also build by alarm record name for rule references
+    # The composite_rule references alarm names (the name column)
+    has_insufficient = @alarm.child_alarms.any?(&:insufficient_data?)
+    result = tree.evaluate(child_states)
+
+    new_state = if result
+      "alarm"
+    elsif has_insufficient
+      "insufficient_data"
+    else
+      "ok"
+    end
+
+    child_summary = child_states.map { |name, state| "#{name}=#{state}" }.join(", ")
+    reason = "Composite rule evaluated: #{new_state} (children: #{child_summary})"
+
+    @alarm.update!(last_evaluated_at: Time.current)
+    @alarm.transition_to!(new_state, reason: reason)
+  end
 
   def collect_period_datapoints
     now = Time.current

@@ -71,7 +71,7 @@ composite_flood_belem:
   severity: 4
   enabled: true
   river_basin: bacia_belem
-  composite_rule: "ALARM(precip_3h_belem) AND ALARM(river_level_belem)"
+  composite_rule: "ALARM(Precipitação 3h Bacia Belém) AND ALARM(Nível Rio Belém)"
   suppress_child_actions: true
 
 disabled_alarm:
