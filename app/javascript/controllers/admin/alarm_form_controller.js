@@ -15,25 +15,16 @@ export default class extends Controller {
 
   toggleSections() {
     const type = this.typeValue
+    this.#toggle(this.metricFieldsTarget, type !== "composite")
+    this.#toggle(this.compositeFieldsTarget, type === "composite")
+    this.#toggle(this.thresholdFieldsTarget, type === "metric")
+    this.#toggle(this.anomalyFieldsTarget, type === "anomaly_detection")
+  }
 
-    // Metric/Anomaly fields
-    if (this.hasMetricFieldsTarget) {
-      this.metricFieldsTarget.hidden = type === "composite"
-    }
-
-    // Composite fields
-    if (this.hasCompositeFieldsTarget) {
-      this.compositeFieldsTarget.hidden = type !== "composite"
-    }
-
-    // Threshold fields (metric only, not anomaly)
-    if (this.hasThresholdFieldsTarget) {
-      this.thresholdFieldsTarget.hidden = type !== "metric"
-    }
-
-    // Anomaly fields
-    if (this.hasAnomalyFieldsTarget) {
-      this.anomalyFieldsTarget.hidden = type !== "anomaly_detection"
-    }
+  #toggle(target, visible) {
+    target.hidden = !visible
+    target.querySelectorAll("input, select, textarea").forEach(el => {
+      el.disabled = !visible
+    })
   }
 }

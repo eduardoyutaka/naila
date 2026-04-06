@@ -1,9 +1,9 @@
 <div class="rounded-xl border border-naila-border bg-naila-surface">
-  <div class="border-b border-naila-border px-6 py-4">
+  <div class="border-b border-naila-border px-4 py-3">
     <h2 class="text-sm font-semibold text-naila-text">Dados do Alarme</h2>
   </div>
 
-  <div class="p-6 space-y-5">
+  <div class="p-4 space-y-5">
     <% if alarm.errors.any? %>
       <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
         <p class="text-sm font-medium text-red-400">
@@ -38,7 +38,7 @@
       <div>
         <%= form.label :severity, "Severidade", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
         <%= form.select :severity,
-              [[1, 1], [2, 2], [3, 3], [4, 4]],
+              [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]],
               {},
               class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
       </div>
@@ -68,6 +68,7 @@
               class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
       </div>
     </div>
+    <p class="text-xs text-naila-text-muted -mt-2">Selecione apenas um escopo, ou deixe ambos vazios para escopo global.</p>
 
     <%# Status %>
     <div>
@@ -126,7 +127,7 @@
             </div>
           </div>
 
-          <%# Threshold fields (metric only, hidden for anomaly via Stimulus) %>
+          <%# Threshold fields (metric only) %>
           <div data-admin--alarm-form-target="thresholdFields">
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
               <div>
@@ -168,8 +169,8 @@
           <div>
             <%= form.label :missing_data_treatment, "Tratamento de Dados Ausentes", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
             <%= form.select :missing_data_treatment,
-                  [["Ausente (missing)", "missing"], ["Não viola (notBreaching)", "notBreaching"],
-                   ["Viola (breaching)", "breaching"], ["Ignorar (ignore)", "ignore"]],
+                  [["Ausente", "missing"], ["Não viola", "notBreaching"],
+                   ["Viola", "breaching"], ["Ignorar", "ignore"]],
                   {},
                   class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
           </div>
@@ -206,7 +207,7 @@
   </div>
 
   <%# Actions %>
-  <div class="flex items-center justify-end gap-3 border-t border-naila-border px-6 py-4">
+  <div class="flex items-center justify-end gap-3 border-t border-naila-border px-4 py-3">
     <%= link_to "Cancelar", admin_alarms_path, class: "text-sm text-naila-text-muted hover:text-naila-text transition-colors" %>
     <%= form.submit alarm.persisted? ? "Salvar" : "Criar Alarme",
           class: "rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg cursor-pointer" %>

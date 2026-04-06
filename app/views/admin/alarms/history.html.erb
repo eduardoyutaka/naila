@@ -24,6 +24,10 @@
 </div>
 
 <div class="rounded-xl border border-naila-border bg-naila-surface">
+  <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
+    <h2 class="text-sm font-semibold text-naila-text">Transições de Estado</h2>
+    <span class="text-xs text-naila-text-muted"><%= @state_histories.size %> registros</span>
+  </div>
   <% if @state_histories.empty? %>
     <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
       Nenhuma transição de estado registrada.
@@ -43,7 +47,7 @@
               <%= state_label[history.new_state] %>
             </span>
             <span class="text-xs tabular-nums text-naila-text-muted ml-auto">
-              <%= history.evaluated_at.strftime("%d/%m/%Y %H:%M:%S") %>
+              <%= l(history.evaluated_at, format: :short) %>
             </span>
           </div>
           <div class="text-xs text-naila-text-muted"><%= history.reason %></div>
