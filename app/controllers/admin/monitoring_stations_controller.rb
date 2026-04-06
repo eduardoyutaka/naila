@@ -1,6 +1,6 @@
 module Admin
   class MonitoringStationsController < BaseController
-    before_action :set_monitoring_station, only: [:show, :edit, :update, :destroy]
+    before_action :set_monitoring_station, only: [ :show, :edit, :update, :destroy ]
 
     def index
       @monitoring_stations = MonitoringStation.includes(:neighborhood, :river, :sensors).order(:name)
@@ -11,29 +11,6 @@ module Admin
                                          .since(24.hours.ago)
                                          .order(recorded_at: :asc)
                                          .group_by(&:reading_type)
-
-      precip_thresholds = AlertThreshold.active
-                                        .where(parameter: "precipitation")
-                                        .where("river_basin_id = ? OR (river_basin_id IS NULL AND river_id IS NULL)",
-                                               @monitoring_station.river_basin_id)
-                                        .order(:severity)
-
-      river_id = @monitoring_station.river_id
-      level_thresholds = if river_id
-        AlertThreshold.active
-                      .where(parameter: "river_level")
-                      .where("river_id = ? OR (river_id IS NULL AND river_basin_id IS NULL)", river_id)
-                      .order(:severity)
-      else
-        AlertThreshold.active
-                      .where(parameter: "river_level", river_basin_id: nil, river_id: nil)
-                      .order(:severity)
-      end
-
-      @thresholds_by_param = {
-        "precipitation" => precip_thresholds.to_a,
-        "river_level"   => level_thresholds.to_a
-      }
     end
 
     def new

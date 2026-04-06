@@ -451,57 +451,7 @@ puts "  Creating sample alerts..."
 end
 
 # ============================================================
-# 8. Alert Thresholds
-# ============================================================
-puts "  Creating alert thresholds..."
-
-rivers.each_value do |river|
-  AlertThreshold.find_or_create_by!(
-    river: river,
-    parameter: "river_level",
-    comparison: "gte",
-    severity: 2
-  ) do |t|
-    t.threshold_type = "river_level_alert"
-    t.unit = "m"
-    t.value = river.alert_level_m
-    t.cooldown_minutes = 60
-    t.active = true
-  end
-
-  AlertThreshold.find_or_create_by!(
-    river: river,
-    parameter: "river_level",
-    comparison: "gte",
-    severity: 3
-  ) do |t|
-    t.threshold_type = "river_level_flood"
-    t.unit = "m"
-    t.value = river.flood_level_m
-    t.cooldown_minutes = 30
-    t.active = true
-  end
-end
-
-# Precipitation thresholds
-[
-  { type: "precipitation_strong", param: "precipitation_1h", value: 25.0, severity: 2, cooldown: 60 },
-  { type: "precipitation_very_strong", param: "precipitation_1h", value: 50.0, severity: 3, cooldown: 30 },
-  { type: "precipitation_extreme", param: "precipitation_1h", value: 80.0, severity: 4, cooldown: 15 },
-].each do |data|
-  AlertThreshold.find_or_create_by!(threshold_type: data[:type]) do |t|
-    t.parameter = data[:param]
-    t.comparison = "gte"
-    t.value = data[:value]
-    t.unit = "mm"
-    t.severity = data[:severity]
-    t.cooldown_minutes = data[:cooldown]
-    t.active = true
-  end
-end
-
-# ============================================================
-# 9. Alarms (CloudWatch-style)
+# 8. Alarms (CloudWatch-style)
 # ============================================================
 puts "  Creating alarms..."
 
@@ -690,7 +640,6 @@ puts "  #{MonitoringStation.count} sensor stations"
 puts "  #{Sensor.count} sensors"
 puts "  #{SensorReading.count} sensor readings"
 puts "  #{Alert.count} alerts"
-puts "  #{AlertThreshold.count} alert thresholds"
 puts "  #{Alarm.count} alarms (#{Alarm.metric_alarms.count} metric, #{Alarm.anomaly_alarms.count} anomaly, #{Alarm.composite_alarms.count} composite)"
 puts "  #{AlarmAction.count} alarm actions"
 puts "  #{User.count} users"

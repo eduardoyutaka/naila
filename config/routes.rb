@@ -23,14 +23,13 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dashboard#index"
 
-    resources :monitoring_stations, only: [:index, :show, :new, :create, :edit, :update, :destroy]
-    resources :alerts, only: [:index, :show, :new, :create] do
+    resources :monitoring_stations, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
+    resources :alerts, only: [ :index, :show, :new, :create ] do
       member do
         patch :acknowledge
         patch :resolve
       end
     end
-    resources :alert_thresholds, only: [:new, :create, :edit, :update, :destroy]
     resources :alarms do
       resources :alarm_actions, only: [ :new, :create, :edit, :update, :destroy ]
       member do
@@ -39,9 +38,9 @@ Rails.application.routes.draw do
         patch :disable
       end
     end
-    resources :river_basins, only: [:index, :show, :new, :create, :edit, :update, :destroy]
-    resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
-    resource :weather, only: [:show], controller: "weather"
+    resources :river_basins, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
+    resources :users, only: [ :index, :new, :create, :edit, :update, :destroy ]
+    resource :weather, only: [ :show ], controller: "weather"
 
     mount MissionControl::Jobs::Engine, at: "/jobs"
   end

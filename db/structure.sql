@@ -193,46 +193,6 @@ ALTER SEQUENCE public.alert_notifications_id_seq OWNED BY public.alert_notificat
 
 
 --
--- Name: alert_thresholds; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.alert_thresholds (
-    id bigint NOT NULL,
-    parameter character varying NOT NULL,
-    threshold_type character varying NOT NULL,
-    severity integer NOT NULL,
-    value double precision NOT NULL,
-    unit character varying NOT NULL,
-    comparison character varying NOT NULL,
-    river_basin_id bigint,
-    river_id bigint,
-    active boolean DEFAULT true,
-    cooldown_minutes integer DEFAULT 60,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: alert_thresholds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.alert_thresholds_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: alert_thresholds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.alert_thresholds_id_seq OWNED BY public.alert_thresholds.id;
-
-
---
 -- Name: alerts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -247,7 +207,6 @@ CREATE TABLE public.alerts (
     river_basin_id bigint,
     neighborhood_id bigint,
     river_id bigint,
-    alert_threshold_id bigint,
     created_by_id bigint,
     resolved_by_id bigint,
     affected_area public.geometry(Polygon,4326),
@@ -1959,13 +1918,6 @@ ALTER TABLE ONLY public.alert_notifications ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- Name: alert_thresholds id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_thresholds ALTER COLUMN id SET DEFAULT nextval('public.alert_thresholds_id_seq'::regclass);
-
-
---
 -- Name: alerts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2205,14 +2157,6 @@ ALTER TABLE ONLY public.alarms
 
 ALTER TABLE ONLY public.alert_notifications
     ADD CONSTRAINT alert_notifications_pkey PRIMARY KEY (id);
-
-
---
--- Name: alert_thresholds alert_thresholds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_thresholds
-    ADD CONSTRAINT alert_thresholds_pkey PRIMARY KEY (id);
 
 
 --
@@ -2790,20 +2734,6 @@ CREATE INDEX index_alert_notifications_on_status ON public.alert_notifications U
 
 
 --
--- Name: index_alert_thresholds_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alert_thresholds_on_river_basin_id ON public.alert_thresholds USING btree (river_basin_id);
-
-
---
--- Name: index_alert_thresholds_on_river_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alert_thresholds_on_river_id ON public.alert_thresholds USING btree (river_id);
-
-
---
 -- Name: index_alerts_on_affected_area; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2815,13 +2745,6 @@ CREATE INDEX index_alerts_on_affected_area ON public.alerts USING gist (affected
 --
 
 CREATE INDEX index_alerts_on_alarm_id ON public.alerts USING btree (alarm_id);
-
-
---
--- Name: index_alerts_on_alert_threshold_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_alert_threshold_id ON public.alerts USING btree (alert_threshold_id);
 
 
 --
@@ -4535,14 +4458,6 @@ ALTER TABLE ONLY public.monitoring_stations
 
 
 --
--- Name: alert_thresholds fk_rails_1c9cdd6425; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_thresholds
-    ADD CONSTRAINT fk_rails_1c9cdd6425 FOREIGN KEY (river_id) REFERENCES public.rivers(id);
-
-
---
 -- Name: alarms fk_rails_27e4b711b3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4607,27 +4522,11 @@ ALTER TABLE ONLY public.solid_queue_blocked_executions
 
 
 --
--- Name: alert_thresholds fk_rails_4dd5cfd18f; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_thresholds
-    ADD CONSTRAINT fk_rails_4dd5cfd18f FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
-
-
---
 -- Name: anomaly_baselines fk_rails_590e435763; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.anomaly_baselines
     ADD CONSTRAINT fk_rails_590e435763 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id) ON DELETE SET NULL;
-
-
---
--- Name: alerts fk_rails_5cf64a5041; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_5cf64a5041 FOREIGN KEY (alert_threshold_id) REFERENCES public.alert_thresholds(id);
 
 
 --
@@ -4805,6 +4704,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260406205016'),
 ('20260406002038'),
 ('20260406001949'),
 ('20260406001314'),

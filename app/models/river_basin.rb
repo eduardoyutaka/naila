@@ -6,7 +6,6 @@ class RiverBasin < ApplicationRecord
   has_many :sensor_readings, through: :sensors
   has_many :risk_assessments, dependent: :destroy
   has_many :alerts, dependent: :nullify
-  has_many :alert_thresholds, dependent: :destroy
   has_many :evacuation_routes, dependent: :destroy
 
   validates :name, presence: true

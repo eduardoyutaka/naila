@@ -164,7 +164,7 @@
                  data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
                  data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
                  data-admin--reading-chart-color-value="<%= config[:color] %>"
-                 data-admin--reading-chart-thresholds-value="<%= (@thresholds_by_param[reading_type] || []).map { |t| { value: t.value, severity: t.severity, label: "#{t.value} #{t.unit}" } }.to_json %>">
+                 data-admin--reading-chart-thresholds-value="[]">
               <div data-admin--reading-chart-target="chart"
                    class="h-40 w-full rounded-lg bg-naila-elevated"></div>
             </div>
@@ -329,7 +329,7 @@
                        data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
                        data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
                        data-admin--reading-chart-color-value="<%= config[:color] %>"
-                       data-admin--reading-chart-thresholds-value="<%= (@thresholds_by_param[reading_type] || []).map { |t| { value: t.value, severity: t.severity, label: "#{t.value} #{t.unit}" } }.to_json %>">
+                       data-admin--reading-chart-thresholds-value="[]">
                     <div data-admin--reading-chart-target="chart"
                          class="h-40 w-full rounded-lg bg-naila-elevated"></div>
                   </div>
