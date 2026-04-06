@@ -1,0 +1,7 @@
+flood_precip:
+  composite_alarm: composite_flood_belem
+  child_alarm: precip_3h_belem
+
+flood_river:
+  composite_alarm: composite_flood_belem
+  child_alarm: river_level_belem

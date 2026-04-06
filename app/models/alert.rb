@@ -3,6 +3,7 @@ class Alert < ApplicationRecord
   belongs_to :neighborhood, optional: true
   belongs_to :river, optional: true
   belongs_to :alert_threshold, optional: true
+  belongs_to :alarm, optional: true
   belongs_to :created_by, class_name: "User", optional: true
   belongs_to :resolved_by, class_name: "User", optional: true
   has_many :alert_notifications, dependent: :destroy

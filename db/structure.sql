@@ -29,6 +29,132 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: alarm_actions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alarm_actions (
+    id bigint NOT NULL,
+    alarm_id bigint NOT NULL,
+    trigger_state character varying NOT NULL,
+    action_type character varying NOT NULL,
+    configuration jsonb DEFAULT '{}'::jsonb NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: alarm_actions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alarm_actions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alarm_actions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alarm_actions_id_seq OWNED BY public.alarm_actions.id;
+
+
+--
+-- Name: alarm_state_histories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alarm_state_histories (
+    id bigint NOT NULL,
+    alarm_id bigint NOT NULL,
+    previous_state character varying NOT NULL,
+    new_state character varying NOT NULL,
+    reason text NOT NULL,
+    datapoints jsonb DEFAULT '[]'::jsonb,
+    evaluated_at timestamp(6) without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: alarm_state_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alarm_state_histories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alarm_state_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alarm_state_histories_id_seq OWNED BY public.alarm_state_histories.id;
+
+
+--
+-- Name: alarms; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alarms (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    description text,
+    alarm_type character varying NOT NULL,
+    state character varying DEFAULT 'insufficient_data'::character varying NOT NULL,
+    state_changed_at timestamp(6) without time zone,
+    state_reason text,
+    severity integer NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    river_basin_id bigint,
+    river_id bigint,
+    metric_name character varying,
+    statistic character varying,
+    period_seconds integer,
+    evaluation_periods integer,
+    datapoints_to_alarm integer,
+    comparison_operator character varying,
+    threshold_value double precision,
+    unit character varying,
+    missing_data_treatment character varying DEFAULT 'missing'::character varying,
+    anomaly_band_width double precision,
+    anomaly_baseline_id bigint,
+    composite_rule text,
+    suppress_child_actions boolean DEFAULT false NOT NULL,
+    last_evaluated_at timestamp(6) without time zone,
+    last_datapoints jsonb DEFAULT '[]'::jsonb,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: alarms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alarms_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alarms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alarms_id_seq OWNED BY public.alarms.id;
+
+
+--
 -- Name: alert_notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -131,7 +257,9 @@ CREATE TABLE public.alerts (
     expires_at timestamp(6) without time zone,
     trigger_data jsonb DEFAULT '{}'::jsonb,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    alarm_id bigint,
+    alarm_state character varying
 );
 
 
@@ -155,6 +283,42 @@ ALTER SEQUENCE public.alerts_id_seq OWNED BY public.alerts.id;
 
 
 --
+-- Name: anomaly_baselines; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.anomaly_baselines (
+    id bigint NOT NULL,
+    metric_name character varying NOT NULL,
+    river_basin_id bigint,
+    river_id bigint,
+    baseline_data jsonb DEFAULT '{}'::jsonb NOT NULL,
+    computed_at timestamp(6) without time zone NOT NULL,
+    training_window_days integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: anomaly_baselines_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.anomaly_baselines_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: anomaly_baselines_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.anomaly_baselines_id_seq OWNED BY public.anomaly_baselines.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -164,6 +328,38 @@ CREATE TABLE public.ar_internal_metadata (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
+
+
+--
+-- Name: composite_alarm_children; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.composite_alarm_children (
+    id bigint NOT NULL,
+    composite_alarm_id bigint NOT NULL,
+    child_alarm_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: composite_alarm_children_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.composite_alarm_children_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: composite_alarm_children_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.composite_alarm_children_id_seq OWNED BY public.composite_alarm_children.id;
 
 
 --
@@ -1735,6 +1931,27 @@ ALTER TABLE ONLY public.sensor_readings ATTACH PARTITION public.sensor_readings_
 
 
 --
+-- Name: alarm_actions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_actions ALTER COLUMN id SET DEFAULT nextval('public.alarm_actions_id_seq'::regclass);
+
+
+--
+-- Name: alarm_state_histories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_state_histories ALTER COLUMN id SET DEFAULT nextval('public.alarm_state_histories_id_seq'::regclass);
+
+
+--
+-- Name: alarms id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms ALTER COLUMN id SET DEFAULT nextval('public.alarms_id_seq'::regclass);
+
+
+--
 -- Name: alert_notifications id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1753,6 +1970,20 @@ ALTER TABLE ONLY public.alert_thresholds ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 ALTER TABLE ONLY public.alerts ALTER COLUMN id SET DEFAULT nextval('public.alerts_id_seq'::regclass);
+
+
+--
+-- Name: anomaly_baselines id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.anomaly_baselines ALTER COLUMN id SET DEFAULT nextval('public.anomaly_baselines_id_seq'::regclass);
+
+
+--
+-- Name: composite_alarm_children id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.composite_alarm_children ALTER COLUMN id SET DEFAULT nextval('public.composite_alarm_children_id_seq'::regclass);
 
 
 --
@@ -1945,6 +2176,30 @@ ALTER TABLE ONLY public.weather_observations ALTER COLUMN id SET DEFAULT nextval
 
 
 --
+-- Name: alarm_actions alarm_actions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_actions
+    ADD CONSTRAINT alarm_actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alarm_state_histories alarm_state_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_state_histories
+    ADD CONSTRAINT alarm_state_histories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alarms alarms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms
+    ADD CONSTRAINT alarms_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: alert_notifications alert_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1969,11 +2224,27 @@ ALTER TABLE ONLY public.alerts
 
 
 --
+-- Name: anomaly_baselines anomaly_baselines_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.anomaly_baselines
+    ADD CONSTRAINT anomaly_baselines_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: composite_alarm_children composite_alarm_children_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.composite_alarm_children
+    ADD CONSTRAINT composite_alarm_children_pkey PRIMARY KEY (id);
 
 
 --
@@ -2393,6 +2664,20 @@ ALTER TABLE ONLY public.weather_observations
 
 
 --
+-- Name: idx_anomaly_baselines_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_anomaly_baselines_uniqueness ON public.anomaly_baselines USING btree (metric_name, river_basin_id, river_id);
+
+
+--
+-- Name: idx_composite_alarm_children_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_composite_alarm_children_uniqueness ON public.composite_alarm_children USING btree (composite_alarm_id, child_alarm_id);
+
+
+--
 -- Name: idx_weather_fc_dedup; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2404,6 +2689,83 @@ CREATE UNIQUE INDEX idx_weather_fc_dedup ON public.weather_forecasts USING btree
 --
 
 CREATE UNIQUE INDEX idx_weather_obs_dedup ON public.weather_observations USING btree (source, station_code, observed_at);
+
+
+--
+-- Name: index_alarm_actions_on_alarm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarm_actions_on_alarm_id ON public.alarm_actions USING btree (alarm_id);
+
+
+--
+-- Name: index_alarm_actions_on_alarm_id_and_trigger_state; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarm_actions_on_alarm_id_and_trigger_state ON public.alarm_actions USING btree (alarm_id, trigger_state);
+
+
+--
+-- Name: index_alarm_state_histories_on_alarm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarm_state_histories_on_alarm_id ON public.alarm_state_histories USING btree (alarm_id);
+
+
+--
+-- Name: index_alarm_state_histories_on_alarm_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarm_state_histories_on_alarm_id_and_created_at ON public.alarm_state_histories USING btree (alarm_id, created_at DESC);
+
+
+--
+-- Name: index_alarms_on_alarm_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_alarm_type ON public.alarms USING btree (alarm_type);
+
+
+--
+-- Name: index_alarms_on_anomaly_baseline_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_anomaly_baseline_id ON public.alarms USING btree (anomaly_baseline_id);
+
+
+--
+-- Name: index_alarms_on_enabled_and_alarm_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_enabled_and_alarm_type ON public.alarms USING btree (enabled, alarm_type);
+
+
+--
+-- Name: index_alarms_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_river_basin_id ON public.alarms USING btree (river_basin_id);
+
+
+--
+-- Name: index_alarms_on_river_basin_id_and_state; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_river_basin_id_and_state ON public.alarms USING btree (river_basin_id, state);
+
+
+--
+-- Name: index_alarms_on_river_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_river_id ON public.alarms USING btree (river_id);
+
+
+--
+-- Name: index_alarms_on_state; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_state ON public.alarms USING btree (state);
 
 
 --
@@ -2446,6 +2808,13 @@ CREATE INDEX index_alert_thresholds_on_river_id ON public.alert_thresholds USING
 --
 
 CREATE INDEX index_alerts_on_affected_area ON public.alerts USING gist (affected_area);
+
+
+--
+-- Name: index_alerts_on_alarm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alerts_on_alarm_id ON public.alerts USING btree (alarm_id);
 
 
 --
@@ -2509,6 +2878,34 @@ CREATE INDEX index_alerts_on_status ON public.alerts USING btree (status);
 --
 
 CREATE INDEX index_alerts_on_status_and_severity ON public.alerts USING btree (status, severity);
+
+
+--
+-- Name: index_anomaly_baselines_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_anomaly_baselines_on_river_basin_id ON public.anomaly_baselines USING btree (river_basin_id);
+
+
+--
+-- Name: index_anomaly_baselines_on_river_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_anomaly_baselines_on_river_id ON public.anomaly_baselines USING btree (river_id);
+
+
+--
+-- Name: index_composite_alarm_children_on_child_alarm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_composite_alarm_children_on_child_alarm_id ON public.composite_alarm_children USING btree (child_alarm_id);
+
+
+--
+-- Name: index_composite_alarm_children_on_composite_alarm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_composite_alarm_children_on_composite_alarm_id ON public.composite_alarm_children USING btree (composite_alarm_id);
 
 
 --
@@ -4146,11 +4543,35 @@ ALTER TABLE ONLY public.alert_thresholds
 
 
 --
+-- Name: alarms fk_rails_27e4b711b3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms
+    ADD CONSTRAINT fk_rails_27e4b711b3 FOREIGN KEY (anomaly_baseline_id) REFERENCES public.anomaly_baselines(id) ON DELETE SET NULL;
+
+
+--
+-- Name: alarm_state_histories fk_rails_2fec122d79; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_state_histories
+    ADD CONSTRAINT fk_rails_2fec122d79 FOREIGN KEY (alarm_id) REFERENCES public.alarms(id);
+
+
+--
 -- Name: solid_queue_recurring_executions fk_rails_318a5533ed; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.solid_queue_recurring_executions
     ADD CONSTRAINT fk_rails_318a5533ed FOREIGN KEY (job_id) REFERENCES public.solid_queue_jobs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: alarms fk_rails_354fe3b1fd; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms
+    ADD CONSTRAINT fk_rails_354fe3b1fd FOREIGN KEY (river_id) REFERENCES public.rivers(id) ON DELETE SET NULL;
 
 
 --
@@ -4194,11 +4615,27 @@ ALTER TABLE ONLY public.alert_thresholds
 
 
 --
+-- Name: anomaly_baselines fk_rails_590e435763; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.anomaly_baselines
+    ADD CONSTRAINT fk_rails_590e435763 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id) ON DELETE SET NULL;
+
+
+--
 -- Name: alerts fk_rails_5cf64a5041; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT fk_rails_5cf64a5041 FOREIGN KEY (alert_threshold_id) REFERENCES public.alert_thresholds(id);
+
+
+--
+-- Name: composite_alarm_children fk_rails_6f5c73e34c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.composite_alarm_children
+    ADD CONSTRAINT fk_rails_6f5c73e34c FOREIGN KEY (composite_alarm_id) REFERENCES public.alarms(id);
 
 
 --
@@ -4242,6 +4679,14 @@ ALTER TABLE ONLY public.rivers
 
 
 --
+-- Name: alerts fk_rails_9157b6bad8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT fk_rails_9157b6bad8 FOREIGN KEY (alarm_id) REFERENCES public.alarms(id);
+
+
+--
 -- Name: alerts fk_rails_955ec70dfc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4274,11 +4719,35 @@ ALTER TABLE ONLY public.alerts
 
 
 --
+-- Name: composite_alarm_children fk_rails_b24930b991; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.composite_alarm_children
+    ADD CONSTRAINT fk_rails_b24930b991 FOREIGN KEY (child_alarm_id) REFERENCES public.alarms(id);
+
+
+--
+-- Name: alarms fk_rails_c07b20de63; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms
+    ADD CONSTRAINT fk_rails_c07b20de63 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id) ON DELETE SET NULL;
+
+
+--
 -- Name: solid_queue_scheduled_executions fk_rails_c4316f352d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.solid_queue_scheduled_executions
     ADD CONSTRAINT fk_rails_c4316f352d FOREIGN KEY (job_id) REFERENCES public.solid_queue_jobs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: anomaly_baselines fk_rails_cdd35070e9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.anomaly_baselines
+    ADD CONSTRAINT fk_rails_cdd35070e9 FOREIGN KEY (river_id) REFERENCES public.rivers(id) ON DELETE SET NULL;
 
 
 --
@@ -4314,6 +4783,14 @@ ALTER TABLE ONLY public.alert_notifications
 
 
 --
+-- Name: alarm_actions fk_rails_fca3f8f33d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_actions
+    ADD CONSTRAINT fk_rails_fca3f8f33d FOREIGN KEY (alarm_id) REFERENCES public.alarms(id);
+
+
+--
 -- Name: sensor_readings fk_sensor_readings_sensors; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4328,6 +4805,14 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260406002038'),
+('20260406001949'),
+('20260406001314'),
+('20260406001313'),
+('20260406001312'),
+('20260406001311'),
+('20260406001304'),
+('20260406001257'),
 ('20260327163247'),
 ('20260326221300'),
 ('20260326221155'),

@@ -1,0 +1,41 @@
+precip_alarm_websocket:
+  alarm: precip_3h_belem
+  trigger_state: alarm
+  action_type: notification
+  configuration: '{"channels":["websocket","sms","push"]}'
+  enabled: true
+
+precip_ok_websocket:
+  alarm: precip_3h_belem
+  trigger_state: ok
+  action_type: notification
+  configuration: '{"channels":["websocket"]}'
+  enabled: true
+
+river_alarm_all_channels:
+  alarm: river_level_belem
+  trigger_state: alarm
+  action_type: notification
+  configuration: '{"channels":["websocket","sms","push","email"]}'
+  enabled: true
+
+river_insufficient_data:
+  alarm: river_level_belem
+  trigger_state: insufficient_data
+  action_type: notification
+  configuration: '{"channels":["websocket"]}'
+  enabled: true
+
+composite_alarm_civil_defense:
+  alarm: composite_flood_belem
+  trigger_state: alarm
+  action_type: notification
+  configuration: '{"channels":["websocket","sms","push","email","civil_defense"]}'
+  enabled: true
+
+disabled_action:
+  alarm: precip_3h_belem
+  trigger_state: alarm
+  action_type: webhook
+  configuration: '{"url":"https://example.com/hook","method":"POST"}'
+  enabled: false
