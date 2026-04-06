@@ -40,7 +40,8 @@ CREATE TABLE public.alarm_actions (
     configuration jsonb DEFAULT '{}'::jsonb NOT NULL,
     enabled boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    min_severity integer
 );
 
 
@@ -100,6 +101,41 @@ ALTER SEQUENCE public.alarm_state_histories_id_seq OWNED BY public.alarm_state_h
 
 
 --
+-- Name: alarm_thresholds; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alarm_thresholds (
+    id bigint NOT NULL,
+    alarm_id bigint NOT NULL,
+    severity integer NOT NULL,
+    comparison_operator character varying NOT NULL,
+    threshold_value double precision NOT NULL,
+    unit character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: alarm_thresholds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alarm_thresholds_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alarm_thresholds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alarm_thresholds_id_seq OWNED BY public.alarm_thresholds.id;
+
+
+--
 -- Name: alarms; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -131,7 +167,8 @@ CREATE TABLE public.alarms (
     last_evaluated_at timestamp(6) without time zone,
     last_datapoints jsonb DEFAULT '[]'::jsonb,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    current_severity integer
 );
 
 
@@ -1817,6 +1854,13 @@ ALTER TABLE ONLY public.alarm_state_histories ALTER COLUMN id SET DEFAULT nextva
 
 
 --
+-- Name: alarm_thresholds id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_thresholds ALTER COLUMN id SET DEFAULT nextval('public.alarm_thresholds_id_seq'::regclass);
+
+
+--
 -- Name: alarms id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2040,6 +2084,14 @@ ALTER TABLE ONLY public.alarm_actions
 
 ALTER TABLE ONLY public.alarm_state_histories
     ADD CONSTRAINT alarm_state_histories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alarm_thresholds alarm_thresholds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_thresholds
+    ADD CONSTRAINT alarm_thresholds_pkey PRIMARY KEY (id);
 
 
 --
@@ -2547,6 +2599,20 @@ CREATE INDEX index_alarm_state_histories_on_alarm_id_and_created_at ON public.al
 
 
 --
+-- Name: index_alarm_thresholds_on_alarm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarm_thresholds_on_alarm_id ON public.alarm_thresholds USING btree (alarm_id);
+
+
+--
+-- Name: index_alarm_thresholds_on_alarm_id_and_severity; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_alarm_thresholds_on_alarm_id_and_severity ON public.alarm_thresholds USING btree (alarm_id, severity);
+
+
+--
 -- Name: index_alarms_on_alarm_type; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2558,6 +2624,13 @@ CREATE INDEX index_alarms_on_alarm_type ON public.alarms USING btree (alarm_type
 --
 
 CREATE INDEX index_alarms_on_anomaly_baseline_id ON public.alarms USING btree (anomaly_baseline_id);
+
+
+--
+-- Name: index_alarms_on_current_severity; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_current_severity ON public.alarms USING btree (current_severity);
 
 
 --
@@ -4370,6 +4443,14 @@ ALTER TABLE ONLY public.solid_queue_claimed_executions
 
 
 --
+-- Name: alarm_thresholds fk_rails_b23273ed78; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarm_thresholds
+    ADD CONSTRAINT fk_rails_b23273ed78 FOREIGN KEY (alarm_id) REFERENCES public.alarms(id) ON DELETE CASCADE;
+
+
+--
 -- Name: composite_alarm_children fk_rails_b24930b991; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4440,6 +4521,9 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260406214826'),
+('20260406214825'),
+('20260406214824'),
 ('20260406210822'),
 ('20260406205016'),
 ('20260406002038'),
