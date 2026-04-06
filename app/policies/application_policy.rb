@@ -8,7 +8,7 @@ class ApplicationPolicy
 
   def index?   = true
   def show?    = true
-  def create?  = user.can_manage_alerts?
-  def update?  = user.can_manage_alerts?
+  def create?  = user.can_manage?
+  def update?  = user.can_manage?
   def destroy? = user.admin?
 end

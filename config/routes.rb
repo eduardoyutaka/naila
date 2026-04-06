@@ -24,12 +24,6 @@ Rails.application.routes.draw do
     root "dashboard#index"
 
     resources :monitoring_stations, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
-    resources :alerts, only: [ :index, :show, :new, :create ] do
-      member do
-        patch :acknowledge
-        patch :resolve
-      end
-    end
     resources :alarms do
       resources :alarm_actions, only: [ :new, :create, :edit, :update, :destroy ]
       member do
@@ -50,7 +44,7 @@ Rails.application.routes.draw do
 
   scope module: :public do
     get "mapa",      to: "risk_map#index",    as: :risk_map
-    get "alertas",   to: "alerts#index",      as: :public_alerts
+    get "alertas",   to: "alarms#index",      as: :public_alarms
     get "bairros",   to: "neighborhoods#index", as: :neighborhoods
     get "bairros/:code", to: "neighborhoods#show", as: :neighborhood
     get "seguranca", to: "safety#index",      as: :safety

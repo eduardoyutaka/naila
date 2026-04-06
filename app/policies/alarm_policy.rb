@@ -4,10 +4,10 @@ class AlarmPolicy < ApplicationPolicy
   end
 
   def enable?
-    user.can_manage_alerts?
+    user.can_manage?
   end
 
   def disable?
-    user.can_manage_alerts?
+    user.can_manage?
   end
 end

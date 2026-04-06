@@ -281,10 +281,6 @@ class AlarmTest < ActiveSupport::TestCase
     assert_includes histories, alarm_state_histories(:river_to_alarm)
   end
 
-  test "has many alerts" do
-    # Alarms don't yet have associated alerts in fixtures, just test the association exists
-    assert_respond_to alarms(:precip_3h_belem), :alerts
-  end
 
   test "composite alarm has many child_alarms through composite_alarm_children" do
     composite = alarms(:composite_flood_belem)

@@ -1,9 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
-  has_many :created_alerts, class_name: "Alert", foreign_key: :created_by_id, dependent: :nullify, inverse_of: :created_by
-  has_many :resolved_alerts, class_name: "Alert", foreign_key: :resolved_by_id, dependent: :nullify, inverse_of: :resolved_by
-
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true
   validates :role, presence: true, inclusion: { in: %w[operator coordinator admin] }
@@ -23,12 +20,12 @@ class User < ApplicationRecord
     role == "operator"
   end
 
-  def can_manage_users?
-    admin?
+  def can_manage?
+    admin? || coordinator?
   end
 
-  def can_manage_alerts?
-    admin? || coordinator?
+  def can_manage_users?
+    admin?
   end
 
   # Override the default 15-minute expiry from has_secure_password

@@ -1,7 +1,6 @@
 class River < ApplicationRecord
   belongs_to :river_basin
   has_many :monitoring_stations, dependent: :nullify
-  has_many :alerts, dependent: :nullify
 
   validates :name, presence: true
   validates :normal_level_m, :alert_level_m, :flood_level_m, :overflow_level_m,

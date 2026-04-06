@@ -16,7 +16,6 @@ class Alarm < ApplicationRecord
 
   has_many :alarm_actions, dependent: :destroy
   has_many :alarm_state_histories, dependent: :destroy
-  has_many :alerts, dependent: :nullify
   has_many :composite_alarm_children, foreign_key: :composite_alarm_id, dependent: :destroy
   has_many :child_alarms, through: :composite_alarm_children
   has_many :parent_composite_links, class_name: "CompositeAlarmChild", foreign_key: :child_alarm_id, dependent: :destroy
@@ -107,7 +106,24 @@ class Alarm < ApplicationRecord
     AlarmActionExecutor.execute(self, new_state)
   end
 
+  after_update_commit :broadcast_basin_alarm_severity, if: -> {
+    river_basin_id.present? && (saved_change_to_state? || saved_change_to_severity?)
+  }
+
   private
+
+  def broadcast_basin_alarm_severity
+    severity_by_basin = Alarm.in_alarm
+                             .where.not(river_basin_id: nil)
+                             .group(:river_basin_id)
+                             .maximum(:severity)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "basin_alarms",
+      target: "basin-alarm-severities",
+      partial: "admin/dashboard/basin_alarm_severities",
+      locals: { severity_by_basin: severity_by_basin }
+    )
+  end
 
   def metric_or_anomaly?
     metric? || anomaly_detection?

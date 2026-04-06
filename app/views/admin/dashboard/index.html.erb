@@ -15,7 +15,7 @@
     <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
       <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted"><%= label %></div>
       <div class="mt-2 text-3xl font-semibold tabular-nums <%= color %>">
-        <%= @alerts_by_severity.fetch(severity, 0) %>
+        <%= @alarms_by_severity.fetch(severity, 0) %>
       </div>
     </div>
   <% end %>
@@ -31,7 +31,7 @@
     forecast_summary: @forecast_summary %>
 
 <%# ── Map ── %>
-<%= turbo_stream_from "basin_alerts" %>
+<%= turbo_stream_from "basin_alarms" %>
 <div class="mb-6 overflow-hidden rounded-xl border border-naila-border bg-naila-surface"
      data-controller="admin--map"
      data-admin--map-river-basins-value="<%= @river_basins.map { |b|
@@ -39,7 +39,7 @@
          id: b.id,
          name: b.name,
          risk_level: b.current_risk_level,
-         alert_severity: @active_alert_severity_by_basin[b.id],
+         alert_severity: @active_alarm_severity_by_basin[b.id],
          geometry: b.geometry ? RGeo::GeoJSON.encode(b.geometry) : nil
        }
      }.to_json %>"
@@ -74,10 +74,10 @@
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-[#8b5cf6]"></span> Meteorológica</span>
     </div>
   </div>
-  <div id="basin-alert-severities"
+  <div id="basin-alarm-severities"
        data-admin--map-target="alertSeverities"
        class="hidden"
-       data-value="<%= @active_alert_severity_by_basin.to_json %>"></div>
+       data-value="<%= @active_alarm_severity_by_basin.to_json %>"></div>
   <div data-admin--map-target="canvas" class="h-[480px] w-full"></div>
 </div>
 
@@ -97,22 +97,21 @@
 
 <%# ── Bottom panels ── %>
 <div class="grid gap-6 lg:grid-cols-2">
-  <%# Active Alerts %>
+  <%# Active Alarms %>
   <div class="rounded-xl border border-naila-border bg-naila-surface">
     <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
-      <h2 class="text-sm font-semibold text-naila-text">Alertas Ativos</h2>
-      <span class="text-xs text-naila-text-muted"><%= @active_alerts.size %> alerta(s)</span>
+      <h2 class="text-sm font-semibold text-naila-text">Alarmes Ativos</h2>
+      <span class="text-xs text-naila-text-muted"><%= @active_alarms.size %> alarme(s)</span>
     </div>
     <div class="divide-y divide-naila-border">
-      <% if @active_alerts.empty? %>
+      <% if @active_alarms.empty? %>
         <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
-          Nenhum alerta ativo no momento.
+          Nenhum alarme ativo no momento.
         </div>
       <% else %>
-        <% @active_alerts.each do |alert| %>
+        <% @active_alarms.each do |alarm| %>
           <div class="flex items-start gap-3 px-4 py-3">
-            <%# Severity indicator %>
-            <% severity_color = case alert.severity
+            <% severity_color = case alarm.severity
                                 when 4 then "bg-risk-emergency glow-emergency"
                                 when 3 then "bg-risk-high glow-high"
                                 when 2 then "bg-risk-alert glow-alert"
@@ -121,15 +120,15 @@
             <div class="mt-1 h-3 w-3 flex-shrink-0 rounded-full <%= severity_color %>"></div>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-naila-text truncate"><%= alert.title %></span>
-                <% severity_label = case alert.severity
+                <%= link_to alarm.name, admin_alarm_path(alarm), class: "text-sm font-medium text-naila-text truncate hover:text-naila-accent" %>
+                <% severity_label = case alarm.severity
                                     when 4 then "Emergência"
                                     when 3 then "Alerta Máximo"
                                     when 2 then "Alerta"
                                     else "Atenção"
                                     end %>
                 <span class="flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-medium
-                  <%= case alert.severity
+                  <%= case alarm.severity
                       when 4 then 'bg-risk-emergency/20 text-risk-emergency'
                       when 3 then 'bg-risk-high/20 text-risk-high'
                       when 2 then 'bg-risk-alert/20 text-risk-alert'
@@ -138,11 +137,11 @@
                   <%= severity_label %>
                 </span>
               </div>
-              <p class="mt-0.5 text-xs text-naila-text-muted truncate"><%= alert.description %></p>
+              <p class="mt-0.5 text-xs text-naila-text-muted truncate"><%= alarm.state_reason %></p>
               <div class="mt-1 text-xs text-naila-text-muted">
-                <%= time_ago_in_words(alert.created_at) %> atrás
-                <% if alert.river_basin %>
-                  · <span class="text-naila-accent"><%= alert.river_basin.name %></span>
+                <%= time_ago_in_words(alarm.state_changed_at) %> atrás
+                <% if alarm.river_basin %>
+                  · <span class="text-naila-accent"><%= alarm.river_basin.name %></span>
                 <% end %>
               </div>
             </div>

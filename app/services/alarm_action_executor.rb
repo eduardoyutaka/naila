@@ -1,10 +1,4 @@
 class AlarmActionExecutor
-  ALARM_STATE_TITLES = {
-    "alarm" => "Alarme ativado",
-    "ok" => "Alarme normalizado",
-    "insufficient_data" => "Dados insuficientes"
-  }.freeze
-
   def self.execute(alarm, new_state)
     new(alarm).execute(new_state)
   end
@@ -34,15 +28,29 @@ class AlarmActionExecutor
     config = JSON.parse(config) if config.is_a?(String)
     channels = config["channels"] || %w[websocket]
 
-    alert = create_alert(new_state)
+    payload = {
+      event_type: "alarm_state_change",
+      alarm_id: @alarm.id,
+      alarm_name: @alarm.name,
+      state: new_state,
+      severity: @alarm.severity,
+      river_basin_id: @alarm.river_basin_id,
+      reason: @alarm.state_reason
+    }
 
     channels.each do |channel|
-      notification = alert.alert_notifications.create!(
-        channel: channel,
-        status: "pending",
-        metadata: { alarm_id: @alarm.id, alarm_state: new_state }
-      )
-      SendAlertNotificationJob.perform_later(notification.id)
+      case channel
+      when "websocket"
+        ActionCable.server.broadcast("alarms", payload)
+      when "sms"
+        Rails.logger.info("[AlarmActionExecutor] SMS: alarm #{@alarm.id}")
+      when "push"
+        Rails.logger.info("[AlarmActionExecutor] Push: alarm #{@alarm.id}")
+      when "email"
+        Rails.logger.info("[AlarmActionExecutor] Email: alarm #{@alarm.id}")
+      when "civil_defense"
+        Rails.logger.info("[AlarmActionExecutor] Civil defense: alarm #{@alarm.id}")
+      end
     end
   end
 
@@ -55,31 +63,6 @@ class AlarmActionExecutor
       config["method"] || "POST",
       build_webhook_payload(new_state),
       config["headers"] || {}
-    )
-  end
-
-  def create_alert(new_state)
-    title = "#{ALARM_STATE_TITLES[new_state]}: #{@alarm.name}"
-
-    @alarm.alerts.create!(
-      title: title,
-      description: @alarm.state_reason || @alarm.description || title,
-      severity: @alarm.severity,
-      alert_type: "automatic",
-      status: "active",
-      activated_at: Time.current,
-      alarm_state: new_state,
-      river_basin: @alarm.river_basin,
-      river: @alarm.river,
-      affected_area: @alarm.river_basin&.geometry,
-      trigger_data: {
-        alarm_id: @alarm.id,
-        alarm_name: @alarm.name,
-        alarm_type: @alarm.alarm_type,
-        alarm_state: new_state,
-        severity: @alarm.severity,
-        last_datapoints: @alarm.last_datapoints
-      }
     )
   end
 

@@ -4,7 +4,6 @@
     { label: "Estações",  path: admin_monitoring_stations_path, icon: "signal" },
     { label: "Meteorologia", path: admin_weather_path,   icon: "cloud-rain" },
     { label: "Alarmes",   path: admin_alarms_path,       icon: "adjustments-horizontal" },
-    { label: "Alertas",   path: admin_alerts_path,       icon: "bell-alert" },
     { label: "Bacias",    path: admin_river_basins_path,  icon: "map" },
     { label: "Usuarios",  path: admin_users_path,        icon: "users" },
   ]
@@ -40,8 +39,8 @@
           <span class="tabular-nums text-risk-attention"><%= RiverBasin.at_risk.count %></span>
         </div>
         <div class="flex items-center justify-between text-xs">
-          <span class="text-naila-text-muted">Alertas Ativos</span>
-          <span class="tabular-nums text-risk-high"><%= Alert.active.count %></span>
+          <span class="text-naila-text-muted">Alarmes Ativos</span>
+          <span class="tabular-nums text-risk-high"><%= Alarm.in_alarm.count %></span>
         </div>
       </div>
     </div>

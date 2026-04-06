@@ -391,67 +391,7 @@ Sensor.find_each do |sensor|
 end
 
 # ============================================================
-# 7. Active Alerts
-# ============================================================
-puts "  Creating sample alerts..."
-
-[
-  {
-    title: "Nível do Rio Atuba acima do nível de alerta",
-    description: "O Rio Atuba na estação Cajuru registrou 3.2m às #{(now - 45.minutes).strftime('%H:%M')}, acima do nível de alerta de 2.8m. Monitoramento intensificado.",
-    severity: 2, status: "active", alert_type: "automatic",
-    basin: "Bacia do Rio Atuba",
-    neighborhood: "cajuru", river: "Rio Atuba",
-    created_at: now - 45.minutes
-  },
-  {
-    title: "Precipitação intensa no Boqueirão",
-    description: "Acumulado de 42mm nas últimas 2 horas na região do Boqueirão. Taxa atual de 15mm/h. Risco de alagamento em áreas baixas.",
-    severity: 2, status: "active", alert_type: "automatic",
-    basin: "Bacia do Rio Iguaçu",
-    neighborhood: "boqueirao",
-    created_at: now - 30.minutes
-  },
-  {
-    title: "Risco elevado de enchente no Ganchinho",
-    description: "Combinação de chuva intensa (38mm/2h) e nível do Rio Iguaçu em 4.2m (nível de enchente: 4.5m). Equipes de resposta em prontidão.",
-    severity: 3, status: "active", alert_type: "automatic",
-    basin: "Bacia do Rio Iguaçu",
-    neighborhood: "ganchinho", river: "Rio Iguaçu",
-    created_at: now - 20.minutes
-  },
-  {
-    title: "Atenção: Solo saturado no Tatuquara",
-    description: "Imagens de satélite indicam solo saturado na encosta do Tatuquara. Monitoramento preventivo ativado.",
-    severity: 1, status: "active", alert_type: "automatic",
-    basin: "Bacia do Ribeirão dos Padilhas",
-    neighborhood: "tatuquara",
-    created_at: now - 2.hours
-  },
-  {
-    title: "Alagamento reportado na Av. Marechal Floriano",
-    description: "Defesa Civil registrou alagamento pontual na Av. Marechal Floriano Peixoto, próximo ao Terminal do Boqueirão. Trânsito interrompido.",
-    severity: 2, status: "acknowledged", alert_type: "manual",
-    neighborhood: "boqueirao",
-    created_at: now - 1.hour,
-    acknowledged_at: now - 40.minutes
-  },
-].each do |data|
-  Alert.find_or_create_by!(title: data[:title]) do |a|
-    a.description = data[:description]
-    a.severity = data[:severity]
-    a.status = data[:status]
-    a.alert_type = data[:alert_type]
-    a.river_basin = basins[data[:basin]] if data[:basin]
-    a.neighborhood = neighborhoods[data[:neighborhood]] if data[:neighborhood]
-    a.river = rivers[data[:river]] if data[:river]
-    a.created_at = data[:created_at]
-    a.acknowledged_at = data[:acknowledged_at]
-  end
-end
-
-# ============================================================
-# 8. Alarms (CloudWatch-style)
+# 7. Alarms (CloudWatch-style)
 # ============================================================
 puts "  Creating alarms..."
 
@@ -639,7 +579,6 @@ puts "  #{River.count} rivers"
 puts "  #{MonitoringStation.count} sensor stations"
 puts "  #{Sensor.count} sensors"
 puts "  #{SensorReading.count} sensor readings"
-puts "  #{Alert.count} alerts"
 puts "  #{Alarm.count} alarms (#{Alarm.metric_alarms.count} metric, #{Alarm.anomaly_alarms.count} anomaly, #{Alarm.composite_alarms.count} composite)"
 puts "  #{AlarmAction.count} alarm actions"
 puts "  #{User.count} users"

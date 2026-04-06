@@ -2,12 +2,12 @@ module Admin
   class DashboardController < BaseController
     def index
       @river_basins = RiverBasin.active
-      @active_alerts = Alert.active.by_severity.limit(10)
+      @active_alarms = Alarm.in_alarm.includes(:river_basin).order(severity: :desc, state_changed_at: :desc).limit(10)
       @recent_readings = SensorReading.recent.includes(sensor: :monitoring_station).limit(10)
       @sensors_online = MonitoringStation.online.count
-      @alerts_by_severity = Alert.active.group(:severity).count
+      @alarms_by_severity = Alarm.in_alarm.group(:severity).count
       @monitoring_stations = MonitoringStation.where.not(location: nil).includes(:neighborhood, :river, :sensors)
-      @active_alert_severity_by_basin = Alert.active
+      @active_alarm_severity_by_basin = Alarm.in_alarm
                                              .where.not(river_basin_id: nil)
                                              .group(:river_basin_id)
                                              .maximum(:severity)

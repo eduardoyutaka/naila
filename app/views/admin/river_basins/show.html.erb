@@ -158,23 +158,23 @@
       </div>
     <% end %>
 
-    <%# Active Alerts %>
-    <% if @active_alerts.any? %>
+    <%# Active Alarms %>
+    <% if @active_alarms.any? %>
       <div class="rounded-xl border border-naila-border bg-naila-surface">
         <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
-          <h2 class="text-sm font-semibold text-naila-text">Alertas Ativos</h2>
-          <span class="text-xs text-naila-text-muted"><%= @active_alerts.size %></span>
+          <h2 class="text-sm font-semibold text-naila-text">Alarmes Ativos</h2>
+          <span class="text-xs text-naila-text-muted"><%= @active_alarms.size %></span>
         </div>
         <div class="divide-y divide-naila-border">
-          <% @active_alerts.each do |alert| %>
+          <% @active_alarms.each do |alarm| %>
             <div class="flex items-center justify-between px-4 py-3">
               <div class="flex items-center gap-2">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= assessment_level_color[alert.severity] %>">
-                  <%= assessment_level_label[alert.severity] %>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= assessment_level_color[alarm.severity] %>">
+                  <%= assessment_level_label[alarm.severity] %>
                 </span>
-                <span class="text-sm text-naila-text"><%= alert.title %></span>
+                <%= link_to alarm.name, admin_alarm_path(alarm), class: "text-sm text-naila-text hover:text-naila-accent" %>
               </div>
-              <span class="text-xs text-naila-text-muted"><%= time_ago_in_words(alert.created_at) %> atrás</span>
+              <span class="text-xs text-naila-text-muted"><%= time_ago_in_words(alarm.state_changed_at) %> atrás</span>
             </div>
           <% end %>
         </div>
@@ -231,8 +231,8 @@
           <span class="text-sm tabular-nums text-naila-text"><%= @river_basin.risk_assessments.count %></span>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total de Alertas</span>
-          <span class="text-sm tabular-nums text-naila-text"><%= @river_basin.alerts.count %></span>
+          <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total de Alarmes</span>
+          <span class="text-sm tabular-nums text-naila-text"><%= @river_basin.alarms.count %></span>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
           <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Criada em</span>

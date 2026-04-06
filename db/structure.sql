@@ -155,93 +155,6 @@ ALTER SEQUENCE public.alarms_id_seq OWNED BY public.alarms.id;
 
 
 --
--- Name: alert_notifications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.alert_notifications (
-    id bigint NOT NULL,
-    alert_id bigint NOT NULL,
-    channel character varying NOT NULL,
-    recipient character varying,
-    status character varying DEFAULT 'pending'::character varying,
-    sent_at timestamp(6) without time zone,
-    delivered_at timestamp(6) without time zone,
-    failure_reason text,
-    metadata jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: alert_notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.alert_notifications_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: alert_notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.alert_notifications_id_seq OWNED BY public.alert_notifications.id;
-
-
---
--- Name: alerts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.alerts (
-    id bigint NOT NULL,
-    title character varying NOT NULL,
-    description text NOT NULL,
-    instructions text,
-    severity integer NOT NULL,
-    alert_type character varying NOT NULL,
-    status character varying DEFAULT 'active'::character varying,
-    river_basin_id bigint,
-    neighborhood_id bigint,
-    river_id bigint,
-    created_by_id bigint,
-    resolved_by_id bigint,
-    affected_area public.geometry(Polygon,4326),
-    activated_at timestamp(6) without time zone,
-    acknowledged_at timestamp(6) without time zone,
-    resolved_at timestamp(6) without time zone,
-    expires_at timestamp(6) without time zone,
-    trigger_data jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    alarm_id bigint,
-    alarm_state character varying
-);
-
-
---
--- Name: alerts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.alerts_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: alerts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.alerts_id_seq OWNED BY public.alerts.id;
-
-
---
 -- Name: anomaly_baselines; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1911,20 +1824,6 @@ ALTER TABLE ONLY public.alarms ALTER COLUMN id SET DEFAULT nextval('public.alarm
 
 
 --
--- Name: alert_notifications id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_notifications ALTER COLUMN id SET DEFAULT nextval('public.alert_notifications_id_seq'::regclass);
-
-
---
--- Name: alerts id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts ALTER COLUMN id SET DEFAULT nextval('public.alerts_id_seq'::regclass);
-
-
---
 -- Name: anomaly_baselines id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2149,22 +2048,6 @@ ALTER TABLE ONLY public.alarm_state_histories
 
 ALTER TABLE ONLY public.alarms
     ADD CONSTRAINT alarms_pkey PRIMARY KEY (id);
-
-
---
--- Name: alert_notifications alert_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_notifications
-    ADD CONSTRAINT alert_notifications_pkey PRIMARY KEY (id);
-
-
---
--- Name: alerts alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_pkey PRIMARY KEY (id);
 
 
 --
@@ -2710,97 +2593,6 @@ CREATE INDEX index_alarms_on_river_id ON public.alarms USING btree (river_id);
 --
 
 CREATE INDEX index_alarms_on_state ON public.alarms USING btree (state);
-
-
---
--- Name: index_alert_notifications_on_alert_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alert_notifications_on_alert_id ON public.alert_notifications USING btree (alert_id);
-
-
---
--- Name: index_alert_notifications_on_alert_id_and_channel; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alert_notifications_on_alert_id_and_channel ON public.alert_notifications USING btree (alert_id, channel);
-
-
---
--- Name: index_alert_notifications_on_status; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alert_notifications_on_status ON public.alert_notifications USING btree (status);
-
-
---
--- Name: index_alerts_on_affected_area; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_affected_area ON public.alerts USING gist (affected_area);
-
-
---
--- Name: index_alerts_on_alarm_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_alarm_id ON public.alerts USING btree (alarm_id);
-
-
---
--- Name: index_alerts_on_created_by_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_created_by_id ON public.alerts USING btree (created_by_id);
-
-
---
--- Name: index_alerts_on_neighborhood_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_neighborhood_id ON public.alerts USING btree (neighborhood_id);
-
-
---
--- Name: index_alerts_on_resolved_by_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_resolved_by_id ON public.alerts USING btree (resolved_by_id);
-
-
---
--- Name: index_alerts_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_river_basin_id ON public.alerts USING btree (river_basin_id);
-
-
---
--- Name: index_alerts_on_river_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_river_id ON public.alerts USING btree (river_id);
-
-
---
--- Name: index_alerts_on_severity; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_severity ON public.alerts USING btree (severity);
-
-
---
--- Name: index_alerts_on_status; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_status ON public.alerts USING btree (status);
-
-
---
--- Name: index_alerts_on_status_and_severity; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alerts_on_status_and_severity ON public.alerts USING btree (status, severity);
 
 
 --
@@ -4562,14 +4354,6 @@ ALTER TABLE ONLY public.monitoring_stations
 
 
 --
--- Name: alerts fk_rails_8426bfc331; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_8426bfc331 FOREIGN KEY (created_by_id) REFERENCES public.users(id);
-
-
---
 -- Name: rivers fk_rails_86c7a5cf9d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4578,43 +4362,11 @@ ALTER TABLE ONLY public.rivers
 
 
 --
--- Name: alerts fk_rails_9157b6bad8; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_9157b6bad8 FOREIGN KEY (alarm_id) REFERENCES public.alarms(id);
-
-
---
--- Name: alerts fk_rails_955ec70dfc; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_955ec70dfc FOREIGN KEY (neighborhood_id) REFERENCES public.neighborhoods(id);
-
-
---
--- Name: alerts fk_rails_97d953eac8; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_97d953eac8 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
-
-
---
 -- Name: solid_queue_claimed_executions fk_rails_9cfe4d4944; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.solid_queue_claimed_executions
     ADD CONSTRAINT fk_rails_9cfe4d4944 FOREIGN KEY (job_id) REFERENCES public.solid_queue_jobs(id) ON DELETE CASCADE;
-
-
---
--- Name: alerts fk_rails_a373ae3498; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_a373ae3498 FOREIGN KEY (river_id) REFERENCES public.rivers(id);
 
 
 --
@@ -4650,14 +4402,6 @@ ALTER TABLE ONLY public.anomaly_baselines
 
 
 --
--- Name: alerts fk_rails_d57155fb1b; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT fk_rails_d57155fb1b FOREIGN KEY (resolved_by_id) REFERENCES public.users(id);
-
-
---
 -- Name: risk_assessments fk_rails_dfc4c4b3ee; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4671,14 +4415,6 @@ ALTER TABLE ONLY public.risk_assessments
 
 ALTER TABLE ONLY public.neighborhoods
     ADD CONSTRAINT fk_rails_ed97da2abb FOREIGN KEY (region_id) REFERENCES public.regions(id);
-
-
---
--- Name: alert_notifications fk_rails_ee7a462e3e; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alert_notifications
-    ADD CONSTRAINT fk_rails_ee7a462e3e FOREIGN KEY (alert_id) REFERENCES public.alerts(id);
 
 
 --
@@ -4704,6 +4440,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260406210822'),
 ('20260406205016'),
 ('20260406002038'),
 ('20260406001949'),
