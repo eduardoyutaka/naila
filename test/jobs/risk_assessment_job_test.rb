@@ -27,4 +27,10 @@ class RiskAssessmentJobTest < ActiveSupport::TestCase
     # Should have created at least one automatic alert
     assert Alert.where(alert_type: "automatic", river_basin: basin).exists?
   end
+
+  test "enqueues alarm evaluation after risk assessment" do
+    assert_enqueued_with(job: AlarmEvaluationJob, args: [ "all" ]) do
+      RiskAssessmentJob.perform_now("all")
+    end
+  end
 end

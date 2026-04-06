@@ -10,6 +10,8 @@ class RiskAssessmentJob < ApplicationJob
 
     basins.find_each do |basin|
       assessment = RiskEngine.assess(basin)
+
+      # OLD path (kept during migration to new alarm system)
       results = AlertEvaluator.evaluate(assessment)
 
       results.each do |result|
@@ -31,5 +33,8 @@ class RiskAssessmentJob < ApplicationJob
         end
       end
     end
+
+    # NEW path: evaluate CloudWatch-style alarms after all basins are assessed
+    AlarmEvaluationJob.perform_later("all")
   end
 end
