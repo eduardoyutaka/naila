@@ -275,6 +275,27 @@
       </div>
     </div>
 
+    <%# Parent Alarm %>
+    <% if @alert.alarm %>
+      <div class="rounded-xl border border-naila-border bg-naila-surface" data-testid="parent-alarm">
+        <div class="border-b border-naila-border px-4 py-3">
+          <h2 class="text-sm font-semibold text-naila-text">Alarme de Origem</h2>
+        </div>
+        <div class="p-4">
+          <%= link_to admin_alarm_path(@alert.alarm),
+                class: "flex items-center gap-2 text-sm text-naila-accent hover:underline" do %>
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            <%= @alert.alarm.name %>
+          <% end %>
+          <% if @alert.alarm_state.present? %>
+            <div class="mt-1 text-xs text-naila-text-muted">Estado: <%= @alert.alarm_state %></div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <%# Notifications %>
     <div class="rounded-xl border border-naila-border bg-naila-surface">
       <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">

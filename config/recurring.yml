@@ -3,8 +3,9 @@ weather_ingestion:
   queue: weather_ingestion
   schedule: every hour
 
-escalation_check:
-  class: EscalationCheckJob
+alarm_evaluation:
+  class: AlarmEvaluationJob
+  args: ["all"]
   schedule: every 5 minutes
 
 production:

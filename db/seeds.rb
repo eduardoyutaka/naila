@@ -501,23 +501,7 @@ end
 end
 
 # ============================================================
-# 9. Escalation Rules
-# ============================================================
-puts "  Creating escalation rules..."
-
-[
-  { from: 1, to: 2, after: 120 },
-  { from: 2, to: 3, after: 60 },
-  { from: 3, to: 4, after: 30 },
-].each do |data|
-  EscalationRule.find_or_create_by!(from_severity: data[:from], to_severity: data[:to]) do |r|
-    r.escalation_after_minutes = data[:after]
-    r.active = true
-  end
-end
-
-# ============================================================
-# 10. Users
+# 9. Users
 # ============================================================
 puts "  Creating users..."
 
@@ -573,7 +557,6 @@ puts "  #{Sensor.count} sensors"
 puts "  #{SensorReading.count} sensor readings"
 puts "  #{Alert.count} alerts"
 puts "  #{AlertThreshold.count} alert thresholds"
-puts "  #{EscalationRule.count} escalation rules"
 puts "  #{User.count} users"
 puts "  #{DataSource.count} data sources"
 puts ""
