@@ -104,6 +104,7 @@ class Alarm < ApplicationRecord
       datapoints: datapoints,
       evaluated_at: Time.current
     )
+    AlarmActionExecutor.execute(self, new_state)
   end
 
   private
