@@ -1,0 +1,12 @@
+<% content_for(:title, "Naila — Novo Alarme") %>
+
+<div class="mx-auto max-w-3xl" data-controller="admin--alarm-form"
+     data-admin--alarm-form-type-value="<%= @alarm.alarm_type %>">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-naila-text">Novo Alarme</h1>
+  </div>
+
+  <%= form_with model: [:admin, @alarm] do |f| %>
+    <%= render "form", form: f, alarm: @alarm %>
+  <% end %>
+</div>

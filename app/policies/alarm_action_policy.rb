@@ -1,0 +1,2 @@
+class AlarmActionPolicy < ApplicationPolicy
+end
