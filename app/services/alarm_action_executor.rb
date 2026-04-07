@@ -28,7 +28,6 @@ class AlarmActionExecutor
 
   def execute_notification(action, new_state)
     config = action.configuration
-    config = JSON.parse(config) if config.is_a?(String)
     channels = config["channels"] || %w[websocket]
 
     payload = {
@@ -53,7 +52,6 @@ class AlarmActionExecutor
 
   def execute_webhook(action, new_state)
     config = action.configuration
-    config = JSON.parse(config) if config.is_a?(String)
 
     SendWebhookJob.perform_later(
       config["url"],

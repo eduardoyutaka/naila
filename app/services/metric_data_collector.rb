@@ -81,9 +81,8 @@ class MetricDataCollector
                               .where(valid_from: period_start..period_end)
                               .order(issued_at: :desc)
                               .first
-    raw = forecast&.raw_data
-    raw = JSON.parse(raw) if raw.is_a?(String) rescue nil
-    if raw.is_a?(Hash) && raw.key?("soil_moisture_avg")
+    raw = forecast&.raw_data || {}
+    if raw.key?("soil_moisture_avg")
       return raw["soil_moisture_avg"].to_f
     end
 
