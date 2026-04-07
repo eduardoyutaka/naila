@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { CHART_THEME, resolveColor } from "chart_theme"
 
 // Full historical area/line chart with zoom and pan
 export default class extends Controller {
@@ -29,38 +30,40 @@ export default class extends Controller {
     const seriesData = this.seriesValue
     const unit = this.unitValue
 
+    const t = CHART_THEME
+
     this.chart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: t.bg,
       title: {
         text: this.titleValue,
         left: "center",
-        textStyle: { color: "#f1f5f9", fontSize: 13, fontWeight: 600 },
+        textStyle: { color: t.tooltip.text, fontSize: 13, fontWeight: 600 },
       },
       tooltip: {
         trigger: "axis",
-        backgroundColor: "#1e293b",
-        borderColor: "#334155",
-        textStyle: { color: "#f1f5f9", fontSize: 11 },
-        axisPointer: { type: "cross", lineStyle: { color: "#334155" } },
+        backgroundColor: t.tooltip.bg,
+        borderColor: t.tooltip.border,
+        textStyle: { color: t.tooltip.text, fontSize: 11 },
+        axisPointer: { type: "cross", lineStyle: { color: t.axis.line } },
       },
       legend: {
         bottom: 0,
-        textStyle: { color: "#94a3b8", fontSize: 10 },
+        textStyle: { color: t.legend.text, fontSize: 10 },
       },
-      grid: { top: 40, right: 16, bottom: 64, left: 50 }, 
+      grid: { top: 40, right: 16, bottom: 64, left: 50 },
       xAxis: {
         type: "time",
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 10 },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 10 },
         splitLine: { show: false },
       },
       yAxis: {
         type: "value",
         name: unit,
-        nameTextStyle: { color: "#94a3b8", fontSize: 10 },
+        nameTextStyle: { color: t.axis.label, fontSize: 10 },
         axisLine: { show: false },
-        axisLabel: { color: "#94a3b8", fontSize: 10 },
-        splitLine: { lineStyle: { color: "#334155", type: "dashed" } },
+        axisLabel: { color: t.axis.label, fontSize: 10 },
+        splitLine: { lineStyle: { color: t.axis.split, type: "dashed" } },
       },
       dataZoom: [
         { type: "inside", start: 0, end: 100 },
@@ -68,31 +71,34 @@ export default class extends Controller {
           type: "slider",
           height: 18,
           bottom: 24,
-          borderColor: "#334155",
-          backgroundColor: "#111827",
-          fillerColor: "rgba(59, 130, 246, 0.15)",
-          handleStyle: { color: "#3b82f6" },
-          textStyle: { color: "#94a3b8", fontSize: 9 },
+          borderColor: t.dataZoom.border,
+          backgroundColor: t.dataZoom.bg,
+          fillerColor: t.dataZoom.filler,
+          handleStyle: { color: t.dataZoom.handle },
+          textStyle: { color: t.axis.label, fontSize: 9 },
         },
       ],
-      series: seriesData.map((s) => ({
-        name: s.name,
-        type: "line",
-        data: s.data,
-        smooth: true,
-        symbol: "none",
-        lineStyle: { color: s.color || "#3b82f6", width: 1.5 },
-        areaStyle: {
-          color: {
-            type: "linear",
-            x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: (s.color || "#3b82f6") + "30" },
-              { offset: 1, color: (s.color || "#3b82f6") + "05" },
-            ],
+      series: seriesData.map((s) => {
+        const color = resolveColor(s.color) || t.accent
+        return {
+          name: s.name,
+          type: "line",
+          data: s.data,
+          smooth: true,
+          symbol: "none",
+          lineStyle: { color, width: 1.5 },
+          areaStyle: {
+            color: {
+              type: "linear",
+              x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [
+                { offset: 0, color: color + "30" },
+                { offset: 1, color: color + "05" },
+              ],
+            },
           },
-        },
-      })),
+        }
+      }),
     })
   }
 

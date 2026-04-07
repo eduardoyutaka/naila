@@ -3,21 +3,6 @@
 <%
   active_basins = @river_basins.select(&:active?)
   at_risk_basins = @river_basins.reject(&:risk_normal?)
-
-  risk_label = {
-    "normal"     => "Normal",
-    "attention"  => "Atenção",
-    "alert"      => "Alerta",
-    "high_alert" => "Alerta Máximo",
-    "emergency"  => "Emergência"
-  }
-  risk_color = {
-    "normal"     => "bg-risk-normal/20 text-risk-normal",
-    "attention"  => "bg-risk-attention/20 text-risk-attention",
-    "alert"      => "bg-risk-alert/20 text-risk-alert",
-    "high_alert" => "bg-risk-high/20 text-risk-high",
-    "emergency"  => "bg-risk-emergency/20 text-risk-emergency"
-  }
 %>
 
 <%# ── Summary Cards ── %>
@@ -72,9 +57,7 @@
             <tr class="hover:bg-naila-elevated/50 transition-colors">
               <%# Nível de Risco %>
               <td class="px-4 py-3">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= risk_color[basin.current_risk_level] %>">
-                  <%= risk_label[basin.current_risk_level] %>
-                </span>
+                <%= risk_level_badge(basin.current_risk_level) %>
               </td>
 
               <%# Nome %>

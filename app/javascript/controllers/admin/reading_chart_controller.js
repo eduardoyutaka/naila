@@ -1,7 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-
-// Severity → border colour (matches app-wide risk colour scheme)
-const SEVERITY_COLORS = { 1: "#eab308", 2: "#f97316", 3: "#ef4444", 4: "#a855f7" }
+import { CHART_THEME, resolveColor } from "chart_theme"
 
 // Compact chart for sensor readings over time (bar or line, configurable)
 export default class extends Controller {
@@ -33,8 +31,9 @@ export default class extends Controller {
   render() {
     const readings = this.readingsValue
     const unit = this.unitValue
-    const color = this.colorValue
+    const color = resolveColor(this.colorValue)
     const isBar = this.chartTypeValue === "bar"
+    const t = CHART_THEME
 
     const series = isBar ? this.#barSeries(readings, color) : this.#lineSeries(readings, color)
     if (this.thresholdsValue.length > 0) {
@@ -42,12 +41,12 @@ export default class extends Controller {
     }
 
     this.chart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: t.bg,
       tooltip: {
         trigger: "axis",
-        backgroundColor: "#1e293b",
-        borderColor: "#334155",
-        textStyle: { color: "#f1f5f9", fontSize: 11 },
+        backgroundColor: t.tooltip.bg,
+        borderColor: t.tooltip.border,
+        textStyle: { color: t.tooltip.text, fontSize: 11 },
         formatter: (params) => {
           const p = params[0]
           if (!p) return ""
@@ -59,17 +58,17 @@ export default class extends Controller {
       grid: { top: 8, right: 8, bottom: 24, left: 36 },
       xAxis: {
         type: "time",
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 9, formatter: "{HH}:{mm}" },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 9, formatter: "{HH}:{mm}" },
         splitLine: { show: false },
       },
       yAxis: {
         type: "value",
         name: unit,
-        nameTextStyle: { color: "#94a3b8", fontSize: 9 },
+        nameTextStyle: { color: t.axis.label, fontSize: 9 },
         axisLine: { show: false },
-        axisLabel: { color: "#94a3b8", fontSize: 9 },
-        splitLine: { lineStyle: { color: "#334155", type: "dashed" } },
+        axisLabel: { color: t.axis.label, fontSize: 9 },
+        splitLine: { lineStyle: { color: t.axis.split, type: "dashed" } },
         min: isBar ? 0 : undefined,
       },
       series: [series],
@@ -123,16 +122,21 @@ export default class extends Controller {
   }
 
   #thresholdMarkLines(thresholds) {
+    const severityColors = CHART_THEME.severity
+    const fallback = CHART_THEME.axis.label
     return {
       silent: true,
       symbol: ["none", "none"],
       animation: false,
-      data: thresholds.map((t) => ({
-        name: t.label,
-        yAxis: t.value,
-        lineStyle: { type: "dashed", color: SEVERITY_COLORS[t.severity] || "#94a3b8", width: 1.5, opacity: 0.8 },
-        label: { show: true, position: "end", formatter: t.label, color: SEVERITY_COLORS[t.severity] || "#94a3b8", fontSize: 9 },
-      })),
+      data: thresholds.map((t) => {
+        const color = severityColors[t.severity] || fallback
+        return {
+          name: t.label,
+          yAxis: t.value,
+          lineStyle: { type: "dashed", color, width: 1.5, opacity: 0.8 },
+          label: { show: true, position: "end", formatter: t.label, color, fontSize: 9 },
+        }
+      }),
     }
   }
 

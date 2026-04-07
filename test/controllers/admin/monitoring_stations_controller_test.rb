@@ -172,7 +172,7 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#sensor_detail" do
       assert_select "span", text: "Pluviômetro"
       assert_select "span", text: "Fluviômetro"
-      assert_select "span", text: "Estação Meteorológica"
+      assert_select "span", text: "Meteorológica"
     end
   end
 

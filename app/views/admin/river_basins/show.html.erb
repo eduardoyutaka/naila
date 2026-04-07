@@ -1,28 +1,6 @@
 <% content_for(:title, "Naila — #{@river_basin.name}") %>
 
 <%
-  risk_label = {
-    "normal"     => "Normal",
-    "attention"  => "Atenção",
-    "alert"      => "Alerta",
-    "high_alert" => "Alerta Máximo",
-    "emergency"  => "Emergência"
-  }
-  risk_color = {
-    "normal"     => "bg-risk-normal/20 text-risk-normal",
-    "attention"  => "bg-risk-attention/20 text-risk-attention",
-    "alert"      => "bg-risk-alert/20 text-risk-alert",
-    "high_alert" => "bg-risk-high/20 text-risk-high",
-    "emergency"  => "bg-risk-emergency/20 text-risk-emergency"
-  }
-  assessment_level_label = { 0 => "Normal", 1 => "Atenção", 2 => "Alerta", 3 => "Alerta Máximo", 4 => "Emergência" }
-  assessment_level_color = {
-    0 => "bg-risk-normal/20 text-risk-normal",
-    1 => "bg-risk-attention/20 text-risk-attention",
-    2 => "bg-risk-alert/20 text-risk-alert",
-    3 => "bg-risk-high/20 text-risk-high",
-    4 => "bg-risk-emergency/20 text-risk-emergency"
-  }
   geojson_str = @river_basin.geometry ? RGeo::GeoJSON.encode(@river_basin.geometry).to_json : ""
 %>
 
@@ -39,14 +17,12 @@
 <%# ── Header ── %>
 <div class="mb-6">
   <div class="flex flex-wrap items-center gap-2 mb-2">
-    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= risk_color[@river_basin.current_risk_level] %>">
-      <%= risk_label[@river_basin.current_risk_level] %>
-    </span>
+    <%= risk_level_badge(@river_basin.current_risk_level) %>
     <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-naila-elevated text-naila-text-muted">
       <%= @river_basin.active? ? "Ativa" : "Inativa" %>
     </span>
   </div>
-  <h1 class="text-xl font-semibold text-naila-text"><%= @river_basin.name %></h1>
+  <h1 class="text-2xl font-bold text-naila-text"><%= @river_basin.name %></h1>
   <% if @river_basin.description.present? %>
     <p class="mt-1 text-sm text-naila-text-muted"><%= @river_basin.description %></p>
   <% end %>
@@ -143,9 +119,8 @@
                     <%= assessment.assessed_at.strftime("%d/%m/%Y %H:%M") %>
                   </td>
                   <td class="px-4 py-2">
-                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= assessment_level_color[assessment.risk_level] %>">
-                      <%= assessment_level_label[assessment.risk_level] %>
-                    </span>
+                    <%= tag.span(RiskHelper::ASSESSMENT_LEVEL_LABEL[assessment.risk_level],
+                          class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{RiskHelper::ASSESSMENT_LEVEL_BADGE_CLASSES[assessment.risk_level]}") %>
                   </td>
                   <td class="px-4 py-2 text-xs tabular-nums text-naila-text">
                     <%= number_to_percentage(assessment.risk_score * 100, precision: 1) %>
@@ -169,9 +144,7 @@
           <% @active_alarms.each do |alarm| %>
             <div class="flex items-center justify-between px-4 py-3">
               <div class="flex items-center gap-2">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= assessment_level_color[alarm.current_severity] %>">
-                  <%= assessment_level_label[alarm.current_severity] %>
-                </span>
+                <%= severity_badge(alarm.current_severity) %>
                 <%= link_to alarm.name, admin_alarm_path(alarm), class: "text-sm text-naila-text hover:text-naila-accent" %>
               </div>
               <span class="text-xs text-naila-text-muted"><%= time_ago_in_words(alarm.state_changed_at) %> atrás</span>

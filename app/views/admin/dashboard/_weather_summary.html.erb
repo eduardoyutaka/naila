@@ -2,7 +2,7 @@
   <div class="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
     <%# Current conditions %>
     <div class="flex items-center gap-4 min-w-0">
-      <span class="text-xl">🌧️</span>
+      <span class="text-naila-text-muted"><%= render "shared/icons/cloud-rain" %></span>
       <div>
         <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Condições Atuais</div>
         <% if current_weather %>
@@ -14,7 +14,7 @@
               <span class="text-naila-text-muted">· <%= number_with_precision(current_weather.humidity_pct, precision: 0) %>% umidade</span>
             <% end %>
             <% if current_weather.precipitation_mm&.> 0 %>
-              <span class="text-[#3b82f6]">· <%= number_with_precision(current_weather.precipitation_mm, precision: 1) %> mm</span>
+              <span class="text-sensor-pluviometer">· <%= number_with_precision(current_weather.precipitation_mm, precision: 1) %> mm</span>
             <% end %>
           </div>
         <% else %>
@@ -29,8 +29,11 @@
     <div data-testid="forecast-precipitation">
       <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Previsão 6h</div>
       <div class="mt-0.5 flex items-center gap-3 text-sm">
-        <span class="font-semibold tabular-nums text-naila-text">
-          💧 <%= number_with_precision(forecast_summary[:total_precipitation_mm], precision: 1) %> mm
+        <span class="inline-flex items-center gap-1 font-semibold tabular-nums text-naila-text">
+          <svg class="h-3.5 w-3.5 text-sensor-pluviometer flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c0 0-7 7.5-7 11.5a7 7 0 0 0 14 0C19 10.5 12 3 12 3Z" />
+          </svg>
+          <%= number_with_precision(forecast_summary[:total_precipitation_mm], precision: 1) %> mm
         </span>
         <% if forecast_summary[:max_probability] > 0 %>
           <span class="text-naila-text-muted">

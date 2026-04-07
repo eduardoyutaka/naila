@@ -133,7 +133,7 @@
             </div>
 
             <%# Column headers %>
-            <div role="row" class="grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 mb-1 px-1">
+            <div role="row" class="grid threshold-grid gap-2 mb-1 px-1">
               <span role="columnheader" id="th-severity" class="text-xs font-medium text-naila-text-muted">Severidade</span>
               <span role="columnheader" id="th-operator" class="text-xs font-medium text-naila-text-muted">Operador</span>
               <span role="columnheader" id="th-threshold" class="text-xs font-medium text-naila-text-muted">Limiar</span>
@@ -147,15 +147,21 @@
               <% end %>
             </div>
 
+            <p data-admin--alarm-form-target="emptyWarning"
+               class="mt-2 text-xs text-risk-attention"
+               hidden>
+              Adicione ao menos uma faixa de limiar para salvar o alarme.
+            </p>
+
             <%# Hidden template for new rows — cloned by JS %>
             <template data-admin--alarm-form-target="thresholdTemplate">
-              <div class="threshold-row grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 items-center">
+              <div class="threshold-row grid threshold-grid gap-2 items-center">
                 <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
                         aria-labelledby="th-severity"
                         class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent">
                   <option value="1">1 — Atenção</option>
                   <option value="2">2 — Alerta</option>
-                  <option value="3">3 — Alto</option>
+                  <option value="3">3 — Alerta Máximo</option>
                   <option value="4">4 — Emergência</option>
                 </select>
                 <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"

@@ -33,24 +33,17 @@
     <%# Status indicators %>
     <div class="relative z-10 mt-12 flex flex-col gap-3 w-52">
       <div class="flex items-center justify-between rounded-lg border border-naila-border bg-naila-elevated/60 px-4 py-2.5">
-        <span class="text-xs text-naila-text-muted">Sensores Ativos</span>
+        <span class="text-xs text-naila-text-muted">Sensores Online</span>
         <div class="flex items-center gap-1.5">
           <span class="inline-block h-1.5 w-1.5 rounded-full bg-sensor-online"></span>
-          <span class="text-xs font-semibold text-naila-text tabular-nums">24</span>
+          <span class="text-xs font-semibold text-naila-text tabular-nums"><%= @sensors_online %></span>
         </div>
       </div>
       <div class="flex items-center justify-between rounded-lg border border-naila-border bg-naila-elevated/60 px-4 py-2.5">
         <span class="text-xs text-naila-text-muted">Bacias Monitoradas</span>
         <div class="flex items-center gap-1.5">
           <span class="inline-block h-1.5 w-1.5 rounded-full bg-naila-accent"></span>
-          <span class="text-xs font-semibold text-naila-text tabular-nums">8</span>
-        </div>
-      </div>
-      <div class="flex items-center justify-between rounded-lg border border-naila-border bg-naila-elevated/60 px-4 py-2.5">
-        <span class="text-xs text-naila-text-muted">Cobertura da Cidade</span>
-        <div class="flex items-center gap-1.5">
-          <span class="inline-block h-1.5 w-1.5 rounded-full bg-risk-normal"></span>
-          <span class="text-xs font-semibold text-naila-text tabular-nums">98%</span>
+          <span class="text-xs font-semibold text-naila-text tabular-nums"><%= @river_basins_count %></span>
         </div>
       </div>
     </div>

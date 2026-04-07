@@ -8,13 +8,6 @@
     "insufficient_data" => "bg-naila-elevated text-naila-text-muted"
   }
   type_label = { "metric" => "Métrica", "anomaly_detection" => "Anomalia", "composite" => "Composto" }
-  severity_label = { 1 => "Atenção", 2 => "Alerta", 3 => "Alto", 4 => "Emergência" }
-  severity_color = {
-    1 => "bg-risk-attention/20 text-risk-attention",
-    2 => "bg-risk-alert/20 text-risk-alert",
-    3 => "bg-risk-high/20 text-risk-high",
-    4 => "bg-risk-emergency/20 text-risk-emergency"
-  }
 %>
 
 <%# ── Summary Cards ── %>
@@ -99,9 +92,7 @@
               </td>
               <td class="px-4 py-3 text-sm text-naila-text-muted"><%= type_label[alarm.alarm_type] %></td>
               <td class="px-4 py-3">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_color[alarm.current_severity] %>">
-                  <%= severity_label[alarm.current_severity] %>
-                </span>
+                <%= severity_badge(alarm.current_severity) %>
               </td>
               <td class="px-4 py-3 text-sm text-naila-text-muted">
                 <%= alarm.river&.name || alarm.river_basin&.name || "Global" %>

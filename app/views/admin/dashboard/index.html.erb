@@ -6,15 +6,10 @@
     <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores Online</div>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @sensors_online %></div>
   </div>
-  <% [
-    [1, "Atenção",       "text-risk-attention"],
-    [2, "Alerta",        "text-risk-alert"],
-    [3, "Alerta Máximo", "text-risk-high"],
-    [4, "Emergência",    "text-risk-emergency"],
-  ].each do |severity, label, color| %>
+  <% RiskHelper::SEVERITY_LABEL.each do |severity, label| %>
     <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
       <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted"><%= label %></div>
-      <div class="mt-2 text-3xl font-semibold tabular-nums <%= color %>">
+      <div class="mt-2 text-3xl font-semibold tabular-nums <%= RiskHelper::SEVERITY_TEXT_CLASS[severity] %>">
         <%= @alarms_by_severity.fetch(severity, 0) %>
       </div>
     </div>
@@ -68,10 +63,10 @@
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> Alerta</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-high"></span> Alerta Máx</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-emergency"></span> Emergência</span>
-      <span class="text-naila-border">|</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-[#3b82f6]"></span> Pluviômetro</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-[#06b6d4]"></span> Fluviômetro</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-[#8b5cf6]"></span> Meteorológica</span>
+      <span class="h-3 w-px bg-naila-border" aria-hidden="true"></span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-sensor-pluviometer"></span> Pluviômetro</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-sensor-river-gauge"></span> Fluviômetro</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-weather"></span> Meteorológica</span>
     </div>
   </div>
   <div id="basin-alarm-severities"
@@ -121,21 +116,7 @@
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <%= link_to alarm.name, admin_alarm_path(alarm), class: "text-sm font-medium text-naila-text truncate hover:text-naila-accent" %>
-                <% severity_label = case alarm.current_severity
-                                    when 4 then "Emergência"
-                                    when 3 then "Alerta Máximo"
-                                    when 2 then "Alerta"
-                                    else "Atenção"
-                                    end %>
-                <span class="flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-medium
-                  <%= case alarm.current_severity
-                      when 4 then 'bg-risk-emergency/20 text-risk-emergency'
-                      when 3 then 'bg-risk-high/20 text-risk-high'
-                      when 2 then 'bg-risk-alert/20 text-risk-alert'
-                      else 'bg-risk-attention/20 text-risk-attention'
-                      end %>">
-                  <%= severity_label %>
-                </span>
+                <%= severity_badge(alarm.current_severity) %>
               </div>
               <p class="mt-0.5 text-xs text-naila-text-muted truncate"><%= alarm.state_reason %></p>
               <div class="mt-1 text-xs text-naila-text-muted">
@@ -166,14 +147,33 @@
         <% @recent_readings.each do |reading| %>
           <div class="flex items-center justify-between px-4 py-2.5">
             <div class="flex items-center gap-3 min-w-0">
-              <% reading_icon = case reading.reading_type
-                                when "precipitation" then "💧"
-                                when "river_level" then "🌊"
-                                when "temperature" then "🌡️"
-                                when "humidity" then "💨"
-                                else "📡"
-                                end %>
-              <span class="text-sm"><%= reading_icon %></span>
+              <span class="flex-shrink-0 text-naila-text-muted">
+                <% case reading.reading_type %>
+                <% when "precipitation" %>
+                  <%# Droplet %>
+                  <svg class="h-4 w-4 text-sensor-pluviometer" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c0 0-7 7.5-7 11.5a7 7 0 0 0 14 0C19 10.5 12 3 12 3Z" />
+                  </svg>
+                <% when "river_level" %>
+                  <%# Waves %>
+                  <svg class="h-4 w-4 text-sensor-river-gauge" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 14.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1M3 18.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1M3 10.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1" />
+                  </svg>
+                <% when "temperature" %>
+                  <%# Thermometer %>
+                  <svg class="h-4 w-4 text-sensor-weather" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9.75a3 3 0 1 1-6 0V5.25a3 3 0 0 1 6 0v4.5ZM12 17.25a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                  </svg>
+                <% when "humidity" %>
+                  <%# Wind %>
+                  <svg class="h-4 w-4 text-naila-text-muted" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25h12a3 3 0 1 1-3 3M3 15.75h9a3 3 0 1 0-3-3" />
+                  </svg>
+                <% else %>
+                  <%# Signal / antenna %>
+                  <%= render "shared/icons/signal" %>
+                <% end %>
+              </span>
               <div class="min-w-0">
                 <div class="text-sm font-medium text-naila-text truncate"><%= reading.monitoring_station&.name || "—" %></div>
                 <div class="text-xs text-naila-text-muted"><%= reading.reading_type&.humanize %></div>

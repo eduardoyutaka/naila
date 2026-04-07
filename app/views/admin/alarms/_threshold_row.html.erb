@@ -1,9 +1,9 @@
-<div class="threshold-row grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 items-center">
+<div class="threshold-row grid threshold-grid gap-2 items-center">
   <%= tf.hidden_field :id %>
   <%= tf.hidden_field :_destroy, value: "0", data: { destroy_field: true } %>
 
   <%= tf.select :severity,
-        [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]],
+        [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alerta Máximo", 3], ["4 — Emergência", 4]],
         {},
         aria: { labelledby: "th-severity" },
         class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>

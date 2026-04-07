@@ -1,29 +1,33 @@
 import { Controller } from "@hotwired/stimulus"
+import { CHART_THEME } from "chart_theme"
 
-// Risk level → color mapping
-const RISK_COLORS = {
-  normal:     { fill: "rgba(34, 197, 94, 0.15)",  stroke: "#22c55e", glow: "rgba(34, 197, 94, 0.25)" },
-  attention:  { fill: "rgba(234, 179, 8, 0.15)",   stroke: "#eab308", glow: "rgba(234, 179, 8, 0.25)" },
-  alert:      { fill: "rgba(249, 115, 22, 0.20)",  stroke: "#f97316", glow: "rgba(249, 115, 22, 0.30)" },
-  high_alert: { fill: "rgba(239, 68, 68, 0.25)",   stroke: "#ef4444", glow: "rgba(239, 68, 68, 0.40)" },
-  emergency:  { fill: "rgba(168, 85, 247, 0.30)",  stroke: "#a855f7", glow: "rgba(168, 85, 247, 0.50)" },
+// Risk level → color mapping (resolved from CSS custom properties via CHART_THEME)
+function buildRiskColors() {
+  const s = CHART_THEME.severity
+  return {
+    normal:     { fill: "rgba(34, 197, 94, 0.15)",  stroke: CHART_THEME.sensor.online,          glow: "rgba(34, 197, 94, 0.25)" },
+    attention:  { fill: "rgba(234, 179, 8, 0.15)",   stroke: s[1],                               glow: "rgba(234, 179, 8, 0.25)" },
+    alert:      { fill: "rgba(249, 115, 22, 0.20)",  stroke: s[2],                               glow: "rgba(249, 115, 22, 0.30)" },
+    high_alert: { fill: "rgba(239, 68, 68, 0.25)",   stroke: s[3],                               glow: "rgba(239, 68, 68, 0.40)" },
+    emergency:  { fill: "rgba(168, 85, 247, 0.30)",  stroke: s[4],                               glow: "rgba(168, 85, 247, 0.50)" },
+  }
 }
 
 // Alert severity (1–4) → risk level name
 const SEVERITY_TO_RISK = { 1: "attention", 2: "alert", 3: "high_alert", 4: "emergency" }
 
-// Sensor station type → fill color
+// Sensor station type → fill color (from design tokens)
 const SENSOR_TYPE_COLORS = {
-  pluviometer:     "#3b82f6",
-  river_gauge:     "#06b6d4",
-  weather_station: "#8b5cf6",
+  pluviometer:     CHART_THEME.sensor.pluviometer,
+  river_gauge:     CHART_THEME.sensor.river_gauge,
+  weather_station: CHART_THEME.sensor.weather_station,
 }
 
-// Sensor status → stroke color
+// Sensor status → stroke color (from design tokens)
 const SENSOR_STATUS_COLORS = {
-  active:      "#22c55e",
-  maintenance: "#eab308",
-  inactive:    "#ef4444",
+  active:      CHART_THEME.sensor.online,
+  maintenance: CHART_THEME.sensor.degraded,
+  inactive:    CHART_THEME.sensor.offline,
 }
 
 // CartoDB Dark Matter tile URL
@@ -46,6 +50,7 @@ export default class extends Controller {
       return
     }
 
+    this.RISK_COLORS = buildRiskColors()
     this.initMap()
     this.addRiverBasins()
     this.addSensors()
@@ -147,7 +152,7 @@ export default class extends Controller {
     const riskLevel = alertSeverity != null
       ? (SEVERITY_TO_RISK[alertSeverity] || "normal")
       : (feature.get("riskLevel") || "normal")
-    const colors = RISK_COLORS[riskLevel] || RISK_COLORS.normal
+    const colors = this.RISK_COLORS[riskLevel] || this.RISK_COLORS.normal
 
     return new ol.style.Style({
       fill: new ol.style.Fill({ color: colors.fill }),
@@ -256,12 +261,21 @@ export default class extends Controller {
     }
 
     const label = alertSeverity != null ? "Alerta" : "Risco"
-    const color = (RISK_COLORS[riskLevel] || RISK_COLORS.normal).stroke
+    const color = (this.RISK_COLORS[riskLevel] || this.RISK_COLORS.normal).stroke
 
-    this.popupEl.innerHTML = `
-      <strong>${name}</strong><br>
-      ${label}: <span style="color: ${color}">${riskLabels[riskLevel] || riskLevel}</span>
-    `
+    this.popupEl.textContent = ""
+
+    const strong = document.createElement("strong")
+    strong.textContent = name
+    this.popupEl.appendChild(strong)
+    this.popupEl.appendChild(document.createElement("br"))
+    this.popupEl.appendChild(document.createTextNode(`${label}: `))
+
+    const riskSpan = document.createElement("span")
+    riskSpan.style.color = color
+    riskSpan.textContent = riskLabels[riskLevel] || riskLevel
+    this.popupEl.appendChild(riskSpan)
+
     this.showPopupAt(pixel)
   }
 
@@ -285,22 +299,33 @@ export default class extends Controller {
       inactive: "Inativo",
     }
 
-    const statusColor = SENSOR_STATUS_COLORS[status] || "#22c55e"
+    const statusColor = SENSOR_STATUS_COLORS[status] || CHART_THEME.sensor.online
     const typesDisplay = sensorTypes.map(t => typeLabels[t] || t).join(", ")
 
-    let html = `<strong>${name}</strong><br>
-      ${typesDisplay || "—"} · <span style="color: ${statusColor}">${statusLabels[status] || status}</span>`
+    this.popupEl.textContent = ""
+
+    const strong = document.createElement("strong")
+    strong.textContent = name
+    this.popupEl.appendChild(strong)
+    this.popupEl.appendChild(document.createElement("br"))
+
+    this.popupEl.appendChild(document.createTextNode(`${typesDisplay || "—"} · `))
+    const statusSpan = document.createElement("span")
+    statusSpan.style.color = statusColor
+    statusSpan.textContent = statusLabels[status] || status
+    this.popupEl.appendChild(statusSpan)
 
     if (neighborhood) {
-      html += `<br>Bairro: ${neighborhood}`
+      this.popupEl.appendChild(document.createElement("br"))
+      this.popupEl.appendChild(document.createTextNode(`Bairro: ${neighborhood}`))
     }
 
     if (lastValue != null && lastAt) {
       const ago = this.timeAgo(new Date(lastAt))
-      html += `<br>Última leitura: ${lastValue} · ${ago}`
+      this.popupEl.appendChild(document.createElement("br"))
+      this.popupEl.appendChild(document.createTextNode(`Última leitura: ${lastValue} · ${ago}`))
     }
 
-    this.popupEl.innerHTML = html
     this.showPopupAt(pixel)
   }
 

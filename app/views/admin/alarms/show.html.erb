@@ -9,13 +9,6 @@
   }
   type_label = { "metric" => "Métrica", "anomaly_detection" => "Anomalia", "composite" => "Composto" }
   trigger_label = { "alarm" => "Alarme", "ok" => "OK", "insufficient_data" => "Dados Insuficientes" }
-  severity_label = { 1 => "Atenção", 2 => "Alerta", 3 => "Alto", 4 => "Emergência" }
-  severity_color = {
-    1 => "bg-risk-attention/20 text-risk-attention",
-    2 => "bg-risk-alert/20 text-risk-alert",
-    3 => "bg-risk-high/20 text-risk-high",
-    4 => "bg-risk-emergency/20 text-risk-emergency"
-  }
   missing_data_label = {
     "missing" => "Ausente", "notBreaching" => "Não viola",
     "breaching" => "Viola", "ignore" => "Ignorar"
@@ -42,9 +35,7 @@
       <%= type_label[@alarm.alarm_type] %>
     </span>
     <% if @alarm.current_severity %>
-      <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_color[@alarm.current_severity] %>">
-        <%= severity_label[@alarm.current_severity] %>
-      </span>
+      <%= severity_badge(@alarm.current_severity) %>
     <% end %>
     <% unless @alarm.enabled? %>
       <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-attention/20 text-risk-attention">
@@ -52,7 +43,7 @@
       </span>
     <% end %>
   </div>
-  <h1 class="text-xl font-semibold text-naila-text"><%= @alarm.name %></h1>
+  <h1 class="text-2xl font-bold text-naila-text"><%= @alarm.name %></h1>
   <% if @alarm.description.present? %>
     <p class="mt-1 text-sm text-naila-text-muted"><%= @alarm.description %></p>
   <% end %>
@@ -94,9 +85,7 @@
               <div class="mt-2 space-y-1">
                 <% @alarm.alarm_thresholds.order(:severity).each do |t| %>
                   <div class="flex items-center gap-2">
-                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_color[t.severity] %>">
-                      <%= severity_label[t.severity] %>
-                    </span>
+                    <%= severity_badge(t.severity) %>
                     <span class="text-sm tabular-nums text-naila-text-muted">
                       <%= t.comparison_operator.gsub(/([A-Z])/, ' \1').strip %> <%= t.threshold_value %><%= t.unit %>
                     </span>

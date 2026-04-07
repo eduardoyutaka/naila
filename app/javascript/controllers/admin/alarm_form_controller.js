@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["metricFields", "compositeFields", "thresholdFields", "anomalyFields", "thresholdList", "thresholdTemplate"]
+  static targets = ["metricFields", "compositeFields", "thresholdFields", "anomalyFields", "thresholdList", "thresholdTemplate", "emptyWarning"]
   static values = { type: String }
 
   connect() {
@@ -29,6 +29,7 @@ export default class extends Controller {
     })
 
     this.thresholdListTarget.appendChild(clone)
+    this.#updateSubmitState()
   }
 
   removeThreshold(event) {
@@ -45,13 +46,17 @@ export default class extends Controller {
       row.remove()
     }
 
-    // Warn if no visible rows remain (metric alarms require at least one band)
+    this.#updateSubmitState()
+  }
+
+  #updateSubmitState() {
     const visibleRows = this.thresholdListTarget.querySelectorAll(".threshold-row:not([hidden])").length
+    const isEmpty = visibleRows === 0
+
     const submitBtn = this.element.querySelector("[type=submit]")
-    if (submitBtn) {
-      submitBtn.disabled = visibleRows === 0
-      submitBtn.title = visibleRows === 0 ? "Adicione ao menos uma faixa de limiar" : ""
-    }
+    if (submitBtn) submitBtn.disabled = isEmpty
+
+    if (this.hasEmptyWarningTarget) this.emptyWarningTarget.hidden = !isEmpty
   }
 
   #toggle(target, visible) {

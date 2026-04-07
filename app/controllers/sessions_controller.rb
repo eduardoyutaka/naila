@@ -2,6 +2,8 @@ class SessionsController < ApplicationController
   layout "application"
 
   def new
+    @sensors_online = MonitoringStation.online.count
+    @river_basins_count = RiverBasin.count
   end
 
   def create

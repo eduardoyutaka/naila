@@ -27,6 +27,11 @@
   --color-sensor-degraded: #eab308;
   --color-sensor-offline: #ef4444;
 
+  /* Sensor type colors */
+  --color-sensor-pluviometer: #3b82f6;
+  --color-sensor-river-gauge: #06b6d4;
+  --color-sensor-weather: #8b5cf6;
+
   /* Public light theme colors */
   --color-public-bg: #f8fafc;
   --color-public-surface: #ffffff;
@@ -88,6 +93,13 @@
    ============================================ */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   Alarm threshold grid layout
+   ============================================ */
+.threshold-grid {
+  grid-template-columns: 6rem 1fr 6rem 5rem 2rem;
 }
 
 /* ============================================

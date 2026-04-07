@@ -17,9 +17,9 @@
                          when "inactive" then "bg-sensor-offline/20 text-sensor-offline"
                          end
   chart_config = {
-    "precipitation" => { type: "bar",  color: "#3b82f6", label: "Precipitação 24h" },
-    "river_level"   => { type: "line", color: "#06b6d4", label: "Nível do Rio 24h" },
-    "temperature"   => { type: "line", color: "#8b5cf6", label: "Temperatura 24h" },
+    "precipitation" => { type: "bar",  color: "sensor-pluviometer", label: "Precipitação 24h" },
+    "river_level"   => { type: "line", color: "sensor-river-gauge",  label: "Nível do Rio 24h" },
+    "temperature"   => { type: "line", color: "sensor-weather",      label: "Temperatura 24h" },
   }
 %>
 
@@ -78,16 +78,6 @@
           <div class="mb-2 text-xs font-medium uppercase tracking-wider text-naila-text-muted">Sensores</div>
           <div class="space-y-1.5">
             <% @monitoring_station.sensors.each do |sensor| %>
-              <% sensor_type_label = case sensor.sensor_type
-                                     when "pluviometer" then "Pluviômetro"
-                                     when "river_gauge" then "Fluviômetro"
-                                     when "weather_station" then "Estação Meteorológica"
-                                     end %>
-              <% sensor_type_color = case sensor.sensor_type
-                                     when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
-                                     when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
-                                     when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
-                                     end %>
               <% sensor_status_color = case sensor.status
                                        when "active" then "text-sensor-online"
                                        when "maintenance" then "text-sensor-degraded"
@@ -95,7 +85,7 @@
                                        end %>
               <div class="flex items-center justify-between rounded-lg bg-naila-elevated px-3 py-2">
                 <div class="flex items-center gap-2">
-                  <span class="rounded px-1.5 py-0.5 text-xs font-medium <%= sensor_type_color %>"><%= sensor_type_label %></span>
+                  <%= sensor_type_badge(sensor.sensor_type) %>
                   <% if sensor.last_reading_value %>
                     <span class="tabular-nums text-xs text-naila-text">
                       <%= number_with_precision(sensor.last_reading_value, precision: 1) %> <%= sensor.unit %>
@@ -208,7 +198,7 @@
       <div class="mb-2 flex flex-wrap items-center gap-2">
         <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= status_badge_classes %>"><%= status_label %></span>
       </div>
-      <h1 class="text-xl font-semibold text-naila-text"><%= @monitoring_station.name %></h1>
+      <h1 class="text-2xl font-bold text-naila-text"><%= @monitoring_station.name %></h1>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">
@@ -277,16 +267,6 @@
             </div>
             <div class="divide-y divide-naila-border">
               <% @monitoring_station.sensors.each do |sensor| %>
-                <% sensor_type_label = case sensor.sensor_type
-                                       when "pluviometer" then "Pluviômetro"
-                                       when "river_gauge" then "Fluviômetro"
-                                       when "weather_station" then "Estação Meteorológica"
-                                       end %>
-                <% sensor_type_color = case sensor.sensor_type
-                                       when "pluviometer" then "bg-[#3b82f6]/20 text-[#3b82f6]"
-                                       when "river_gauge" then "bg-[#06b6d4]/20 text-[#06b6d4]"
-                                       when "weather_station" then "bg-[#8b5cf6]/20 text-[#8b5cf6]"
-                                       end %>
                 <% sensor_status_color = case sensor.status
                                          when "active" then "text-sensor-online"
                                          when "maintenance" then "text-sensor-degraded"
@@ -294,7 +274,7 @@
                                          end %>
                 <div class="flex items-center justify-between px-4 py-3">
                   <div class="flex items-center gap-3">
-                    <span class="rounded px-1.5 py-0.5 text-xs font-medium <%= sensor_type_color %>"><%= sensor_type_label %></span>
+                    <%= sensor_type_badge(sensor.sensor_type) %>
                     <% if sensor.last_reading_value %>
                       <span class="tabular-nums text-sm text-naila-text">
                         <%= number_with_precision(sensor.last_reading_value, precision: 1) %> <%= sensor.unit %>
@@ -385,7 +365,7 @@
               <% if policy(@monitoring_station).destroy? %>
                 <%= button_to admin_monitoring_station_path(@monitoring_station),
                       method: :delete,
-                      class: "w-full rounded-lg px-4 py-2.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10",
+                      class: "w-full rounded-lg px-4 py-2.5 text-sm font-medium text-risk-high transition-colors hover:bg-risk-high/10",
                       form: { data: { turbo_confirm: "Tem certeza que deseja excluir esta estação? Esta ação não pode ser desfeita." } } do %>
                   Excluir Estação
                 <% end %>

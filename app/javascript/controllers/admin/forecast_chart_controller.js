@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { CHART_THEME } from "chart_theme"
 
 // Dual y-axis ECharts chart for precipitation forecast (bars) + probability (line)
 export default class extends Controller {
@@ -30,21 +31,24 @@ export default class extends Controller {
     const precipData = forecasts.map((f) => f.precipitation_mm)
     const probData = forecasts.map((f) => f.probability)
 
+    const t = CHART_THEME
+    const accentDark = t.sensor.river_gauge  // cyan — probability line
+
     this.chart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: t.bg,
       title: {
         text: this.titleValue,
         left: "center",
-        textStyle: { color: "#f1f5f9", fontSize: 13, fontWeight: 600 },
+        textStyle: { color: t.tooltip.text, fontSize: 13, fontWeight: 600 },
       },
       tooltip: {
         trigger: "axis",
-        backgroundColor: "#1e293b",
-        borderColor: "#334155",
-        textStyle: { color: "#f1f5f9", fontSize: 11 },
-        axisPointer: { type: "cross", lineStyle: { color: "#334155" } },
+        backgroundColor: t.tooltip.bg,
+        borderColor: t.tooltip.border,
+        textStyle: { color: t.tooltip.text, fontSize: 11 },
+        axisPointer: { type: "cross", lineStyle: { color: t.axis.line } },
         formatter(params) {
-          let html = `<div style="margin-bottom:4px;color:#94a3b8;font-size:10px">${params[0].axisValue}</div>`
+          let html = `<div style="margin-bottom:4px;color:${t.tooltip.muted};font-size:10px">${params[0].axisValue}</div>`
           params.forEach((p) => {
             const unit = p.seriesName.includes("Probabilidade") ? "%" : " mm"
             html += `<div>${p.marker}${p.seriesName}: <b>${p.value}${unit}</b></div>`
@@ -54,33 +58,33 @@ export default class extends Controller {
       },
       legend: {
         bottom: 0,
-        textStyle: { color: "#94a3b8", fontSize: 10 },
+        textStyle: { color: t.legend.text, fontSize: 10 },
       },
       grid: { top: 44, right: 56, bottom: 72, left: 52 },
       xAxis: {
         type: "category",
         data: times,
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 10, rotate: 30 },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 10, rotate: 30 },
         splitLine: { show: false },
       },
       yAxis: [
         {
           type: "value",
           name: "mm",
-          nameTextStyle: { color: "#94a3b8", fontSize: 10 },
+          nameTextStyle: { color: t.axis.label, fontSize: 10 },
           axisLine: { show: false },
-          axisLabel: { color: "#94a3b8", fontSize: 10 },
-          splitLine: { lineStyle: { color: "#334155", type: "dashed" } },
+          axisLabel: { color: t.axis.label, fontSize: 10 },
+          splitLine: { lineStyle: { color: t.axis.split, type: "dashed" } },
         },
         {
           type: "value",
           name: "%",
           min: 0,
           max: 100,
-          nameTextStyle: { color: "#94a3b8", fontSize: 10 },
+          nameTextStyle: { color: t.axis.label, fontSize: 10 },
           axisLine: { show: false },
-          axisLabel: { color: "#94a3b8", fontSize: 10, formatter: "{value}%" },
+          axisLabel: { color: t.axis.label, fontSize: 10, formatter: "{value}%" },
           splitLine: { show: false },
         },
       ],
@@ -95,8 +99,8 @@ export default class extends Controller {
               type: "linear",
               x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
-                { offset: 0, color: "#3b82f6" },
-                { offset: 1, color: "#1d4ed8" },
+                { offset: 0, color: t.accent },
+                { offset: 1, color: t.accent + "cc" },
               ],
             },
             borderRadius: [3, 3, 0, 0],
@@ -110,8 +114,8 @@ export default class extends Controller {
           smooth: true,
           symbol: "circle",
           symbolSize: 4,
-          lineStyle: { color: "#06b6d4", width: 1.5 },
-          itemStyle: { color: "#06b6d4" },
+          lineStyle: { color: accentDark, width: 1.5 },
+          itemStyle: { color: accentDark },
         },
       ],
     })
