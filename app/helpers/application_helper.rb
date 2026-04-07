@@ -7,4 +7,7 @@ module ApplicationHelper
   include Catalyst::AvatarHelper
   include Catalyst::TableHelper
   include Catalyst::DescriptionListHelper
+  include Catalyst::DialogHelper
+  include Catalyst::DropdownHelper
+  include Catalyst::ComboboxHelper
 end
