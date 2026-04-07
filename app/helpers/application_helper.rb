@@ -10,4 +10,7 @@ module ApplicationHelper
   include Catalyst::DialogHelper
   include Catalyst::DropdownHelper
   include Catalyst::ComboboxHelper
+  include Catalyst::SidebarHelper
+  include Catalyst::NavbarHelper
+  include Catalyst::PaginationHelper
 end
