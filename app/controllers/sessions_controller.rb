@@ -2,8 +2,8 @@ class SessionsController < ApplicationController
   layout "application"
 
   def new
-    @sensors_online = MonitoringStation.online.count
-    @river_basins_count = RiverBasin.count
+    @sensors_online = Rails.cache.fetch("sensors_online_count", expires_in: 5.minutes) { MonitoringStation.online.count }
+    @river_basins_count = Rails.cache.fetch("river_basins_count", expires_in: 1.hour) { RiverBasin.count }
   end
 
   def create
