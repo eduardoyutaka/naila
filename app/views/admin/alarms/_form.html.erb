@@ -133,15 +133,15 @@
             </div>
 
             <%# Column headers %>
-            <div class="grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 mb-1 px-1">
-              <span class="text-xs font-medium text-naila-text-muted">Severidade</span>
-              <span class="text-xs font-medium text-naila-text-muted">Operador</span>
-              <span class="text-xs font-medium text-naila-text-muted">Limiar</span>
-              <span class="text-xs font-medium text-naila-text-muted">Unidade</span>
+            <div role="row" class="grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 mb-1 px-1">
+              <span role="columnheader" id="th-severity" class="text-xs font-medium text-naila-text-muted">Severidade</span>
+              <span role="columnheader" id="th-operator" class="text-xs font-medium text-naila-text-muted">Operador</span>
+              <span role="columnheader" id="th-threshold" class="text-xs font-medium text-naila-text-muted">Limiar</span>
+              <span role="columnheader" id="th-unit" class="text-xs font-medium text-naila-text-muted">Unidade</span>
               <span></span>
             </div>
 
-            <div data-admin--alarm-form-target="thresholdList" class="space-y-2">
+            <div data-admin--alarm-form-target="thresholdList" aria-live="polite" class="space-y-2">
               <%= form.fields_for :alarm_thresholds do |tf| %>
                 <%= render "admin/alarms/threshold_row", tf: tf, persisted: tf.object.persisted? %>
               <% end %>
@@ -151,6 +151,7 @@
             <template data-admin--alarm-form-target="thresholdTemplate">
               <div class="threshold-row grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 items-center">
                 <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
+                        aria-labelledby="th-severity"
                         class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent">
                   <option value="1">1 — Atenção</option>
                   <option value="2">2 — Alerta</option>
@@ -158,6 +159,7 @@
                   <option value="4">4 — Emergência</option>
                 </select>
                 <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"
+                        aria-labelledby="th-operator"
                         class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent">
                   <option value="GreaterThanThreshold">Maior que</option>
                   <option value="GreaterThanOrEqualToThreshold" selected>Maior ou igual</option>
@@ -166,13 +168,18 @@
                 </select>
                 <input type="number" step="any" placeholder="0.0"
                        name="alarm[alarm_thresholds_attributes][NEW_RECORD][threshold_value]"
+                       aria-labelledby="th-threshold"
                        class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm tabular-nums text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" />
                 <input type="text" placeholder="mm"
                        name="alarm[alarm_thresholds_attributes][NEW_RECORD][unit]"
+                       aria-labelledby="th-unit"
                        class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" />
                 <button type="button"
+                        aria-label="Remover faixa"
+                        title="Remover faixa"
                         class="flex items-center justify-center rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-risk-high transition-colors"
-                        data-action="click->admin--alarm-form#removeThreshold">
+                        data-action="click->admin--alarm-form#removeThreshold"
+                        data-persisted="false">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                   </svg>

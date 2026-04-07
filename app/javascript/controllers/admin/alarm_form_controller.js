@@ -5,16 +5,14 @@ export default class extends Controller {
   static values = { type: String }
 
   connect() {
-    this.toggleSections()
+    this.toggleSections(this.typeValue)
   }
 
   typeChanged(event) {
-    this.typeValue = event.target.value
-    this.toggleSections()
+    this.toggleSections(event.target.value)
   }
 
-  toggleSections() {
-    const type = this.typeValue
+  toggleSections(type = this.typeValue) {
     this.#toggle(this.metricFieldsTarget, type !== "composite")
     this.#toggle(this.compositeFieldsTarget, type === "composite")
     this.#toggle(this.thresholdFieldsTarget, type === "metric")
@@ -45,6 +43,14 @@ export default class extends Controller {
       row.querySelectorAll("input, select").forEach(el => el.disabled = true)
     } else {
       row.remove()
+    }
+
+    // Warn if no visible rows remain (metric alarms require at least one band)
+    const visibleRows = this.thresholdListTarget.querySelectorAll(".threshold-row:not([hidden])").length
+    const submitBtn = this.element.querySelector("[type=submit]")
+    if (submitBtn) {
+      submitBtn.disabled = visibleRows === 0
+      submitBtn.title = visibleRows === 0 ? "Adicione ao menos uma faixa de limiar" : ""
     }
   }
 
