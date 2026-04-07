@@ -391,73 +391,107 @@ Sensor.find_each do |sensor|
 end
 
 # ============================================================
-# 7. Alarms (CloudWatch-style)
+# 7. Alarms (CloudWatch-style, multi-threshold)
 # ============================================================
 puts "  Creating alarms..."
 
-# Metric alarms — precipitation per basin
+precip_bands = [
+  { severity: 1, value: 20.0 },
+  { severity: 2, value: 40.0 },
+  { severity: 3, value: 60.0 },
+  { severity: 4, value: 80.0 },
+]
+
+# One precipitation alarm per basin with 4 threshold bands
 precip_alarms = {}
 basins.each do |basin_name, basin|
-  [
-    { severity: 1, value: 20.0, label: "Atenção" },
-    { severity: 2, value: 40.0, label: "Alerta" },
-    { severity: 3, value: 60.0, label: "Alerta Máximo" },
-    { severity: 4, value: 80.0, label: "Emergência" },
-  ].each do |level|
-    alarm_name = "Precipitação 3h — #{basin.name} (sev #{level[:severity]})"
-    alarm = Alarm.find_or_create_by!(name: alarm_name) do |a|
-      a.alarm_type = "metric"
-      a.severity = level[:severity]
-      a.enabled = true
-      a.river_basin = basin
-      a.metric_name = "precipitation_3h"
-      a.statistic = "Sum"
-      a.period_seconds = 3600
-      a.evaluation_periods = 3
-      a.datapoints_to_alarm = 2
-      a.comparison_operator = "GreaterThanOrEqualToThreshold"
-      a.threshold_value = level[:value]
-      a.unit = "mm"
-      a.missing_data_treatment = "missing"
-      a.state = "insufficient_data"
+  alarm_name = "Precipitação 3h — #{basin.name}"
+  alarm = Alarm.find_by(name: alarm_name)
+  unless alarm
+    alarm = Alarm.new(
+      name: alarm_name,
+      alarm_type: "metric",
+      enabled: true,
+      river_basin: basin,
+      metric_name: "precipitation_3h",
+      statistic: "Sum",
+      period_seconds: 3600,
+      evaluation_periods: 3,
+      datapoints_to_alarm: 2,
+      missing_data_treatment: "missing",
+      state: "insufficient_data"
+    )
+    precip_bands.each do |band|
+      alarm.alarm_thresholds.build(
+        severity: band[:severity],
+        comparison_operator: "GreaterThanOrEqualToThreshold",
+        threshold_value: band[:value],
+        unit: "mm"
+      )
     end
-    precip_alarms["#{basin_name}:#{level[:severity]}"] = alarm
+    alarm.save!
+  else
+    precip_bands.each do |band|
+      AlarmThreshold.find_or_create_by!(alarm: alarm, severity: band[:severity]) do |t|
+        t.comparison_operator = "GreaterThanOrEqualToThreshold"
+        t.threshold_value = band[:value]
+        t.unit = "mm"
+      end
+    end
   end
+  precip_alarms[basin_name] = alarm
 end
 
-# Metric alarms — river level per river
+# One river level alarm per river with 2 threshold bands
 river_alarms = {}
 rivers.each do |river_name, river|
-  [
-    { severity: 2, value: river.alert_level_m, label: "Alerta" },
-    { severity: 3, value: river.flood_level_m, label: "Alerta Máximo" },
-  ].each do |level|
-    alarm_name = "Nível do rio — #{river.name} (sev #{level[:severity]})"
-    alarm = Alarm.find_or_create_by!(name: alarm_name) do |a|
-      a.alarm_type = "metric"
-      a.severity = level[:severity]
-      a.enabled = true
-      a.river_basin = river.river_basin
-      a.river = river
-      a.metric_name = "river_level"
-      a.statistic = "Maximum"
-      a.period_seconds = 300
-      a.evaluation_periods = 3
-      a.datapoints_to_alarm = 2
-      a.comparison_operator = "GreaterThanOrEqualToThreshold"
-      a.threshold_value = level[:value]
-      a.unit = "m"
-      a.missing_data_treatment = "missing"
-      a.state = "insufficient_data"
+  alarm_name = "Nível do rio — #{river.name}"
+  alarm = Alarm.find_by(name: alarm_name)
+  unless alarm
+    alarm = Alarm.new(
+      name: alarm_name,
+      alarm_type: "metric",
+      enabled: true,
+      river_basin: river.river_basin,
+      river: river,
+      metric_name: "river_level",
+      statistic: "Maximum",
+      period_seconds: 300,
+      evaluation_periods: 3,
+      datapoints_to_alarm: 2,
+      missing_data_treatment: "missing",
+      state: "insufficient_data"
+    )
+    [
+      { severity: 2, value: river.alert_level_m },
+      { severity: 3, value: river.flood_level_m },
+    ].each do |band|
+      alarm.alarm_thresholds.build(
+        severity: band[:severity],
+        comparison_operator: "GreaterThanOrEqualToThreshold",
+        threshold_value: band[:value],
+        unit: "m"
+      )
     end
-    river_alarms["#{river_name}:#{level[:severity]}"] = alarm
+    alarm.save!
+  else
+    [
+      { severity: 2, value: river.alert_level_m },
+      { severity: 3, value: river.flood_level_m },
+    ].each do |band|
+      AlarmThreshold.find_or_create_by!(alarm: alarm, severity: band[:severity]) do |t|
+        t.comparison_operator = "GreaterThanOrEqualToThreshold"
+        t.threshold_value = band[:value]
+        t.unit = "m"
+      end
+    end
   end
+  river_alarms[river_name] = alarm
 end
 
 # Anomaly detection alarm — precipitation anomaly for Bacia do Rio Atuba
-anomaly_alarm = Alarm.find_or_create_by!(name: "Anomalia Precipitação — Bacia do Rio Atuba") do |a|
+Alarm.find_or_create_by!(name: "Anomalia Precipitação — Bacia do Rio Atuba") do |a|
   a.alarm_type = "anomaly_detection"
-  a.severity = 2
   a.enabled = true
   a.river_basin = basins["Bacia do Rio Atuba"]
   a.metric_name = "precipitation_1h"
@@ -471,18 +505,14 @@ anomaly_alarm = Alarm.find_or_create_by!(name: "Anomalia Precipitação — Baci
 end
 
 # Composite alarm — flood risk combining precipitation + river level
-composite_names = []
 rivers.each do |river_name, river|
-  precip_key = "#{river.river_basin.name}:3"
-  river_key = "#{river_name}:2"
-  precip = precip_alarms[precip_key]
-  river_a = river_alarms[river_key]
+  precip = precip_alarms[river.river_basin.name]
+  river_a = river_alarms[river_name]
   next unless precip && river_a
 
   alarm_name = "Risco de Enchente — #{river.name}"
   composite = Alarm.find_or_create_by!(name: alarm_name) do |a|
     a.alarm_type = "composite"
-    a.severity = 4
     a.enabled = true
     a.river_basin = river.river_basin
     a.composite_rule = "ALARM(#{precip.name}) AND ALARM(#{river_a.name})"
@@ -490,38 +520,29 @@ rivers.each do |river_name, river|
     a.state = "insufficient_data"
   end
 
-  # Link child alarms
   CompositeAlarmChild.find_or_create_by!(composite_alarm: composite, child_alarm: precip)
   CompositeAlarmChild.find_or_create_by!(composite_alarm: composite, child_alarm: river_a)
-  composite_names << alarm_name
 end
 
-# Alarm actions — auto-generate notification actions per severity
-channels_for_severity = {
-  1 => %w[websocket],
-  2 => %w[websocket sms],
-  3 => %w[websocket sms push],
-  4 => %w[websocket sms push email civil_defense]
-}
-
+# Alarm actions — severity-aware notifications using min_severity
 Alarm.find_each do |alarm|
   next if alarm.alarm_actions.exists?
 
-  channels = channels_for_severity.fetch(alarm.severity, %w[websocket])
+  # Always notify via websocket
+  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
+                               configuration: { "channels" => %w[websocket] }, enabled: true)
+  # SMS at severity 2+
+  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
+                               configuration: { "channels" => %w[sms] }, min_severity: 2, enabled: true)
+  # Push at severity 3+
+  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
+                               configuration: { "channels" => %w[push] }, min_severity: 3, enabled: true)
+  # Email + civil defense at severity 4
+  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
+                               configuration: { "channels" => %w[email civil_defense] }, min_severity: 4, enabled: true)
 
-  alarm.alarm_actions.create!(
-    trigger_state: "alarm",
-    action_type: "notification",
-    configuration: { "channels" => channels },
-    enabled: true
-  )
-
-  alarm.alarm_actions.create!(
-    trigger_state: "ok",
-    action_type: "notification",
-    configuration: { "channels" => %w[websocket] },
-    enabled: true
-  )
+  alarm.alarm_actions.create!(trigger_state: "ok", action_type: "notification",
+                               configuration: { "channels" => %w[websocket] }, enabled: true)
 end
 
 # ============================================================
