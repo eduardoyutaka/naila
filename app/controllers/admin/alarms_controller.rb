@@ -3,7 +3,7 @@ module Admin
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
 
-    before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history, :enable, :disable ]
+    before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history ]
 
     def index
       @alarms = policy_scope(Alarm).includes(:river_basin, :river)
@@ -60,17 +60,6 @@ module Admin
       @state_histories = @alarm.alarm_state_histories.order(evaluated_at: :desc)
     end
 
-    def enable
-      authorize @alarm
-      @alarm.update!(enabled: true)
-      redirect_to admin_alarm_path(@alarm), notice: "Alarme ativado."
-    end
-
-    def disable
-      authorize @alarm
-      @alarm.update!(enabled: false)
-      redirect_to admin_alarm_path(@alarm), notice: "Alarme desativado."
-    end
 
     private
 

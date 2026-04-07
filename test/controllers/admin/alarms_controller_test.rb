@@ -207,27 +207,4 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  # ── Enable / Disable ──
-
-  test "enable activates a disabled alarm" do
-    alarm = alarms(:disabled_alarm)
-    assert_not alarm.enabled?
-    patch enable_admin_alarm_path(alarm)
-    assert_redirected_to admin_alarm_path(alarm)
-    assert alarm.reload.enabled?
-  end
-
-  test "disable deactivates an enabled alarm" do
-    alarm = alarms(:precip_3h_belem)
-    assert alarm.enabled?
-    patch disable_admin_alarm_path(alarm)
-    assert_redirected_to admin_alarm_path(alarm)
-    assert_not alarm.reload.enabled?
-  end
-
-  test "operator cannot enable alarms" do
-    sign_in_as users(:operator)
-    patch enable_admin_alarm_path(alarms(:disabled_alarm))
-    assert_redirected_to admin_root_path
-  end
 end

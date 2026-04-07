@@ -26,10 +26,9 @@ Rails.application.routes.draw do
     resources :monitoring_stations, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
     resources :alarms do
       resources :alarm_actions, only: [ :new, :create, :edit, :update, :destroy ]
+      resource :status, only: [ :update ], module: :alarms
       member do
         get :history
-        patch :enable
-        patch :disable
       end
     end
     resources :river_basins, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]

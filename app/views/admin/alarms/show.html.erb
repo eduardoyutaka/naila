@@ -265,9 +265,10 @@
             Editar Alarme
           <% end %>
         <% end %>
-        <% if policy(@alarm).enable? && !@alarm.enabled? %>
-          <%= button_to enable_admin_alarm_path(@alarm),
+        <% if policy(@alarm).update? && !@alarm.enabled? %>
+          <%= button_to admin_alarm_status_path(@alarm),
                 method: :patch,
+                params: { enabled: "true" },
                 class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-normal/30 bg-risk-normal/10 px-4 py-2.5 text-sm font-medium text-risk-normal transition-colors hover:bg-risk-normal/20" do %>
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
@@ -275,9 +276,10 @@
             Ativar Alarme
           <% end %>
         <% end %>
-        <% if policy(@alarm).disable? && @alarm.enabled? %>
-          <%= button_to disable_admin_alarm_path(@alarm),
+        <% if policy(@alarm).update? && @alarm.enabled? %>
+          <%= button_to admin_alarm_status_path(@alarm),
                 method: :patch,
+                params: { enabled: "false" },
                 class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-attention/30 bg-risk-attention/10 px-4 py-2.5 text-sm font-medium text-risk-attention transition-colors hover:bg-risk-attention/20" do %>
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
