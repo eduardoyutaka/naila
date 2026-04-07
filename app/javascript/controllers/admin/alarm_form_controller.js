@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["metricFields", "compositeFields", "thresholdFields", "anomalyFields", "thresholdList", "thresholdTemplate", "emptyWarning"]
+  static targets = ["metricFields", "compositeFields", "thresholdFields", "anomalyFields", "thresholdList", "thresholdTemplate", "emptyWarning", "submit"]
   static values = { type: String }
 
   connect() {
@@ -53,8 +53,7 @@ export default class extends Controller {
     const visibleRows = this.thresholdListTarget.querySelectorAll(".threshold-row:not([hidden])").length
     const isEmpty = visibleRows === 0
 
-    const submitBtn = this.element.querySelector("[type=submit]")
-    if (submitBtn) submitBtn.disabled = isEmpty
+    if (this.hasSubmitTarget) this.submitTarget.disabled = isEmpty
 
     if (this.hasEmptyWarningTarget) this.emptyWarningTarget.hidden = !isEmpty
   }
