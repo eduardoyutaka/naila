@@ -1,0 +1,32 @@
+<div class="threshold-row grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 items-center">
+  <%= tf.hidden_field :id %>
+  <%= tf.hidden_field :_destroy, value: "0", data: { destroy_field: true } %>
+
+  <%= tf.select :severity,
+        [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]],
+        {},
+        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+
+  <%= tf.select :comparison_operator,
+        [["Maior que", "GreaterThanThreshold"],
+         ["Maior ou igual", "GreaterThanOrEqualToThreshold"],
+         ["Menor que", "LessThanThreshold"],
+         ["Menor ou igual", "LessThanOrEqualToThreshold"]],
+        {},
+        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+
+  <%= tf.number_field :threshold_value, step: "any", placeholder: "0.0",
+        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm tabular-nums text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+
+  <%= tf.text_field :unit, placeholder: "mm",
+        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+
+  <button type="button"
+          class="flex items-center justify-center rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-risk-high transition-colors"
+          data-action="click->admin--alarm-form#removeThreshold"
+          <% if persisted %>data-persisted="true"<% end %>>
+    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div>

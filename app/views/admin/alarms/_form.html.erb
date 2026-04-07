@@ -25,23 +25,14 @@
             placeholder: "Ex: Precipitação 3h — Bacia Belém" %>
     </div>
 
-    <%# Tipo + Severidade %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :alarm_type, "Tipo", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-        <%= form.select :alarm_type,
-              [["Métrica", "metric"], ["Anomalia", "anomaly_detection"], ["Composto", "composite"]],
-              {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
-              data: { action: "change->admin--alarm-form#typeChanged" } %>
-      </div>
-      <div>
-        <%= form.label :severity, "Severidade", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-        <%= form.select :severity,
-              [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]],
-              {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
-      </div>
+    <%# Tipo %>
+    <div>
+      <%= form.label :alarm_type, "Tipo", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+      <%= form.select :alarm_type,
+            [["Métrica", "metric"], ["Anomalia", "anomaly_detection"], ["Composto", "composite"]],
+            {},
+            class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
+            data: { action: "change->admin--alarm-form#typeChanged" } %>
     </div>
 
     <%# Descrição %>
@@ -127,32 +118,67 @@
             </div>
           </div>
 
-          <%# Threshold fields (metric only) %>
+          <%# Threshold bands (metric only) %>
           <div data-admin--alarm-form-target="thresholdFields">
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-              <div>
-                <%= form.label :comparison_operator, "Operador", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-                <%= form.select :comparison_operator,
-                      [["Maior que", "GreaterThanThreshold"],
-                       ["Maior ou igual", "GreaterThanOrEqualToThreshold"],
-                       ["Menor que", "LessThanThreshold"],
-                       ["Menor ou igual", "LessThanOrEqualToThreshold"]],
-                      { include_blank: "— Selecione —" },
-                      class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
-              </div>
-              <div>
-                <%= form.label :threshold_value, "Limiar", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-                <%= form.number_field :threshold_value, step: "any",
-                      class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 tabular-nums text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
-                      placeholder: "40.0" %>
-              </div>
-              <div>
-                <%= form.label :unit, "Unidade", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
-                <%= form.text_field :unit,
-                      class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent",
-                      placeholder: "mm" %>
-              </div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-naila-text-muted">Faixas de Limiar</span>
+              <button type="button"
+                      class="inline-flex items-center gap-1 rounded-md bg-naila-elevated px-2.5 py-1.5 text-xs font-medium text-naila-text-muted border border-naila-border hover:text-naila-accent hover:border-naila-accent transition-colors"
+                      data-action="click->admin--alarm-form#addThreshold">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Adicionar Faixa
+              </button>
             </div>
+
+            <%# Column headers %>
+            <div class="grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 mb-1 px-1">
+              <span class="text-xs font-medium text-naila-text-muted">Severidade</span>
+              <span class="text-xs font-medium text-naila-text-muted">Operador</span>
+              <span class="text-xs font-medium text-naila-text-muted">Limiar</span>
+              <span class="text-xs font-medium text-naila-text-muted">Unidade</span>
+              <span></span>
+            </div>
+
+            <div data-admin--alarm-form-target="thresholdList" class="space-y-2">
+              <%= form.fields_for :alarm_thresholds do |tf| %>
+                <%= render "admin/alarms/threshold_row", tf: tf, persisted: tf.object.persisted? %>
+              <% end %>
+            </div>
+
+            <%# Hidden template for new rows — cloned by JS %>
+            <template data-admin--alarm-form-target="thresholdTemplate">
+              <div class="threshold-row grid grid-cols-[6rem_1fr_6rem_5rem_2rem] gap-2 items-center">
+                <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
+                        class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent">
+                  <option value="1">1 — Atenção</option>
+                  <option value="2">2 — Alerta</option>
+                  <option value="3">3 — Alto</option>
+                  <option value="4">4 — Emergência</option>
+                </select>
+                <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"
+                        class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent">
+                  <option value="GreaterThanThreshold">Maior que</option>
+                  <option value="GreaterThanOrEqualToThreshold" selected>Maior ou igual</option>
+                  <option value="LessThanThreshold">Menor que</option>
+                  <option value="LessThanOrEqualToThreshold">Menor ou igual</option>
+                </select>
+                <input type="number" step="any" placeholder="0.0"
+                       name="alarm[alarm_thresholds_attributes][NEW_RECORD][threshold_value]"
+                       class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm tabular-nums text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" />
+                <input type="text" placeholder="mm"
+                       name="alarm[alarm_thresholds_attributes][NEW_RECORD][unit]"
+                       class="rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" />
+                <button type="button"
+                        class="flex items-center justify-center rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-risk-high transition-colors"
+                        data-action="click->admin--alarm-form#removeThreshold">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </template>
           </div>
 
           <%# Anomaly fields %>

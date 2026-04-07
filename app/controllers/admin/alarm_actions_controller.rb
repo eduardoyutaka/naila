@@ -47,7 +47,7 @@ module Admin
     end
 
     def alarm_action_params
-      params.require(:alarm_action).permit(:trigger_state, :action_type, :enabled, configuration: {})
+      params.require(:alarm_action).permit(:trigger_state, :action_type, :min_severity, :enabled, configuration: {})
     end
   end
 end
