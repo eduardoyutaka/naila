@@ -9,7 +9,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     @alarm.alarm_actions.create!(
       trigger_state: "alarm",
       action_type: "notification",
-      configuration: { "channels" => %w[websocket sms] },
+      configuration: { "channels" => %w[websocket] },
       enabled: true
     )
   end
@@ -65,6 +65,13 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
 
     assert_broadcasts("alarms", 1) do
       AlarmActionExecutor.execute(@alarm, "insufficient_data")
+    end
+  end
+
+  test "raises NotImplementedError for unimplemented channels (sms, push, email, civil_defense)" do
+    @alarm.alarm_actions.first.update!(configuration: { "channels" => %w[sms] })
+    assert_raises(NotImplementedError) do
+      AlarmActionExecutor.execute(@alarm, "alarm")
     end
   end
 

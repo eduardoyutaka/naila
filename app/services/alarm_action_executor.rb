@@ -45,14 +45,8 @@ class AlarmActionExecutor
       case channel
       when "websocket"
         ActionCable.server.broadcast("alarms", payload)
-      when "sms"
-        Rails.logger.info("[AlarmActionExecutor] SMS: alarm #{@alarm.id}")
-      when "push"
-        Rails.logger.info("[AlarmActionExecutor] Push: alarm #{@alarm.id}")
-      when "email"
-        Rails.logger.info("[AlarmActionExecutor] Email: alarm #{@alarm.id}")
-      when "civil_defense"
-        Rails.logger.info("[AlarmActionExecutor] Civil defense: alarm #{@alarm.id}")
+      when "sms", "push", "email", "civil_defense"
+        raise NotImplementedError, "Canal '#{channel}' ainda não está implementado."
       end
     end
   end
