@@ -15,10 +15,10 @@
   <div class="flex flex-1 flex-col gap-1 p-3">
     <% nav_items.each do |item| %>
       <%= link_to item[:path],
-            class: "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+            class: "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-colors
               #{current_page?(item[:path]) ?
-                'bg-naila-accent/10 text-naila-accent' :
-                'text-naila-text-muted hover:bg-naila-elevated hover:text-naila-text'}" do %>
+                'border-l-2 border-naila-accent bg-naila-accent/10 text-naila-accent pl-[10px] pr-3' :
+                'px-3 text-naila-text-muted hover:bg-naila-elevated hover:text-naila-text'}" do %>
         <%= render "shared/icons/#{item[:icon]}" %>
         <span><%= item[:label] %></span>
       <% end %>

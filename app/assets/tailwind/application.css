@@ -5,22 +5,22 @@
    ============================================ */
 
 @theme {
-  /* Admin dark theme colors */
-  --color-naila-bg: #0a0f1a;
-  --color-naila-surface: #111827;
-  --color-naila-elevated: #1e293b;
-  --color-naila-border: #334155;
-  --color-naila-accent: #3b82f6;
-  --color-naila-glow: #60a5fa;
-  --color-naila-text: #f1f5f9;
-  --color-naila-text-muted: #94a3b8;
+  /* Admin dark theme colors — "Sentinela" palette */
+  --color-naila-bg: #04091a;
+  --color-naila-surface: #081325;
+  --color-naila-elevated: #0d2040;
+  --color-naila-border: #162d50;
+  --color-naila-accent: #0ea5e9;
+  --color-naila-glow: #7dd3fc;
+  --color-naila-text: #daf0ff;
+  --color-naila-text-muted: #4d7a9a;
 
   /* Risk level colors */
   --color-risk-normal: #22c55e;
   --color-risk-attention: #eab308;
   --color-risk-alert: #f97316;
   --color-risk-high: #ef4444;
-  --color-risk-emergency: #a855f7;
+  --color-risk-emergency: #c026d3;
 
   /* Sensor status colors */
   --color-sensor-online: #22c55e;
@@ -79,13 +79,50 @@
 /* ============================================
    Risk level glow utilities
    ============================================ */
-.glow-normal { box-shadow: 0 0 12px #22c55e40; }
-.glow-attention { box-shadow: 0 0 12px #eab30840; }
-.glow-alert { box-shadow: 0 0 16px #f9731640; }
-.glow-high { box-shadow: 0 0 20px #ef444460; }
+.glow-normal { box-shadow: 0 0 14px #22c55e50; }
+.glow-attention { box-shadow: 0 0 14px #eab30850; }
+.glow-alert { box-shadow: 0 0 18px #f9731660; }
+.glow-high { box-shadow: 0 0 22px #ef444470; }
 .glow-emergency {
-  box-shadow: 0 0 24px #a855f780;
+  box-shadow: 0 0 28px #c026d390;
   animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   Topbar accent glow (bottom border highlight)
+   ============================================ */
+.topbar-glow {
+  box-shadow: 0 1px 0 color-mix(in srgb, #0ea5e9 25%, transparent 75%),
+              0 2px 8px color-mix(in srgb, #0ea5e9 8%, transparent 92%);
+}
+
+/* ============================================
+   Stat card — subtle gradient for summary cards
+   ============================================ */
+.stat-card {
+  background: linear-gradient(135deg, #081325 0%, #0d2040 100%);
+  border: 1px solid #162d50;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/* ============================================
+   Panel — canonical container for lists/tables
+   ============================================ */
+.panel {
+  border-radius: 0.75rem;
+  border: 1px solid #162d50;
+  background-color: #081325;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #162d50;
+  background: linear-gradient(to bottom, #0d2040, #081325);
 }
 
 /* ============================================
