@@ -8,7 +8,11 @@ class RiverBasin < ApplicationRecord
   has_many :alarms, dependent: :nullify
   has_many :evacuation_routes, dependent: :destroy
 
+  attr_writer :geometry_geojson
+
   validates :name, presence: true
+
+  before_validation :parse_geometry_geojson
 
   enum :current_risk_level, {
     normal: 0,
@@ -20,4 +24,16 @@ class RiverBasin < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :at_risk, -> { where.not(current_risk_level: :normal) }
+
+  private
+
+  def parse_geometry_geojson
+    return unless @geometry_geojson.present?
+
+    factory = RGeo::Geographic.spherical_factory(srid: 4326)
+    parsed = JSON.parse(@geometry_geojson)
+    self.geometry = RGeo::GeoJSON.decode(parsed, geo_factory: factory)
+  rescue JSON::ParserError, RGeo::Error::InvalidGeometry
+    errors.add(:geometry, "inválida")
+  end
 end
