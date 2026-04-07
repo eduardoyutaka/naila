@@ -15,7 +15,7 @@ module Admin
     end
 
     def not_authorized
-      redirect_to admin_root_path, alert: "Voce nao tem permissao para realizar esta acao."
+      redirect_to admin_root_path, alert: "Você não tem permissão para realizar esta ação."
     end
   end
 end

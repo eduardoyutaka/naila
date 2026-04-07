@@ -27,7 +27,7 @@ module Authentication
   end
 
   def redirect_to_sign_in
-    redirect_to login_path, alert: "Voce precisa fazer login para acessar esta pagina."
+    redirect_to login_path, alert: "Você precisa fazer login para acessar esta página."
   end
 
   def start_session(user)
