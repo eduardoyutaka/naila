@@ -8,13 +8,20 @@ class FetchCemadenJob < ApplicationJob
 
     return if readings.empty?
 
+    # Batch-load all CEMADEN stations and their pluviometer sensors to avoid O(n) DB queries
+    station_map = MonitoringStation.where(data_source: "CEMADEN")
+                                   .index_by(&:external_id)
+    station_ids = station_map.values.map(&:id)
+    sensor_map = Sensor.where(monitoring_station_id: station_ids, sensor_type: :pluviometer, status: :active)
+                       .index_by(&:monitoring_station_id)
+
     affected_basin_ids = Set.new
 
     readings.each do |attrs|
-      station = MonitoringStation.find_by(external_id: attrs[:station_code], data_source: "CEMADEN")
+      station = station_map[attrs[:station_code]]
       next unless station
 
-      sensor = station.sensors.find_by(reading_type: attrs[:reading_type])
+      sensor = sensor_map[station.id]
       next unless sensor
 
       SensorReading.find_or_create_by!(
