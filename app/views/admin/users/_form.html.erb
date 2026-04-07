@@ -1,112 +1,72 @@
-<div class="rounded-xl border border-white/10 bg-zinc-900">
-  <div class="border-b border-white/10 px-6 py-4">
-    <h2 class="text-sm font-semibold text-white">
-      <%= user.persisted? ? "Editar Usuário" : "Novo Usuário" %>
-    </h2>
+<div class="rounded-xl border border-zinc-950/10 bg-white shadow-sm dark:border-white/10 dark:bg-zinc-900">
+  <div class="border-b border-zinc-950/10 px-6 py-4 dark:border-white/10">
+    <%= catalyst_subheading(user.persisted? ? "Editar Usuário" : "Novo Usuário") %>
   </div>
 
-  <div class="p-6 space-y-5">
-    <% if user.errors.any? %>
-      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
-        <p class="text-sm font-medium text-red-400">
-          <%= user.errors.count %> erro(s) impediu(iram) o salvamento:
-        </p>
-        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
-          <% user.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
+  <div class="p-6">
+    <%= form.error_summary %>
+
+    <%= form.field_group do %>
+      <%= form.field do %>
+        <%= form.label :name, "Nome" %>
+        <%= form.text_field :name, required: true, placeholder: "Nome completo" %>
+      <% end %>
+
+      <%= form.field do %>
+        <%= form.label :email_address, "Email" %>
+        <%= form.email_field :email_address, required: true, placeholder: "usuario@exemplo.com" %>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :department, "Departamento" %>
+          <%= form.text_field :department, placeholder: "Defesa Civil" %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :phone_number, "Telefone" %>
+          <%= form.telephone_field :phone_number, placeholder: "+5541999000000" %>
+        <% end %>
+      </div>
+
+      <%= form.field do %>
+        <%= form.label :role, "Cargo" %>
+        <%= form.select :role, [["Operador", "operator"], ["Coordenador", "coordinator"], ["Administrador", "admin"]] %>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :password, "Senha" %>
+          <%= form.password_field :password, required: !user.persisted?, placeholder: "••••••••" %>
+          <% if user.persisted? %>
+            <%= form.description "Deixe em branco para manter a senha atual." %>
           <% end %>
-        </ul>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :password_confirmation, "Confirmar Senha" %>
+          <%= form.password_field :password_confirmation, required: !user.persisted?, placeholder: "••••••••" %>
+        <% end %>
+      </div>
+
+      <div class="flex flex-col gap-4 rounded-lg border border-zinc-950/10 bg-zinc-50 p-4 dark:border-white/10 dark:bg-zinc-800">
+        <div class="flex items-center gap-3">
+          <%= form.check_box :active, { disabled: user == current_user }, "true", "false" %>
+          <%= form.label :active do %>
+            Usuário ativo
+            <% if user == current_user %>
+              <span class="text-xs text-zinc-500 dark:text-zinc-400 ml-1">(você não pode desativar seu próprio usuário)</span>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= form.check_box :receives_sms_alerts, {}, "true", "false" %>
+          <%= form.label :receives_sms_alerts, "Recebe alertas por SMS" %>
+        </div>
       </div>
     <% end %>
-
-    <%# Nome %>
-    <div>
-      <%= form.label :name, "Nome", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.text_field :name, required: true,
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-            placeholder: "Nome completo" %>
-    </div>
-
-    <%# Email %>
-    <div>
-      <%= form.label :email_address, "Email", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.email_field :email_address, required: true,
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-            placeholder: "usuario@exemplo.com" %>
-    </div>
-
-    <%# Departamento + Telefone (side by side) %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :department, "Departamento", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.text_field :department,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "Defesa Civil" %>
-      </div>
-      <div>
-        <%= form.label :phone_number, "Telefone", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.telephone_field :phone_number,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "+5541999000000" %>
-      </div>
-    </div>
-
-    <%# Cargo %>
-    <div>
-      <%= form.label :role, "Cargo", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.select :role,
-            [["Operador", "operator"], ["Coordenador", "coordinator"], ["Administrador", "admin"]],
-            {},
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-    </div>
-
-    <%# Senha + Confirmar Senha %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :password, "Senha", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.password_field :password,
-              required: !user.persisted?,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "••••••••" %>
-        <% if user.persisted? %>
-          <p class="mt-1 text-xs text-zinc-400">Deixe em branco para manter a senha atual.</p>
-        <% end %>
-      </div>
-      <div>
-        <%= form.label :password_confirmation, "Confirmar Senha", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.password_field :password_confirmation,
-              required: !user.persisted?,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "••••••••" %>
-      </div>
-    </div>
-
-    <%# Toggles %>
-    <div class="flex flex-col gap-4 rounded-lg border border-white/10 bg-zinc-800 p-4">
-      <div class="flex items-center gap-3">
-        <%= form.check_box :active,
-              { disabled: user == current_user, class: "h-4 w-4 rounded border-white/10 bg-zinc-950 text-sky-500 focus:ring-sky-500 focus:ring-offset-zinc-950" },
-              "true", "false" %>
-        <%= form.label :active, class: "text-sm text-white" do %>
-          Usuário ativo
-          <% if user == current_user %>
-            <span class="text-xs text-zinc-400 ml-1">(você não pode desativar seu próprio usuário)</span>
-          <% end %>
-        <% end %>
-      </div>
-      <div class="flex items-center gap-3">
-        <%= form.check_box :receives_sms_alerts,
-              { class: "h-4 w-4 rounded border-white/10 bg-zinc-950 text-sky-500 focus:ring-sky-500 focus:ring-offset-zinc-950" },
-              "true", "false" %>
-        <%= form.label :receives_sms_alerts, "Recebe alertas por SMS", class: "text-sm text-white" %>
-      </div>
-    </div>
   </div>
 
-  <%# Actions %>
-  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
-    <%= link_to "Cancelar", admin_users_path, class: "text-sm text-zinc-400 hover:text-white transition-colors" %>
-    <%= form.submit user.persisted? ? "Salvar Alterações" : "Criar Usuário",
-          class: "rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-sky-500/90 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-zinc-950 cursor-pointer" %>
+  <div class="flex items-center justify-end gap-3 border-t border-zinc-950/10 px-6 py-4 dark:border-white/10">
+    <%= catalyst_button_link "Cancelar", href: admin_users_path, variant: :plain %>
+    <%= form.submit user.persisted? ? "Salvar Alterações" : "Criar Usuário" %>
   </div>
 </div>

@@ -136,6 +136,18 @@ class CatalystFormBuilder < ActionView::Helpers::FormBuilder
     @template.tag.p(messages, class: css, data: { slot: "error" }, **opts)
   end
 
+  # -- Submit button with Catalyst solid button styling --
+  def submit(value = nil, **opts)
+    opts[:class] = merge_classes(
+      Catalyst::ButtonHelper::BUTTON_BASE,
+      Catalyst::ButtonHelper::BUTTON_SOLID,
+      Catalyst::ButtonHelper::BUTTON_COLORS["sky"],
+      "cursor-pointer",
+      opts[:class]
+    )
+    super
+  end
+
   # -- Error summary --
   def error_summary(**opts)
     return unless object&.errors&.any?
