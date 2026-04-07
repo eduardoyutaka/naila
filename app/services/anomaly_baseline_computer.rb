@@ -47,10 +47,10 @@ class AnomalyBaselineComputer
   end
 
   def collect_precipitation_data(since)
-    sensor_ids = pluviometer_ids
-    return [] if sensor_ids.empty?
+    sensors = Sensor.nearby_pluviometers(@river_basin)
+    return [] if sensors.none?
 
-    SensorReading.where(sensor_id: sensor_ids)
+    SensorReading.where(sensor_id: sensors)
                  .by_type("precipitation")
                  .since(since)
                  .select(:value, :recorded_at)
@@ -120,20 +120,4 @@ class AnomalyBaselineComputer
     { "hourly" => hourly }
   end
 
-  def pluviometer_ids
-    if @river_basin.geometry
-      ids = Sensor.joins(:monitoring_station)
-                  .where(sensor_type: :pluviometer, status: :active)
-                  .where("ST_DWithin(monitoring_stations.location::geography, ?::geography, 5000)", @river_basin.geometry)
-                  .pluck(:id)
-      return ids if ids.any?
-    end
-
-    Sensor.joins(:monitoring_station)
-          .where(sensor_type: :pluviometer, status: :active)
-          .where(monitoring_stations: { river_basin_id: @river_basin.id })
-          .pluck(:id)
-  rescue ActiveRecord::StatementInvalid
-    []
-  end
 end

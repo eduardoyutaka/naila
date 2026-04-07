@@ -198,6 +198,8 @@ class RiskEngine
   end
 
   def nearby_sensor_ids(sensor_type)
+    return Sensor.nearby_pluviometers(river_basin).pluck(:id) if sensor_type.to_sym == :pluviometer
+
     return [] unless river_basin.geometry
 
     Sensor.joins(:monitoring_station)

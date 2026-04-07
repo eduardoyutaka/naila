@@ -28,10 +28,10 @@ class MetricDataCollector
   private
 
   def collect_precipitation(period_start, period_end, statistic)
-    sensor_ids = pluviometer_ids
-    return 0.0 if sensor_ids.empty?
+    sensors = Sensor.nearby_pluviometers(@river_basin)
+    return 0.0 if sensors.none?
 
-    readings = SensorReading.where(sensor_id: sensor_ids)
+    readings = SensorReading.where(sensor_id: sensors)
                             .by_type("precipitation")
                             .where(recorded_at: period_start..period_end)
 
@@ -87,10 +87,10 @@ class MetricDataCollector
     end
 
     # Fallback: 72h accumulated precipitation / 100
-    sensor_ids = pluviometer_ids
-    return nil if sensor_ids.empty?
+    sensors = Sensor.nearby_pluviometers(@river_basin)
+    return nil if sensors.none?
 
-    precip = SensorReading.where(sensor_id: sensor_ids)
+    precip = SensorReading.where(sensor_id: sensors)
                           .by_type("precipitation")
                           .since(72.hours.ago)
                           .sum(:value)
@@ -115,22 +115,4 @@ class MetricDataCollector
     end
   end
 
-  def pluviometer_ids
-    @pluviometer_ids ||= begin
-      if @river_basin.geometry
-        ids = Sensor.joins(:monitoring_station)
-                    .where(sensor_type: :pluviometer, status: :active)
-                    .where("ST_DWithin(monitoring_stations.location::geography, ?::geography, ?)", @river_basin.geometry, SEARCH_RADIUS_M)
-                    .pluck(:id)
-        return ids if ids.any?
-      end
-
-      Sensor.joins(:monitoring_station)
-            .where(sensor_type: :pluviometer, status: :active)
-            .where(monitoring_stations: { river_basin_id: @river_basin.id })
-            .pluck(:id)
-    rescue ActiveRecord::StatementInvalid
-      []
-    end
-  end
 end
