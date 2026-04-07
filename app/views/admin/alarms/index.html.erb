@@ -5,7 +5,7 @@
   state_color = {
     "ok"                => "bg-risk-normal/20 text-risk-normal",
     "alarm"             => "bg-risk-high/20 text-risk-high",
-    "insufficient_data" => "bg-naila-elevated text-naila-text-muted"
+    "insufficient_data" => "bg-zinc-800 text-zinc-400"
   }
   type_label = { "metric" => "Métrica", "anomaly_detection" => "Anomalia", "composite" => "Composto" }
 %>
@@ -13,32 +13,32 @@
 <%# ── Summary Cards ── %>
 <% if @alarms.any? %>
   <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
-    <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Total</div>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-text" data-testid="summary-total"><%= @alarms.size %></div>
+    <div class="rounded-xl border border-white/10 bg-zinc-900 p-4">
+      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Total</div>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total"><%= @alarms.size %></div>
     </div>
-    <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Ativos</div>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-accent" data-testid="summary-enabled"><%= @alarms.count(&:enabled?) %></div>
+    <div class="rounded-xl border border-white/10 bg-zinc-900 p-4">
+      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Ativos</div>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500" data-testid="summary-enabled"><%= @alarms.count(&:enabled?) %></div>
     </div>
-    <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Em Alarme</div>
+    <div class="rounded-xl border border-white/10 bg-zinc-900 p-4">
+      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Em Alarme</div>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high" data-testid="summary-alarm"><%= @alarms.count(&:alarm?) %></div>
     </div>
-    <div class="rounded-xl border border-naila-border bg-naila-surface p-4">
-      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Dados Insuficientes</div>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-naila-text-muted" data-testid="summary-insufficient"><%= @alarms.count(&:insufficient_data?) %></div>
+    <div class="rounded-xl border border-white/10 bg-zinc-900 p-4">
+      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Dados Insuficientes</div>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-400" data-testid="summary-insufficient"><%= @alarms.count(&:insufficient_data?) %></div>
     </div>
   </div>
 <% end %>
 
 <%# ── Alarms Table ── %>
-<div class="rounded-xl border border-naila-border bg-naila-surface">
-  <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
-    <h2 class="text-sm font-semibold text-naila-text">Alarmes</h2>
+<div class="rounded-xl border border-white/10 bg-zinc-900">
+  <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
+    <h2 class="text-sm font-semibold text-white">Alarmes</h2>
     <% if policy(Alarm).create? %>
       <%= link_to new_admin_alarm_path,
-            class: "inline-flex items-center gap-1.5 rounded-lg bg-naila-accent px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-naila-accent/90" do %>
+            class: "inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-sky-500/90" do %>
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
@@ -49,11 +49,11 @@
 
   <% if @alarms.empty? %>
     <div class="px-4 py-12 text-center">
-      <p class="text-sm text-naila-text-muted">Nenhum alarme cadastrado.</p>
+      <p class="text-sm text-zinc-400">Nenhum alarme cadastrado.</p>
       <% if policy(Alarm).create? %>
         <div class="mt-4">
           <%= link_to new_admin_alarm_path,
-                class: "inline-flex items-center gap-1.5 rounded-lg bg-naila-accent px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-naila-accent/90" do %>
+                class: "inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-sky-500/90" do %>
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
@@ -66,44 +66,44 @@
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
-          <tr class="border-b border-naila-border">
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Nome</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Tipo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Severidade</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Escopo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-naila-text-muted">Avaliado</th>
-            <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-naila-text-muted">Ações</th>
+          <tr class="border-b border-white/10">
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Nome</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Tipo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Severidade</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Escopo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Avaliado</th>
+            <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-400">Ações</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-naila-border">
+        <tbody class="divide-y divide-white/10">
           <% @alarms.each do |alarm| %>
-            <tr class="hover:bg-naila-elevated/50 transition-colors <%= 'opacity-50' unless alarm.enabled? %>">
+            <tr class="hover:bg-zinc-800/50 transition-colors <%= 'opacity-50' unless alarm.enabled? %>">
               <td class="px-4 py-3">
                 <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[alarm.state] %>">
                   <%= state_label[alarm.state] %>
                 </span>
               </td>
               <td class="px-4 py-3">
-                <div class="text-sm font-medium text-naila-text"><%= alarm.name %></div>
+                <div class="text-sm font-medium text-white"><%= alarm.name %></div>
                 <% if alarm.description.present? %>
-                  <div class="text-xs text-naila-text-muted truncate max-w-xs"><%= alarm.description %></div>
+                  <div class="text-xs text-zinc-400 truncate max-w-xs"><%= alarm.description %></div>
                 <% end %>
               </td>
-              <td class="px-4 py-3 text-sm text-naila-text-muted"><%= type_label[alarm.alarm_type] %></td>
+              <td class="px-4 py-3 text-sm text-zinc-400"><%= type_label[alarm.alarm_type] %></td>
               <td class="px-4 py-3">
                 <%= severity_badge(alarm.current_severity) %>
               </td>
-              <td class="px-4 py-3 text-sm text-naila-text-muted">
+              <td class="px-4 py-3 text-sm text-zinc-400">
                 <%= alarm.river&.name || alarm.river_basin&.name || "Global" %>
               </td>
-              <td class="px-4 py-3 text-xs tabular-nums text-naila-text-muted">
+              <td class="px-4 py-3 text-xs tabular-nums text-zinc-400">
                 <%= alarm.last_evaluated_at ? time_ago_in_words(alarm.last_evaluated_at) + " atrás" : "—" %>
               </td>
               <td class="px-4 py-3 text-right">
                 <div class="inline-flex items-center gap-1">
                   <%= link_to admin_alarm_path(alarm),
-                        class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-naila-accent transition-colors",
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-sky-500 transition-colors",
                         title: "Ver detalhes",
                         aria: { label: "Ver detalhes de #{alarm.name}" } do %>
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -113,7 +113,7 @@
                   <% end %>
                   <% if policy(alarm).update? %>
                     <%= link_to edit_admin_alarm_path(alarm),
-                          class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-naila-accent transition-colors",
+                          class: "rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-sky-500 transition-colors",
                           title: "Editar",
                           aria: { label: "Editar #{alarm.name}" } do %>
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -124,7 +124,7 @@
                   <% if policy(alarm).destroy? %>
                     <%= button_to admin_alarm_path(alarm),
                           method: :delete,
-                          class: "rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-risk-high transition-colors",
+                          class: "rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-risk-high transition-colors",
                           form: { data: { turbo_confirm: "Tem certeza que deseja remover este alarme?" } },
                           aria: { label: "Remover #{alarm.name}" } do %>
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

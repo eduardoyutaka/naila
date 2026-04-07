@@ -1,42 +1,42 @@
-<div class="mb-6 rounded-xl border border-naila-border bg-naila-surface" data-testid="weather-summary">
+<div class="mb-6 rounded-xl border border-white/10 bg-zinc-900" data-testid="weather-summary">
   <div class="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
     <%# Current conditions %>
     <div class="flex items-center gap-4 min-w-0">
-      <span class="text-naila-text-muted"><%= render "shared/icons/cloud-rain" %></span>
+      <span class="text-zinc-400"><%= render "shared/icons/cloud-rain" %></span>
       <div>
-        <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Condições Atuais</div>
+        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Condições Atuais</div>
         <% if current_weather %>
-          <div class="mt-0.5 flex items-center gap-2 text-sm text-naila-text">
+          <div class="mt-0.5 flex items-center gap-2 text-sm text-white">
             <% if current_weather.temperature_c %>
               <span class="font-semibold tabular-nums" data-testid="current-temperature"><%= number_with_precision(current_weather.temperature_c, precision: 1) %>°C</span>
             <% end %>
             <% if current_weather.humidity_pct %>
-              <span class="text-naila-text-muted">· <%= number_with_precision(current_weather.humidity_pct, precision: 0) %>% umidade</span>
+              <span class="text-zinc-400">· <%= number_with_precision(current_weather.humidity_pct, precision: 0) %>% umidade</span>
             <% end %>
             <% if current_weather.precipitation_mm&.> 0 %>
               <span class="text-sensor-pluviometer">· <%= number_with_precision(current_weather.precipitation_mm, precision: 1) %> mm</span>
             <% end %>
           </div>
         <% else %>
-          <div class="mt-0.5 text-sm text-naila-text-muted">Sem dados</div>
+          <div class="mt-0.5 text-sm text-zinc-400">Sem dados</div>
         <% end %>
       </div>
     </div>
 
-    <div class="hidden sm:block h-8 w-px bg-naila-border"></div>
+    <div class="hidden sm:block h-8 w-px bg-white/10"></div>
 
     <%# 6h forecast summary %>
     <div data-testid="forecast-precipitation">
-      <div class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Previsão 6h</div>
+      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Previsão 6h</div>
       <div class="mt-0.5 flex items-center gap-3 text-sm">
-        <span class="inline-flex items-center gap-1 font-semibold tabular-nums text-naila-text">
+        <span class="inline-flex items-center gap-1 font-semibold tabular-nums text-white">
           <svg class="h-3.5 w-3.5 text-sensor-pluviometer flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c0 0-7 7.5-7 11.5a7 7 0 0 0 14 0C19 10.5 12 3 12 3Z" />
           </svg>
           <%= number_with_precision(forecast_summary[:total_precipitation_mm], precision: 1) %> mm
         </span>
         <% if forecast_summary[:max_probability] > 0 %>
-          <span class="text-naila-text-muted">
+          <span class="text-zinc-400">
             · <%= number_with_precision(forecast_summary[:max_probability], precision: 0) %>% prob.
           </span>
         <% end %>
@@ -45,7 +45,7 @@
 
     <div class="ml-auto flex-shrink-0">
       <%= link_to admin_weather_path,
-            class: "text-xs font-medium text-naila-accent hover:text-naila-text transition-colors" do %>
+            class: "text-xs font-medium text-sky-500 hover:text-white transition-colors" do %>
         Ver detalhes →
       <% end %>
     </div>

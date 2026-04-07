@@ -106,7 +106,7 @@ export default class extends Controller {
 
     // Popup overlay for hover
     this.popupEl = document.createElement("div")
-    this.popupEl.className = "ol-popup rounded-lg border border-naila-border bg-naila-elevated px-3 py-2 text-xs text-naila-text shadow-lg"
+    this.popupEl.className = "ol-popup rounded-lg border border-white/10 bg-zinc-800 px-3 py-2 text-xs text-white shadow-lg"
     this.popupEl.style.cssText = "position: absolute; pointer-events: none; white-space: nowrap; display: none;"
     this.canvasTarget.appendChild(this.popupEl)
 

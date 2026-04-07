@@ -6,7 +6,7 @@
         [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alerta Máximo", 3], ["4 — Emergência", 4]],
         {},
         aria: { labelledby: "th-severity" },
-        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+        class: "rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
 
   <%= tf.select :comparison_operator,
         [["Maior que", "GreaterThanThreshold"],
@@ -15,20 +15,20 @@
          ["Menor ou igual", "LessThanOrEqualToThreshold"]],
         {},
         aria: { labelledby: "th-operator" },
-        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+        class: "rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
 
   <%= tf.number_field :threshold_value, step: "any", placeholder: "0.0",
         aria: { labelledby: "th-threshold" },
-        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm tabular-nums text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+        class: "rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm tabular-nums text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
 
   <%= tf.text_field :unit, placeholder: "mm",
         aria: { labelledby: "th-unit" },
-        class: "rounded-md border border-naila-border bg-naila-elevated px-2 py-2 text-sm text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+        class: "rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
 
   <button type="button"
           aria-label="Remover faixa"
           title="Remover faixa"
-          class="flex items-center justify-center rounded-md p-1.5 text-naila-text-muted hover:bg-naila-elevated hover:text-risk-high transition-colors"
+          class="flex items-center justify-center rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-risk-high transition-colors"
           data-action="click->admin--alarm-form#removeThreshold"
           data-persisted="<%= persisted %>">
     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

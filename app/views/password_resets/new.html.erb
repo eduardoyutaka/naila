@@ -1,26 +1,26 @@
 <div class="flex min-h-screen">
 
   <%# Left decorative panel — mirrors login page %>
-  <div class="relative hidden lg:flex lg:w-5/12 flex-col items-center justify-center overflow-hidden bg-naila-surface border-r border-naila-border"
+  <div class="relative hidden lg:flex lg:w-5/12 flex-col items-center justify-center overflow-hidden bg-zinc-900 border-r border-white/10"
        style="background-image: radial-gradient(circle, #334155 1px, transparent 1px); background-size: 28px 28px;">
     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div class="absolute rounded-full border border-naila-accent/40"
+      <div class="absolute rounded-full border border-sky-500/40"
            style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 0s;"></div>
-      <div class="absolute rounded-full border border-naila-accent/30"
+      <div class="absolute rounded-full border border-sky-500/30"
            style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 1s;"></div>
-      <div class="absolute rounded-full border border-naila-accent/20"
+      <div class="absolute rounded-full border border-sky-500/20"
            style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 2s;"></div>
-      <div class="absolute w-3 h-3 rounded-full bg-naila-accent" style="box-shadow: 0 0 12px #3b82f6, 0 0 24px #3b82f680;"></div>
+      <div class="absolute w-3 h-3 rounded-full bg-sky-500" style="box-shadow: 0 0 12px #3b82f6, 0 0 24px #3b82f680;"></div>
     </div>
     <div class="relative z-10 text-center px-10">
-      <div class="mb-2 text-5xl font-bold tracking-tight text-naila-accent" style="text-shadow: 0 0 24px #3b82f680;">
+      <div class="mb-2 text-5xl font-bold tracking-tight text-sky-500" style="text-shadow: 0 0 24px #3b82f680;">
         NAILA
       </div>
-      <div class="text-sm font-medium text-naila-text-muted tracking-widest uppercase mb-2">
+      <div class="text-sm font-medium text-zinc-400 tracking-widest uppercase mb-2">
         Defesa Civil de Curitiba
       </div>
-      <div class="mx-auto mb-10 h-px w-16 bg-naila-border"></div>
-      <p class="text-sm text-naila-text-muted leading-relaxed max-w-xs">
+      <div class="mx-auto mb-10 h-px w-16 bg-white/10"></div>
+      <p class="text-sm text-zinc-400 leading-relaxed max-w-xs">
         Monitoramento em tempo real de risco de enchentes para a Região Metropolitana de Curitiba.
       </p>
     </div>
@@ -30,15 +30,15 @@
   <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
 
     <div class="mb-8 text-center lg:hidden">
-      <div class="text-3xl font-bold tracking-tight text-naila-accent">NAILA</div>
-      <p class="mt-1 text-xs text-naila-text-muted tracking-widest uppercase">Defesa Civil de Curitiba</p>
+      <div class="text-3xl font-bold tracking-tight text-sky-500">NAILA</div>
+      <p class="mt-1 text-xs text-zinc-400 tracking-widest uppercase">Defesa Civil de Curitiba</p>
     </div>
 
     <div class="w-full max-w-sm animate-fade-in">
 
       <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-naila-text">Esqueceu sua senha?</h1>
-        <p class="mt-1.5 text-sm text-naila-text-muted">Informe seu email e enviaremos as instruções de redefinição.</p>
+        <h1 class="text-2xl font-semibold text-white">Esqueceu sua senha?</h1>
+        <p class="mt-1.5 text-sm text-zinc-400">Informe seu email e enviaremos as instruções de redefinição.</p>
       </div>
 
       <% if flash[:alert].present? %>
@@ -54,27 +54,27 @@
 
       <%= form_with url: forgot_password_path, method: :post, class: "space-y-5" do |f| %>
         <div>
-          <label for="email_address" class="mb-1.5 block text-sm font-medium text-naila-text-muted">Email institucional</label>
+          <label for="email_address" class="mb-1.5 block text-sm font-medium text-zinc-400">Email institucional</label>
           <input type="email" name="email_address" id="email_address" required autofocus
-                 class="w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text placeholder-naila-text-muted/50 outline-none transition-colors focus:border-naila-accent focus:ring-1 focus:ring-naila-accent"
+                 class="w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none transition-colors focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                  placeholder="seu@email.gov.br">
         </div>
 
         <button type="submit"
-                class="w-full rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg">
+                class="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-sky-500/90 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-zinc-950">
           Enviar instruções
         </button>
       <% end %>
 
       <div class="mt-6 text-center">
-        <%= link_to login_path, class: "text-sm text-naila-text-muted hover:text-naila-accent transition-colors" do %>
+        <%= link_to login_path, class: "text-sm text-zinc-400 hover:text-sky-500 transition-colors" do %>
           ← Voltar ao login
         <% end %>
       </div>
 
     </div>
 
-    <p class="mt-12 text-xs text-naila-text-muted/50">
+    <p class="mt-12 text-xs text-zinc-400/50">
       &copy; 2026 Defesa Civil de Curitiba &mdash; Uso restrito
     </p>
 

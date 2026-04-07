@@ -19,27 +19,27 @@ export const CHART_THEME = {
   bg: "transparent",
 
   tooltip: {
-    bg:    css("naila-elevated"),
-    border: css("naila-border"),
-    text:  css("naila-text"),
-    muted: css("naila-text-muted"),
+    bg:    css("zinc-800"),
+    border: css("white/10"),
+    text:  css("white"),
+    muted: css("zinc-400"),
   },
 
   axis: {
-    line:  css("naila-border"),
-    label: css("naila-text-muted"),
-    split: css("naila-border"),
+    line:  css("white/10"),
+    label: css("zinc-400"),
+    split: css("white/10"),
   },
 
   dataZoom: {
-    border:  css("naila-border"),
-    bg:      css("naila-surface"),
-    filler:  css("naila-accent") + "26",   // ~15 % opacity
-    handle:  css("naila-accent"),
+    border:  css("white/10"),
+    bg:      css("zinc-900"),
+    filler:  css("sky-500") + "26",   // ~15 % opacity
+    handle:  css("sky-500"),
   },
 
   legend: {
-    text: css("naila-text-muted"),
+    text: css("zinc-400"),
   },
 
   // Alarm severity level → stroke color
@@ -60,5 +60,5 @@ export const CHART_THEME = {
     offline:         css("sensor-offline"),
   },
 
-  accent: css("naila-accent"),
+  accent: css("sky-500"),
 }

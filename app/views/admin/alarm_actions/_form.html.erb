@@ -1,6 +1,6 @@
-<div class="rounded-xl border border-naila-border bg-naila-surface">
-  <div class="border-b border-naila-border px-6 py-4">
-    <h2 class="text-sm font-semibold text-naila-text">Dados da Ação</h2>
+<div class="rounded-xl border border-white/10 bg-zinc-900">
+  <div class="border-b border-white/10 px-6 py-4">
+    <h2 class="text-sm font-semibold text-white">Dados da Ação</h2>
   </div>
 
   <div class="p-6 space-y-5">
@@ -20,47 +20,47 @@
     <%# Trigger State + Action Type %>
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <div>
-        <%= form.label :trigger_state, "Gatilho (Estado)", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.label :trigger_state, "Gatilho (Estado)", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
         <%= form.select :trigger_state,
               [["Alarme", "alarm"], ["OK", "ok"], ["Dados Insuficientes", "insufficient_data"]],
               {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
       </div>
       <div>
-        <%= form.label :action_type, "Tipo de Ação", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.label :action_type, "Tipo de Ação", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
         <%= form.select :action_type,
               [["Notificação", "notification"], ["Webhook", "webhook"]],
               {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
       </div>
     </div>
 
     <%# Severidade mínima + Status %>
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <div>
-        <%= form.label :min_severity, "Severidade Mínima", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.label :min_severity, "Severidade Mínima", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
         <%= form.select :min_severity,
               [["— Qualquer —", ""],
                ["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]],
               {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
-        <p class="mt-1.5 text-xs text-naila-text-muted">Disparar somente se a severidade atual atingir este nível.</p>
+              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
+        <p class="mt-1.5 text-xs text-zinc-400">Disparar somente se a severidade atual atingir este nível.</p>
       </div>
       <div>
-        <%= form.label :enabled, "Status", class: "mb-1.5 block text-sm font-medium text-naila-text-muted" %>
+        <%= form.label :enabled, "Status", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
         <%= form.select :enabled,
               [["Ativada", true], ["Desativada", false]],
               {},
-              class: "w-full rounded-lg border border-naila-border bg-naila-elevated px-3 py-2.5 text-naila-text outline-none focus:border-naila-accent focus:ring-1 focus:ring-naila-accent" %>
+              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
       </div>
     </div>
   </div>
 
   <%# Actions %>
-  <div class="flex items-center justify-end gap-3 border-t border-naila-border px-6 py-4">
+  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
     <%= link_to "Cancelar", admin_alarm_path(alarm_action.alarm || @alarm),
-          class: "text-sm text-naila-text-muted hover:text-naila-text transition-colors" %>
+          class: "text-sm text-zinc-400 hover:text-white transition-colors" %>
     <%= form.submit alarm_action.persisted? ? "Salvar" : "Criar Ação",
-          class: "rounded-lg bg-naila-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-naila-accent/90 focus:outline-none focus:ring-2 focus:ring-naila-accent focus:ring-offset-2 focus:ring-offset-naila-bg cursor-pointer" %>
+          class: "rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-sky-500/90 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-zinc-950 cursor-pointer" %>
   </div>
 </div>

@@ -5,13 +5,13 @@
   state_color = {
     "ok"                => "bg-risk-normal/20 text-risk-normal",
     "alarm"             => "bg-risk-high/20 text-risk-high",
-    "insufficient_data" => "bg-naila-elevated text-naila-text-muted"
+    "insufficient_data" => "bg-zinc-800 text-zinc-400"
   }
 %>
 
 <%# ── Back Link ── %>
 <div class="mb-4">
-  <%= link_to admin_alarm_path(@alarm), class: "inline-flex items-center gap-1 text-sm text-naila-text-muted hover:text-naila-accent transition-colors" do %>
+  <%= link_to admin_alarm_path(@alarm), class: "inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-sky-500 transition-colors" do %>
     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
     </svg>
@@ -20,37 +20,37 @@
 </div>
 
 <div class="mb-6">
-  <h1 class="text-xl font-semibold text-naila-text">Histórico — <%= @alarm.name %></h1>
+  <h1 class="text-xl font-semibold text-white">Histórico — <%= @alarm.name %></h1>
 </div>
 
-<div class="rounded-xl border border-naila-border bg-naila-surface">
-  <div class="flex items-center justify-between border-b border-naila-border px-4 py-3">
-    <h2 class="text-sm font-semibold text-naila-text">Transições de Estado</h2>
-    <span class="text-xs text-naila-text-muted"><%= @state_histories.size %> registros</span>
+<div class="rounded-xl border border-white/10 bg-zinc-900">
+  <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
+    <h2 class="text-sm font-semibold text-white">Transições de Estado</h2>
+    <span class="text-xs text-zinc-400"><%= @state_histories.size %> registros</span>
   </div>
   <% if @state_histories.empty? %>
-    <div class="px-4 py-8 text-center text-sm text-naila-text-muted">
+    <div class="px-4 py-8 text-center text-sm text-zinc-400">
       Nenhuma transição de estado registrada.
     </div>
   <% else %>
-    <div class="divide-y divide-naila-border">
+    <div class="divide-y divide-white/10">
       <% @state_histories.each do |history| %>
         <div class="px-4 py-3">
           <div class="flex items-center gap-2 mb-1">
             <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.previous_state] %>">
               <%= state_label[history.previous_state] %>
             </span>
-            <svg class="h-3 w-3 text-naila-text-muted" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <svg class="h-3 w-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
             <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.new_state] %>">
               <%= state_label[history.new_state] %>
             </span>
-            <span class="text-xs tabular-nums text-naila-text-muted ml-auto">
+            <span class="text-xs tabular-nums text-zinc-400 ml-auto">
               <%= l(history.evaluated_at, format: :short) %>
             </span>
           </div>
-          <div class="text-xs text-naila-text-muted"><%= history.reason %></div>
+          <div class="text-xs text-zinc-400"><%= history.reason %></div>
         </div>
       <% end %>
     </div>
