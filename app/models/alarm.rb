@@ -28,20 +28,14 @@ class Alarm < ApplicationRecord
   validates :name, presence: true
   validates :alarm_type, presence: true, inclusion: { in: ALARM_TYPES }
   validates :state, presence: true, inclusion: { in: STATES }
-  validates :severity, presence: true, numericality: { in: 1..4 }
 
-  # Metric alarm validations
+  # Metric/anomaly alarm validations
   with_options if: :metric_or_anomaly? do
     validates :metric_name, presence: true
     validates :statistic, presence: true, inclusion: { in: STATISTICS }
     validates :period_seconds, presence: true, numericality: { greater_than: 0 }
     validates :evaluation_periods, presence: true, numericality: { greater_than: 0 }
     validates :datapoints_to_alarm, presence: true, numericality: { greater_than: 0 }
-  end
-
-  with_options if: :metric? do
-    validates :comparison_operator, presence: true, inclusion: { in: COMPARISON_OPERATORS }
-    validates :threshold_value, presence: true
   end
 
   validates :missing_data_treatment, inclusion: { in: MISSING_DATA_TREATMENTS }, allow_nil: true

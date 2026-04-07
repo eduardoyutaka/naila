@@ -4,7 +4,7 @@ module Admin
 
     def index
       @alarms = Alarm.includes(:river_basin, :river)
-                     .order(enabled: :desc, severity: :desc, name: :asc)
+                     .order(enabled: :desc, name: :asc)
     end
 
     def show
@@ -14,9 +14,10 @@ module Admin
     end
 
     def new
-      @alarm = Alarm.new(alarm_type: "metric", enabled: true, severity: 1,
+      @alarm = Alarm.new(alarm_type: "metric", enabled: true,
                          evaluation_periods: 1, datapoints_to_alarm: 1,
                          missing_data_treatment: "missing")
+      @alarm.alarm_thresholds.build(severity: 1)
     end
 
     def create
@@ -73,13 +74,13 @@ module Admin
 
     def alarm_params
       params.require(:alarm).permit(
-        :name, :description, :alarm_type, :severity, :enabled,
+        :name, :description, :alarm_type, :enabled,
         :river_basin_id, :river_id,
         :metric_name, :statistic, :period_seconds, :evaluation_periods,
-        :datapoints_to_alarm, :comparison_operator, :threshold_value,
-        :unit, :missing_data_treatment,
+        :datapoints_to_alarm, :missing_data_treatment,
         :anomaly_band_width, :anomaly_baseline_id,
-        :composite_rule, :suppress_child_actions
+        :composite_rule, :suppress_child_actions,
+        alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]
       )
     end
   end

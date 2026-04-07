@@ -147,7 +147,6 @@ CREATE TABLE public.alarms (
     state character varying DEFAULT 'insufficient_data'::character varying NOT NULL,
     state_changed_at timestamp(6) without time zone,
     state_reason text,
-    severity integer NOT NULL,
     enabled boolean DEFAULT true NOT NULL,
     river_basin_id bigint,
     river_id bigint,
@@ -156,9 +155,6 @@ CREATE TABLE public.alarms (
     period_seconds integer,
     evaluation_periods integer,
     datapoints_to_alarm integer,
-    comparison_operator character varying,
-    threshold_value double precision,
-    unit character varying,
     missing_data_treatment character varying DEFAULT 'missing'::character varying,
     anomaly_band_width double precision,
     anomaly_baseline_id bigint,
@@ -4521,6 +4517,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260407011045'),
 ('20260406214826'),
 ('20260406214825'),
 ('20260406214824'),
