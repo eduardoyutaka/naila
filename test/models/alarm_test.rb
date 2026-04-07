@@ -17,6 +17,12 @@ class AlarmTest < ActiveSupport::TestCase
       threshold_value: 40.0,
       unit: "mm"
     )
+    alarm.alarm_thresholds.build(
+      severity: 2,
+      comparison_operator: "GreaterThanOrEqualToThreshold",
+      threshold_value: 40.0,
+      unit: "mm"
+    )
     assert alarm.valid?
   end
 

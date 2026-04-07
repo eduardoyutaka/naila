@@ -77,23 +77,9 @@ class AlarmThresholdTest < ActiveSupport::TestCase
   end
 
   test "same severity is valid for different alarms" do
-    t = valid_threshold(alarm: alarms(:river_level_belem), severity: 2)
-    # river_level_belem already has sev 2 via fixture — so this would fail.
-    # Use a fresh alarm instead.
-    fresh_alarm = Alarm.create!(
-      name: "Fresh Alarm",
-      alarm_type: "metric",
-      severity: 1,
-      metric_name: "precipitation_1h",
-      statistic: "Sum",
-      period_seconds: 3600,
-      evaluation_periods: 1,
-      datapoints_to_alarm: 1,
-      comparison_operator: "GreaterThanThreshold",
-      threshold_value: 10.0
-    )
-    t2 = valid_threshold(alarm: fresh_alarm, severity: 2)
-    assert t2.valid?
+    # composite_flood_belem has no threshold bands — reuse it as a second alarm scope
+    t = valid_threshold(alarm: alarms(:composite_flood_belem), severity: 2)
+    assert t.valid?
   end
 
   # ── Associations ──
