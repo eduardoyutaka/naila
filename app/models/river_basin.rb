@@ -19,5 +19,5 @@ class RiverBasin < ApplicationRecord
   }, prefix: :risk
 
   scope :active, -> { where(active: true) }
-  scope :at_risk, -> { where("current_risk_level > 0") }
+  scope :at_risk, -> { where.not(current_risk_level: :normal) }
 end
