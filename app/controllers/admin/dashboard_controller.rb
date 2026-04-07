@@ -1,5 +1,7 @@
 module Admin
   class DashboardController < BaseController
+    skip_after_action :verify_authorized, only: :index
+
     def index
       @river_basins = RiverBasin.active
       @active_alarms = Alarm.in_alarm.includes(:river_basin).order(current_severity: :desc, state_changed_at: :desc).limit(10)

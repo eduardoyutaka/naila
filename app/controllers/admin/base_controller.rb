@@ -4,6 +4,8 @@ module Admin
 
     before_action :authenticate!
 
+    after_action :verify_authorized
+
     layout "admin"
 
     rescue_from Pundit::NotAuthorizedError, with: :not_authorized

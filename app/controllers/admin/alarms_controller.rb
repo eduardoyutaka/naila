@@ -1,13 +1,17 @@
 module Admin
   class AlarmsController < BaseController
+    skip_after_action :verify_authorized, only: :index
+    after_action :verify_policy_scoped, only: :index
+
     before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history, :enable, :disable ]
 
     def index
-      @alarms = Alarm.includes(:river_basin, :river)
-                     .order(enabled: :desc, name: :asc)
+      @alarms = policy_scope(Alarm).includes(:river_basin, :river)
+                                   .order(enabled: :desc, name: :asc)
     end
 
     def show
+      authorize @alarm
       @alarm_actions = @alarm.alarm_actions.order(trigger_state: :asc)
       @state_histories = @alarm.alarm_state_histories.order(evaluated_at: :desc).limit(20)
       @child_alarms = @alarm.composite? ? @alarm.child_alarms.includes(:river_basin, :river) : []
@@ -17,6 +21,7 @@ module Admin
       @alarm = Alarm.new(alarm_type: "metric", enabled: true,
                          evaluation_periods: 1, datapoints_to_alarm: 1,
                          missing_data_treatment: "missing")
+      authorize @alarm
       @alarm.alarm_thresholds.build(severity: 1)
     end
 
@@ -32,6 +37,7 @@ module Admin
     end
 
     def edit
+      authorize @alarm
     end
 
     def update

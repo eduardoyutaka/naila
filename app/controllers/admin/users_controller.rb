@@ -1,11 +1,14 @@
 module Admin
   class UsersController < BaseController
+    skip_after_action :verify_authorized, only: :index
+    after_action :verify_policy_scoped, only: :index
+
     before_action :set_user, only: [:edit, :update, :destroy]
     before_action -> { authorize User }, only: [:index, :new, :create]
     before_action -> { authorize @user }, only: [:edit, :update, :destroy]
 
     def index
-      @users = User.order(:name).includes(:sessions)
+      @users = policy_scope(User).order(:name).includes(:sessions)
     end
 
     def new

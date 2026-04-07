@@ -1,12 +1,16 @@
 module Admin
   class MonitoringStationsController < BaseController
+    skip_after_action :verify_authorized, only: :index
+    after_action :verify_policy_scoped, only: :index
+
     before_action :set_monitoring_station, only: [ :show, :edit, :update, :destroy ]
 
     def index
-      @monitoring_stations = MonitoringStation.includes(:neighborhood, :river, :sensors).order(:name)
+      @monitoring_stations = policy_scope(MonitoringStation).includes(:neighborhood, :river, :sensors).order(:name)
     end
 
     def show
+      authorize @monitoring_station
       @readings_by_type = @monitoring_station.sensor_readings
                                          .since(24.hours.ago)
                                          .order(recorded_at: :asc)
@@ -15,6 +19,7 @@ module Admin
 
     def new
       @monitoring_station = MonitoringStation.new
+      authorize @monitoring_station
     end
 
     def create
@@ -30,6 +35,7 @@ module Admin
     end
 
     def edit
+      authorize @monitoring_station
     end
 
     def update

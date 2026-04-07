@@ -1,12 +1,16 @@
 module Admin
   class RiverBasinsController < BaseController
+    skip_after_action :verify_authorized, only: :index
+    after_action :verify_policy_scoped, only: :index
+
     before_action :set_river_basin, only: [:show, :edit, :update, :destroy]
 
     def index
-      @river_basins = RiverBasin.order(current_risk_level: :desc, name: :asc)
+      @river_basins = policy_scope(RiverBasin).order(current_risk_level: :desc, name: :asc)
     end
 
     def show
+      authorize @river_basin
       @recent_assessments = @river_basin.risk_assessments.order(assessed_at: :desc).limit(10)
       @active_alarms = @river_basin.alarms.in_alarm.order(current_severity: :desc)
       @forecast_summary = WeatherForecast.aggregate_next_hours(6)
@@ -15,6 +19,7 @@ module Admin
 
     def new
       @river_basin = RiverBasin.new
+      authorize @river_basin
     end
 
     def create
@@ -30,6 +35,7 @@ module Admin
     end
 
     def edit
+      authorize @river_basin
     end
 
     def update

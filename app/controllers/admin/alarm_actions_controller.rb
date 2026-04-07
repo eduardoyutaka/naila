@@ -5,6 +5,7 @@ module Admin
 
     def new
       @alarm_action = @alarm.alarm_actions.new(enabled: true)
+      authorize @alarm_action
     end
 
     def create
@@ -19,6 +20,7 @@ module Admin
     end
 
     def edit
+      authorize @alarm_action
     end
 
     def update
