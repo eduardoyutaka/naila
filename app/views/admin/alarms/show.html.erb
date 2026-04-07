@@ -41,9 +41,11 @@
     <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-naila-elevated text-naila-text-muted">
       <%= type_label[@alarm.alarm_type] %>
     </span>
-    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_color[@alarm.severity] %>">
-      <%= severity_label[@alarm.severity] %>
-    </span>
+    <% if @alarm.current_severity %>
+      <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_color[@alarm.current_severity] %>">
+        <%= severity_label[@alarm.current_severity] %>
+      </span>
+    <% end %>
     <% unless @alarm.enabled? %>
       <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-attention/20 text-risk-attention">
         Desativado
@@ -86,10 +88,21 @@
             <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Avaliação</span>
             <span class="text-sm tabular-nums text-naila-text"><%= @alarm.datapoints_to_alarm %> de <%= @alarm.evaluation_periods %> períodos</span>
           </div>
-          <% if @alarm.metric? %>
-            <div class="flex items-center justify-between px-4 py-3">
-              <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Limiar</span>
-              <span class="text-sm tabular-nums text-naila-text"><%= @alarm.comparison_operator&.gsub(/([A-Z])/, ' \1')&.strip %> <%= @alarm.threshold_value %> <%= @alarm.unit %></span>
+          <% if @alarm.metric? && @alarm.alarm_thresholds.any? %>
+            <div class="px-4 py-3">
+              <span class="text-xs font-medium uppercase tracking-wider text-naila-text-muted">Faixas de Limiar</span>
+              <div class="mt-2 space-y-1">
+                <% @alarm.alarm_thresholds.order(:severity).each do |t| %>
+                  <div class="flex items-center gap-2">
+                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= severity_color[t.severity] %>">
+                      <%= severity_label[t.severity] %>
+                    </span>
+                    <span class="text-sm tabular-nums text-naila-text-muted">
+                      <%= t.comparison_operator.gsub(/([A-Z])/, ' \1').strip %> <%= t.threshold_value %><%= t.unit %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
             </div>
           <% end %>
           <% if @alarm.anomaly_detection? %>

@@ -186,6 +186,88 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     assert_equal "alarm", alarm.reload.state
   end
 
+  # ── Multi-threshold band evaluation ──
+
+  test "sets current_severity to the highest breached threshold band" do
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "precipitation_1h",
+      threshold_value: 10.0,  # sev 1 band: >= 10mm (readings are ~20mm)
+      severity: 1,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+    # Add a sev 2 band at 25mm (won't be breached by ~20mm readings)
+    alarm.alarm_thresholds.create!(severity: 2, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                   threshold_value: 25.0, unit: "mm")
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "alarm", alarm.reload.state
+    assert_equal 1, alarm.current_severity
+  end
+
+  test "escalates to higher severity when higher band is also breached" do
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "precipitation_1h",
+      threshold_value: 5.0,  # sev 1 band: >= 5mm
+      severity: 1,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+    # sev 2 band at 15mm — also breached by ~20mm readings
+    alarm.alarm_thresholds.create!(severity: 2, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                   threshold_value: 15.0, unit: "mm")
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "alarm", alarm.reload.state
+    assert_equal 2, alarm.current_severity
+  end
+
+  test "transitions from alarm to ok clears current_severity" do
+    alarm = create_metric_alarm(
+      state: "alarm",
+      current_severity: 2,
+      metric_name: "precipitation_1h",
+      threshold_value: 100.0,  # won't be breached
+      severity: 2,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "ok", alarm.reload.state
+    assert_nil alarm.current_severity
+  end
+
+  test "severity downgrade records history without changing state_changed_at" do
+    alarm = create_metric_alarm(
+      state: "alarm",
+      current_severity: 2,
+      metric_name: "precipitation_1h",
+      threshold_value: 5.0,   # sev 1: >= 5mm (readings ~20mm breaches this)
+      severity: 1,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+    # sev 2 band at 25mm — readings ~20mm will NOT breach this
+    alarm.alarm_thresholds.create!(severity: 2, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                   threshold_value: 25.0, unit: "mm")
+    original_state_changed_at = alarm.state_changed_at
+
+    assert_difference "AlarmStateHistory.count", 1 do
+      AlarmEvaluationEngine.evaluate_alarm(alarm)
+    end
+
+    alarm.reload
+    assert_equal "alarm", alarm.state
+    assert_equal 1, alarm.current_severity
+    assert_equal original_state_changed_at.to_i, alarm.state_changed_at.to_i
+  end
+
   # ── evaluate_all ──
 
   test "evaluate_all evaluates all enabled alarms" do
@@ -239,17 +321,30 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   private
 
   def create_metric_alarm(overrides = {})
+    # Extract threshold band fields — they go on AlarmThreshold, not Alarm
+    severity        = overrides.delete(:severity) || 2
+    comparison_op   = overrides.delete(:comparison_operator) || "GreaterThanOrEqualToThreshold"
+    threshold_value = overrides.delete(:threshold_value)
+    unit            = overrides.delete(:unit) || "mm"
+
+    raise ArgumentError, "threshold_value is required for create_metric_alarm" if threshold_value.nil?
+
     defaults = {
       name: "Test Alarm #{SecureRandom.hex(4)}",
       alarm_type: "metric",
-      severity: 2,
       river_basin: @basin,
       statistic: "Sum",
       period_seconds: 3600,
-      comparison_operator: "GreaterThanOrEqualToThreshold",
-      unit: "mm",
       missing_data_treatment: "missing"
     }
-    Alarm.create!(defaults.merge(overrides))
+    alarm = Alarm.new(defaults.merge(overrides))
+    alarm.alarm_thresholds.build(
+      severity: severity,
+      comparison_operator: comparison_op,
+      threshold_value: threshold_value,
+      unit: unit
+    )
+    alarm.save!
+    alarm
   end
 end

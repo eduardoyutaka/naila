@@ -25,28 +25,29 @@ class AlarmEvaluationEngine
 
   def evaluate_metric_or_anomaly
     datapoints = collect_period_datapoints
-    new_state = determine_state(datapoints)
+    new_state, new_severity = determine_state(datapoints)
 
     @alarm.update!(
       last_evaluated_at: Time.current,
       last_datapoints: datapoints
     )
 
-    @alarm.transition_to!(new_state, reason: build_reason(datapoints, new_state), datapoints: datapoints)
+    @alarm.transition_to!(
+      new_state,
+      reason: build_reason(datapoints, new_state, new_severity),
+      datapoints: datapoints,
+      severity: new_severity
+    )
   end
 
   def evaluate_composite
     tree = CompositeRuleParser.parse(@alarm.composite_rule)
 
-    # Build child alarm states map: name → state
     child_states = {}
     @alarm.child_alarms.each do |child|
-      # Use fixture name convention: alarm name key for lookup
       child_states[child.name] = child.state
     end
 
-    # Also build by alarm record name for rule references
-    # The composite_rule references alarm names (the name column)
     has_insufficient = @alarm.child_alarms.any?(&:insufficient_data?)
     result = tree.evaluate(child_states)
 
@@ -83,30 +84,31 @@ class AlarmEvaluationEngine
         statistic: @alarm.statistic
       )
 
-      breaching = if value.nil?
-        nil  # missing
-      elsif @alarm.anomaly_detection?
-        evaluate_anomaly_breach(value)
+      if @alarm.metric?
+        breaching_severity = value.nil? ? nil : evaluate_threshold_bands(value)
+        { "period" => i + 1, "value" => value, "breaching_severity" => breaching_severity }
       else
-        evaluate_threshold_breach(value)
+        breaching = value.nil? ? nil : evaluate_anomaly_breach(value)
+        { "period" => i + 1, "value" => value, "breaching" => breaching }
       end
-
-      { "period" => i + 1, "value" => value, "breaching" => breaching }
     end
   end
 
-  def evaluate_threshold_breach(value)
-    case @alarm.comparison_operator
-    when "GreaterThanThreshold"
-      value > @alarm.threshold_value
-    when "GreaterThanOrEqualToThreshold"
-      value >= @alarm.threshold_value
-    when "LessThanThreshold"
-      value < @alarm.threshold_value
-    when "LessThanOrEqualToThreshold"
-      value <= @alarm.threshold_value
-    else
-      false
+  # Returns the highest severity whose threshold is breached, or 0 if none.
+  def evaluate_threshold_bands(value)
+    @alarm.alarm_thresholds.order(severity: :desc).each do |threshold|
+      return threshold.severity if threshold_breached?(value, threshold)
+    end
+    0
+  end
+
+  def threshold_breached?(value, threshold)
+    case threshold.comparison_operator
+    when "GreaterThanThreshold"           then value > threshold.threshold_value
+    when "GreaterThanOrEqualToThreshold"  then value >= threshold.threshold_value
+    when "LessThanThreshold"              then value < threshold.threshold_value
+    when "LessThanOrEqualToThreshold"     then value <= threshold.threshold_value
+    else false
     end
   end
 
@@ -131,12 +133,50 @@ class AlarmEvaluationEngine
     value < (mean - band) || value > (mean + band)
   end
 
+  # Returns [new_state, severity] tuple.
+  # Metric alarms: severity is 1-4 or nil. Anomaly alarms: severity is always nil.
   def determine_state(datapoints)
+    if @alarm.metric?
+      determine_state_metric(datapoints)
+    else
+      [determine_state_anomaly(datapoints), nil]
+    end
+  end
+
+  def determine_state_metric(datapoints)
+    missing_count = datapoints.count { |dp| dp["breaching_severity"].nil? }
+    total = datapoints.size
+    treatment = @alarm.missing_data_treatment || "missing"
+
+    return ["insufficient_data", nil] if missing_count == total && treatment == "missing"
+
+    # Find the highest severity with enough breaching periods
+    [4, 3, 2, 1].each do |sev|
+      effective_breaching = 0
+
+      datapoints.each do |dp|
+        if dp["breaching_severity"].nil?
+          case treatment
+          when "breaching"   then effective_breaching += 1
+          when "notBreaching" then nil  # does not count as breach
+          when "ignore", "missing" then next
+          end
+        else
+          effective_breaching += 1 if dp["breaching_severity"] >= sev
+        end
+      end
+
+      return ["alarm", sev] if effective_breaching >= @alarm.datapoints_to_alarm
+    end
+
+    ["ok", nil]
+  end
+
+  def determine_state_anomaly(datapoints)
     missing_count = datapoints.count { |dp| dp["breaching"].nil? }
     total = datapoints.size
     treatment = @alarm.missing_data_treatment || "missing"
 
-    # Apply missing data treatment
     effective_breaching = 0
     effective_evaluated = 0
 
@@ -148,11 +188,7 @@ class AlarmEvaluationEngine
           effective_evaluated += 1
         when "notBreaching"
           effective_evaluated += 1
-        when "ignore"
-          # skip this period entirely
-          next
-        when "missing"
-          # counted as missing, contributes to insufficient_data check
+        when "ignore", "missing"
           next
         end
       else
@@ -161,30 +197,28 @@ class AlarmEvaluationEngine
       end
     end
 
-    # All periods missing → insufficient_data
-    if missing_count == total && treatment == "missing"
-      return "insufficient_data"
-    end
-
-    # Check if enough datapoints breach
-    if effective_breaching >= @alarm.datapoints_to_alarm
-      "alarm"
-    else
-      "ok"
-    end
+    return "insufficient_data" if missing_count == total && treatment == "missing"
+    effective_breaching >= @alarm.datapoints_to_alarm ? "alarm" : "ok"
   end
 
-  def build_reason(datapoints, new_state)
-    breaching_count = datapoints.count { |dp| dp["breaching"] == true }
-    missing_count = datapoints.count { |dp| dp["breaching"].nil? }
+  def build_reason(datapoints, new_state, severity)
     values = datapoints.filter_map { |dp| dp["value"] }
+
+    if @alarm.metric?
+      breaching_count = datapoints.count { |dp| dp["breaching_severity"].to_i >= 1 }
+      missing_count   = datapoints.count { |dp| dp["breaching_severity"].nil? }
+    else
+      breaching_count = datapoints.count { |dp| dp["breaching"] == true }
+      missing_count   = datapoints.count { |dp| dp["breaching"].nil? }
+    end
 
     case new_state
     when "alarm"
       threshold_desc = if @alarm.anomaly_detection?
         "anomaly band"
       else
-        "#{@alarm.threshold_value}#{@alarm.unit}"
+        band = @alarm.alarm_thresholds.find_by(severity: severity)
+        band ? "#{band.threshold_value}#{band.unit} (severity #{severity})" : "severity #{severity}"
       end
       "#{breaching_count} of #{@alarm.evaluation_periods} evaluation periods breached threshold #{threshold_desc} (values: #{values.map { |v| v&.round(2) }})"
     when "ok"

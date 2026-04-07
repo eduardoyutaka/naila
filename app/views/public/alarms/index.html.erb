@@ -20,19 +20,19 @@
       <div class="space-y-4">
         <% @active_alarms.each do |alarm| %>
           <%
-            severity_border = case alarm.severity
+            severity_border = case alarm.current_severity
                               when 4 then "border-l-risk-emergency"
                               when 3 then "border-l-risk-high"
                               when 2 then "border-l-risk-alert"
                               else "border-l-risk-attention"
                               end
-            severity_classes = case alarm.severity
+            severity_classes = case alarm.current_severity
                               when 4 then "bg-risk-emergency/10 text-risk-emergency"
                               when 3 then "bg-risk-high/10 text-risk-high"
                               when 2 then "bg-risk-alert/10 text-risk-alert"
                               else "bg-risk-attention/10 text-risk-attention"
                               end
-            severity_label = case alarm.severity
+            severity_label = case alarm.current_severity
                              when 4 then "Emergência"
                              when 3 then "Alerta Máximo"
                              when 2 then "Alerta"
@@ -79,13 +79,13 @@
         <div class="divide-y divide-gray-100">
           <% @recently_resolved.each do |alarm| %>
             <%
-              severity_classes = case alarm.severity
+              severity_classes = case alarm.current_severity
                                 when 4 then "bg-gray-200 text-gray-600"
                                 when 3 then "bg-gray-200 text-gray-600"
                                 when 2 then "bg-gray-100 text-gray-500"
                                 else "bg-gray-100 text-gray-500"
                                 end
-              severity_label = case alarm.severity
+              severity_label = case alarm.current_severity
                                when 4 then "Emergência"
                                when 3 then "Alerta Máximo"
                                when 2 then "Alerta"

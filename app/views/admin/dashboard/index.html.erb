@@ -111,7 +111,7 @@
       <% else %>
         <% @active_alarms.each do |alarm| %>
           <div class="flex items-start gap-3 px-4 py-3">
-            <% severity_color = case alarm.severity
+            <% severity_color = case alarm.current_severity
                                 when 4 then "bg-risk-emergency glow-emergency"
                                 when 3 then "bg-risk-high glow-high"
                                 when 2 then "bg-risk-alert glow-alert"
@@ -121,14 +121,14 @@
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <%= link_to alarm.name, admin_alarm_path(alarm), class: "text-sm font-medium text-naila-text truncate hover:text-naila-accent" %>
-                <% severity_label = case alarm.severity
+                <% severity_label = case alarm.current_severity
                                     when 4 then "Emergência"
                                     when 3 then "Alerta Máximo"
                                     when 2 then "Alerta"
                                     else "Atenção"
                                     end %>
                 <span class="flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-medium
-                  <%= case alarm.severity
+                  <%= case alarm.current_severity
                       when 4 then 'bg-risk-emergency/20 text-risk-emergency'
                       when 3 then 'bg-risk-high/20 text-risk-high'
                       when 2 then 'bg-risk-alert/20 text-risk-alert'

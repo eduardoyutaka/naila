@@ -65,8 +65,10 @@ class AlarmEvaluationEngineCompositeTest < ActiveSupport::TestCase
 
   test "evaluate_all includes composite alarms" do
     # Lower thresholds so fixture data actually triggers both alarms
-    @precip_alarm.update!(state: "ok", threshold_value: 5.0, evaluation_periods: 1, datapoints_to_alarm: 1)
-    @river_alarm.update!(state: "ok", threshold_value: 0.5, period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1)
+    @precip_alarm.update!(state: "ok", evaluation_periods: 1, datapoints_to_alarm: 1)
+    @precip_alarm.alarm_thresholds.update_all(threshold_value: 5.0)
+    @river_alarm.update!(state: "ok", period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1)
+    @river_alarm.alarm_thresholds.update_all(threshold_value: 0.5)
 
     AlarmEvaluationEngine.evaluate_all
 

@@ -10,8 +10,11 @@ class AlarmActionExecutor
   def execute(new_state)
     return if suppressed_by_parent?
 
+    current_sev = @alarm.current_severity
     actions = @alarm.alarm_actions.enabled.for_state(new_state)
     actions.each do |action|
+      next if action.min_severity.present? && (current_sev.nil? || current_sev < action.min_severity)
+
       case action.action_type
       when "notification"
         execute_notification(action, new_state)
@@ -33,7 +36,7 @@ class AlarmActionExecutor
       alarm_id: @alarm.id,
       alarm_name: @alarm.name,
       state: new_state,
-      severity: @alarm.severity,
+      current_severity: @alarm.current_severity,
       river_basin_id: @alarm.river_basin_id,
       reason: @alarm.state_reason
     }
@@ -72,7 +75,7 @@ class AlarmActionExecutor
       alarm_name: @alarm.name,
       alarm_type: @alarm.alarm_type,
       new_state: new_state,
-      severity: @alarm.severity,
+      current_severity: @alarm.current_severity,
       reason: @alarm.state_reason,
       timestamp: Time.current.iso8601
     }

@@ -31,7 +31,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     assert_equal "alarm_state_change", payload["event_type"]
     assert_equal @alarm.id, payload["alarm_id"]
     assert_equal "alarm", payload["state"]
-    assert_equal @alarm.severity, payload["severity"]
+    assert_nil payload["current_severity"]  # disabled_alarm has no current_severity
   end
 
   test "skips disabled actions" do
@@ -65,6 +65,35 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
 
     assert_broadcasts("alarms", 1) do
       AlarmActionExecutor.execute(@alarm, "insufficient_data")
+    end
+  end
+
+  # ── min_severity filtering ──
+
+  test "skips action when current_severity is below min_severity" do
+    @alarm.update!(current_severity: 1)
+    @alarm.alarm_actions.update_all(min_severity: 2)
+
+    assert_no_broadcasts("alarms") do
+      AlarmActionExecutor.execute(@alarm, "alarm")
+    end
+  end
+
+  test "executes action when current_severity meets min_severity" do
+    @alarm.update!(current_severity: 2)
+    @alarm.alarm_actions.update_all(min_severity: 2)
+
+    assert_broadcasts("alarms", 1) do
+      AlarmActionExecutor.execute(@alarm, "alarm")
+    end
+  end
+
+  test "executes action with no min_severity regardless of current_severity" do
+    @alarm.update!(current_severity: 1)
+    # min_severity is nil by default
+
+    assert_broadcasts("alarms", 1) do
+      AlarmActionExecutor.execute(@alarm, "alarm")
     end
   end
 

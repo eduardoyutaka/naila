@@ -84,7 +84,6 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form" do
       assert_select "input[name='alarm[name]']"
       assert_select "select[name='alarm[alarm_type]']"
-      assert_select "select[name='alarm[severity]']"
     end
   end
 
@@ -96,27 +95,27 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
         alarm: {
           name: "Novo Alarme Teste",
           alarm_type: "metric",
-          severity: 2,
           enabled: true,
           metric_name: "precipitation_1h",
           statistic: "Sum",
           period_seconds: 3600,
           evaluation_periods: 1,
           datapoints_to_alarm: 1,
-          comparison_operator: "GreaterThanThreshold",
-          threshold_value: 50.0,
-          unit: "mm",
-          missing_data_treatment: "missing"
+          missing_data_treatment: "missing",
+          alarm_thresholds_attributes: {
+            "0" => { severity: 2, comparison_operator: "GreaterThanThreshold", threshold_value: 50.0, unit: "mm" }
+          }
         }
       }
     end
     assert_redirected_to admin_alarm_path(Alarm.last)
+    assert_equal 1, Alarm.last.alarm_thresholds.count
   end
 
   test "create with invalid params renders new with 422" do
     assert_no_difference "Alarm.count" do
       post admin_alarms_path, params: {
-        alarm: { name: "", alarm_type: "metric", severity: 2 }
+        alarm: { name: "", alarm_type: "metric" }
       }
     end
     assert_response :unprocessable_entity
@@ -125,7 +124,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
   test "operator cannot create alarms" do
     sign_in_as users(:operator)
     post admin_alarms_path, params: {
-      alarm: { name: "Proibido", alarm_type: "metric", severity: 1 }
+      alarm: { name: "Proibido", alarm_type: "metric" }
     }
     assert_redirected_to admin_root_path
   end
@@ -137,16 +136,15 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
         alarm: {
           name: "Alarme do Coordenador",
           alarm_type: "metric",
-          severity: 1,
           metric_name: "precipitation_1h",
           statistic: "Sum",
           period_seconds: 3600,
           evaluation_periods: 1,
           datapoints_to_alarm: 1,
-          comparison_operator: "GreaterThanThreshold",
-          threshold_value: 10.0,
-          unit: "mm",
-          missing_data_treatment: "missing"
+          missing_data_treatment: "missing",
+          alarm_thresholds_attributes: {
+            "0" => { severity: 1, comparison_operator: "GreaterThanThreshold", threshold_value: 10.0, unit: "mm" }
+          }
         }
       }
     end

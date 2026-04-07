@@ -7,15 +7,11 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "Test Alarm",
       alarm_type: "metric",
-      severity: 2,
       metric_name: "precipitation_1h",
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 3,
-      datapoints_to_alarm: 2,
-      comparison_operator: "GreaterThanOrEqualToThreshold",
-      threshold_value: 40.0,
-      unit: "mm"
+      datapoints_to_alarm: 2
     )
     alarm.alarm_thresholds.build(
       severity: 2,
@@ -30,7 +26,6 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "Composite Test",
       alarm_type: "composite",
-      severity: 4,
       composite_rule: "ALARM(precip_3h_belem) AND ALARM(river_level_belem)"
     )
     assert alarm.valid?
@@ -40,7 +35,6 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "Anomaly Test",
       alarm_type: "anomaly_detection",
-      severity: 2,
       metric_name: "precipitation_1h",
       statistic: "Sum",
       period_seconds: 3600,
@@ -70,28 +64,6 @@ class AlarmTest < ActiveSupport::TestCase
     alarm.alarm_type = "unknown"
     assert_not alarm.valid?
     assert_includes alarm.errors[:alarm_type], "is not included in the list"
-  end
-
-  test "invalid without severity" do
-    alarm = alarms(:precip_3h_belem)
-    alarm.severity = nil
-    assert_not alarm.valid?
-  end
-
-  test "severity must be between 1 and 4" do
-    alarm = alarms(:precip_3h_belem)
-
-    alarm.severity = 0
-    assert_not alarm.valid?
-
-    alarm.severity = 5
-    assert_not alarm.valid?
-
-    alarm.severity = 1
-    assert alarm.valid?
-
-    alarm.severity = 4
-    assert alarm.valid?
   end
 
   test "invalid with unknown state" do
@@ -140,24 +112,6 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not alarm.valid?
   end
 
-  test "metric alarm requires comparison_operator" do
-    alarm = alarms(:precip_3h_belem)
-    alarm.comparison_operator = nil
-    assert_not alarm.valid?
-  end
-
-  test "metric alarm requires threshold_value" do
-    alarm = alarms(:precip_3h_belem)
-    alarm.threshold_value = nil
-    assert_not alarm.valid?
-  end
-
-  test "metric alarm invalid with unknown comparison_operator" do
-    alarm = alarms(:precip_3h_belem)
-    alarm.comparison_operator = "EqualTo"
-    assert_not alarm.valid?
-  end
-
   test "metric alarm invalid with unknown statistic" do
     alarm = alarms(:precip_3h_belem)
     alarm.statistic = "Median"
@@ -184,6 +138,20 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not alarm.valid?
   end
 
+  test "metric alarm requires at least one threshold band" do
+    alarm = Alarm.new(
+      name: "No Thresholds",
+      alarm_type: "metric",
+      metric_name: "precipitation_1h",
+      statistic: "Sum",
+      period_seconds: 3600,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+    assert_not alarm.valid?
+    assert alarm.errors[:base].any? { |e| e.include?("faixa de limiar") }
+  end
+
   # ── Composite alarm validations ──
 
   test "composite alarm requires composite_rule" do
@@ -197,7 +165,6 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "Composite",
       alarm_type: "composite",
-      severity: 3,
       composite_rule: "ALARM(test)"
     )
     assert alarm.valid?
@@ -276,6 +243,21 @@ class AlarmTest < ActiveSupport::TestCase
     assert_nil alarms(:precip_3h_belem).anomaly_baseline
   end
 
+  test "has many alarm_thresholds" do
+    thresholds = alarms(:river_level_belem).alarm_thresholds
+    assert_includes thresholds, alarm_thresholds(:river_belem_sev2)
+    assert_includes thresholds, alarm_thresholds(:river_belem_sev3)
+  end
+
+  test "destroying alarm destroys dependent alarm_thresholds" do
+    alarm = alarms(:precip_3h_belem)
+    threshold_ids = alarm.alarm_thresholds.pluck(:id)
+    assert threshold_ids.any?
+
+    alarm.destroy
+    assert_empty AlarmThreshold.where(id: threshold_ids)
+  end
+
   test "has many alarm_actions" do
     actions = alarms(:precip_3h_belem).alarm_actions
     assert_includes actions, alarm_actions(:precip_alarm_websocket)
@@ -286,7 +268,6 @@ class AlarmTest < ActiveSupport::TestCase
     histories = alarms(:river_level_belem).alarm_state_histories
     assert_includes histories, alarm_state_histories(:river_to_alarm)
   end
-
 
   test "composite alarm has many child_alarms through composite_alarm_children" do
     composite = alarms(:composite_flood_belem)
@@ -327,18 +308,53 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = alarms(:precip_3h_belem)
     assert_equal "ok", alarm.state
 
-    alarm.transition_to!("alarm", reason: "2 of 3 breached", datapoints: [1, 2, 3])
+    alarm.transition_to!("alarm", reason: "2 of 3 breached", datapoints: [1, 2, 3], severity: 2)
 
     assert_equal "alarm", alarm.state
     assert_not_nil alarm.state_changed_at
     assert_equal "2 of 3 breached", alarm.state_reason
   end
 
+  test "transition_to! sets current_severity when transitioning to alarm" do
+    alarm = alarms(:precip_3h_belem)
+    assert_nil alarm.current_severity
+
+    alarm.transition_to!("alarm", reason: "breached", severity: 3)
+
+    assert_equal 3, alarm.reload.current_severity
+  end
+
+  test "transition_to! clears current_severity when transitioning to ok" do
+    alarm = alarms(:river_level_belem)
+    assert_equal 3, alarm.current_severity
+
+    alarm.transition_to!("ok", reason: "recovered")
+
+    assert_nil alarm.reload.current_severity
+  end
+
+  test "transition_to! records severity change while already in alarm" do
+    alarm = alarms(:river_level_belem)
+    assert_equal "alarm", alarm.state
+    assert_equal 3, alarm.current_severity
+
+    assert_difference "AlarmStateHistory.count", 1 do
+      alarm.transition_to!("alarm", reason: "severity downgrade", severity: 2)
+    end
+
+    assert_equal 2, alarm.reload.current_severity
+    assert_equal "alarm", alarm.state
+
+    history = alarm.alarm_state_histories.order(created_at: :desc).first
+    assert_equal "alarm", history.previous_state
+    assert_equal "alarm", history.new_state
+  end
+
   test "transition_to! creates alarm_state_history record" do
     alarm = alarms(:precip_3h_belem)
 
     assert_difference "AlarmStateHistory.count", 1 do
-      alarm.transition_to!("alarm", reason: "threshold breached", datapoints: [42.0])
+      alarm.transition_to!("alarm", reason: "threshold breached", datapoints: [42.0], severity: 2)
     end
 
     history = alarm.alarm_state_histories.order(created_at: :desc).first
@@ -349,7 +365,7 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not_nil history.evaluated_at
   end
 
-  test "transition_to! is a no-op when state is unchanged" do
+  test "transition_to! is a no-op when state and severity are unchanged" do
     alarm = alarms(:precip_3h_belem)
     assert_equal "ok", alarm.state
 
@@ -361,11 +377,11 @@ class AlarmTest < ActiveSupport::TestCase
   test "transition_to! records multiple transitions" do
     alarm = alarms(:precip_3h_belem)
 
-    alarm.transition_to!("alarm", reason: "breached")
+    alarm.transition_to!("alarm", reason: "breached", severity: 2)
     alarm.transition_to!("ok", reason: "recovered")
 
     histories = alarm.alarm_state_histories.order(:created_at)
-    assert_equal 3, histories.count  # 1 existing fixture + 2 new (fixture is for precip alarm_to_ok)
+    assert_equal 3, histories.count  # 1 existing fixture + 2 new
 
     latest = histories.last
     assert_equal "alarm", latest.previous_state
