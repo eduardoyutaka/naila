@@ -68,7 +68,7 @@ gem "pagy", "~> 9.0"
 # Charts [https://github.com/ankane/chartkick]
 gem "chartkick", "~> 5.0"
 # Time-series grouping [https://github.com/ankane/groupdate]
-gem "groupdate", "~> 6.0"
+gem "groupdate", "~> 6.8"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
