@@ -59,6 +59,10 @@ class Alarm < ApplicationRecord
   scope :in_alarm, -> { where(state: "alarm") }
   scope :by_state, ->(s) { where(state: s) }
 
+  def self.max_severity_by_basin
+    in_alarm.where.not(river_basin_id: nil).group(:river_basin_id).maximum(:current_severity)
+  end
+
   # ── State helpers ──
 
   def ok?
@@ -128,10 +132,7 @@ class Alarm < ApplicationRecord
   private
 
   def broadcast_basin_alarm_severity
-    severity_by_basin = Alarm.in_alarm
-                             .where.not(river_basin_id: nil)
-                             .group(:river_basin_id)
-                             .maximum(:current_severity)
+    severity_by_basin = Alarm.max_severity_by_basin
     Turbo::StreamsChannel.broadcast_replace_to(
       "basin_alarms",
       target: "basin-alarm-severities",
