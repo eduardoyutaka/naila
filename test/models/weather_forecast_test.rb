@@ -87,7 +87,7 @@ class WeatherForecastTest < ActiveSupport::TestCase
   end
 
   test "map_timeline returns empty array when no forecasts" do
-    WeatherForecast.delete_all
+    WeatherForecast.destroy_all
     assert_equal [], WeatherForecast.map_timeline(hours: 6)
   end
 
@@ -96,5 +96,35 @@ class WeatherForecastTest < ActiveSupport::TestCase
     timeline.each do |entry|
       assert_equal entry[:precipitation_mm], entry[:precipitation_mm].round(1)
     end
+  end
+
+  # ── wmo_severity ──
+
+  test "wmo_severity returns 0 for clear sky (code 0)" do
+    assert_equal 0, WeatherForecast.send(:wmo_severity, 0)
+  end
+
+  test "wmo_severity returns 1 for fog (code 45)" do
+    assert_equal 1, WeatherForecast.send(:wmo_severity, 45)
+  end
+
+  test "wmo_severity returns 2 for drizzle (code 51)" do
+    assert_equal 2, WeatherForecast.send(:wmo_severity, 51)
+  end
+
+  test "wmo_severity returns 3 for rain lower boundary (code 61)" do
+    assert_equal 3, WeatherForecast.send(:wmo_severity, 61)
+  end
+
+  test "wmo_severity returns 4 for rain shower lower boundary (code 80)" do
+    assert_equal 4, WeatherForecast.send(:wmo_severity, 80)
+  end
+
+  test "wmo_severity returns 5 for thunderstorm lower boundary (code 95)" do
+    assert_equal 5, WeatherForecast.send(:wmo_severity, 95)
+  end
+
+  test "wmo_severity returns 5 for thunderstorm upper boundary (code 99)" do
+    assert_equal 5, WeatherForecast.send(:wmo_severity, 99)
   end
 end
