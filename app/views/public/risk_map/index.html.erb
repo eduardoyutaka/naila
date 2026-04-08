@@ -30,7 +30,7 @@
                   <p class="mt-0.5 text-sm text-gray-500 line-clamp-1"><%= basin.description %></p>
                 <% end %>
                 <% if basin.area_km2 %>
-                  <p class="mt-0.5 text-xs text-gray-400"><%= number_with_precision(basin.area_km2, precision: 1) %> km²</p>
+                  <p class="mt-0.5 text-sm text-gray-500"><%= number_with_precision(basin.area_km2, precision: 1) %> km²</p>
                 <% end %>
               </div>
               <div class="shrink-0">
@@ -55,7 +55,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
           <p class="mt-2 text-sm font-medium text-green-800">Nenhum alarme ativo</p>
-          <p class="mt-1 text-xs text-green-700">Situação normal em todas as bacias.</p>
+          <p class="mt-1 text-sm text-green-800">Situação normal em todas as bacias.</p>
         </div>
       <% else %>
         <div class="space-y-3">

@@ -17,19 +17,19 @@
 <% if @alarms.any? %>
   <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
     <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total</p>
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total</p>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total"><%= @alarms.size %></div>
     </div>
     <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Ativos</p>
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Ativos</p>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-400" data-testid="summary-enabled"><%= @alarms.count(&:enabled?) %></div>
     </div>
     <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Alarme</p>
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Alarme</p>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high" data-testid="summary-alarm"><%= @alarms.count(&:alarm?) %></div>
     </div>
     <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Dados Insuficientes</p>
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Dados Insuficientes</p>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-400" data-testid="summary-insufficient"><%= @alarms.count(&:insufficient_data?) %></div>
     </div>
   </div>

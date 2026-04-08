@@ -14,7 +14,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
         <p class="mt-3 text-lg font-semibold text-green-800">Nenhum alarme ativo no momento</p>
-        <p class="mt-1 text-sm text-green-700">A situação está normal. Continue acompanhando para atualizações.</p>
+        <p class="mt-1 text-sm text-green-800">A situação está normal. Continue acompanhando para atualizações.</p>
       </div>
     <% else %>
       <div class="space-y-4">
@@ -65,7 +65,7 @@
                 </span>
                 <span class="text-sm text-gray-700 truncate"><%= alarm.name %></span>
               </div>
-              <span class="flex-shrink-0 text-xs tabular-nums text-gray-400 ml-3">
+              <span class="flex-shrink-0 text-sm tabular-nums text-gray-500 ml-3">
                 <%= alarm.state_changed_at&.strftime("%d/%m %H:%M") %>
               </span>
             </div>

@@ -33,10 +33,10 @@
               <%= neighborhood.name %>
             </h2>
             <% if neighborhood.region %>
-              <p class="mt-0.5 text-xs text-gray-500"><%= neighborhood.region.name %></p>
+              <p class="mt-0.5 text-sm text-gray-500"><%= neighborhood.region.name %></p>
             <% end %>
             <% if neighborhood.population %>
-              <p class="mt-1 text-xs text-gray-400"><%= number_with_delimiter(neighborhood.population) %> hab.</p>
+              <p class="mt-1 text-sm text-gray-500"><%= number_with_delimiter(neighborhood.population) %> hab.</p>
             <% end %>
           </div>
           <div class="shrink-0 mt-0.5">
