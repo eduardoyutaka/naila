@@ -15,17 +15,17 @@
     <%# ── Header: Brand ── %>
     <%= catalyst_sidebar_header do %>
       <%= catalyst_sidebar_section do %>
-        <div class="flex items-center gap-3 rounded-lg px-2 py-2.5">
-          <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 ring-1 ring-sky-500/30">
-            <svg class="size-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 14.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1M3 10.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1" />
-            </svg>
-          </div>
+        <%= link_to admin_root_path, class: "flex items-center gap-3 rounded-lg px-2 py-2" do %>
+          <%# Logo mark — mix-blend-mode:screen makes the black bg transparent on dark sidebar %>
+          <%= image_tag "logo5.jpeg",
+                alt: "Naila",
+                class: "size-10 shrink-0 object-contain",
+                style: "mix-blend-mode: screen;" %>
           <div class="min-w-0">
-            <div class="text-sm font-semibold text-white">NAILA</div>
-            <div class="text-xs text-zinc-400 truncate">Defesa Civil de Curitiba</div>
+            <div class="text-sm font-bold tracking-widest text-white">NAILA</div>
+            <div class="text-[10px] font-medium tracking-widest text-zinc-400 uppercase truncate">Tecnologia Ambiental</div>
           </div>
-        </div>
+        <% end %>
       <% end %>
     <% end %>
 

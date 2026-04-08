@@ -18,8 +18,13 @@
 
     <%# Branding %>
     <div class="relative z-10 text-center px-10">
-      <div class="mb-2 text-5xl font-bold tracking-widest text-sky-500" style="text-shadow: 0 0 24px #0ea5e980;">
-        NAILA
+      <div class="flex flex-col items-center mb-8">
+        <%= image_tag "logo5.jpeg",
+              alt: "Naila",
+              class: "w-24 h-24 object-contain mb-4",
+              style: "mix-blend-mode: screen;" %>
+        <div class="text-4xl font-bold tracking-widest text-white">NAILA</div>
+        <div class="mt-1 text-xs font-medium tracking-widest text-zinc-400 uppercase">Tecnologia Ambiental</div>
       </div>
       <div class="text-sm font-medium text-zinc-400 tracking-widest uppercase mb-2">
         Defesa Civil de Curitiba
@@ -53,9 +58,13 @@
   <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
 
     <%# Mobile-only logo %>
-    <div class="mb-8 text-center lg:hidden">
-      <div class="text-3xl font-bold tracking-tight text-sky-500">NAILA</div>
-      <p class="mt-1 text-xs text-zinc-400 tracking-widest uppercase">Defesa Civil de Curitiba</p>
+    <div class="mb-8 flex flex-col items-center lg:hidden">
+      <%= image_tag "logo5.jpeg",
+            alt: "Naila",
+            class: "w-16 h-16 object-contain",
+            style: "mix-blend-mode: screen;" %>
+      <div class="mt-2 text-2xl font-bold tracking-widest text-white">NAILA</div>
+      <p class="mt-0.5 text-xs text-zinc-400 tracking-widest uppercase">Defesa Civil de Curitiba</p>
     </div>
 
     <div class="w-full max-w-sm animate-fade-in">
