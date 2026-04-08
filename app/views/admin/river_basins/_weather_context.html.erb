@@ -42,8 +42,12 @@
 
     <div class="px-4 py-3">
       <%= link_to admin_weather_path,
-            class: "flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 transition-colors hover:border-sky-500 hover:text-sky-500" do %>
-        Ver meteorologia completa →
+            class: "flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-zinc-800 px-4 py-2 text-xs font-medium text-zinc-400 transition-colors hover:border-sky-500 hover:text-sky-500",
+            aria: { label: "Ver meteorologia completa" } do %>
+        Ver meteorologia completa
+        <svg class="h-3 w-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
       <% end %>
     </div>
   </div>

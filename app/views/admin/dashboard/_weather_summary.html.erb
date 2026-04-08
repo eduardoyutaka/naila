@@ -43,11 +43,18 @@
       </div>
     </div>
 
-    <div class="ml-auto flex-shrink-0">
+    <div class="ml-auto flex-shrink-0 text-right">
       <%= link_to admin_weather_path,
-            class: "text-xs font-medium text-sky-500 hover:text-white transition-colors" do %>
-        Ver detalhes →
+            class: "inline-flex items-center gap-1 text-xs font-medium text-sky-500 hover:text-white transition-colors",
+            aria: { label: "Ver detalhes meteorológicos" } do %>
+        Ver detalhes
+        <svg class="h-3 w-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
       <% end %>
+      <p class="mt-1 text-xs text-zinc-500">
+        Atualizado <time datetime="<%= Time.current.iso8601 %>"><%= time_ago_in_words(Time.current) %></time>
+      </p>
     </div>
   </div>
 </div>

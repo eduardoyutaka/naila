@@ -12,7 +12,7 @@
   --color-risk-attention: #eab308;
   --color-risk-alert: #f97316;
   --color-risk-high: #ef4444;
-  --color-risk-emergency: #c026d3;
+  --color-risk-emergency: #7f1d1d;
 
   /* Sensor status colors */
   --color-sensor-online: #22c55e;
@@ -25,7 +25,7 @@
   --color-sensor-weather: #8b5cf6;
 
   /* Typography */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Custom animations */
@@ -70,7 +70,7 @@
 .glow-alert { box-shadow: 0 0 18px #f9731660; }
 .glow-high { box-shadow: 0 0 22px #ef444470; }
 .glow-emergency {
-  box-shadow: 0 0 28px #c026d390;
+  box-shadow: 0 0 28px #7f1d1d90;
   animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -94,4 +94,15 @@
 @keyframes ping-slow {
   0% { transform: scale(1); opacity: 0.5; }
   100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* ============================================
+   Accessibility — reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

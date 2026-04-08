@@ -21,6 +21,13 @@ module RiskHelper
     4 => "text-risk-emergency"
   }.freeze
 
+  SEVERITY_BORDER_CLASS = {
+    1 => "border-l-risk-attention",
+    2 => "border-l-risk-alert",
+    3 => "border-l-risk-high",
+    4 => "border-l-risk-emergency"
+  }.freeze
+
   SEVERITY_BADGE_CLASSES = {
     1 => "bg-risk-attention/20 text-risk-attention",
     2 => "bg-risk-alert/20 text-risk-alert",
