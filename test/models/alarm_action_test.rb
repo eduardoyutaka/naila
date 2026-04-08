@@ -29,7 +29,7 @@ class AlarmActionTest < ActiveSupport::TestCase
     action = alarm_actions(:precip_alarm_websocket)
     action.trigger_state = "critical"
     assert_not action.valid?
-    assert_includes action.errors[:trigger_state], "is not included in the list"
+    assert_includes action.errors[:trigger_state], "não está incluído na lista"
   end
 
   test "invalid without action_type" do
@@ -42,7 +42,7 @@ class AlarmActionTest < ActiveSupport::TestCase
     action = alarm_actions(:precip_alarm_websocket)
     action.action_type = "siren"
     assert_not action.valid?
-    assert_includes action.errors[:action_type], "is not included in the list"
+    assert_includes action.errors[:action_type], "não está incluído na lista"
   end
 
   # ── Scopes ──

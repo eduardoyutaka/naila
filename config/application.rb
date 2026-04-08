@@ -36,6 +36,10 @@ module Naila
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Default locale — all user-facing text and Rails helpers (time_ago_in_words, etc.) in pt-BR
+    config.i18n.default_locale = :"pt-BR"
+    config.i18n.available_locales = [:"pt-BR", :en]
+
     # Don't generate system test files.
     config.generators.system_tests = nil
 

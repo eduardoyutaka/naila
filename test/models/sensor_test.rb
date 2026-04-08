@@ -15,13 +15,13 @@ class SensorTest < ActiveSupport::TestCase
   test "invalid without external_id" do
     sensor = Sensor.new(monitoring_station: monitoring_stations(:estacao_belem), sensor_type: "pluviometer")
     assert_not sensor.valid?
-    assert_includes sensor.errors[:external_id], "can't be blank"
+    assert_includes sensor.errors[:external_id], "não pode ficar em branco"
   end
 
   test "invalid without sensor_type" do
     sensor = Sensor.new(monitoring_station: monitoring_stations(:estacao_belem), external_id: "TEST-001")
     assert_not sensor.valid?
-    assert_includes sensor.errors[:sensor_type], "can't be blank"
+    assert_includes sensor.errors[:sensor_type], "não pode ficar em branco"
   end
 
   test "invalid without monitoring_station" do
@@ -37,7 +37,7 @@ class SensorTest < ActiveSupport::TestCase
       external_id: existing.external_id
     )
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:external_id], "has already been taken"
+    assert_includes duplicate.errors[:external_id], "já foi utilizado"
   end
 
   # ── Associations ──

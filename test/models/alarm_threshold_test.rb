@@ -24,7 +24,7 @@ class AlarmThresholdTest < ActiveSupport::TestCase
   test "invalid without severity" do
     t = valid_threshold(severity: nil)
     assert_not t.valid?
-    assert_includes t.errors[:severity], "can't be blank"
+    assert_includes t.errors[:severity], "não pode ficar em branco"
   end
 
   test "invalid with severity below 1" do
@@ -42,7 +42,7 @@ class AlarmThresholdTest < ActiveSupport::TestCase
   test "invalid without comparison_operator" do
     t = valid_threshold(comparison_operator: nil)
     assert_not t.valid?
-    assert_includes t.errors[:comparison_operator], "can't be blank"
+    assert_includes t.errors[:comparison_operator], "não pode ficar em branco"
   end
 
   test "invalid with unknown comparison_operator" do

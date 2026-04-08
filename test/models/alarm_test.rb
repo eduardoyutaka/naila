@@ -50,7 +50,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = alarms(:precip_3h_belem)
     alarm.name = nil
     assert_not alarm.valid?
-    assert_includes alarm.errors[:name], "can't be blank"
+    assert_includes alarm.errors[:name], "não pode ficar em branco"
   end
 
   test "invalid without alarm_type" do
@@ -63,14 +63,14 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = alarms(:precip_3h_belem)
     alarm.alarm_type = "unknown"
     assert_not alarm.valid?
-    assert_includes alarm.errors[:alarm_type], "is not included in the list"
+    assert_includes alarm.errors[:alarm_type], "não está incluído na lista"
   end
 
   test "invalid with unknown state" do
     alarm = alarms(:precip_3h_belem)
     alarm.state = "invalid"
     assert_not alarm.valid?
-    assert_includes alarm.errors[:state], "is not included in the list"
+    assert_includes alarm.errors[:state], "não está incluído na lista"
   end
 
   test "state defaults to insufficient_data" do
@@ -84,14 +84,14 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = alarms(:precip_3h_belem)
     alarm.metric_name = nil
     assert_not alarm.valid?
-    assert_includes alarm.errors[:metric_name], "can't be blank"
+    assert_includes alarm.errors[:metric_name], "não pode ficar em branco"
   end
 
   test "metric alarm requires statistic" do
     alarm = alarms(:precip_3h_belem)
     alarm.statistic = nil
     assert_not alarm.valid?
-    assert_includes alarm.errors[:statistic], "can't be blank"
+    assert_includes alarm.errors[:statistic], "não pode ficar em branco"
   end
 
   test "metric alarm requires period_seconds" do
@@ -158,7 +158,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = alarms(:composite_flood_belem)
     alarm.composite_rule = nil
     assert_not alarm.valid?
-    assert_includes alarm.errors[:composite_rule], "can't be blank"
+    assert_includes alarm.errors[:composite_rule], "não pode ficar em branco"
   end
 
   test "composite alarm does not require metric fields" do
@@ -176,7 +176,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = alarms(:anomaly_precip_belem)
     alarm.anomaly_band_width = nil
     assert_not alarm.valid?
-    assert_includes alarm.errors[:anomaly_band_width], "can't be blank"
+    assert_includes alarm.errors[:anomaly_band_width], "não pode ficar em branco"
   end
 
   test "anomaly_band_width must be positive" do

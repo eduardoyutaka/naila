@@ -1,5 +1,5 @@
 module Catalyst::TypographyHelper
-  HEADING_CLASSES = "text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white".freeze
+  HEADING_CLASSES = "text-2xl/8 font-bold text-zinc-950 dark:text-white".freeze
   SUBHEADING_CLASSES = "text-base/7 font-semibold text-zinc-950 sm:text-sm/6 dark:text-white".freeze
   TEXT_CLASSES = "text-base/6 text-zinc-500 sm:text-sm/6 dark:text-zinc-400".freeze
   STRONG_CLASSES = "font-medium text-zinc-950 dark:text-white".freeze

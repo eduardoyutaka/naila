@@ -18,7 +18,7 @@ module RiskHelper
     1 => "text-risk-attention",
     2 => "text-risk-alert",
     3 => "text-risk-high",
-    4 => "text-risk-emergency"
+    4 => "text-red-400"
   }.freeze
 
   SEVERITY_BORDER_CLASS = {
