@@ -1,0 +1,179 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "NAILA" [ref=e4] [cursor=pointer]:
+      - /url: /admin
+      - generic [ref=e5]: NAILA
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: AN
+        - generic [ref=e9]: Administrador NAILA
+      - button "Sair" [ref=e11]:
+        - img [ref=e12]
+  - generic [ref=e14]:
+    - navigation [ref=e15]:
+      - generic [ref=e16]:
+        - link "Painel" [ref=e17] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e18]
+          - generic [ref=e20]: Painel
+        - link "Estações" [ref=e21] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+          - img [ref=e22]
+          - generic [ref=e24]: Estações
+        - link "Meteorologia" [ref=e25] [cursor=pointer]:
+          - /url: /admin/weather
+          - img [ref=e26]
+          - generic [ref=e29]: Meteorologia
+        - link "Alarmes" [ref=e30] [cursor=pointer]:
+          - /url: /admin/alarms
+          - img [ref=e31]
+          - generic [ref=e33]: Alarmes
+        - link "Bacias" [ref=e34] [cursor=pointer]:
+          - /url: /admin/river_basins
+          - img [ref=e35]
+          - generic [ref=e37]: Bacias
+        - link "Usuários" [ref=e38] [cursor=pointer]:
+          - /url: /admin/users
+          - img [ref=e39]
+          - generic [ref=e41]: Usuários
+      - generic [ref=e43]:
+        - generic [ref=e44]: Status do Sistema
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]: Sensores Online
+            - generic [ref=e48]: "6"
+          - generic [ref=e49]:
+            - generic [ref=e50]: Bacias em Risco
+            - generic [ref=e51]: "0"
+          - generic [ref=e52]:
+            - generic [ref=e53]: Alarmes Ativos
+            - generic [ref=e54]: "0"
+    - main [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: Total de Bacias
+          - generic [ref=e59]: "6"
+        - generic [ref=e60]:
+          - generic [ref=e61]: Bacias Ativas
+          - generic [ref=e62]: "6"
+        - generic [ref=e63]:
+          - generic [ref=e64]: Bacias em Risco
+          - generic [ref=e65]: "0"
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "Bacias Hidrográficas" [level=2] [ref=e68]
+          - link "Nova Bacia" [ref=e69] [cursor=pointer]:
+            - /url: /admin/river_basins/new
+            - img [ref=e70]
+            - text: Nova Bacia
+        - table [ref=e73]:
+          - rowgroup [ref=e74]:
+            - row "Nível Nome Área (km²) Score Ações" [ref=e75]:
+              - columnheader "Nível" [ref=e76]
+              - columnheader "Nome" [ref=e77]
+              - columnheader "Área (km²)" [ref=e78]
+              - columnheader "Score" [ref=e79]
+              - columnheader "Ações" [ref=e80]
+          - rowgroup [ref=e81]:
+            - row "Normal Bacia do Ribeirão dos Padilhas 33.0 1%" [ref=e82]:
+              - cell "Normal" [ref=e83]:
+                - generic [ref=e84]: Normal
+              - cell "Bacia do Ribeirão dos Padilhas" [ref=e85]:
+                - generic [ref=e86]: Bacia do Ribeirão dos Padilhas
+              - cell "33.0" [ref=e87]
+              - cell "1%" [ref=e88]
+              - cell [ref=e89]:
+                - generic [ref=e90]:
+                  - link "Ver detalhes" [ref=e91] [cursor=pointer]:
+                    - /url: /admin/river_basins/6
+                    - img [ref=e92]
+                  - link "Editar" [ref=e95] [cursor=pointer]:
+                    - /url: /admin/river_basins/6/edit
+                    - img [ref=e96]
+                  - button "Remover" [ref=e99]:
+                    - img [ref=e100]
+            - row "Normal Bacia do Rio Atuba 127.6 12%" [ref=e102]:
+              - cell "Normal" [ref=e103]:
+                - generic [ref=e104]: Normal
+              - cell "Bacia do Rio Atuba" [ref=e105]:
+                - generic [ref=e106]: Bacia do Rio Atuba
+              - cell "127.6" [ref=e107]
+              - cell "12%" [ref=e108]
+              - cell [ref=e109]:
+                - generic [ref=e110]:
+                  - link "Ver detalhes" [ref=e111] [cursor=pointer]:
+                    - /url: /admin/river_basins/4
+                    - img [ref=e112]
+                  - link "Editar" [ref=e115] [cursor=pointer]:
+                    - /url: /admin/river_basins/4/edit
+                    - img [ref=e116]
+                  - button "Remover" [ref=e119]:
+                    - img [ref=e120]
+            - row "Normal Bacia do Rio Barigui 131.0 13%" [ref=e122]:
+              - cell "Normal" [ref=e123]:
+                - generic [ref=e124]: Normal
+              - cell "Bacia do Rio Barigui" [ref=e125]:
+                - generic [ref=e126]: Bacia do Rio Barigui
+              - cell "131.0" [ref=e127]
+              - cell "13%" [ref=e128]
+              - cell [ref=e129]:
+                - generic [ref=e130]:
+                  - link "Ver detalhes" [ref=e131] [cursor=pointer]:
+                    - /url: /admin/river_basins/2
+                    - img [ref=e132]
+                  - link "Editar" [ref=e135] [cursor=pointer]:
+                    - /url: /admin/river_basins/2/edit
+                    - img [ref=e136]
+                  - button "Remover" [ref=e139]:
+                    - img [ref=e140]
+            - row "Normal Bacia do Rio Belém 87.8 17%" [ref=e142]:
+              - cell "Normal" [ref=e143]:
+                - generic [ref=e144]: Normal
+              - cell "Bacia do Rio Belém" [ref=e145]:
+                - generic [ref=e146]: Bacia do Rio Belém
+              - cell "87.8" [ref=e147]
+              - cell "17%" [ref=e148]
+              - cell [ref=e149]:
+                - generic [ref=e150]:
+                  - link "Ver detalhes" [ref=e151] [cursor=pointer]:
+                    - /url: /admin/river_basins/3
+                    - img [ref=e152]
+                  - link "Editar" [ref=e155] [cursor=pointer]:
+                    - /url: /admin/river_basins/3/edit
+                    - img [ref=e156]
+                  - button "Remover" [ref=e159]:
+                    - img [ref=e160]
+            - row "Normal Bacia do Rio Iguaçu 308.0 13%" [ref=e162]:
+              - cell "Normal" [ref=e163]:
+                - generic [ref=e164]: Normal
+              - cell "Bacia do Rio Iguaçu" [ref=e165]:
+                - generic [ref=e166]: Bacia do Rio Iguaçu
+              - cell "308.0" [ref=e167]
+              - cell "13%" [ref=e168]
+              - cell [ref=e169]:
+                - generic [ref=e170]:
+                  - link "Ver detalhes" [ref=e171] [cursor=pointer]:
+                    - /url: /admin/river_basins/1
+                    - img [ref=e172]
+                  - link "Editar" [ref=e175] [cursor=pointer]:
+                    - /url: /admin/river_basins/1/edit
+                    - img [ref=e176]
+                  - button "Remover" [ref=e179]:
+                    - img [ref=e180]
+            - row "Normal Bacia do Rio Passaúna 216.0 1%" [ref=e182]:
+              - cell "Normal" [ref=e183]:
+                - generic [ref=e184]: Normal
+              - cell "Bacia do Rio Passaúna" [ref=e185]:
+                - generic [ref=e186]: Bacia do Rio Passaúna
+              - cell "216.0" [ref=e187]
+              - cell "1%" [ref=e188]
+              - cell [ref=e189]:
+                - generic [ref=e190]:
+                  - link "Ver detalhes" [ref=e191] [cursor=pointer]:
+                    - /url: /admin/river_basins/5
+                    - img [ref=e192]
+                  - link "Editar" [ref=e195] [cursor=pointer]:
+                    - /url: /admin/river_basins/5/edit
+                    - img [ref=e196]
+                  - button "Remover" [ref=e199]:
+                    - img [ref=e200]

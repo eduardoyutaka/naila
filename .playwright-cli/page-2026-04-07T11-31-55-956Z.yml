@@ -1,0 +1,200 @@
+- generic [active] [ref=e36]:
+  - banner [ref=e37]:
+    - link "NAILA" [ref=e39] [cursor=pointer]:
+      - /url: /admin
+      - generic [ref=e40]: NAILA
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: AN
+        - generic [ref=e44]: Administrador NAILA
+      - button "Sair" [ref=e46]:
+        - img [ref=e47]
+  - generic [ref=e49]:
+    - navigation [ref=e50]:
+      - generic [ref=e51]:
+        - link "Painel" [ref=e52] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e53]
+          - generic [ref=e55]: Painel
+        - link "Estações" [ref=e56] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+          - img [ref=e57]
+          - generic [ref=e59]: Estações
+        - link "Meteorologia" [ref=e60] [cursor=pointer]:
+          - /url: /admin/weather
+          - img [ref=e61]
+          - generic [ref=e64]: Meteorologia
+        - link "Alarmes" [ref=e65] [cursor=pointer]:
+          - /url: /admin/alarms
+          - img [ref=e66]
+          - generic [ref=e68]: Alarmes
+        - link "Bacias" [ref=e69] [cursor=pointer]:
+          - /url: /admin/river_basins
+          - img [ref=e70]
+          - generic [ref=e72]: Bacias
+        - link "Usuários" [ref=e73] [cursor=pointer]:
+          - /url: /admin/users
+          - img [ref=e74]
+          - generic [ref=e76]: Usuários
+      - generic [ref=e78]:
+        - generic [ref=e79]: Status do Sistema
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]: Sensores Online
+            - generic [ref=e83]: "6"
+          - generic [ref=e84]:
+            - generic [ref=e85]: Bacias em Risco
+            - generic [ref=e86]: "0"
+          - generic [ref=e87]:
+            - generic [ref=e88]: Alarmes Ativos
+            - generic [ref=e89]: "0"
+    - main [ref=e90]:
+      - generic [ref=e91]: Login realizado com sucesso.
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e94]: Sensores Online
+          - generic [ref=e95]: "6"
+        - generic [ref=e96]:
+          - generic [ref=e97]: Atenção
+          - generic [ref=e98]: "0"
+        - generic [ref=e99]:
+          - generic [ref=e100]: Alerta
+          - generic [ref=e101]: "0"
+        - generic [ref=e102]:
+          - generic [ref=e103]: Alerta Máximo
+          - generic [ref=e104]: "0"
+        - generic [ref=e105]:
+          - generic [ref=e106]: Emergência
+          - generic [ref=e107]: "0"
+        - generic [ref=e108]:
+          - generic [ref=e109]: Bacias Monitoradas
+          - generic [ref=e110]: "6"
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - img [ref=e115]
+          - generic [ref=e118]:
+            - generic [ref=e119]: Condições Atuais
+            - generic [ref=e120]:
+              - generic [ref=e121]: 20.2°C
+              - generic [ref=e122]: · 87% umidade
+        - generic [ref=e124]:
+          - generic [ref=e125]: Previsão 6h
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - img [ref=e128]
+              - text: 2.7 mm
+            - generic [ref=e130]: · 70% prob.
+        - link "Ver detalhes →" [ref=e132] [cursor=pointer]:
+          - /url: /admin/weather
+      - generic [ref=e134]:
+        - heading "Mapa de Risco — Curitiba" [level=2] [ref=e135]
+        - generic [ref=e136]:
+          - generic [ref=e137]: Normal
+          - generic [ref=e139]: Atenção
+          - generic [ref=e141]: Alerta
+          - generic [ref=e143]: Alerta Máx
+          - generic [ref=e145]: Emergência
+          - generic [ref=e148]: Pluviômetro
+          - generic [ref=e150]: Fluviômetro
+          - generic [ref=e152]: Meteorológica
+      - generic [ref=e155]:
+        - generic [ref=e156]:
+          - generic [ref=e157]:
+            - heading "Alarmes Ativos" [level=2] [ref=e158]
+            - generic [ref=e159]: 0 alarme(s)
+          - generic [ref=e161]: Nenhum alarme ativo no momento.
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - heading "Leituras Recentes" [level=2] [ref=e164]
+            - generic [ref=e165]: Últimas 10
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e168]:
+                - img [ref=e170]
+                - generic [ref=e172]:
+                  - generic [ref=e173]: Estação Iguaçu — Ponte do Guabirotuba
+                  - generic [ref=e174]: Precipitation
+              - generic [ref=e175]:
+                - generic [ref=e176]: 7.9 mm
+                - generic [ref=e177]: 01:42
+            - generic [ref=e178]:
+              - generic [ref=e179]:
+                - img [ref=e181]
+                - generic [ref=e183]:
+                  - generic [ref=e184]: Estação Barigui — Parque Barigui
+                  - generic [ref=e185]: Precipitation
+              - generic [ref=e186]:
+                - generic [ref=e187]: 13.1 mm
+                - generic [ref=e188]: 01:42
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - img [ref=e192]
+                - generic [ref=e194]:
+                  - generic [ref=e195]: Estação Passaúna
+                  - generic [ref=e196]: Precipitation
+              - generic [ref=e197]:
+                - generic [ref=e198]: 9.9 mm
+                - generic [ref=e199]: 01:42
+            - generic [ref=e200]:
+              - generic [ref=e201]:
+                - img [ref=e203]
+                - generic [ref=e205]:
+                  - generic [ref=e206]: Estação Ribeirão dos Padilhas
+                  - generic [ref=e207]: Precipitation
+              - generic [ref=e208]:
+                - generic [ref=e209]: 7.6 mm
+                - generic [ref=e210]: 01:42
+            - generic [ref=e211]:
+              - generic [ref=e212]:
+                - img [ref=e214]
+                - generic [ref=e216]:
+                  - generic [ref=e217]: Estação Belém — Centro Cívico
+                  - generic [ref=e218]: Precipitation
+              - generic [ref=e219]:
+                - generic [ref=e220]: 10.4 mm
+                - generic [ref=e221]: 01:42
+            - generic [ref=e222]:
+              - generic [ref=e223]:
+                - img [ref=e225]
+                - generic [ref=e227]:
+                  - generic [ref=e228]: Estação Atuba — Cajuru
+                  - generic [ref=e229]: Precipitation
+              - generic [ref=e230]:
+                - generic [ref=e231]: 14.6 mm
+                - generic [ref=e232]: 01:42
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - img [ref=e236]
+                - generic [ref=e238]:
+                  - generic [ref=e239]: Estação Belém — Centro Cívico
+                  - generic [ref=e240]: Precipitation
+              - generic [ref=e241]:
+                - generic [ref=e242]: 13.0 mm
+                - generic [ref=e243]: 01:42
+            - generic [ref=e244]:
+              - generic [ref=e245]:
+                - img [ref=e247]
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Estação Atuba — Cajuru
+                  - generic [ref=e251]: Precipitation
+              - generic [ref=e252]:
+                - generic [ref=e253]: 11.7 mm
+                - generic [ref=e254]: 01:42
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - img [ref=e258]
+                - generic [ref=e260]:
+                  - generic [ref=e261]: Estação Iguaçu — Ponte do Guabirotuba
+                  - generic [ref=e262]: Precipitation
+              - generic [ref=e263]:
+                - generic [ref=e264]: 14.6 mm
+                - generic [ref=e265]: 01:42
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - img [ref=e269]
+                - generic [ref=e271]:
+                  - generic [ref=e272]: Estação Passaúna
+                  - generic [ref=e273]: Precipitation
+              - generic [ref=e274]:
+                - generic [ref=e275]: 11.3 mm
+                - generic [ref=e276]: 01:42

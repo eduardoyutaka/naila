@@ -1,0 +1,144 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "NAILA" [ref=e4] [cursor=pointer]:
+      - /url: /admin
+      - generic [ref=e5]: NAILA
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: AN
+        - generic [ref=e9]: Administrador NAILA
+      - button "Sair" [ref=e11]:
+        - img [ref=e12]
+  - generic [ref=e14]:
+    - navigation [ref=e15]:
+      - generic [ref=e16]:
+        - link "Painel" [ref=e17] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e18]
+          - generic [ref=e20]: Painel
+        - link "Estações" [ref=e21] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+          - img [ref=e22]
+          - generic [ref=e24]: Estações
+        - link "Meteorologia" [ref=e25] [cursor=pointer]:
+          - /url: /admin/weather
+          - img [ref=e26]
+          - generic [ref=e29]: Meteorologia
+        - link "Alarmes" [ref=e30] [cursor=pointer]:
+          - /url: /admin/alarms
+          - img [ref=e31]
+          - generic [ref=e33]: Alarmes
+        - link "Bacias" [ref=e34] [cursor=pointer]:
+          - /url: /admin/river_basins
+          - img [ref=e35]
+          - generic [ref=e37]: Bacias
+        - link "Usuários" [ref=e38] [cursor=pointer]:
+          - /url: /admin/users
+          - img [ref=e39]
+          - generic [ref=e41]: Usuários
+      - generic [ref=e43]:
+        - generic [ref=e44]: Status do Sistema
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]: Sensores Online
+            - generic [ref=e48]: "6"
+          - generic [ref=e49]:
+            - generic [ref=e50]: Bacias em Risco
+            - generic [ref=e51]: "0"
+          - generic [ref=e52]:
+            - generic [ref=e53]: Alarmes Ativos
+            - generic [ref=e54]: "0"
+    - main [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: Total de Usuários
+          - generic [ref=e59]: "3"
+        - generic [ref=e60]:
+          - generic [ref=e61]: Usuários Ativos
+          - generic [ref=e62]: "3"
+        - generic [ref=e63]:
+          - generic [ref=e64]: Recebem SMS
+          - generic [ref=e65]: "2"
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "Usuários" [level=2] [ref=e68]
+          - link "Novo Usuário" [ref=e69] [cursor=pointer]:
+            - /url: /admin/users/new
+            - img [ref=e70]
+            - text: Novo Usuário
+        - table [ref=e73]:
+          - rowgroup [ref=e74]:
+            - row "Nome Email Cargo Departamento Status Ações" [ref=e75]:
+              - columnheader "Nome" [ref=e76]
+              - columnheader "Email" [ref=e77]
+              - columnheader "Cargo" [ref=e78]
+              - columnheader "Departamento" [ref=e79]
+              - columnheader "Status" [ref=e80]
+              - columnheader "Ações" [ref=e81]
+          - rowgroup [ref=e82]:
+            - 'row "AN Administrador NAILA +5541999000001 Último acesso: 1 minute atrás admin@naila.curitiba.pr.gov.br Administrador Tecnologia da Informação Ativo SMS" [ref=e83]':
+              - 'cell "AN Administrador NAILA +5541999000001 Último acesso: 1 minute atrás" [ref=e84]':
+                - generic [ref=e85]:
+                  - generic [ref=e86]: AN
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: Administrador NAILA
+                    - generic [ref=e89]: "+5541999000001"
+                    - generic [ref=e90]: "Último acesso: 1 minute atrás"
+              - cell "admin@naila.curitiba.pr.gov.br" [ref=e91]
+              - cell "Administrador" [ref=e92]:
+                - generic [ref=e93]: Administrador
+              - cell "Tecnologia da Informação" [ref=e94]
+              - cell "Ativo SMS" [ref=e95]:
+                - generic [ref=e96]:
+                  - generic [ref=e99]: Ativo
+                  - generic [ref=e100]:
+                    - img [ref=e101]
+                    - generic [ref=e103]: SMS
+              - cell [ref=e104]:
+                - link "Editar" [ref=e106] [cursor=pointer]:
+                  - /url: /admin/users/1/edit
+                  - img [ref=e107]
+            - row "JS João Santos +5541999000003 operador@defesacivil.curitiba.pr.gov.br Operador Defesa Civil Ativo" [ref=e109]:
+              - cell "JS João Santos +5541999000003" [ref=e110]:
+                - generic [ref=e111]:
+                  - generic [ref=e112]: JS
+                  - generic [ref=e113]:
+                    - generic [ref=e114]: João Santos
+                    - generic [ref=e115]: "+5541999000003"
+              - cell "operador@defesacivil.curitiba.pr.gov.br" [ref=e116]
+              - cell "Operador" [ref=e117]:
+                - generic [ref=e118]: Operador
+              - cell "Defesa Civil" [ref=e119]
+              - cell "Ativo" [ref=e120]:
+                - generic [ref=e124]: Ativo
+              - cell [ref=e125]:
+                - generic [ref=e126]:
+                  - link "Editar" [ref=e127] [cursor=pointer]:
+                    - /url: /admin/users/3/edit
+                    - img [ref=e128]
+                  - button "Remover" [ref=e131]:
+                    - img [ref=e132]
+            - row "MS Maria Silva +5541999000002 coord@defesacivil.curitiba.pr.gov.br Coordenador Defesa Civil Ativo SMS" [ref=e134]:
+              - cell "MS Maria Silva +5541999000002" [ref=e135]:
+                - generic [ref=e136]:
+                  - generic [ref=e137]: MS
+                  - generic [ref=e138]:
+                    - generic [ref=e139]: Maria Silva
+                    - generic [ref=e140]: "+5541999000002"
+              - cell "coord@defesacivil.curitiba.pr.gov.br" [ref=e141]
+              - cell "Coordenador" [ref=e142]:
+                - generic [ref=e143]: Coordenador
+              - cell "Defesa Civil" [ref=e144]
+              - cell "Ativo SMS" [ref=e145]:
+                - generic [ref=e146]:
+                  - generic [ref=e149]: Ativo
+                  - generic [ref=e150]:
+                    - img [ref=e151]
+                    - generic [ref=e153]: SMS
+              - cell [ref=e154]:
+                - generic [ref=e155]:
+                  - link "Editar" [ref=e156] [cursor=pointer]:
+                    - /url: /admin/users/2/edit
+                    - img [ref=e157]
+                  - button "Remover" [ref=e160]:
+                    - img [ref=e161]

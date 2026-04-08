@@ -1,0 +1,125 @@
+- generic [ref=e2]:
+  - navigation [ref=e5]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e8] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: NAILA
+        - generic [ref=e12]: Tecnologia Ambiental
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - link "Painel" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e18] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e20] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e22] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e24] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e26] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e27]:
+        - heading "Status do Sistema" [level=3] [ref=e28]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Sensores Online
+            - generic [ref=e33]: "6"
+          - generic [ref=e34]:
+            - generic [ref=e35]: Bacias em Risco
+            - generic [ref=e36]: "0"
+          - generic [ref=e37]:
+            - generic [ref=e38]: Alarmes Ativos
+            - generic [ref=e39]: "0"
+    - generic [ref=e43]:
+      - img [ref=e45]:
+        - generic [ref=e46]: AN
+      - generic [ref=e47]:
+        - generic [ref=e48]: Administrador NAILA
+        - generic [ref=e49]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e51]:
+        - img [ref=e52]
+  - main [ref=e54]:
+    - generic [ref=e56]:
+      - link "Voltar" [ref=e58] [cursor=pointer]:
+        - /url: /admin/alarms
+        - img [ref=e59]
+        - text: Voltar
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]: Dados Insuficientes
+          - generic [ref=e64]: Anomalia
+        - heading "Anomalia Precipitação — Bacia do Rio Atuba" [level=1] [ref=e65]
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - heading "Configuração" [level=2] [ref=e70]
+            - generic [ref=e71]:
+              - term [ref=e72]: Métrica
+              - definition [ref=e73]: precipitation_1h
+              - term [ref=e74]: Estatística
+              - definition [ref=e75]: Sum
+              - term [ref=e76]: Período
+              - definition [ref=e77]: 3600s
+              - term [ref=e78]: Avaliação
+              - definition [ref=e79]: 2 de 3 períodos
+              - term [ref=e80]: Banda de Anomalia
+              - definition [ref=e81]: 2.0 desvios-padrão
+              - term [ref=e82]: Dados Ausentes
+              - definition [ref=e83]: Ausente
+              - term [ref=e84]: Escopo
+              - definition [ref=e85]: Bacia do Rio Atuba
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - heading "Ações Configuradas" [level=2] [ref=e88]
+              - link "Nova Ação" [ref=e89] [cursor=pointer]:
+                - /url: /admin/alarms/35/alarm_actions/new
+                - img [ref=e90]
+                - text: Nova Ação
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - generic [ref=e95]:
+                    - generic [ref=e96]: Alarme
+                    - generic [ref=e97]: Notificação
+                  - generic [ref=e98]: websocket, sms
+                - generic [ref=e99]:
+                  - link "Editar ação Alarme" [ref=e100] [cursor=pointer]:
+                    - /url: /admin/alarms/35/alarm_actions/69/edit
+                    - img [ref=e101]
+                  - button "Remover ação Alarme" [ref=e104]:
+                    - img [ref=e105]
+              - generic [ref=e107]:
+                - generic [ref=e108]:
+                  - generic [ref=e109]:
+                    - generic [ref=e110]: OK
+                    - generic [ref=e111]: Notificação
+                  - generic [ref=e112]: websocket
+                - generic [ref=e113]:
+                  - link "Editar ação OK" [ref=e114] [cursor=pointer]:
+                    - /url: /admin/alarms/35/alarm_actions/70/edit
+                    - img [ref=e115]
+                  - button "Remover ação OK" [ref=e118]:
+                    - img [ref=e119]
+        - generic [ref=e121]:
+          - generic [ref=e122]:
+            - heading "Gerenciar" [level=2] [ref=e124]
+            - generic [ref=e125]:
+              - link "Editar Alarme" [ref=e126] [cursor=pointer]:
+                - /url: /admin/alarms/35/edit
+                - img [ref=e127]
+                - text: Editar Alarme
+              - button "Desativar Alarme" [ref=e130]
+              - button "Remover Alarme" [ref=e132]
+          - generic [ref=e133]:
+            - heading "Informações" [level=2] [ref=e135]
+            - generic [ref=e136]:
+              - term [ref=e137]: Última Avaliação
+              - definition [ref=e138]: 08 Apr 17:10
+              - term [ref=e139]: Mudança de Estado
+              - definition [ref=e140]: —
+              - term [ref=e141]: Total de Transições
+              - definition [ref=e142]: "0"
+              - term [ref=e143]: Criado em
+              - definition [ref=e144]: 06/04/2026

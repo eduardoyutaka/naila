@@ -1,0 +1,191 @@
+- generic [ref=e2]:
+  - navigation [ref=e5]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e8] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: NAILA
+        - generic [ref=e12]: Tecnologia Ambiental
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - link "Painel" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e18] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e20] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e22] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e24] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e26] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e27]:
+        - heading "Status do Sistema" [level=3] [ref=e28]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Sensores Online
+            - generic [ref=e33]: "6"
+          - generic [ref=e34]:
+            - generic [ref=e35]: Bacias em Risco
+            - generic [ref=e36]: "0"
+          - generic [ref=e37]:
+            - generic [ref=e38]: Alarmes Ativos
+            - generic [ref=e39]: "0"
+    - generic [ref=e43]:
+      - img [ref=e45]:
+        - generic [ref=e46]: AN
+      - generic [ref=e47]:
+        - generic [ref=e48]: Administrador NAILA
+        - generic [ref=e49]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e51]:
+        - img [ref=e52]
+  - main [ref=e54]:
+    - generic [ref=e57]:
+      - link "Voltar" [ref=e59] [cursor=pointer]:
+        - /url: /admin/alarms
+        - img [ref=e60]
+        - text: Voltar
+      - heading "Novo Alarme" [level=1] [ref=e62]
+      - generic [ref=e64]:
+        - heading "Novo Alarme" [level=2] [ref=e66]
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - text: Nome
+              - textbox "Nome" [ref=e71]:
+                - /placeholder: "Ex: Precipitação 3h — Bacia Belém"
+            - generic [ref=e72]:
+              - text: Tipo
+              - generic [ref=e73]:
+                - combobox "Tipo" [ref=e74]:
+                  - option "Métrica" [selected]
+                  - option "Anomalia"
+                  - option "Composto"
+                - generic:
+                  - img
+            - generic [ref=e75]:
+              - text: Descrição
+              - textbox "Descrição" [ref=e77]:
+                - /placeholder: Descrição opcional...
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - text: Bacia Hidrográfica
+                - generic [ref=e80]:
+                  - combobox "Bacia Hidrográfica" [ref=e81]:
+                    - option "— Nenhuma —" [selected]
+                    - option "Bacia do Ribeirão dos Padilhas"
+                    - option "Bacia do Rio Atuba"
+                    - option "Bacia do Rio Barigui"
+                    - option "Bacia do Rio Belém"
+                    - option "Bacia do Rio Iguaçu"
+                    - option "Bacia do Rio Passaúna"
+                  - generic:
+                    - img
+              - generic [ref=e82]:
+                - text: Rio
+                - generic [ref=e83]:
+                  - combobox "Rio" [ref=e84]:
+                    - option "— Nenhum —" [selected]
+                    - option "Rio Atuba"
+                    - option "Rio Barigui"
+                    - option "Rio Belém"
+                    - option "Rio Iguaçu"
+                    - option "Rio Passaúna"
+                  - generic:
+                    - img
+            - paragraph [ref=e85]: Selecione apenas um escopo, ou deixe ambos vazios para escopo global.
+            - generic [ref=e86]:
+              - text: Status
+              - generic [ref=e87]:
+                - combobox "Status" [ref=e88]:
+                  - option "Ativado" [selected]
+                  - option "Desativado"
+                - generic:
+                  - img
+          - generic [ref=e89]:
+            - heading "Configuração de Métrica" [level=2] [ref=e90]
+            - generic [ref=e91]:
+              - generic [ref=e92]:
+                - generic [ref=e93]:
+                  - text: Métrica
+                  - generic [ref=e94]:
+                    - combobox "Métrica" [ref=e95]:
+                      - option "— Selecione —" [selected]
+                      - option "Precipitação 1h"
+                      - option "Precipitação 3h"
+                      - option "Nível do Rio"
+                      - option "Score de Risco"
+                      - option "Umidade do Solo"
+                      - option "Previsão Precip."
+                    - generic:
+                      - img
+                - generic [ref=e96]:
+                  - text: Estatística
+                  - generic [ref=e97]:
+                    - combobox "Estatística" [ref=e98]:
+                      - option "— Selecione —" [selected]
+                      - option "Average"
+                      - option "Sum"
+                      - option "Minimum"
+                      - option "Maximum"
+                      - option "SampleCount"
+                    - generic:
+                      - img
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - text: Período (s)
+                  - spinbutton "Período (s)" [ref=e102]
+                - generic [ref=e103]:
+                  - text: Períodos de Avaliação
+                  - spinbutton "Períodos de Avaliação" [ref=e105]: "1"
+                - generic [ref=e106]:
+                  - text: Datapoints p/ Alarme
+                  - spinbutton "Datapoints p/ Alarme" [ref=e108]: "1"
+              - generic [ref=e109]:
+                - generic [ref=e110]:
+                  - generic [ref=e111]: Faixas de Limiar
+                  - button "Adicionar Faixa" [ref=e112]:
+                    - img [ref=e113]
+                    - text: Adicionar Faixa
+                - row "Severidade Operador Limiar Unidade" [ref=e115]:
+                  - columnheader "Severidade" [ref=e116]
+                  - columnheader "Operador" [ref=e117]
+                  - columnheader "Limiar" [ref=e118]
+                  - columnheader "Unidade" [ref=e119]
+                - generic [ref=e122]:
+                  - generic [ref=e123]:
+                    - combobox "Severidade" [ref=e124]:
+                      - option "1 — Atenção" [selected]
+                      - option "2 — Alerta"
+                      - option "3 — Alerta Máximo"
+                      - option "4 — Emergência"
+                    - generic:
+                      - img
+                  - generic [ref=e125]:
+                    - combobox "Operador" [ref=e126]:
+                      - option "Maior que" [selected]
+                      - option "Maior ou igual"
+                      - option "Menor que"
+                      - option "Menor ou igual"
+                    - generic:
+                      - img
+                  - spinbutton "Limiar" [ref=e128]
+                  - textbox "Unidade" [ref=e130]:
+                    - /placeholder: mm
+                  - button "Remover faixa" [ref=e131]:
+                    - img [ref=e132]
+              - generic [ref=e134]:
+                - text: Tratamento de Dados Ausentes
+                - generic [ref=e135]:
+                  - combobox "Tratamento de Dados Ausentes" [ref=e136]:
+                    - option "Ausente" [selected]
+                    - option "Não viola"
+                    - option "Viola"
+                    - option "Ignorar"
+                  - generic:
+                    - img
+        - generic [ref=e137]:
+          - link "Cancelar" [ref=e138] [cursor=pointer]:
+            - /url: /admin/alarms
+          - button "Criar Alarme" [ref=e139] [cursor=pointer]

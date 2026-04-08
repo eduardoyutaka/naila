@@ -1,0 +1,192 @@
+- generic [ref=e2]:
+  - navigation [ref=e5]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e8] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: NAILA
+        - generic [ref=e12]: Tecnologia Ambiental
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - link "Painel" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e18] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e20] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e22] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e24] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e26] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e27]:
+        - heading "Status do Sistema" [level=3] [ref=e28]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Sensores Online
+            - generic [ref=e33]: "6"
+          - generic [ref=e34]:
+            - generic [ref=e35]: Bacias em Risco
+            - generic [ref=e36]: "0"
+          - generic [ref=e37]:
+            - generic [ref=e38]: Alarmes Ativos
+            - generic [ref=e39]: "0"
+    - generic [ref=e43]:
+      - img [ref=e45]:
+        - generic [ref=e46]: AN
+      - generic [ref=e47]:
+        - generic [ref=e48]: Administrador NAILA
+        - generic [ref=e49]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e51]:
+        - img [ref=e52]
+  - main [ref=e54]:
+    - generic [ref=e56]:
+      - link "Voltar" [ref=e58] [cursor=pointer]:
+        - /url: /admin/river_basins
+        - img [ref=e59]
+        - text: Voltar
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]: Normal
+          - generic [ref=e64]: Ativa
+        - heading "Bacia do Rio Iguaçu" [level=1] [ref=e65]
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - heading "Mapa da Bacia" [level=2] [ref=e70]
+            - generic [ref=e73]:
+              - generic:
+                - generic [ref=e77]:
+                  - button "+" [ref=e78]
+                  - button "–" [ref=e79]
+                - generic:
+                  - generic: 2 km
+          - generic [ref=e80]:
+            - heading "Detalhes" [level=2] [ref=e82]
+            - generic [ref=e83]:
+              - term [ref=e84]: Área
+              - definition [ref=e85]: 308.0 km²
+              - term [ref=e86]: Rios
+              - definition [ref=e87]: Rio Iguaçu
+              - term [ref=e88]: Score Atual
+              - definition [ref=e89]: 12.2%
+              - term [ref=e90]: Fatores de Risco
+              - definition [ref=e91]:
+                - generic [ref=e92]:
+                  - generic [ref=e93]:
+                    - generic [ref=e94]: Forecast
+                    - generic [ref=e95]: 1%
+                  - generic [ref=e96]:
+                    - generic [ref=e97]: River level
+                    - generic [ref=e98]: 48%
+                  - generic [ref=e99]:
+                    - generic [ref=e100]: Precipitation
+                    - generic [ref=e101]: 0%
+                  - generic [ref=e102]:
+                    - generic [ref=e103]: Soil moisture
+                    - generic [ref=e104]: 0%
+              - term [ref=e105]: Última Avaliação
+              - definition [ref=e106]: 08/04/2026 19:00
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - heading "Avaliações Recentes" [level=2] [ref=e109]
+              - paragraph [ref=e110]: "10"
+            - table [ref=e114]:
+              - rowgroup [ref=e115]:
+                - row "Data/Hora Nível Score" [ref=e116]:
+                  - columnheader "Data/Hora" [ref=e117]
+                  - columnheader "Nível" [ref=e118]
+                  - columnheader "Score" [ref=e119]
+              - rowgroup [ref=e120]:
+                - row "08/04/2026 19:00 Normal 12.2%" [ref=e121]:
+                  - cell "08/04/2026 19:00" [ref=e122]
+                  - cell "Normal" [ref=e123]:
+                    - generic [ref=e124]: Normal
+                  - cell "12.2%" [ref=e125]
+                - row "08/04/2026 19:00 Normal 12.2%" [ref=e126]:
+                  - cell "08/04/2026 19:00" [ref=e127]
+                  - cell "Normal" [ref=e128]:
+                    - generic [ref=e129]: Normal
+                  - cell "12.2%" [ref=e130]
+                - row "08/04/2026 18:00 Normal 12.2%" [ref=e131]:
+                  - cell "08/04/2026 18:00" [ref=e132]
+                  - cell "Normal" [ref=e133]:
+                    - generic [ref=e134]: Normal
+                  - cell "12.2%" [ref=e135]
+                - row "08/04/2026 18:00 Normal 12.2%" [ref=e136]:
+                  - cell "08/04/2026 18:00" [ref=e137]
+                  - cell "Normal" [ref=e138]:
+                    - generic [ref=e139]: Normal
+                  - cell "12.2%" [ref=e140]
+                - row "08/04/2026 17:00 Normal 12.2%" [ref=e141]:
+                  - cell "08/04/2026 17:00" [ref=e142]
+                  - cell "Normal" [ref=e143]:
+                    - generic [ref=e144]: Normal
+                  - cell "12.2%" [ref=e145]
+                - row "08/04/2026 17:00 Normal 12.2%" [ref=e146]:
+                  - cell "08/04/2026 17:00" [ref=e147]
+                  - cell "Normal" [ref=e148]:
+                    - generic [ref=e149]: Normal
+                  - cell "12.2%" [ref=e150]
+                - row "08/04/2026 16:00 Normal 12.2%" [ref=e151]:
+                  - cell "08/04/2026 16:00" [ref=e152]
+                  - cell "Normal" [ref=e153]:
+                    - generic [ref=e154]: Normal
+                  - cell "12.2%" [ref=e155]
+                - row "08/04/2026 16:00 Normal 12.2%" [ref=e156]:
+                  - cell "08/04/2026 16:00" [ref=e157]
+                  - cell "Normal" [ref=e158]:
+                    - generic [ref=e159]: Normal
+                  - cell "12.2%" [ref=e160]
+                - row "08/04/2026 14:00 Normal 12.2%" [ref=e161]:
+                  - cell "08/04/2026 14:00" [ref=e162]
+                  - cell "Normal" [ref=e163]:
+                    - generic [ref=e164]: Normal
+                  - cell "12.2%" [ref=e165]
+                - row "08/04/2026 14:00 Normal 12.2%" [ref=e166]:
+                  - cell "08/04/2026 14:00" [ref=e167]
+                  - cell "Normal" [ref=e168]:
+                    - generic [ref=e169]: Normal
+                  - cell "12.2%" [ref=e170]
+        - generic [ref=e171]:
+          - generic [ref=e172]:
+            - heading "Ações" [level=2] [ref=e174]
+            - generic [ref=e175]:
+              - link "Editar Bacia" [ref=e176] [cursor=pointer]:
+                - /url: /admin/river_basins/1/edit
+              - button "Remover Bacia" [ref=e178]
+          - generic [ref=e179]:
+            - heading "Contexto Meteorológico" [level=2] [ref=e181]
+            - generic [ref=e182]:
+              - generic [ref=e183]:
+                - generic [ref=e184]: Temperatura
+                - generic [ref=e185]: 25.4°C
+              - generic [ref=e186]:
+                - generic [ref=e187]: Umidade
+                - generic [ref=e188]: 74%
+              - generic [ref=e189]:
+                - generic [ref=e190]: Precipitação atual
+                - generic [ref=e191]: 0.0 mm
+              - generic [ref=e192]:
+                - generic [ref=e193]: Previsão 6h
+                - generic [ref=e194]:
+                  - generic [ref=e195]:
+                    - generic [ref=e196]: Total
+                    - generic [ref=e197]: 1.2 mm
+                  - generic [ref=e198]:
+                    - generic [ref=e199]: Prob. máx.
+                    - generic [ref=e200]: 100%
+              - link "Ver meteorologia completa" [ref=e202] [cursor=pointer]:
+                - /url: /admin/weather
+                - text: Ver meteorologia completa
+                - img [ref=e203]
+          - generic [ref=e205]:
+            - heading "Estatísticas" [level=2] [ref=e207]
+            - generic [ref=e208]:
+              - term [ref=e209]: Total de Avaliações
+              - definition [ref=e210]: "102"
+              - term [ref=e211]: Total de Alarmes
+              - definition [ref=e212]: "9"
+              - term [ref=e213]: Criada em
+              - definition [ref=e214]: 26/03/2026

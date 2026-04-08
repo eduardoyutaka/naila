@@ -1,0 +1,100 @@
+- generic [ref=e2]:
+  - navigation [ref=e5]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e8] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: NAILA
+        - generic [ref=e12]: Tecnologia Ambiental
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - link "Painel" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e18] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e20] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e22] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e24] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e26] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e27]:
+        - heading "Status do Sistema" [level=3] [ref=e28]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Sensores Online
+            - generic [ref=e33]: "6"
+          - generic [ref=e34]:
+            - generic [ref=e35]: Bacias em Risco
+            - generic [ref=e36]: "0"
+          - generic [ref=e37]:
+            - generic [ref=e38]: Alarmes Ativos
+            - generic [ref=e39]: "0"
+    - generic [ref=e43]:
+      - img [ref=e45]:
+        - generic [ref=e46]: AN
+      - generic [ref=e47]:
+        - generic [ref=e48]: Administrador NAILA
+        - generic [ref=e49]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e51]:
+        - img [ref=e52]
+  - main [ref=e54]:
+    - generic [ref=e57]:
+      - link "Voltar" [ref=e59] [cursor=pointer]:
+        - /url: /admin/users
+        - img [ref=e60]
+        - text: Voltar
+      - heading "Novo Usuário" [level=1] [ref=e62]
+      - generic [ref=e64]:
+        - heading "Novo Usuário" [level=2] [ref=e66]
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - text: Nome
+            - textbox "Nome" [ref=e71]:
+              - /placeholder: Nome completo
+          - generic [ref=e72]:
+            - text: Email
+            - textbox "Email" [ref=e74]:
+              - /placeholder: usuario@exemplo.com
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - text: Departamento
+              - textbox "Departamento" [ref=e78]:
+                - /placeholder: Defesa Civil
+            - generic [ref=e79]:
+              - text: Telefone
+              - textbox "Telefone" [ref=e81]:
+                - /placeholder: "+5541999000000"
+          - generic [ref=e82]:
+            - text: Cargo
+            - generic [ref=e83]:
+              - combobox "Cargo" [ref=e84]:
+                - option "Operador" [selected]
+                - option "Coordenador"
+                - option "Administrador"
+              - generic:
+                - img
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - text: Senha
+              - textbox "Senha" [ref=e88]:
+                - /placeholder: ••••••••
+            - generic [ref=e89]:
+              - text: Confirmar Senha
+              - textbox "Confirmar Senha" [ref=e91]:
+                - /placeholder: ••••••••
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - checkbox "Usuário ativo" [checked] [ref=e94]
+              - generic [ref=e95]: Usuário ativo
+            - generic [ref=e96]:
+              - checkbox "Recebe alertas por SMS" [checked] [ref=e97]
+              - generic [ref=e98]:
+                - text: Recebe alertas por SMS
+                - paragraph [ref=e99]: Notificações por SMS para novos alarmes de nível alto ou emergência.
+        - generic [ref=e100]:
+          - link "Cancelar" [ref=e101] [cursor=pointer]:
+            - /url: /admin/users
+          - button "Criar Usuário" [ref=e102] [cursor=pointer]

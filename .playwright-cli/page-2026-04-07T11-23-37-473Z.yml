@@ -1,0 +1,197 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "NAILA" [ref=e4] [cursor=pointer]:
+      - /url: /admin
+      - generic [ref=e5]: NAILA
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: AN
+        - generic [ref=e9]: Administrador NAILA
+      - button "Sair" [ref=e11]:
+        - img [ref=e12]
+  - generic [ref=e14]:
+    - navigation [ref=e15]:
+      - generic [ref=e16]:
+        - link "Painel" [ref=e17] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e18]
+          - generic [ref=e20]: Painel
+        - link "Estações" [ref=e21] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+          - img [ref=e22]
+          - generic [ref=e24]: Estações
+        - link "Meteorologia" [ref=e25] [cursor=pointer]:
+          - /url: /admin/weather
+          - img [ref=e26]
+          - generic [ref=e29]: Meteorologia
+        - link "Alarmes" [ref=e30] [cursor=pointer]:
+          - /url: /admin/alarms
+          - img [ref=e31]
+          - generic [ref=e33]: Alarmes
+        - link "Bacias" [ref=e34] [cursor=pointer]:
+          - /url: /admin/river_basins
+          - img [ref=e35]
+          - generic [ref=e37]: Bacias
+        - link "Usuários" [ref=e38] [cursor=pointer]:
+          - /url: /admin/users
+          - img [ref=e39]
+          - generic [ref=e41]: Usuários
+      - generic [ref=e43]:
+        - generic [ref=e44]: Status do Sistema
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]: Sensores Online
+            - generic [ref=e48]: "6"
+          - generic [ref=e49]:
+            - generic [ref=e50]: Bacias em Risco
+            - generic [ref=e51]: "0"
+          - generic [ref=e52]:
+            - generic [ref=e53]: Alarmes Ativos
+            - generic [ref=e54]: "0"
+    - main [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: Total de Estações
+          - generic [ref=e59]: "6"
+        - generic [ref=e60]:
+          - generic [ref=e61]: Online
+          - generic [ref=e62]: "6"
+        - generic [ref=e63]:
+          - generic [ref=e64]: Em Manutenção
+          - generic [ref=e65]: "0"
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - heading "Estações de Monitoramento" [level=2] [ref=e68]
+          - link "Nova Estação" [ref=e69] [cursor=pointer]:
+            - /url: /admin/monitoring_stations/new
+            - img [ref=e70]
+            - text: Nova Estação
+        - table [ref=e73]:
+          - rowgroup [ref=e74]:
+            - row "Nome Sensores Status Localização Última Leitura Ações" [ref=e75]:
+              - columnheader "Nome" [ref=e76]
+              - columnheader "Sensores" [ref=e77]
+              - columnheader "Status" [ref=e78]
+              - columnheader "Localização" [ref=e79]
+              - columnheader "Última Leitura" [ref=e80]
+              - columnheader "Ações" [ref=e81]
+          - rowgroup [ref=e82]:
+            - row "Estação Atuba — Cajuru EST-ATUBA-01 Fluviômetro Pluviômetro Ativo Cajuru —" [ref=e83]:
+              - cell "Estação Atuba — Cajuru EST-ATUBA-01" [ref=e84]:
+                - generic [ref=e85]: Estação Atuba — Cajuru
+                - generic [ref=e86]: EST-ATUBA-01
+              - cell "Fluviômetro Pluviômetro" [ref=e87]:
+                - generic [ref=e88]:
+                  - generic [ref=e89]: Fluviômetro
+                  - generic [ref=e90]: Pluviômetro
+              - cell "Ativo" [ref=e91]:
+                - generic [ref=e92]: Ativo
+              - cell "Cajuru" [ref=e94]
+              - cell "—" [ref=e95]
+              - cell [ref=e96]:
+                - generic [ref=e97]:
+                  - link "Ver detalhes" [ref=e98] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/4
+                    - img [ref=e99]
+                  - link "Editar" [ref=e102] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/4/edit
+                    - img [ref=e103]
+            - row "Estação Barigui — Parque Barigui EST-BARIGUI-01 Fluviômetro Pluviômetro Ativo Santa Felicidade —" [ref=e105]:
+              - cell "Estação Barigui — Parque Barigui EST-BARIGUI-01" [ref=e106]:
+                - generic [ref=e107]: Estação Barigui — Parque Barigui
+                - generic [ref=e108]: EST-BARIGUI-01
+              - cell "Fluviômetro Pluviômetro" [ref=e109]:
+                - generic [ref=e110]:
+                  - generic [ref=e111]: Fluviômetro
+                  - generic [ref=e112]: Pluviômetro
+              - cell "Ativo" [ref=e113]:
+                - generic [ref=e114]: Ativo
+              - cell "Santa Felicidade" [ref=e116]
+              - cell "—" [ref=e117]
+              - cell [ref=e118]:
+                - generic [ref=e119]:
+                  - link "Ver detalhes" [ref=e120] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/2
+                    - img [ref=e121]
+                  - link "Editar" [ref=e124] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/2/edit
+                    - img [ref=e125]
+            - row "Estação Belém — Centro Cívico EST-BELEM-01 Fluviômetro Pluviômetro Meteorológica Ativo Centro Cívico —" [ref=e127]:
+              - cell "Estação Belém — Centro Cívico EST-BELEM-01" [ref=e128]:
+                - generic [ref=e129]: Estação Belém — Centro Cívico
+                - generic [ref=e130]: EST-BELEM-01
+              - cell "Fluviômetro Pluviômetro Meteorológica" [ref=e131]:
+                - generic [ref=e132]:
+                  - generic [ref=e133]: Fluviômetro
+                  - generic [ref=e134]: Pluviômetro
+                  - generic [ref=e135]: Meteorológica
+              - cell "Ativo" [ref=e136]:
+                - generic [ref=e137]: Ativo
+              - cell "Centro Cívico" [ref=e139]
+              - cell "—" [ref=e140]
+              - cell [ref=e141]:
+                - generic [ref=e142]:
+                  - link "Ver detalhes" [ref=e143] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/3
+                    - img [ref=e144]
+                  - link "Editar" [ref=e147] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/3/edit
+                    - img [ref=e148]
+            - row "Estação Iguaçu — Ponte do Guabirotuba EST-IGUACU-01 Fluviômetro Pluviômetro Ativo Boqueirão —" [ref=e150]:
+              - cell "Estação Iguaçu — Ponte do Guabirotuba EST-IGUACU-01" [ref=e151]:
+                - generic [ref=e152]: Estação Iguaçu — Ponte do Guabirotuba
+                - generic [ref=e153]: EST-IGUACU-01
+              - cell "Fluviômetro Pluviômetro" [ref=e154]:
+                - generic [ref=e155]:
+                  - generic [ref=e156]: Fluviômetro
+                  - generic [ref=e157]: Pluviômetro
+              - cell "Ativo" [ref=e158]:
+                - generic [ref=e159]: Ativo
+              - cell "Boqueirão" [ref=e161]
+              - cell "—" [ref=e162]
+              - cell [ref=e163]:
+                - generic [ref=e164]:
+                  - link "Ver detalhes" [ref=e165] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/1
+                    - img [ref=e166]
+                  - link "Editar" [ref=e169] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/1/edit
+                    - img [ref=e170]
+            - row "Estação Passaúna EST-PASSAUNA-01 Pluviômetro Meteorológica Ativo Cidade Industrial —" [ref=e172]:
+              - cell "Estação Passaúna EST-PASSAUNA-01" [ref=e173]:
+                - generic [ref=e174]: Estação Passaúna
+                - generic [ref=e175]: EST-PASSAUNA-01
+              - cell "Pluviômetro Meteorológica" [ref=e176]:
+                - generic [ref=e177]:
+                  - generic [ref=e178]: Pluviômetro
+                  - generic [ref=e179]: Meteorológica
+              - cell "Ativo" [ref=e180]:
+                - generic [ref=e181]: Ativo
+              - cell "Cidade Industrial" [ref=e183]
+              - cell "—" [ref=e184]
+              - cell [ref=e185]:
+                - generic [ref=e186]:
+                  - link "Ver detalhes" [ref=e187] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/5
+                    - img [ref=e188]
+                  - link "Editar" [ref=e191] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/5/edit
+                    - img [ref=e192]
+            - row "Estação Ribeirão dos Padilhas EST-PADILHAS-01 Pluviômetro Ativo Sítio Cercado —" [ref=e194]:
+              - cell "Estação Ribeirão dos Padilhas EST-PADILHAS-01" [ref=e195]:
+                - generic [ref=e196]: Estação Ribeirão dos Padilhas
+                - generic [ref=e197]: EST-PADILHAS-01
+              - cell "Pluviômetro" [ref=e198]:
+                - generic [ref=e200]: Pluviômetro
+              - cell "Ativo" [ref=e201]:
+                - generic [ref=e202]: Ativo
+              - cell "Sítio Cercado" [ref=e204]
+              - cell "—" [ref=e205]
+              - cell [ref=e206]:
+                - generic [ref=e207]:
+                  - link "Ver detalhes" [ref=e208] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/6
+                    - img [ref=e209]
+                  - link "Editar" [ref=e212] [cursor=pointer]:
+                    - /url: /admin/monitoring_stations/6/edit
+                    - img [ref=e213]

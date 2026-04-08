@@ -1,0 +1,1043 @@
+- generic [ref=e2]:
+  - navigation [ref=e5]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e8] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: NAILA
+        - generic [ref=e12]: Tecnologia Ambiental
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - link "Painel" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e18] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e20] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e23] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e25] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e27] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e28]:
+        - heading "Status do Sistema" [level=3] [ref=e29]
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - generic [ref=e33]: Sensores Online
+            - generic [ref=e34]: "6"
+          - generic [ref=e35]:
+            - generic [ref=e36]: Bacias em Risco
+            - generic [ref=e37]: "0"
+          - generic [ref=e38]:
+            - generic [ref=e39]: Alarmes Ativos
+            - generic [ref=e40]: "0"
+    - generic [ref=e44]:
+      - img [ref=e46]:
+        - generic [ref=e47]: AN
+      - generic [ref=e48]:
+        - generic [ref=e49]: Administrador NAILA
+        - generic [ref=e50]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e52]:
+        - img [ref=e53]
+  - main [ref=e55]:
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - heading "Alarmes" [level=1] [ref=e59]
+        - link "Novo Alarme" [ref=e60] [cursor=pointer]:
+          - /url: /admin/alarms/new
+          - img [ref=e61]
+          - text: Novo Alarme
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - paragraph [ref=e65]: Total
+          - generic [ref=e66]: "51"
+        - generic [ref=e67]:
+          - paragraph [ref=e68]: Ativos
+          - generic [ref=e69]: "51"
+        - generic [ref=e70]:
+          - paragraph [ref=e71]: Em Alarme
+          - generic [ref=e72]: "0"
+        - generic [ref=e73]:
+          - paragraph [ref=e74]: Dados Insuficientes
+          - generic [ref=e75]: "21"
+      - table [ref=e79]:
+        - rowgroup [ref=e80]:
+          - row "Estado Nome Tipo Severidade Escopo Avaliado Ações" [ref=e81]:
+            - columnheader "Estado" [ref=e82]
+            - columnheader "Nome" [ref=e83]
+            - columnheader "Tipo" [ref=e84]
+            - columnheader "Severidade" [ref=e85]
+            - columnheader "Escopo" [ref=e86]
+            - columnheader "Avaliado" [ref=e87]
+            - columnheader "Ações" [ref=e88]
+        - rowgroup [ref=e89]:
+          - row "Insuficiente Anomalia Precipitação — Bacia do Rio Atuba Anomalia Bacia do Rio Atuba 4 minutes atrás Ver detalhes de Anomalia Precipitação — Bacia do Rio Atuba Editar Anomalia Precipitação — Bacia do Rio Atuba Remover Anomalia Precipitação — Bacia do Rio Atuba" [ref=e90]:
+            - cell "Insuficiente" [ref=e91]:
+              - generic [ref=e92]: Insuficiente
+            - cell "Anomalia Precipitação — Bacia do Rio Atuba" [ref=e93]:
+              - generic [ref=e94]: Anomalia Precipitação — Bacia do Rio Atuba
+            - cell "Anomalia" [ref=e95]
+            - cell [ref=e96]
+            - cell "Bacia do Rio Atuba" [ref=e98]
+            - cell "4 minutes atrás" [ref=e99]
+            - cell "Ver detalhes de Anomalia Precipitação — Bacia do Rio Atuba Editar Anomalia Precipitação — Bacia do Rio Atuba Remover Anomalia Precipitação — Bacia do Rio Atuba" [ref=e100]:
+              - generic [ref=e101]:
+                - link "Ver detalhes de Anomalia Precipitação — Bacia do Rio Atuba" [ref=e102] [cursor=pointer]:
+                  - /url: /admin/alarms/35
+                  - img [ref=e103]
+                - link "Editar Anomalia Precipitação — Bacia do Rio Atuba" [ref=e106] [cursor=pointer]:
+                  - /url: /admin/alarms/35/edit
+                  - img [ref=e107]
+                - button "Remover Anomalia Precipitação — Bacia do Rio Atuba" [ref=e110]:
+                  - img [ref=e111]
+          - row "Insuficiente Nível do rio — Rio Atuba Métrica Rio Atuba 4 minutes atrás Ver detalhes de Nível do rio — Rio Atuba Editar Nível do rio — Rio Atuba Remover Nível do rio — Rio Atuba" [ref=e113]:
+            - cell "Insuficiente" [ref=e114]:
+              - generic [ref=e115]: Insuficiente
+            - cell "Nível do rio — Rio Atuba" [ref=e116]:
+              - generic [ref=e117]: Nível do rio — Rio Atuba
+            - cell "Métrica" [ref=e118]
+            - cell [ref=e119]
+            - cell "Rio Atuba" [ref=e121]
+            - cell "4 minutes atrás" [ref=e122]
+            - cell "Ver detalhes de Nível do rio — Rio Atuba Editar Nível do rio — Rio Atuba Remover Nível do rio — Rio Atuba" [ref=e123]:
+              - generic [ref=e124]:
+                - link "Ver detalhes de Nível do rio — Rio Atuba" [ref=e125] [cursor=pointer]:
+                  - /url: /admin/alarms/50
+                  - img [ref=e126]
+                - link "Editar Nível do rio — Rio Atuba" [ref=e129] [cursor=pointer]:
+                  - /url: /admin/alarms/50/edit
+                  - img [ref=e130]
+                - button "Remover Nível do rio — Rio Atuba" [ref=e133]:
+                  - img [ref=e134]
+          - row "Insuficiente Nível do rio — Rio Atuba (sev 2) Métrica Rio Atuba 4 minutes atrás Ver detalhes de Nível do rio — Rio Atuba (sev 2) Editar Nível do rio — Rio Atuba (sev 2) Remover Nível do rio — Rio Atuba (sev 2)" [ref=e136]:
+            - cell "Insuficiente" [ref=e137]:
+              - generic [ref=e138]: Insuficiente
+            - cell "Nível do rio — Rio Atuba (sev 2)" [ref=e139]:
+              - generic [ref=e140]: Nível do rio — Rio Atuba (sev 2)
+            - cell "Métrica" [ref=e141]
+            - cell [ref=e142]
+            - cell "Rio Atuba" [ref=e144]
+            - cell "4 minutes atrás" [ref=e145]
+            - cell "Ver detalhes de Nível do rio — Rio Atuba (sev 2) Editar Nível do rio — Rio Atuba (sev 2) Remover Nível do rio — Rio Atuba (sev 2)" [ref=e146]:
+              - generic [ref=e147]:
+                - link "Ver detalhes de Nível do rio — Rio Atuba (sev 2)" [ref=e148] [cursor=pointer]:
+                  - /url: /admin/alarms/31
+                  - img [ref=e149]
+                - link "Editar Nível do rio — Rio Atuba (sev 2)" [ref=e152] [cursor=pointer]:
+                  - /url: /admin/alarms/31/edit
+                  - img [ref=e153]
+                - button "Remover Nível do rio — Rio Atuba (sev 2)" [ref=e156]:
+                  - img [ref=e157]
+          - row "Insuficiente Nível do rio — Rio Atuba (sev 3) Métrica Rio Atuba 4 minutes atrás Ver detalhes de Nível do rio — Rio Atuba (sev 3) Editar Nível do rio — Rio Atuba (sev 3) Remover Nível do rio — Rio Atuba (sev 3)" [ref=e159]:
+            - cell "Insuficiente" [ref=e160]:
+              - generic [ref=e161]: Insuficiente
+            - cell "Nível do rio — Rio Atuba (sev 3)" [ref=e162]:
+              - generic [ref=e163]: Nível do rio — Rio Atuba (sev 3)
+            - cell "Métrica" [ref=e164]
+            - cell [ref=e165]
+            - cell "Rio Atuba" [ref=e167]
+            - cell "4 minutes atrás" [ref=e168]
+            - cell "Ver detalhes de Nível do rio — Rio Atuba (sev 3) Editar Nível do rio — Rio Atuba (sev 3) Remover Nível do rio — Rio Atuba (sev 3)" [ref=e169]:
+              - generic [ref=e170]:
+                - link "Ver detalhes de Nível do rio — Rio Atuba (sev 3)" [ref=e171] [cursor=pointer]:
+                  - /url: /admin/alarms/32
+                  - img [ref=e172]
+                - link "Editar Nível do rio — Rio Atuba (sev 3)" [ref=e175] [cursor=pointer]:
+                  - /url: /admin/alarms/32/edit
+                  - img [ref=e176]
+                - button "Remover Nível do rio — Rio Atuba (sev 3)" [ref=e179]:
+                  - img [ref=e180]
+          - row "Insuficiente Nível do rio — Rio Barigui Métrica Rio Barigui 4 minutes atrás Ver detalhes de Nível do rio — Rio Barigui Editar Nível do rio — Rio Barigui Remover Nível do rio — Rio Barigui" [ref=e182]:
+            - cell "Insuficiente" [ref=e183]:
+              - generic [ref=e184]: Insuficiente
+            - cell "Nível do rio — Rio Barigui" [ref=e185]:
+              - generic [ref=e186]: Nível do rio — Rio Barigui
+            - cell "Métrica" [ref=e187]
+            - cell [ref=e188]
+            - cell "Rio Barigui" [ref=e190]
+            - cell "4 minutes atrás" [ref=e191]
+            - cell "Ver detalhes de Nível do rio — Rio Barigui Editar Nível do rio — Rio Barigui Remover Nível do rio — Rio Barigui" [ref=e192]:
+              - generic [ref=e193]:
+                - link "Ver detalhes de Nível do rio — Rio Barigui" [ref=e194] [cursor=pointer]:
+                  - /url: /admin/alarms/48
+                  - img [ref=e195]
+                - link "Editar Nível do rio — Rio Barigui" [ref=e198] [cursor=pointer]:
+                  - /url: /admin/alarms/48/edit
+                  - img [ref=e199]
+                - button "Remover Nível do rio — Rio Barigui" [ref=e202]:
+                  - img [ref=e203]
+          - row "Insuficiente Nível do rio — Rio Barigui (sev 2) Métrica Rio Barigui 4 minutes atrás Ver detalhes de Nível do rio — Rio Barigui (sev 2) Editar Nível do rio — Rio Barigui (sev 2) Remover Nível do rio — Rio Barigui (sev 2)" [ref=e205]:
+            - cell "Insuficiente" [ref=e206]:
+              - generic [ref=e207]: Insuficiente
+            - cell "Nível do rio — Rio Barigui (sev 2)" [ref=e208]:
+              - generic [ref=e209]: Nível do rio — Rio Barigui (sev 2)
+            - cell "Métrica" [ref=e210]
+            - cell [ref=e211]
+            - cell "Rio Barigui" [ref=e213]
+            - cell "4 minutes atrás" [ref=e214]
+            - cell "Ver detalhes de Nível do rio — Rio Barigui (sev 2) Editar Nível do rio — Rio Barigui (sev 2) Remover Nível do rio — Rio Barigui (sev 2)" [ref=e215]:
+              - generic [ref=e216]:
+                - link "Ver detalhes de Nível do rio — Rio Barigui (sev 2)" [ref=e217] [cursor=pointer]:
+                  - /url: /admin/alarms/27
+                  - img [ref=e218]
+                - link "Editar Nível do rio — Rio Barigui (sev 2)" [ref=e221] [cursor=pointer]:
+                  - /url: /admin/alarms/27/edit
+                  - img [ref=e222]
+                - button "Remover Nível do rio — Rio Barigui (sev 2)" [ref=e225]:
+                  - img [ref=e226]
+          - row "Insuficiente Nível do rio — Rio Barigui (sev 3) Métrica Rio Barigui 4 minutes atrás Ver detalhes de Nível do rio — Rio Barigui (sev 3) Editar Nível do rio — Rio Barigui (sev 3) Remover Nível do rio — Rio Barigui (sev 3)" [ref=e228]:
+            - cell "Insuficiente" [ref=e229]:
+              - generic [ref=e230]: Insuficiente
+            - cell "Nível do rio — Rio Barigui (sev 3)" [ref=e231]:
+              - generic [ref=e232]: Nível do rio — Rio Barigui (sev 3)
+            - cell "Métrica" [ref=e233]
+            - cell [ref=e234]
+            - cell "Rio Barigui" [ref=e236]
+            - cell "4 minutes atrás" [ref=e237]
+            - cell "Ver detalhes de Nível do rio — Rio Barigui (sev 3) Editar Nível do rio — Rio Barigui (sev 3) Remover Nível do rio — Rio Barigui (sev 3)" [ref=e238]:
+              - generic [ref=e239]:
+                - link "Ver detalhes de Nível do rio — Rio Barigui (sev 3)" [ref=e240] [cursor=pointer]:
+                  - /url: /admin/alarms/28
+                  - img [ref=e241]
+                - link "Editar Nível do rio — Rio Barigui (sev 3)" [ref=e244] [cursor=pointer]:
+                  - /url: /admin/alarms/28/edit
+                  - img [ref=e245]
+                - button "Remover Nível do rio — Rio Barigui (sev 3)" [ref=e248]:
+                  - img [ref=e249]
+          - row "Insuficiente Nível do rio — Rio Belém Métrica Rio Belém 4 minutes atrás Ver detalhes de Nível do rio — Rio Belém Editar Nível do rio — Rio Belém Remover Nível do rio — Rio Belém" [ref=e251]:
+            - cell "Insuficiente" [ref=e252]:
+              - generic [ref=e253]: Insuficiente
+            - cell "Nível do rio — Rio Belém" [ref=e254]:
+              - generic [ref=e255]: Nível do rio — Rio Belém
+            - cell "Métrica" [ref=e256]
+            - cell [ref=e257]
+            - cell "Rio Belém" [ref=e259]
+            - cell "4 minutes atrás" [ref=e260]
+            - cell "Ver detalhes de Nível do rio — Rio Belém Editar Nível do rio — Rio Belém Remover Nível do rio — Rio Belém" [ref=e261]:
+              - generic [ref=e262]:
+                - link "Ver detalhes de Nível do rio — Rio Belém" [ref=e263] [cursor=pointer]:
+                  - /url: /admin/alarms/49
+                  - img [ref=e264]
+                - link "Editar Nível do rio — Rio Belém" [ref=e267] [cursor=pointer]:
+                  - /url: /admin/alarms/49/edit
+                  - img [ref=e268]
+                - button "Remover Nível do rio — Rio Belém" [ref=e271]:
+                  - img [ref=e272]
+          - row "Insuficiente Nível do rio — Rio Belém (sev 2) Métrica Rio Belém 4 minutes atrás Ver detalhes de Nível do rio — Rio Belém (sev 2) Editar Nível do rio — Rio Belém (sev 2) Remover Nível do rio — Rio Belém (sev 2)" [ref=e274]:
+            - cell "Insuficiente" [ref=e275]:
+              - generic [ref=e276]: Insuficiente
+            - cell "Nível do rio — Rio Belém (sev 2)" [ref=e277]:
+              - generic [ref=e278]: Nível do rio — Rio Belém (sev 2)
+            - cell "Métrica" [ref=e279]
+            - cell [ref=e280]
+            - cell "Rio Belém" [ref=e282]
+            - cell "4 minutes atrás" [ref=e283]
+            - cell "Ver detalhes de Nível do rio — Rio Belém (sev 2) Editar Nível do rio — Rio Belém (sev 2) Remover Nível do rio — Rio Belém (sev 2)" [ref=e284]:
+              - generic [ref=e285]:
+                - link "Ver detalhes de Nível do rio — Rio Belém (sev 2)" [ref=e286] [cursor=pointer]:
+                  - /url: /admin/alarms/29
+                  - img [ref=e287]
+                - link "Editar Nível do rio — Rio Belém (sev 2)" [ref=e290] [cursor=pointer]:
+                  - /url: /admin/alarms/29/edit
+                  - img [ref=e291]
+                - button "Remover Nível do rio — Rio Belém (sev 2)" [ref=e294]:
+                  - img [ref=e295]
+          - row "Insuficiente Nível do rio — Rio Belém (sev 3) Métrica Rio Belém 4 minutes atrás Ver detalhes de Nível do rio — Rio Belém (sev 3) Editar Nível do rio — Rio Belém (sev 3) Remover Nível do rio — Rio Belém (sev 3)" [ref=e297]:
+            - cell "Insuficiente" [ref=e298]:
+              - generic [ref=e299]: Insuficiente
+            - cell "Nível do rio — Rio Belém (sev 3)" [ref=e300]:
+              - generic [ref=e301]: Nível do rio — Rio Belém (sev 3)
+            - cell "Métrica" [ref=e302]
+            - cell [ref=e303]
+            - cell "Rio Belém" [ref=e305]
+            - cell "4 minutes atrás" [ref=e306]
+            - cell "Ver detalhes de Nível do rio — Rio Belém (sev 3) Editar Nível do rio — Rio Belém (sev 3) Remover Nível do rio — Rio Belém (sev 3)" [ref=e307]:
+              - generic [ref=e308]:
+                - link "Ver detalhes de Nível do rio — Rio Belém (sev 3)" [ref=e309] [cursor=pointer]:
+                  - /url: /admin/alarms/30
+                  - img [ref=e310]
+                - link "Editar Nível do rio — Rio Belém (sev 3)" [ref=e313] [cursor=pointer]:
+                  - /url: /admin/alarms/30/edit
+                  - img [ref=e314]
+                - button "Remover Nível do rio — Rio Belém (sev 3)" [ref=e317]:
+                  - img [ref=e318]
+          - row "Insuficiente Nível do rio — Rio Iguaçu Métrica Rio Iguaçu 4 minutes atrás Ver detalhes de Nível do rio — Rio Iguaçu Editar Nível do rio — Rio Iguaçu Remover Nível do rio — Rio Iguaçu" [ref=e320]:
+            - cell "Insuficiente" [ref=e321]:
+              - generic [ref=e322]: Insuficiente
+            - cell "Nível do rio — Rio Iguaçu" [ref=e323]:
+              - generic [ref=e324]: Nível do rio — Rio Iguaçu
+            - cell "Métrica" [ref=e325]
+            - cell [ref=e326]
+            - cell "Rio Iguaçu" [ref=e328]
+            - cell "4 minutes atrás" [ref=e329]
+            - cell "Ver detalhes de Nível do rio — Rio Iguaçu Editar Nível do rio — Rio Iguaçu Remover Nível do rio — Rio Iguaçu" [ref=e330]:
+              - generic [ref=e331]:
+                - link "Ver detalhes de Nível do rio — Rio Iguaçu" [ref=e332] [cursor=pointer]:
+                  - /url: /admin/alarms/47
+                  - img [ref=e333]
+                - link "Editar Nível do rio — Rio Iguaçu" [ref=e336] [cursor=pointer]:
+                  - /url: /admin/alarms/47/edit
+                  - img [ref=e337]
+                - button "Remover Nível do rio — Rio Iguaçu" [ref=e340]:
+                  - img [ref=e341]
+          - row "Insuficiente Nível do rio — Rio Iguaçu (sev 2) Métrica Rio Iguaçu 4 minutes atrás Ver detalhes de Nível do rio — Rio Iguaçu (sev 2) Editar Nível do rio — Rio Iguaçu (sev 2) Remover Nível do rio — Rio Iguaçu (sev 2)" [ref=e343]:
+            - cell "Insuficiente" [ref=e344]:
+              - generic [ref=e345]: Insuficiente
+            - cell "Nível do rio — Rio Iguaçu (sev 2)" [ref=e346]:
+              - generic [ref=e347]: Nível do rio — Rio Iguaçu (sev 2)
+            - cell "Métrica" [ref=e348]
+            - cell [ref=e349]
+            - cell "Rio Iguaçu" [ref=e351]
+            - cell "4 minutes atrás" [ref=e352]
+            - cell "Ver detalhes de Nível do rio — Rio Iguaçu (sev 2) Editar Nível do rio — Rio Iguaçu (sev 2) Remover Nível do rio — Rio Iguaçu (sev 2)" [ref=e353]:
+              - generic [ref=e354]:
+                - link "Ver detalhes de Nível do rio — Rio Iguaçu (sev 2)" [ref=e355] [cursor=pointer]:
+                  - /url: /admin/alarms/25
+                  - img [ref=e356]
+                - link "Editar Nível do rio — Rio Iguaçu (sev 2)" [ref=e359] [cursor=pointer]:
+                  - /url: /admin/alarms/25/edit
+                  - img [ref=e360]
+                - button "Remover Nível do rio — Rio Iguaçu (sev 2)" [ref=e363]:
+                  - img [ref=e364]
+          - row "Insuficiente Nível do rio — Rio Iguaçu (sev 3) Métrica Rio Iguaçu 4 minutes atrás Ver detalhes de Nível do rio — Rio Iguaçu (sev 3) Editar Nível do rio — Rio Iguaçu (sev 3) Remover Nível do rio — Rio Iguaçu (sev 3)" [ref=e366]:
+            - cell "Insuficiente" [ref=e367]:
+              - generic [ref=e368]: Insuficiente
+            - cell "Nível do rio — Rio Iguaçu (sev 3)" [ref=e369]:
+              - generic [ref=e370]: Nível do rio — Rio Iguaçu (sev 3)
+            - cell "Métrica" [ref=e371]
+            - cell [ref=e372]
+            - cell "Rio Iguaçu" [ref=e374]
+            - cell "4 minutes atrás" [ref=e375]
+            - cell "Ver detalhes de Nível do rio — Rio Iguaçu (sev 3) Editar Nível do rio — Rio Iguaçu (sev 3) Remover Nível do rio — Rio Iguaçu (sev 3)" [ref=e376]:
+              - generic [ref=e377]:
+                - link "Ver detalhes de Nível do rio — Rio Iguaçu (sev 3)" [ref=e378] [cursor=pointer]:
+                  - /url: /admin/alarms/26
+                  - img [ref=e379]
+                - link "Editar Nível do rio — Rio Iguaçu (sev 3)" [ref=e382] [cursor=pointer]:
+                  - /url: /admin/alarms/26/edit
+                  - img [ref=e383]
+                - button "Remover Nível do rio — Rio Iguaçu (sev 3)" [ref=e386]:
+                  - img [ref=e387]
+          - row "Insuficiente Nível do rio — Rio Passaúna Métrica Rio Passaúna 4 minutes atrás Ver detalhes de Nível do rio — Rio Passaúna Editar Nível do rio — Rio Passaúna Remover Nível do rio — Rio Passaúna" [ref=e389]:
+            - cell "Insuficiente" [ref=e390]:
+              - generic [ref=e391]: Insuficiente
+            - cell "Nível do rio — Rio Passaúna" [ref=e392]:
+              - generic [ref=e393]: Nível do rio — Rio Passaúna
+            - cell "Métrica" [ref=e394]
+            - cell [ref=e395]
+            - cell "Rio Passaúna" [ref=e397]
+            - cell "4 minutes atrás" [ref=e398]
+            - cell "Ver detalhes de Nível do rio — Rio Passaúna Editar Nível do rio — Rio Passaúna Remover Nível do rio — Rio Passaúna" [ref=e399]:
+              - generic [ref=e400]:
+                - link "Ver detalhes de Nível do rio — Rio Passaúna" [ref=e401] [cursor=pointer]:
+                  - /url: /admin/alarms/51
+                  - img [ref=e402]
+                - link "Editar Nível do rio — Rio Passaúna" [ref=e405] [cursor=pointer]:
+                  - /url: /admin/alarms/51/edit
+                  - img [ref=e406]
+                - button "Remover Nível do rio — Rio Passaúna" [ref=e409]:
+                  - img [ref=e410]
+          - row "Insuficiente Nível do rio — Rio Passaúna (sev 2) Métrica Rio Passaúna 4 minutes atrás Ver detalhes de Nível do rio — Rio Passaúna (sev 2) Editar Nível do rio — Rio Passaúna (sev 2) Remover Nível do rio — Rio Passaúna (sev 2)" [ref=e412]:
+            - cell "Insuficiente" [ref=e413]:
+              - generic [ref=e414]: Insuficiente
+            - cell "Nível do rio — Rio Passaúna (sev 2)" [ref=e415]:
+              - generic [ref=e416]: Nível do rio — Rio Passaúna (sev 2)
+            - cell "Métrica" [ref=e417]
+            - cell [ref=e418]
+            - cell "Rio Passaúna" [ref=e420]
+            - cell "4 minutes atrás" [ref=e421]
+            - cell "Ver detalhes de Nível do rio — Rio Passaúna (sev 2) Editar Nível do rio — Rio Passaúna (sev 2) Remover Nível do rio — Rio Passaúna (sev 2)" [ref=e422]:
+              - generic [ref=e423]:
+                - link "Ver detalhes de Nível do rio — Rio Passaúna (sev 2)" [ref=e424] [cursor=pointer]:
+                  - /url: /admin/alarms/33
+                  - img [ref=e425]
+                - link "Editar Nível do rio — Rio Passaúna (sev 2)" [ref=e428] [cursor=pointer]:
+                  - /url: /admin/alarms/33/edit
+                  - img [ref=e429]
+                - button "Remover Nível do rio — Rio Passaúna (sev 2)" [ref=e432]:
+                  - img [ref=e433]
+          - row "Insuficiente Nível do rio — Rio Passaúna (sev 3) Métrica Rio Passaúna 4 minutes atrás Ver detalhes de Nível do rio — Rio Passaúna (sev 3) Editar Nível do rio — Rio Passaúna (sev 3) Remover Nível do rio — Rio Passaúna (sev 3)" [ref=e435]:
+            - cell "Insuficiente" [ref=e436]:
+              - generic [ref=e437]: Insuficiente
+            - cell "Nível do rio — Rio Passaúna (sev 3)" [ref=e438]:
+              - generic [ref=e439]: Nível do rio — Rio Passaúna (sev 3)
+            - cell "Métrica" [ref=e440]
+            - cell [ref=e441]
+            - cell "Rio Passaúna" [ref=e443]
+            - cell "4 minutes atrás" [ref=e444]
+            - cell "Ver detalhes de Nível do rio — Rio Passaúna (sev 3) Editar Nível do rio — Rio Passaúna (sev 3) Remover Nível do rio — Rio Passaúna (sev 3)" [ref=e445]:
+              - generic [ref=e446]:
+                - link "Ver detalhes de Nível do rio — Rio Passaúna (sev 3)" [ref=e447] [cursor=pointer]:
+                  - /url: /admin/alarms/34
+                  - img [ref=e448]
+                - link "Editar Nível do rio — Rio Passaúna (sev 3)" [ref=e451] [cursor=pointer]:
+                  - /url: /admin/alarms/34/edit
+                  - img [ref=e452]
+                - button "Remover Nível do rio — Rio Passaúna (sev 3)" [ref=e455]:
+                  - img [ref=e456]
+          - row "OK Precipitação 3h — Bacia do Ribeirão dos Padilhas Métrica Bacia do Ribeirão dos Padilhas 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas" [ref=e458]:
+            - cell "OK" [ref=e459]:
+              - generic [ref=e460]: OK
+            - cell "Precipitação 3h — Bacia do Ribeirão dos Padilhas" [ref=e461]:
+              - generic [ref=e462]: Precipitação 3h — Bacia do Ribeirão dos Padilhas
+            - cell "Métrica" [ref=e463]
+            - cell [ref=e464]
+            - cell "Bacia do Ribeirão dos Padilhas" [ref=e466]
+            - cell "4 minutes atrás" [ref=e467]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas" [ref=e468]:
+              - generic [ref=e469]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas" [ref=e470] [cursor=pointer]:
+                  - /url: /admin/alarms/46
+                  - img [ref=e471]
+                - link "Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas" [ref=e474] [cursor=pointer]:
+                  - /url: /admin/alarms/46/edit
+                  - img [ref=e475]
+                - button "Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas" [ref=e478]:
+                  - img [ref=e479]
+          - row "OK Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1) Métrica Bacia do Ribeirão dos Padilhas 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)" [ref=e481]:
+            - cell "OK" [ref=e482]:
+              - generic [ref=e483]: OK
+            - cell "Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)" [ref=e484]:
+              - generic [ref=e485]: Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)
+            - cell "Métrica" [ref=e486]
+            - cell [ref=e487]
+            - cell "Bacia do Ribeirão dos Padilhas" [ref=e489]
+            - cell "4 minutes atrás" [ref=e490]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)" [ref=e491]:
+              - generic [ref=e492]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)" [ref=e493] [cursor=pointer]:
+                  - /url: /admin/alarms/21
+                  - img [ref=e494]
+                - link "Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)" [ref=e497] [cursor=pointer]:
+                  - /url: /admin/alarms/21/edit
+                  - img [ref=e498]
+                - button "Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 1)" [ref=e501]:
+                  - img [ref=e502]
+          - row "OK Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2) Métrica Bacia do Ribeirão dos Padilhas 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)" [ref=e504]:
+            - cell "OK" [ref=e505]:
+              - generic [ref=e506]: OK
+            - cell "Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)" [ref=e507]:
+              - generic [ref=e508]: Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)
+            - cell "Métrica" [ref=e509]
+            - cell [ref=e510]
+            - cell "Bacia do Ribeirão dos Padilhas" [ref=e512]
+            - cell "4 minutes atrás" [ref=e513]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)" [ref=e514]:
+              - generic [ref=e515]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)" [ref=e516] [cursor=pointer]:
+                  - /url: /admin/alarms/22
+                  - img [ref=e517]
+                - link "Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)" [ref=e520] [cursor=pointer]:
+                  - /url: /admin/alarms/22/edit
+                  - img [ref=e521]
+                - button "Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 2)" [ref=e524]:
+                  - img [ref=e525]
+          - row "OK Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3) Métrica Bacia do Ribeirão dos Padilhas 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)" [ref=e527]:
+            - cell "OK" [ref=e528]:
+              - generic [ref=e529]: OK
+            - cell "Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)" [ref=e530]:
+              - generic [ref=e531]: Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)
+            - cell "Métrica" [ref=e532]
+            - cell [ref=e533]
+            - cell "Bacia do Ribeirão dos Padilhas" [ref=e535]
+            - cell "4 minutes atrás" [ref=e536]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)" [ref=e537]:
+              - generic [ref=e538]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)" [ref=e539] [cursor=pointer]:
+                  - /url: /admin/alarms/23
+                  - img [ref=e540]
+                - link "Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)" [ref=e543] [cursor=pointer]:
+                  - /url: /admin/alarms/23/edit
+                  - img [ref=e544]
+                - button "Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 3)" [ref=e547]:
+                  - img [ref=e548]
+          - row "OK Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4) Métrica Bacia do Ribeirão dos Padilhas 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)" [ref=e550]:
+            - cell "OK" [ref=e551]:
+              - generic [ref=e552]: OK
+            - cell "Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)" [ref=e553]:
+              - generic [ref=e554]: Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)
+            - cell "Métrica" [ref=e555]
+            - cell [ref=e556]
+            - cell "Bacia do Ribeirão dos Padilhas" [ref=e558]
+            - cell "4 minutes atrás" [ref=e559]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4) Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4) Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)" [ref=e560]:
+              - generic [ref=e561]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)" [ref=e562] [cursor=pointer]:
+                  - /url: /admin/alarms/24
+                  - img [ref=e563]
+                - link "Editar Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)" [ref=e566] [cursor=pointer]:
+                  - /url: /admin/alarms/24/edit
+                  - img [ref=e567]
+                - button "Remover Precipitação 3h — Bacia do Ribeirão dos Padilhas (sev 4)" [ref=e570]:
+                  - img [ref=e571]
+          - row "OK Precipitação 3h — Bacia do Rio Atuba Métrica Bacia do Rio Atuba 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Atuba Editar Precipitação 3h — Bacia do Rio Atuba Remover Precipitação 3h — Bacia do Rio Atuba" [ref=e573]:
+            - cell "OK" [ref=e574]:
+              - generic [ref=e575]: OK
+            - cell "Precipitação 3h — Bacia do Rio Atuba" [ref=e576]:
+              - generic [ref=e577]: Precipitação 3h — Bacia do Rio Atuba
+            - cell "Métrica" [ref=e578]
+            - cell [ref=e579]
+            - cell "Bacia do Rio Atuba" [ref=e581]
+            - cell "4 minutes atrás" [ref=e582]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba Editar Precipitação 3h — Bacia do Rio Atuba Remover Precipitação 3h — Bacia do Rio Atuba" [ref=e583]:
+              - generic [ref=e584]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba" [ref=e585] [cursor=pointer]:
+                  - /url: /admin/alarms/44
+                  - img [ref=e586]
+                - link "Editar Precipitação 3h — Bacia do Rio Atuba" [ref=e589] [cursor=pointer]:
+                  - /url: /admin/alarms/44/edit
+                  - img [ref=e590]
+                - button "Remover Precipitação 3h — Bacia do Rio Atuba" [ref=e593]:
+                  - img [ref=e594]
+          - row "OK Precipitação 3h — Bacia do Rio Atuba (sev 1) Métrica Bacia do Rio Atuba 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 1) Editar Precipitação 3h — Bacia do Rio Atuba (sev 1) Remover Precipitação 3h — Bacia do Rio Atuba (sev 1)" [ref=e596]:
+            - cell "OK" [ref=e597]:
+              - generic [ref=e598]: OK
+            - cell "Precipitação 3h — Bacia do Rio Atuba (sev 1)" [ref=e599]:
+              - generic [ref=e600]: Precipitação 3h — Bacia do Rio Atuba (sev 1)
+            - cell "Métrica" [ref=e601]
+            - cell [ref=e602]
+            - cell "Bacia do Rio Atuba" [ref=e604]
+            - cell "4 minutes atrás" [ref=e605]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 1) Editar Precipitação 3h — Bacia do Rio Atuba (sev 1) Remover Precipitação 3h — Bacia do Rio Atuba (sev 1)" [ref=e606]:
+              - generic [ref=e607]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 1)" [ref=e608] [cursor=pointer]:
+                  - /url: /admin/alarms/13
+                  - img [ref=e609]
+                - link "Editar Precipitação 3h — Bacia do Rio Atuba (sev 1)" [ref=e612] [cursor=pointer]:
+                  - /url: /admin/alarms/13/edit
+                  - img [ref=e613]
+                - button "Remover Precipitação 3h — Bacia do Rio Atuba (sev 1)" [ref=e616]:
+                  - img [ref=e617]
+          - row "OK Precipitação 3h — Bacia do Rio Atuba (sev 2) Métrica Bacia do Rio Atuba 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 2) Editar Precipitação 3h — Bacia do Rio Atuba (sev 2) Remover Precipitação 3h — Bacia do Rio Atuba (sev 2)" [ref=e619]:
+            - cell "OK" [ref=e620]:
+              - generic [ref=e621]: OK
+            - cell "Precipitação 3h — Bacia do Rio Atuba (sev 2)" [ref=e622]:
+              - generic [ref=e623]: Precipitação 3h — Bacia do Rio Atuba (sev 2)
+            - cell "Métrica" [ref=e624]
+            - cell [ref=e625]
+            - cell "Bacia do Rio Atuba" [ref=e627]
+            - cell "4 minutes atrás" [ref=e628]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 2) Editar Precipitação 3h — Bacia do Rio Atuba (sev 2) Remover Precipitação 3h — Bacia do Rio Atuba (sev 2)" [ref=e629]:
+              - generic [ref=e630]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 2)" [ref=e631] [cursor=pointer]:
+                  - /url: /admin/alarms/14
+                  - img [ref=e632]
+                - link "Editar Precipitação 3h — Bacia do Rio Atuba (sev 2)" [ref=e635] [cursor=pointer]:
+                  - /url: /admin/alarms/14/edit
+                  - img [ref=e636]
+                - button "Remover Precipitação 3h — Bacia do Rio Atuba (sev 2)" [ref=e639]:
+                  - img [ref=e640]
+          - row "OK Precipitação 3h — Bacia do Rio Atuba (sev 3) Métrica Bacia do Rio Atuba 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 3) Editar Precipitação 3h — Bacia do Rio Atuba (sev 3) Remover Precipitação 3h — Bacia do Rio Atuba (sev 3)" [ref=e642]:
+            - cell "OK" [ref=e643]:
+              - generic [ref=e644]: OK
+            - cell "Precipitação 3h — Bacia do Rio Atuba (sev 3)" [ref=e645]:
+              - generic [ref=e646]: Precipitação 3h — Bacia do Rio Atuba (sev 3)
+            - cell "Métrica" [ref=e647]
+            - cell [ref=e648]
+            - cell "Bacia do Rio Atuba" [ref=e650]
+            - cell "4 minutes atrás" [ref=e651]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 3) Editar Precipitação 3h — Bacia do Rio Atuba (sev 3) Remover Precipitação 3h — Bacia do Rio Atuba (sev 3)" [ref=e652]:
+              - generic [ref=e653]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 3)" [ref=e654] [cursor=pointer]:
+                  - /url: /admin/alarms/15
+                  - img [ref=e655]
+                - link "Editar Precipitação 3h — Bacia do Rio Atuba (sev 3)" [ref=e658] [cursor=pointer]:
+                  - /url: /admin/alarms/15/edit
+                  - img [ref=e659]
+                - button "Remover Precipitação 3h — Bacia do Rio Atuba (sev 3)" [ref=e662]:
+                  - img [ref=e663]
+          - row "OK Precipitação 3h — Bacia do Rio Atuba (sev 4) Métrica Bacia do Rio Atuba 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 4) Editar Precipitação 3h — Bacia do Rio Atuba (sev 4) Remover Precipitação 3h — Bacia do Rio Atuba (sev 4)" [ref=e665]:
+            - cell "OK" [ref=e666]:
+              - generic [ref=e667]: OK
+            - cell "Precipitação 3h — Bacia do Rio Atuba (sev 4)" [ref=e668]:
+              - generic [ref=e669]: Precipitação 3h — Bacia do Rio Atuba (sev 4)
+            - cell "Métrica" [ref=e670]
+            - cell [ref=e671]
+            - cell "Bacia do Rio Atuba" [ref=e673]
+            - cell "4 minutes atrás" [ref=e674]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 4) Editar Precipitação 3h — Bacia do Rio Atuba (sev 4) Remover Precipitação 3h — Bacia do Rio Atuba (sev 4)" [ref=e675]:
+              - generic [ref=e676]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Atuba (sev 4)" [ref=e677] [cursor=pointer]:
+                  - /url: /admin/alarms/16
+                  - img [ref=e678]
+                - link "Editar Precipitação 3h — Bacia do Rio Atuba (sev 4)" [ref=e681] [cursor=pointer]:
+                  - /url: /admin/alarms/16/edit
+                  - img [ref=e682]
+                - button "Remover Precipitação 3h — Bacia do Rio Atuba (sev 4)" [ref=e685]:
+                  - img [ref=e686]
+          - row "OK Precipitação 3h — Bacia do Rio Barigui Métrica Bacia do Rio Barigui 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Barigui Editar Precipitação 3h — Bacia do Rio Barigui Remover Precipitação 3h — Bacia do Rio Barigui" [ref=e688]:
+            - cell "OK" [ref=e689]:
+              - generic [ref=e690]: OK
+            - cell "Precipitação 3h — Bacia do Rio Barigui" [ref=e691]:
+              - generic [ref=e692]: Precipitação 3h — Bacia do Rio Barigui
+            - cell "Métrica" [ref=e693]
+            - cell [ref=e694]
+            - cell "Bacia do Rio Barigui" [ref=e696]
+            - cell "4 minutes atrás" [ref=e697]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui Editar Precipitação 3h — Bacia do Rio Barigui Remover Precipitação 3h — Bacia do Rio Barigui" [ref=e698]:
+              - generic [ref=e699]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui" [ref=e700] [cursor=pointer]:
+                  - /url: /admin/alarms/42
+                  - img [ref=e701]
+                - link "Editar Precipitação 3h — Bacia do Rio Barigui" [ref=e704] [cursor=pointer]:
+                  - /url: /admin/alarms/42/edit
+                  - img [ref=e705]
+                - button "Remover Precipitação 3h — Bacia do Rio Barigui" [ref=e708]:
+                  - img [ref=e709]
+          - row "OK Precipitação 3h — Bacia do Rio Barigui (sev 1) Métrica Bacia do Rio Barigui 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 1) Editar Precipitação 3h — Bacia do Rio Barigui (sev 1) Remover Precipitação 3h — Bacia do Rio Barigui (sev 1)" [ref=e711]:
+            - cell "OK" [ref=e712]:
+              - generic [ref=e713]: OK
+            - cell "Precipitação 3h — Bacia do Rio Barigui (sev 1)" [ref=e714]:
+              - generic [ref=e715]: Precipitação 3h — Bacia do Rio Barigui (sev 1)
+            - cell "Métrica" [ref=e716]
+            - cell [ref=e717]
+            - cell "Bacia do Rio Barigui" [ref=e719]
+            - cell "4 minutes atrás" [ref=e720]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 1) Editar Precipitação 3h — Bacia do Rio Barigui (sev 1) Remover Precipitação 3h — Bacia do Rio Barigui (sev 1)" [ref=e721]:
+              - generic [ref=e722]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 1)" [ref=e723] [cursor=pointer]:
+                  - /url: /admin/alarms/5
+                  - img [ref=e724]
+                - link "Editar Precipitação 3h — Bacia do Rio Barigui (sev 1)" [ref=e727] [cursor=pointer]:
+                  - /url: /admin/alarms/5/edit
+                  - img [ref=e728]
+                - button "Remover Precipitação 3h — Bacia do Rio Barigui (sev 1)" [ref=e731]:
+                  - img [ref=e732]
+          - row "OK Precipitação 3h — Bacia do Rio Barigui (sev 2) Métrica Bacia do Rio Barigui 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 2) Editar Precipitação 3h — Bacia do Rio Barigui (sev 2) Remover Precipitação 3h — Bacia do Rio Barigui (sev 2)" [ref=e734]:
+            - cell "OK" [ref=e735]:
+              - generic [ref=e736]: OK
+            - cell "Precipitação 3h — Bacia do Rio Barigui (sev 2)" [ref=e737]:
+              - generic [ref=e738]: Precipitação 3h — Bacia do Rio Barigui (sev 2)
+            - cell "Métrica" [ref=e739]
+            - cell [ref=e740]
+            - cell "Bacia do Rio Barigui" [ref=e742]
+            - cell "4 minutes atrás" [ref=e743]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 2) Editar Precipitação 3h — Bacia do Rio Barigui (sev 2) Remover Precipitação 3h — Bacia do Rio Barigui (sev 2)" [ref=e744]:
+              - generic [ref=e745]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 2)" [ref=e746] [cursor=pointer]:
+                  - /url: /admin/alarms/6
+                  - img [ref=e747]
+                - link "Editar Precipitação 3h — Bacia do Rio Barigui (sev 2)" [ref=e750] [cursor=pointer]:
+                  - /url: /admin/alarms/6/edit
+                  - img [ref=e751]
+                - button "Remover Precipitação 3h — Bacia do Rio Barigui (sev 2)" [ref=e754]:
+                  - img [ref=e755]
+          - row "OK Precipitação 3h — Bacia do Rio Barigui (sev 3) Métrica Bacia do Rio Barigui 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 3) Editar Precipitação 3h — Bacia do Rio Barigui (sev 3) Remover Precipitação 3h — Bacia do Rio Barigui (sev 3)" [ref=e757]:
+            - cell "OK" [ref=e758]:
+              - generic [ref=e759]: OK
+            - cell "Precipitação 3h — Bacia do Rio Barigui (sev 3)" [ref=e760]:
+              - generic [ref=e761]: Precipitação 3h — Bacia do Rio Barigui (sev 3)
+            - cell "Métrica" [ref=e762]
+            - cell [ref=e763]
+            - cell "Bacia do Rio Barigui" [ref=e765]
+            - cell "4 minutes atrás" [ref=e766]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 3) Editar Precipitação 3h — Bacia do Rio Barigui (sev 3) Remover Precipitação 3h — Bacia do Rio Barigui (sev 3)" [ref=e767]:
+              - generic [ref=e768]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 3)" [ref=e769] [cursor=pointer]:
+                  - /url: /admin/alarms/7
+                  - img [ref=e770]
+                - link "Editar Precipitação 3h — Bacia do Rio Barigui (sev 3)" [ref=e773] [cursor=pointer]:
+                  - /url: /admin/alarms/7/edit
+                  - img [ref=e774]
+                - button "Remover Precipitação 3h — Bacia do Rio Barigui (sev 3)" [ref=e777]:
+                  - img [ref=e778]
+          - row "OK Precipitação 3h — Bacia do Rio Barigui (sev 4) Métrica Bacia do Rio Barigui 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 4) Editar Precipitação 3h — Bacia do Rio Barigui (sev 4) Remover Precipitação 3h — Bacia do Rio Barigui (sev 4)" [ref=e780]:
+            - cell "OK" [ref=e781]:
+              - generic [ref=e782]: OK
+            - cell "Precipitação 3h — Bacia do Rio Barigui (sev 4)" [ref=e783]:
+              - generic [ref=e784]: Precipitação 3h — Bacia do Rio Barigui (sev 4)
+            - cell "Métrica" [ref=e785]
+            - cell [ref=e786]
+            - cell "Bacia do Rio Barigui" [ref=e788]
+            - cell "4 minutes atrás" [ref=e789]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 4) Editar Precipitação 3h — Bacia do Rio Barigui (sev 4) Remover Precipitação 3h — Bacia do Rio Barigui (sev 4)" [ref=e790]:
+              - generic [ref=e791]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Barigui (sev 4)" [ref=e792] [cursor=pointer]:
+                  - /url: /admin/alarms/8
+                  - img [ref=e793]
+                - link "Editar Precipitação 3h — Bacia do Rio Barigui (sev 4)" [ref=e796] [cursor=pointer]:
+                  - /url: /admin/alarms/8/edit
+                  - img [ref=e797]
+                - button "Remover Precipitação 3h — Bacia do Rio Barigui (sev 4)" [ref=e800]:
+                  - img [ref=e801]
+          - row "OK Precipitação 3h — Bacia do Rio Belém Métrica Bacia do Rio Belém 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Belém Editar Precipitação 3h — Bacia do Rio Belém Remover Precipitação 3h — Bacia do Rio Belém" [ref=e803]:
+            - cell "OK" [ref=e804]:
+              - generic [ref=e805]: OK
+            - cell "Precipitação 3h — Bacia do Rio Belém" [ref=e806]:
+              - generic [ref=e807]: Precipitação 3h — Bacia do Rio Belém
+            - cell "Métrica" [ref=e808]
+            - cell [ref=e809]
+            - cell "Bacia do Rio Belém" [ref=e811]
+            - cell "4 minutes atrás" [ref=e812]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Belém Editar Precipitação 3h — Bacia do Rio Belém Remover Precipitação 3h — Bacia do Rio Belém" [ref=e813]:
+              - generic [ref=e814]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Belém" [ref=e815] [cursor=pointer]:
+                  - /url: /admin/alarms/43
+                  - img [ref=e816]
+                - link "Editar Precipitação 3h — Bacia do Rio Belém" [ref=e819] [cursor=pointer]:
+                  - /url: /admin/alarms/43/edit
+                  - img [ref=e820]
+                - button "Remover Precipitação 3h — Bacia do Rio Belém" [ref=e823]:
+                  - img [ref=e824]
+          - row "OK Precipitação 3h — Bacia do Rio Belém (sev 1) Métrica Bacia do Rio Belém 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 1) Editar Precipitação 3h — Bacia do Rio Belém (sev 1) Remover Precipitação 3h — Bacia do Rio Belém (sev 1)" [ref=e826]:
+            - cell "OK" [ref=e827]:
+              - generic [ref=e828]: OK
+            - cell "Precipitação 3h — Bacia do Rio Belém (sev 1)" [ref=e829]:
+              - generic [ref=e830]: Precipitação 3h — Bacia do Rio Belém (sev 1)
+            - cell "Métrica" [ref=e831]
+            - cell [ref=e832]
+            - cell "Bacia do Rio Belém" [ref=e834]
+            - cell "4 minutes atrás" [ref=e835]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 1) Editar Precipitação 3h — Bacia do Rio Belém (sev 1) Remover Precipitação 3h — Bacia do Rio Belém (sev 1)" [ref=e836]:
+              - generic [ref=e837]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 1)" [ref=e838] [cursor=pointer]:
+                  - /url: /admin/alarms/9
+                  - img [ref=e839]
+                - link "Editar Precipitação 3h — Bacia do Rio Belém (sev 1)" [ref=e842] [cursor=pointer]:
+                  - /url: /admin/alarms/9/edit
+                  - img [ref=e843]
+                - button "Remover Precipitação 3h — Bacia do Rio Belém (sev 1)" [ref=e846]:
+                  - img [ref=e847]
+          - row "OK Precipitação 3h — Bacia do Rio Belém (sev 2) Métrica Bacia do Rio Belém 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 2) Editar Precipitação 3h — Bacia do Rio Belém (sev 2) Remover Precipitação 3h — Bacia do Rio Belém (sev 2)" [ref=e849]:
+            - cell "OK" [ref=e850]:
+              - generic [ref=e851]: OK
+            - cell "Precipitação 3h — Bacia do Rio Belém (sev 2)" [ref=e852]:
+              - generic [ref=e853]: Precipitação 3h — Bacia do Rio Belém (sev 2)
+            - cell "Métrica" [ref=e854]
+            - cell [ref=e855]
+            - cell "Bacia do Rio Belém" [ref=e857]
+            - cell "4 minutes atrás" [ref=e858]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 2) Editar Precipitação 3h — Bacia do Rio Belém (sev 2) Remover Precipitação 3h — Bacia do Rio Belém (sev 2)" [ref=e859]:
+              - generic [ref=e860]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 2)" [ref=e861] [cursor=pointer]:
+                  - /url: /admin/alarms/10
+                  - img [ref=e862]
+                - link "Editar Precipitação 3h — Bacia do Rio Belém (sev 2)" [ref=e865] [cursor=pointer]:
+                  - /url: /admin/alarms/10/edit
+                  - img [ref=e866]
+                - button "Remover Precipitação 3h — Bacia do Rio Belém (sev 2)" [ref=e869]:
+                  - img [ref=e870]
+          - row "OK Precipitação 3h — Bacia do Rio Belém (sev 3) Métrica Bacia do Rio Belém 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 3) Editar Precipitação 3h — Bacia do Rio Belém (sev 3) Remover Precipitação 3h — Bacia do Rio Belém (sev 3)" [ref=e872]:
+            - cell "OK" [ref=e873]:
+              - generic [ref=e874]: OK
+            - cell "Precipitação 3h — Bacia do Rio Belém (sev 3)" [ref=e875]:
+              - generic [ref=e876]: Precipitação 3h — Bacia do Rio Belém (sev 3)
+            - cell "Métrica" [ref=e877]
+            - cell [ref=e878]
+            - cell "Bacia do Rio Belém" [ref=e880]
+            - cell "4 minutes atrás" [ref=e881]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 3) Editar Precipitação 3h — Bacia do Rio Belém (sev 3) Remover Precipitação 3h — Bacia do Rio Belém (sev 3)" [ref=e882]:
+              - generic [ref=e883]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 3)" [ref=e884] [cursor=pointer]:
+                  - /url: /admin/alarms/11
+                  - img [ref=e885]
+                - link "Editar Precipitação 3h — Bacia do Rio Belém (sev 3)" [ref=e888] [cursor=pointer]:
+                  - /url: /admin/alarms/11/edit
+                  - img [ref=e889]
+                - button "Remover Precipitação 3h — Bacia do Rio Belém (sev 3)" [ref=e892]:
+                  - img [ref=e893]
+          - row "OK Precipitação 3h — Bacia do Rio Belém (sev 4) Métrica Bacia do Rio Belém 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 4) Editar Precipitação 3h — Bacia do Rio Belém (sev 4) Remover Precipitação 3h — Bacia do Rio Belém (sev 4)" [ref=e895]:
+            - cell "OK" [ref=e896]:
+              - generic [ref=e897]: OK
+            - cell "Precipitação 3h — Bacia do Rio Belém (sev 4)" [ref=e898]:
+              - generic [ref=e899]: Precipitação 3h — Bacia do Rio Belém (sev 4)
+            - cell "Métrica" [ref=e900]
+            - cell [ref=e901]
+            - cell "Bacia do Rio Belém" [ref=e903]
+            - cell "4 minutes atrás" [ref=e904]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 4) Editar Precipitação 3h — Bacia do Rio Belém (sev 4) Remover Precipitação 3h — Bacia do Rio Belém (sev 4)" [ref=e905]:
+              - generic [ref=e906]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Belém (sev 4)" [ref=e907] [cursor=pointer]:
+                  - /url: /admin/alarms/12
+                  - img [ref=e908]
+                - link "Editar Precipitação 3h — Bacia do Rio Belém (sev 4)" [ref=e911] [cursor=pointer]:
+                  - /url: /admin/alarms/12/edit
+                  - img [ref=e912]
+                - button "Remover Precipitação 3h — Bacia do Rio Belém (sev 4)" [ref=e915]:
+                  - img [ref=e916]
+          - row "OK Precipitação 3h — Bacia do Rio Iguaçu Métrica Bacia do Rio Iguaçu 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu Editar Precipitação 3h — Bacia do Rio Iguaçu Remover Precipitação 3h — Bacia do Rio Iguaçu" [ref=e918]:
+            - cell "OK" [ref=e919]:
+              - generic [ref=e920]: OK
+            - cell "Precipitação 3h — Bacia do Rio Iguaçu" [ref=e921]:
+              - generic [ref=e922]: Precipitação 3h — Bacia do Rio Iguaçu
+            - cell "Métrica" [ref=e923]
+            - cell [ref=e924]
+            - cell "Bacia do Rio Iguaçu" [ref=e926]
+            - cell "4 minutes atrás" [ref=e927]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu Editar Precipitação 3h — Bacia do Rio Iguaçu Remover Precipitação 3h — Bacia do Rio Iguaçu" [ref=e928]:
+              - generic [ref=e929]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu" [ref=e930] [cursor=pointer]:
+                  - /url: /admin/alarms/41
+                  - img [ref=e931]
+                - link "Editar Precipitação 3h — Bacia do Rio Iguaçu" [ref=e934] [cursor=pointer]:
+                  - /url: /admin/alarms/41/edit
+                  - img [ref=e935]
+                - button "Remover Precipitação 3h — Bacia do Rio Iguaçu" [ref=e938]:
+                  - img [ref=e939]
+          - row "OK Precipitação 3h — Bacia do Rio Iguaçu (sev 1) Métrica Bacia do Rio Iguaçu 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 1) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 1) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 1)" [ref=e941]:
+            - cell "OK" [ref=e942]:
+              - generic [ref=e943]: OK
+            - cell "Precipitação 3h — Bacia do Rio Iguaçu (sev 1)" [ref=e944]:
+              - generic [ref=e945]: Precipitação 3h — Bacia do Rio Iguaçu (sev 1)
+            - cell "Métrica" [ref=e946]
+            - cell [ref=e947]
+            - cell "Bacia do Rio Iguaçu" [ref=e949]
+            - cell "4 minutes atrás" [ref=e950]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 1) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 1) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 1)" [ref=e951]:
+              - generic [ref=e952]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 1)" [ref=e953] [cursor=pointer]:
+                  - /url: /admin/alarms/1
+                  - img [ref=e954]
+                - link "Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 1)" [ref=e957] [cursor=pointer]:
+                  - /url: /admin/alarms/1/edit
+                  - img [ref=e958]
+                - button "Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 1)" [ref=e961]:
+                  - img [ref=e962]
+          - row "OK Precipitação 3h — Bacia do Rio Iguaçu (sev 2) Métrica Bacia do Rio Iguaçu 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 2) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 2) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 2)" [ref=e964]:
+            - cell "OK" [ref=e965]:
+              - generic [ref=e966]: OK
+            - cell "Precipitação 3h — Bacia do Rio Iguaçu (sev 2)" [ref=e967]:
+              - generic [ref=e968]: Precipitação 3h — Bacia do Rio Iguaçu (sev 2)
+            - cell "Métrica" [ref=e969]
+            - cell [ref=e970]
+            - cell "Bacia do Rio Iguaçu" [ref=e972]
+            - cell "4 minutes atrás" [ref=e973]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 2) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 2) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 2)" [ref=e974]:
+              - generic [ref=e975]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 2)" [ref=e976] [cursor=pointer]:
+                  - /url: /admin/alarms/2
+                  - img [ref=e977]
+                - link "Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 2)" [ref=e980] [cursor=pointer]:
+                  - /url: /admin/alarms/2/edit
+                  - img [ref=e981]
+                - button "Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 2)" [ref=e984]:
+                  - img [ref=e985]
+          - row "OK Precipitação 3h — Bacia do Rio Iguaçu (sev 3) Métrica Bacia do Rio Iguaçu 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 3) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 3) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 3)" [ref=e987]:
+            - cell "OK" [ref=e988]:
+              - generic [ref=e989]: OK
+            - cell "Precipitação 3h — Bacia do Rio Iguaçu (sev 3)" [ref=e990]:
+              - generic [ref=e991]: Precipitação 3h — Bacia do Rio Iguaçu (sev 3)
+            - cell "Métrica" [ref=e992]
+            - cell [ref=e993]
+            - cell "Bacia do Rio Iguaçu" [ref=e995]
+            - cell "4 minutes atrás" [ref=e996]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 3) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 3) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 3)" [ref=e997]:
+              - generic [ref=e998]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 3)" [ref=e999] [cursor=pointer]:
+                  - /url: /admin/alarms/3
+                  - img [ref=e1000]
+                - link "Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 3)" [ref=e1003] [cursor=pointer]:
+                  - /url: /admin/alarms/3/edit
+                  - img [ref=e1004]
+                - button "Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 3)" [ref=e1007]:
+                  - img [ref=e1008]
+          - row "OK Precipitação 3h — Bacia do Rio Iguaçu (sev 4) Métrica Bacia do Rio Iguaçu 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 4) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 4) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 4)" [ref=e1010]:
+            - cell "OK" [ref=e1011]:
+              - generic [ref=e1012]: OK
+            - cell "Precipitação 3h — Bacia do Rio Iguaçu (sev 4)" [ref=e1013]:
+              - generic [ref=e1014]: Precipitação 3h — Bacia do Rio Iguaçu (sev 4)
+            - cell "Métrica" [ref=e1015]
+            - cell [ref=e1016]
+            - cell "Bacia do Rio Iguaçu" [ref=e1018]
+            - cell "4 minutes atrás" [ref=e1019]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 4) Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 4) Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 4)" [ref=e1020]:
+              - generic [ref=e1021]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Iguaçu (sev 4)" [ref=e1022] [cursor=pointer]:
+                  - /url: /admin/alarms/4
+                  - img [ref=e1023]
+                - link "Editar Precipitação 3h — Bacia do Rio Iguaçu (sev 4)" [ref=e1026] [cursor=pointer]:
+                  - /url: /admin/alarms/4/edit
+                  - img [ref=e1027]
+                - button "Remover Precipitação 3h — Bacia do Rio Iguaçu (sev 4)" [ref=e1030]:
+                  - img [ref=e1031]
+          - row "OK Precipitação 3h — Bacia do Rio Passaúna Métrica Bacia do Rio Passaúna 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna Editar Precipitação 3h — Bacia do Rio Passaúna Remover Precipitação 3h — Bacia do Rio Passaúna" [ref=e1033]:
+            - cell "OK" [ref=e1034]:
+              - generic [ref=e1035]: OK
+            - cell "Precipitação 3h — Bacia do Rio Passaúna" [ref=e1036]:
+              - generic [ref=e1037]: Precipitação 3h — Bacia do Rio Passaúna
+            - cell "Métrica" [ref=e1038]
+            - cell [ref=e1039]
+            - cell "Bacia do Rio Passaúna" [ref=e1041]
+            - cell "4 minutes atrás" [ref=e1042]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna Editar Precipitação 3h — Bacia do Rio Passaúna Remover Precipitação 3h — Bacia do Rio Passaúna" [ref=e1043]:
+              - generic [ref=e1044]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna" [ref=e1045] [cursor=pointer]:
+                  - /url: /admin/alarms/45
+                  - img [ref=e1046]
+                - link "Editar Precipitação 3h — Bacia do Rio Passaúna" [ref=e1049] [cursor=pointer]:
+                  - /url: /admin/alarms/45/edit
+                  - img [ref=e1050]
+                - button "Remover Precipitação 3h — Bacia do Rio Passaúna" [ref=e1053]:
+                  - img [ref=e1054]
+          - row "OK Precipitação 3h — Bacia do Rio Passaúna (sev 1) Métrica Bacia do Rio Passaúna 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 1) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 1) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 1)" [ref=e1056]:
+            - cell "OK" [ref=e1057]:
+              - generic [ref=e1058]: OK
+            - cell "Precipitação 3h — Bacia do Rio Passaúna (sev 1)" [ref=e1059]:
+              - generic [ref=e1060]: Precipitação 3h — Bacia do Rio Passaúna (sev 1)
+            - cell "Métrica" [ref=e1061]
+            - cell [ref=e1062]
+            - cell "Bacia do Rio Passaúna" [ref=e1064]
+            - cell "4 minutes atrás" [ref=e1065]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 1) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 1) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 1)" [ref=e1066]:
+              - generic [ref=e1067]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 1)" [ref=e1068] [cursor=pointer]:
+                  - /url: /admin/alarms/17
+                  - img [ref=e1069]
+                - link "Editar Precipitação 3h — Bacia do Rio Passaúna (sev 1)" [ref=e1072] [cursor=pointer]:
+                  - /url: /admin/alarms/17/edit
+                  - img [ref=e1073]
+                - button "Remover Precipitação 3h — Bacia do Rio Passaúna (sev 1)" [ref=e1076]:
+                  - img [ref=e1077]
+          - row "OK Precipitação 3h — Bacia do Rio Passaúna (sev 2) Métrica Bacia do Rio Passaúna 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 2) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 2) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 2)" [ref=e1079]:
+            - cell "OK" [ref=e1080]:
+              - generic [ref=e1081]: OK
+            - cell "Precipitação 3h — Bacia do Rio Passaúna (sev 2)" [ref=e1082]:
+              - generic [ref=e1083]: Precipitação 3h — Bacia do Rio Passaúna (sev 2)
+            - cell "Métrica" [ref=e1084]
+            - cell [ref=e1085]
+            - cell "Bacia do Rio Passaúna" [ref=e1087]
+            - cell "4 minutes atrás" [ref=e1088]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 2) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 2) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 2)" [ref=e1089]:
+              - generic [ref=e1090]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 2)" [ref=e1091] [cursor=pointer]:
+                  - /url: /admin/alarms/18
+                  - img [ref=e1092]
+                - link "Editar Precipitação 3h — Bacia do Rio Passaúna (sev 2)" [ref=e1095] [cursor=pointer]:
+                  - /url: /admin/alarms/18/edit
+                  - img [ref=e1096]
+                - button "Remover Precipitação 3h — Bacia do Rio Passaúna (sev 2)" [ref=e1099]:
+                  - img [ref=e1100]
+          - row "OK Precipitação 3h — Bacia do Rio Passaúna (sev 3) Métrica Bacia do Rio Passaúna 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 3) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 3) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 3)" [ref=e1102]:
+            - cell "OK" [ref=e1103]:
+              - generic [ref=e1104]: OK
+            - cell "Precipitação 3h — Bacia do Rio Passaúna (sev 3)" [ref=e1105]:
+              - generic [ref=e1106]: Precipitação 3h — Bacia do Rio Passaúna (sev 3)
+            - cell "Métrica" [ref=e1107]
+            - cell [ref=e1108]
+            - cell "Bacia do Rio Passaúna" [ref=e1110]
+            - cell "4 minutes atrás" [ref=e1111]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 3) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 3) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 3)" [ref=e1112]:
+              - generic [ref=e1113]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 3)" [ref=e1114] [cursor=pointer]:
+                  - /url: /admin/alarms/19
+                  - img [ref=e1115]
+                - link "Editar Precipitação 3h — Bacia do Rio Passaúna (sev 3)" [ref=e1118] [cursor=pointer]:
+                  - /url: /admin/alarms/19/edit
+                  - img [ref=e1119]
+                - button "Remover Precipitação 3h — Bacia do Rio Passaúna (sev 3)" [ref=e1122]:
+                  - img [ref=e1123]
+          - row "OK Precipitação 3h — Bacia do Rio Passaúna (sev 4) Métrica Bacia do Rio Passaúna 4 minutes atrás Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 4) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 4) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 4)" [ref=e1125]:
+            - cell "OK" [ref=e1126]:
+              - generic [ref=e1127]: OK
+            - cell "Precipitação 3h — Bacia do Rio Passaúna (sev 4)" [ref=e1128]:
+              - generic [ref=e1129]: Precipitação 3h — Bacia do Rio Passaúna (sev 4)
+            - cell "Métrica" [ref=e1130]
+            - cell [ref=e1131]
+            - cell "Bacia do Rio Passaúna" [ref=e1133]
+            - cell "4 minutes atrás" [ref=e1134]
+            - cell "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 4) Editar Precipitação 3h — Bacia do Rio Passaúna (sev 4) Remover Precipitação 3h — Bacia do Rio Passaúna (sev 4)" [ref=e1135]:
+              - generic [ref=e1136]:
+                - link "Ver detalhes de Precipitação 3h — Bacia do Rio Passaúna (sev 4)" [ref=e1137] [cursor=pointer]:
+                  - /url: /admin/alarms/20
+                  - img [ref=e1138]
+                - link "Editar Precipitação 3h — Bacia do Rio Passaúna (sev 4)" [ref=e1141] [cursor=pointer]:
+                  - /url: /admin/alarms/20/edit
+                  - img [ref=e1142]
+                - button "Remover Precipitação 3h — Bacia do Rio Passaúna (sev 4)" [ref=e1145]:
+                  - img [ref=e1146]
+          - row "Insuficiente Risco de Enchente — Rio Atuba Composto Bacia do Rio Atuba — Ver detalhes de Risco de Enchente — Rio Atuba Editar Risco de Enchente — Rio Atuba Remover Risco de Enchente — Rio Atuba" [ref=e1148]:
+            - cell "Insuficiente" [ref=e1149]:
+              - generic [ref=e1150]: Insuficiente
+            - cell "Risco de Enchente — Rio Atuba" [ref=e1151]:
+              - generic [ref=e1152]: Risco de Enchente — Rio Atuba
+            - cell "Composto" [ref=e1153]
+            - cell [ref=e1154]
+            - cell "Bacia do Rio Atuba" [ref=e1156]
+            - cell "—" [ref=e1157]
+            - cell "Ver detalhes de Risco de Enchente — Rio Atuba Editar Risco de Enchente — Rio Atuba Remover Risco de Enchente — Rio Atuba" [ref=e1158]:
+              - generic [ref=e1159]:
+                - link "Ver detalhes de Risco de Enchente — Rio Atuba" [ref=e1160] [cursor=pointer]:
+                  - /url: /admin/alarms/39
+                  - img [ref=e1161]
+                - link "Editar Risco de Enchente — Rio Atuba" [ref=e1164] [cursor=pointer]:
+                  - /url: /admin/alarms/39/edit
+                  - img [ref=e1165]
+                - button "Remover Risco de Enchente — Rio Atuba" [ref=e1168]:
+                  - img [ref=e1169]
+          - row "Insuficiente Risco de Enchente — Rio Barigui Composto Bacia do Rio Barigui — Ver detalhes de Risco de Enchente — Rio Barigui Editar Risco de Enchente — Rio Barigui Remover Risco de Enchente — Rio Barigui" [ref=e1171]:
+            - cell "Insuficiente" [ref=e1172]:
+              - generic [ref=e1173]: Insuficiente
+            - cell "Risco de Enchente — Rio Barigui" [ref=e1174]:
+              - generic [ref=e1175]: Risco de Enchente — Rio Barigui
+            - cell "Composto" [ref=e1176]
+            - cell [ref=e1177]
+            - cell "Bacia do Rio Barigui" [ref=e1179]
+            - cell "—" [ref=e1180]
+            - cell "Ver detalhes de Risco de Enchente — Rio Barigui Editar Risco de Enchente — Rio Barigui Remover Risco de Enchente — Rio Barigui" [ref=e1181]:
+              - generic [ref=e1182]:
+                - link "Ver detalhes de Risco de Enchente — Rio Barigui" [ref=e1183] [cursor=pointer]:
+                  - /url: /admin/alarms/37
+                  - img [ref=e1184]
+                - link "Editar Risco de Enchente — Rio Barigui" [ref=e1187] [cursor=pointer]:
+                  - /url: /admin/alarms/37/edit
+                  - img [ref=e1188]
+                - button "Remover Risco de Enchente — Rio Barigui" [ref=e1191]:
+                  - img [ref=e1192]
+          - row "Insuficiente Risco de Enchente — Rio Belém Composto Bacia do Rio Belém — Ver detalhes de Risco de Enchente — Rio Belém Editar Risco de Enchente — Rio Belém Remover Risco de Enchente — Rio Belém" [ref=e1194]:
+            - cell "Insuficiente" [ref=e1195]:
+              - generic [ref=e1196]: Insuficiente
+            - cell "Risco de Enchente — Rio Belém" [ref=e1197]:
+              - generic [ref=e1198]: Risco de Enchente — Rio Belém
+            - cell "Composto" [ref=e1199]
+            - cell [ref=e1200]
+            - cell "Bacia do Rio Belém" [ref=e1202]
+            - cell "—" [ref=e1203]
+            - cell "Ver detalhes de Risco de Enchente — Rio Belém Editar Risco de Enchente — Rio Belém Remover Risco de Enchente — Rio Belém" [ref=e1204]:
+              - generic [ref=e1205]:
+                - link "Ver detalhes de Risco de Enchente — Rio Belém" [ref=e1206] [cursor=pointer]:
+                  - /url: /admin/alarms/38
+                  - img [ref=e1207]
+                - link "Editar Risco de Enchente — Rio Belém" [ref=e1210] [cursor=pointer]:
+                  - /url: /admin/alarms/38/edit
+                  - img [ref=e1211]
+                - button "Remover Risco de Enchente — Rio Belém" [ref=e1214]:
+                  - img [ref=e1215]
+          - row "Insuficiente Risco de Enchente — Rio Iguaçu Composto Bacia do Rio Iguaçu — Ver detalhes de Risco de Enchente — Rio Iguaçu Editar Risco de Enchente — Rio Iguaçu Remover Risco de Enchente — Rio Iguaçu" [ref=e1217]:
+            - cell "Insuficiente" [ref=e1218]:
+              - generic [ref=e1219]: Insuficiente
+            - cell "Risco de Enchente — Rio Iguaçu" [ref=e1220]:
+              - generic [ref=e1221]: Risco de Enchente — Rio Iguaçu
+            - cell "Composto" [ref=e1222]
+            - cell [ref=e1223]
+            - cell "Bacia do Rio Iguaçu" [ref=e1225]
+            - cell "—" [ref=e1226]
+            - cell "Ver detalhes de Risco de Enchente — Rio Iguaçu Editar Risco de Enchente — Rio Iguaçu Remover Risco de Enchente — Rio Iguaçu" [ref=e1227]:
+              - generic [ref=e1228]:
+                - link "Ver detalhes de Risco de Enchente — Rio Iguaçu" [ref=e1229] [cursor=pointer]:
+                  - /url: /admin/alarms/36
+                  - img [ref=e1230]
+                - link "Editar Risco de Enchente — Rio Iguaçu" [ref=e1233] [cursor=pointer]:
+                  - /url: /admin/alarms/36/edit
+                  - img [ref=e1234]
+                - button "Remover Risco de Enchente — Rio Iguaçu" [ref=e1237]:
+                  - img [ref=e1238]
+          - row "Insuficiente Risco de Enchente — Rio Passaúna Composto Bacia do Rio Passaúna — Ver detalhes de Risco de Enchente — Rio Passaúna Editar Risco de Enchente — Rio Passaúna Remover Risco de Enchente — Rio Passaúna" [ref=e1240]:
+            - cell "Insuficiente" [ref=e1241]:
+              - generic [ref=e1242]: Insuficiente
+            - cell "Risco de Enchente — Rio Passaúna" [ref=e1243]:
+              - generic [ref=e1244]: Risco de Enchente — Rio Passaúna
+            - cell "Composto" [ref=e1245]
+            - cell [ref=e1246]
+            - cell "Bacia do Rio Passaúna" [ref=e1248]
+            - cell "—" [ref=e1249]
+            - cell "Ver detalhes de Risco de Enchente — Rio Passaúna Editar Risco de Enchente — Rio Passaúna Remover Risco de Enchente — Rio Passaúna" [ref=e1250]:
+              - generic [ref=e1251]:
+                - link "Ver detalhes de Risco de Enchente — Rio Passaúna" [ref=e1252] [cursor=pointer]:
+                  - /url: /admin/alarms/40
+                  - img [ref=e1253]
+                - link "Editar Risco de Enchente — Rio Passaúna" [ref=e1256] [cursor=pointer]:
+                  - /url: /admin/alarms/40/edit
+                  - img [ref=e1257]
+                - button "Remover Risco de Enchente — Rio Passaúna" [ref=e1260]:
+                  - img [ref=e1261]
