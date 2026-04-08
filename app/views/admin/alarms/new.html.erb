@@ -2,17 +2,15 @@
 
 <div class="mx-auto max-w-3xl" data-controller="admin--alarm-form"
      data-admin--alarm-form-type-value="<%= @alarm.alarm_type %>">
-  <div class="mb-4">
-    <%= link_to admin_alarms_path, class: "inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-sky-500 transition-colors" do %>
-      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <div class="mb-2 flex items-center gap-3">
+    <%= catalyst_button_link "Alarmes", href: admin_alarms_path, variant: :plain do %>
+      <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
       </svg>
-      Voltar aos alarmes
+      Voltar
     <% end %>
   </div>
-  <div class="mb-6">
-    <h1 class="text-xl font-semibold text-white">Novo Alarme</h1>
-  </div>
+  <%= catalyst_heading "Novo Alarme", level: 1, class: "mb-6" %>
 
   <%= form_with model: [:admin, @alarm] do |f| %>
     <%= render "form", form: f, alarm: @alarm %>
