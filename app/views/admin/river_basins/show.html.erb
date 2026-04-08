@@ -75,7 +75,7 @@
 
     <%# Recent Assessments %>
     <% if @recent_assessments.any? %>
-      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50" style="--gutter: 1.5rem">
         <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <%= catalyst_subheading "Avaliações Recentes" %>
           <%= catalyst_text @recent_assessments.size.to_s %>
