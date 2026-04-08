@@ -42,10 +42,12 @@
         </div>
         <div class="min-w-0 flex-1 flex items-center gap-2 py-1.5">
           <%= link_to admin_root_path, class: "flex items-center gap-2" do %>
-            <%= image_tag "logo5.jpeg",
-                  alt: "Naila",
-                  class: "size-8 object-contain shrink-0",
-                  style: "mix-blend-mode: screen;" %>
+            <div class="size-8 shrink-0 overflow-hidden relative">
+              <%= image_tag "logo.jpeg",
+                    alt: "Naila",
+                    class: "absolute w-8",
+                    style: "mix-blend-mode: screen; top: 5px;" %>
+            </div>
             <span class="text-sm font-bold tracking-widest text-white">NAILA</span>
           <% end %>
         </div>

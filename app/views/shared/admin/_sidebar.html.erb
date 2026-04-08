@@ -17,10 +17,12 @@
       <%= catalyst_sidebar_section do %>
         <%= link_to admin_root_path, class: "flex items-center gap-3 rounded-lg px-2 py-2" do %>
           <%# Logo mark — mix-blend-mode:screen makes the black bg transparent on dark sidebar %>
-          <%= image_tag "logo5.jpeg",
-                alt: "Naila",
-                class: "size-10 shrink-0 object-contain block self-center",
-                style: "mix-blend-mode: screen;" %>
+          <div class="size-10 shrink-0 overflow-hidden relative">
+            <%= image_tag "logo.jpeg",
+                  alt: "Naila",
+                  class: "absolute w-10",
+                  style: "mix-blend-mode: screen; top: 6px;" %>
+          </div>
           <div class="min-w-0">
             <div class="text-sm font-bold tracking-widest text-white">NAILA</div>
             <div class="text-xs font-medium tracking-widest text-zinc-300 uppercase">Tecnologia Ambiental</div>
