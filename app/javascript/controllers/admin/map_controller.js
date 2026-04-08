@@ -34,7 +34,7 @@ const SENSOR_STATUS_COLORS = {
 const DARK_TILES_URL = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
 
 export default class extends Controller {
-  static targets = ["canvas", "alertSeverities"]
+  static targets = ["canvas", "alertSeverities", "placeholder"]
   static outlets = ["admin--side-sheet"]
   static values = {
     riverBasins: { type: Array, default: [] },
@@ -102,6 +102,11 @@ export default class extends Controller {
         new ol.control.Attribution({ collapsible: true }),
         new ol.control.ScaleLine({ units: "metric" }),
       ]),
+    })
+
+    // Hide loading placeholder once map is initialized
+    this.map.once("rendercomplete", () => {
+      if (this.hasPlaceholderTarget) this.placeholderTarget.remove()
     })
 
     // Popup overlay for hover

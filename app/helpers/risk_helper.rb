@@ -59,6 +59,16 @@ module RiskHelper
     4 => "bg-risk-emergency/20 text-risk-emergency"
   }.freeze
 
+  METRIC_NAME_LABEL = {
+    "precipitation_3h"  => "Precipitação (3h)",
+    "precipitation_1h"  => "Precipitação (1h)",
+    "precipitation_24h" => "Precipitação (24h)",
+    "river_level"       => "Nível do rio",
+    "soil_moisture"     => "Umidade do solo",
+    "temperature"       => "Temperatura",
+    "humidity"          => "Umidade relativa"
+  }.freeze
+
   SENSOR_TYPE_LABEL = {
     "pluviometer"     => "Pluviômetro",
     "river_gauge"     => "Fluviômetro",

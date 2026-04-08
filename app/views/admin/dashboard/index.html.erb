@@ -9,10 +9,11 @@
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @sensors_online %></div>
   </div>
   <% RiskHelper::SEVERITY_LABEL.each do |severity, label| %>
-    <div class="rounded-xl border border-white/10 border-l-4 bg-zinc-800/50 p-4 <%= RiskHelper::SEVERITY_BORDER_CLASS[severity] %>">
+    <% count = @alarms_by_severity.fetch(severity, 0) %>
+    <div class="rounded-xl border border-white/10 border-l-4 bg-zinc-800/50 p-4 <%= RiskHelper::SEVERITY_BORDER_CLASS[severity] %> <%= count.zero? ? 'opacity-40' : '' %>">
       <div class="text-sm font-semibold uppercase tracking-wider text-zinc-300"><%= label %></div>
       <div class="mt-2 text-3xl font-semibold tabular-nums <%= RiskHelper::SEVERITY_TEXT_CLASS[severity] %>">
-        <%= @alarms_by_severity.fetch(severity, 0) %>
+        <%= count %>
       </div>
     </div>
   <% end %>
@@ -81,7 +82,15 @@
        data-admin--map-target="alertSeverities"
        class="hidden"
        data-value="<%= @active_alarm_severity_by_basin.to_json %>"></div>
-  <div data-admin--map-target="canvas" class="h-[480px] w-full"></div>
+  <div data-admin--map-target="canvas" class="h-[480px] w-full relative">
+    <div data-admin--map-target="placeholder" class="absolute inset-0 flex items-center justify-center text-zinc-500 text-sm">
+      <svg class="mr-2 h-4 w-4 animate-spin text-zinc-600" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+      Carregando mapa...
+    </div>
+  </div>
 </div>
 
 <%# ── Sensor Side Sheet ── %>
