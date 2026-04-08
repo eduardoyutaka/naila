@@ -1,255 +1,210 @@
-<div class="rounded-xl border border-white/10 bg-zinc-900">
-  <div class="border-b border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-white">Dados do Alarme</h2>
+<div class="rounded-xl border border-white/10 bg-zinc-800/50 shadow-sm">
+  <div class="border-b border-white/10 px-6 py-4">
+    <%= catalyst_subheading(alarm.persisted? ? "Editar Alarme" : "Novo Alarme") %>
   </div>
 
-  <div class="p-4 space-y-5">
-    <% if alarm.errors.any? %>
-      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
-        <p class="text-sm font-medium text-red-400">
-          <%= alarm.errors.count %> erro(s) impediu(iram) o salvamento:
-        </p>
-        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
-          <% alarm.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-        </ul>
+  <div class="p-6">
+    <%= form.error_summary %>
+
+    <%= form.field_group do %>
+      <%# Nome %>
+      <%= form.field do %>
+        <%= form.label :name, "Nome" %>
+        <%= form.text_field :name, required: true, placeholder: "Ex: Precipitação 3h — Bacia Belém" %>
+      <% end %>
+
+      <%# Tipo %>
+      <%= form.field do %>
+        <%= form.label :alarm_type, "Tipo" %>
+        <%= form.select :alarm_type,
+              [["Métrica", "metric"], ["Anomalia", "anomaly_detection"], ["Composto", "composite"]],
+              {},
+              data: { action: "change->admin--alarm-form#typeChanged" } %>
+      <% end %>
+
+      <%# Descrição %>
+      <%= form.field do %>
+        <%= form.label :description, "Descrição" %>
+        <%= form.text_area :description, rows: 2, placeholder: "Descrição opcional..." %>
+      <% end %>
+
+      <%# Escopo %>
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :river_basin_id, "Bacia Hidrográfica" %>
+          <%= form.collection_select :river_basin_id, RiverBasin.order(:name), :id, :name,
+                { include_blank: "— Nenhuma —" } %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :river_id, "Rio" %>
+          <%= form.collection_select :river_id, River.order(:name), :id, :name,
+                { include_blank: "— Nenhum —" } %>
+        <% end %>
       </div>
+      <%= form.description "Selecione apenas um escopo, ou deixe ambos vazios para escopo global." %>
+
+      <%# Status %>
+      <%= form.field do %>
+        <%= form.label :enabled, "Status" %>
+        <%= form.select :enabled, [["Ativado", true], ["Desativado", false]] %>
+      <% end %>
     <% end %>
-
-    <%# Nome %>
-    <div>
-      <%= form.label :name, "Nome", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.text_field :name, required: true,
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-            placeholder: "Ex: Precipitação 3h — Bacia Belém" %>
-    </div>
-
-    <%# Tipo %>
-    <div>
-      <%= form.label :alarm_type, "Tipo", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.select :alarm_type,
-            [["Métrica", "metric"], ["Anomalia", "anomaly_detection"], ["Composto", "composite"]],
-            {},
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-            data: { action: "change->admin--alarm-form#typeChanged" } %>
-    </div>
-
-    <%# Descrição %>
-    <div>
-      <%= form.label :description, "Descrição", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.text_area :description,
-            rows: 2,
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 resize-none",
-            placeholder: "Descrição opcional..." %>
-    </div>
-
-    <%# Escopo %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :river_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.collection_select :river_basin_id, RiverBasin.order(:name), :id, :name,
-              { include_blank: "— Nenhuma —" },
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-      <div>
-        <%= form.label :river_id, "Rio", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.collection_select :river_id, River.order(:name), :id, :name,
-              { include_blank: "— Nenhum —" },
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-    </div>
-    <p class="text-xs text-zinc-400 -mt-2">Selecione apenas um escopo, ou deixe ambos vazios para escopo global.</p>
-
-    <%# Status %>
-    <div>
-      <%= form.label :enabled, "Status", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.select :enabled,
-            [["Ativado", true], ["Desativado", false]],
-            {},
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-    </div>
 
     <%# ── Metric / Anomaly fields ── %>
     <div data-admin--alarm-form-target="metricFields">
-      <div class="border-t border-white/10 pt-5 mt-5">
-        <h3 class="text-sm font-semibold text-white mb-4">Configuração de Métrica</h3>
+      <%= catalyst_divider(soft: true, class: "my-8") %>
+      <%= catalyst_subheading "Configuração de Métrica" %>
 
-        <div class="space-y-5">
-          <%# Metric + Statistic %>
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <div>
-              <%= form.label :metric_name, "Métrica", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-              <%= form.select :metric_name,
-                    [["Precipitação 1h", "precipitation_1h"], ["Precipitação 3h", "precipitation_3h"],
-                     ["Nível do Rio", "river_level"], ["Score de Risco", "risk_score"],
-                     ["Umidade do Solo", "soil_moisture"], ["Previsão Precip.", "forecast_precip"]],
-                    { include_blank: "— Selecione —" },
-                    class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-            </div>
-            <div>
-              <%= form.label :statistic, "Estatística", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-              <%= form.select :statistic,
-                    %w[Average Sum Minimum Maximum SampleCount],
-                    { include_blank: "— Selecione —" },
-                    class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-            </div>
+      <%= form.field_group class: "mt-6" do %>
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <%= form.field do %>
+            <%= form.label :metric_name, "Métrica" %>
+            <%= form.select :metric_name,
+                  [["Precipitação 1h", "precipitation_1h"], ["Precipitação 3h", "precipitation_3h"],
+                   ["Nível do Rio", "river_level"], ["Score de Risco", "risk_score"],
+                   ["Umidade do Solo", "soil_moisture"], ["Previsão Precip.", "forecast_precip"]],
+                  { include_blank: "— Selecione —" } %>
+          <% end %>
+          <%= form.field do %>
+            <%= form.label :statistic, "Estatística" %>
+            <%= form.select :statistic,
+                  %w[Average Sum Minimum Maximum SampleCount],
+                  { include_blank: "— Selecione —" } %>
+          <% end %>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
+          <%= form.field do %>
+            <%= form.label :period_seconds, "Período (s)" %>
+            <%= form.number_field :period_seconds, min: 60, placeholder: "3600" %>
+          <% end %>
+          <%= form.field do %>
+            <%= form.label :evaluation_periods, "Períodos de Avaliação" %>
+            <%= form.number_field :evaluation_periods, min: 1, placeholder: "3" %>
+          <% end %>
+          <%= form.field do %>
+            <%= form.label :datapoints_to_alarm, "Datapoints p/ Alarme" %>
+            <%= form.number_field :datapoints_to_alarm, min: 1, placeholder: "2" %>
+          <% end %>
+        </div>
+
+        <%# Threshold bands (metric only) %>
+        <div data-admin--alarm-form-target="thresholdFields">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm/6 font-medium text-zinc-950 dark:text-white">Faixas de Limiar</span>
+            <button type="button"
+                    class="inline-flex items-center gap-1 rounded-md bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-zinc-400 border border-white/10 hover:text-sky-400 hover:border-sky-500/50 transition-colors"
+                    data-action="click->admin--alarm-form#addThreshold">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Adicionar Faixa
+            </button>
           </div>
 
-          <%# Period + Evaluation %>
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-            <div>
-              <%= form.label :period_seconds, "Período (s)", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-              <%= form.number_field :period_seconds,
-                    class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-                    min: 60, placeholder: "3600" %>
-            </div>
-            <div>
-              <%= form.label :evaluation_periods, "Períodos de Avaliação", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-              <%= form.number_field :evaluation_periods,
-                    class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-                    min: 1, placeholder: "3" %>
-            </div>
-            <div>
-              <%= form.label :datapoints_to_alarm, "Datapoints p/ Alarme", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-              <%= form.number_field :datapoints_to_alarm,
-                    class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-                    min: 1, placeholder: "2" %>
-            </div>
+          <div role="row" class="grid threshold-grid gap-2 mb-1 px-1">
+            <span role="columnheader" id="th-severity" class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Severidade</span>
+            <span role="columnheader" id="th-operator" class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Operador</span>
+            <span role="columnheader" id="th-threshold" class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Limiar</span>
+            <span role="columnheader" id="th-unit" class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Unidade</span>
+            <span></span>
           </div>
 
-          <%# Threshold bands (metric only) %>
-          <div data-admin--alarm-form-target="thresholdFields">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-medium text-zinc-400">Faixas de Limiar</span>
+          <div data-admin--alarm-form-target="thresholdList" aria-live="polite" class="space-y-2">
+            <%= form.fields_for :alarm_thresholds do |tf| %>
+              <%= render "admin/alarms/threshold_row", tf: tf, persisted: tf.object.persisted? %>
+            <% end %>
+          </div>
+
+          <p data-admin--alarm-form-target="emptyWarning"
+             class="mt-2 text-xs text-risk-attention"
+             hidden>
+            Adicione ao menos uma faixa de limiar para salvar o alarme.
+          </p>
+
+          <%# Hidden template for new rows — cloned by JS %>
+          <template data-admin--alarm-form-target="thresholdTemplate">
+            <div class="threshold-row grid threshold-grid gap-2 items-center">
+              <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
+                      aria-labelledby="th-severity"
+                      class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden">
+                <option value="1">1 — Atenção</option>
+                <option value="2">2 — Alerta</option>
+                <option value="3">3 — Alerta Máximo</option>
+                <option value="4">4 — Emergência</option>
+              </select>
+              <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"
+                      aria-labelledby="th-operator"
+                      class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden">
+                <option value="GreaterThanThreshold">Maior que</option>
+                <option value="GreaterThanOrEqualToThreshold" selected>Maior ou igual</option>
+                <option value="LessThanThreshold">Menor que</option>
+                <option value="LessThanOrEqualToThreshold">Menor ou igual</option>
+              </select>
+              <input type="number" step="any" placeholder="0.0"
+                     name="alarm[alarm_thresholds_attributes][NEW_RECORD][threshold_value]"
+                     aria-labelledby="th-threshold"
+                     class="relative block w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] text-sm/6 dark:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden" />
+              <input type="text" placeholder="mm"
+                     name="alarm[alarm_thresholds_attributes][NEW_RECORD][unit]"
+                     aria-labelledby="th-unit"
+                     class="relative block w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] text-sm/6 dark:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden" />
               <button type="button"
-                      class="inline-flex items-center gap-1 rounded-md bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-zinc-400 border border-white/10 hover:text-sky-500 hover:border-sky-500 transition-colors"
-                      data-action="click->admin--alarm-form#addThreshold">
-                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      aria-label="Remover faixa"
+                      title="Remover faixa"
+                      class="flex items-center justify-center rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-risk-high transition-colors"
+                      data-action="click->admin--alarm-form#removeThreshold"
+                      data-persisted="false">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
-                Adicionar Faixa
               </button>
             </div>
-
-            <%# Column headers %>
-            <div role="row" class="grid threshold-grid gap-2 mb-1 px-1">
-              <span role="columnheader" id="th-severity" class="text-xs font-medium text-zinc-400">Severidade</span>
-              <span role="columnheader" id="th-operator" class="text-xs font-medium text-zinc-400">Operador</span>
-              <span role="columnheader" id="th-threshold" class="text-xs font-medium text-zinc-400">Limiar</span>
-              <span role="columnheader" id="th-unit" class="text-xs font-medium text-zinc-400">Unidade</span>
-              <span></span>
-            </div>
-
-            <div data-admin--alarm-form-target="thresholdList" aria-live="polite" class="space-y-2">
-              <%= form.fields_for :alarm_thresholds do |tf| %>
-                <%= render "admin/alarms/threshold_row", tf: tf, persisted: tf.object.persisted? %>
-              <% end %>
-            </div>
-
-            <p data-admin--alarm-form-target="emptyWarning"
-               class="mt-2 text-xs text-risk-attention"
-               hidden>
-              Adicione ao menos uma faixa de limiar para salvar o alarme.
-            </p>
-
-            <%# Hidden template for new rows — cloned by JS %>
-            <template data-admin--alarm-form-target="thresholdTemplate">
-              <div class="threshold-row grid threshold-grid gap-2 items-center">
-                <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
-                        aria-labelledby="th-severity"
-                        class="rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
-                  <option value="1">1 — Atenção</option>
-                  <option value="2">2 — Alerta</option>
-                  <option value="3">3 — Alerta Máximo</option>
-                  <option value="4">4 — Emergência</option>
-                </select>
-                <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"
-                        aria-labelledby="th-operator"
-                        class="rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
-                  <option value="GreaterThanThreshold">Maior que</option>
-                  <option value="GreaterThanOrEqualToThreshold" selected>Maior ou igual</option>
-                  <option value="LessThanThreshold">Menor que</option>
-                  <option value="LessThanOrEqualToThreshold">Menor ou igual</option>
-                </select>
-                <input type="number" step="any" placeholder="0.0"
-                       name="alarm[alarm_thresholds_attributes][NEW_RECORD][threshold_value]"
-                       aria-labelledby="th-threshold"
-                       class="rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm tabular-nums text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" />
-                <input type="text" placeholder="mm"
-                       name="alarm[alarm_thresholds_attributes][NEW_RECORD][unit]"
-                       aria-labelledby="th-unit"
-                       class="rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" />
-                <button type="button"
-                        aria-label="Remover faixa"
-                        title="Remover faixa"
-                        class="flex items-center justify-center rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-risk-high transition-colors"
-                        data-action="click->admin--alarm-form#removeThreshold"
-                        data-persisted="false">
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </template>
-          </div>
-
-          <%# Anomaly fields %>
-          <div data-admin--alarm-form-target="anomalyFields">
-            <div>
-              <%= form.label :anomaly_band_width, "Largura da Banda (desvios-padrão)", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-              <%= form.number_field :anomaly_band_width, step: "any",
-                    class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-                    placeholder: "2.0" %>
-            </div>
-          </div>
-
-          <%# Missing data %>
-          <div>
-            <%= form.label :missing_data_treatment, "Tratamento de Dados Ausentes", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-            <%= form.select :missing_data_treatment,
-                  [["Ausente", "missing"], ["Não viola", "notBreaching"],
-                   ["Viola", "breaching"], ["Ignorar", "ignore"]],
-                  {},
-                  class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-          </div>
+          </template>
         </div>
-      </div>
+
+        <%# Anomaly fields %>
+        <div data-admin--alarm-form-target="anomalyFields">
+          <%= form.field do %>
+            <%= form.label :anomaly_band_width, "Largura da Banda (desvios-padrão)" %>
+            <%= form.number_field :anomaly_band_width, step: "any", placeholder: "2.0" %>
+          <% end %>
+        </div>
+
+        <%# Missing data %>
+        <%= form.field do %>
+          <%= form.label :missing_data_treatment, "Tratamento de Dados Ausentes" %>
+          <%= form.select :missing_data_treatment,
+                [["Ausente", "missing"], ["Não viola", "notBreaching"],
+                 ["Viola", "breaching"], ["Ignorar", "ignore"]] %>
+        <% end %>
+      <% end %>
     </div>
 
     <%# ── Composite fields ── %>
     <div data-admin--alarm-form-target="compositeFields">
-      <div class="border-t border-white/10 pt-5 mt-5">
-        <h3 class="text-sm font-semibold text-white mb-4">Configuração Composta</h3>
+      <%= catalyst_divider(soft: true, class: "my-8") %>
+      <%= catalyst_subheading "Configuração Composta" %>
 
-        <div class="space-y-5">
-          <div>
-            <%= form.label :composite_rule, "Regra Composta", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-            <%= form.text_area :composite_rule,
-                  rows: 3,
-                  class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 font-mono text-sm text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 resize-none",
-                  placeholder: "ALARM(Nome do Alarme 1) AND ALARM(Nome do Alarme 2)" %>
-            <p class="mt-1.5 text-xs text-zinc-400">
-              Use ALARM(nome), OK(nome), INSUFFICIENT_DATA(nome) com operadores AND, OR, NOT e parênteses.
-            </p>
-          </div>
-          <div>
-            <label class="flex items-center gap-2">
-              <%= form.check_box :suppress_child_actions,
-                    class: "rounded border-white/10 bg-zinc-800 text-sky-500 focus:ring-sky-500" %>
-              <span class="text-sm text-zinc-400">Suprimir ações dos alarmes filhos</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <%= form.field_group class: "mt-6" do %>
+        <%= form.field do %>
+          <%= form.label :composite_rule, "Regra Composta" %>
+          <%= form.text_area :composite_rule, rows: 3,
+                placeholder: "ALARM(Nome do Alarme 1) AND ALARM(Nome do Alarme 2)" %>
+          <%= form.description "Use ALARM(nome), OK(nome), INSUFFICIENT_DATA(nome) com operadores AND, OR, NOT e parênteses." %>
+        <% end %>
+
+        <%= form.field do %>
+          <%= form.check_box :suppress_child_actions %>
+          <%= form.label :suppress_child_actions, "Suprimir ações dos alarmes filhos" %>
+        <% end %>
+      <% end %>
     </div>
   </div>
 
-  <%# Actions %>
-  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-4 py-3">
-    <%= link_to "Cancelar", admin_alarms_path, class: "text-sm text-zinc-400 hover:text-white transition-colors" %>
-    <%= form.submit alarm.persisted? ? "Salvar" : "Criar Alarme",
-          data: { "admin--alarm-form-target": "submit" },
-          class: "rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-sky-500/90 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-zinc-950 cursor-pointer" %>
+  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
+    <%= catalyst_button_link "Cancelar", href: admin_alarms_path, variant: :plain %>
+    <%= form.submit alarm.persisted? ? "Salvar Alterações" : "Criar Alarme",
+          data: { "admin--alarm-form-target": "submit" } %>
   </div>
 </div>

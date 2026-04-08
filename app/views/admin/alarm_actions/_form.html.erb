@@ -1,66 +1,42 @@
-<div class="rounded-xl border border-white/10 bg-zinc-900">
+<div class="rounded-xl border border-white/10 bg-zinc-800/50 shadow-sm">
   <div class="border-b border-white/10 px-6 py-4">
-    <h2 class="text-sm font-semibold text-white">Dados da Ação</h2>
+    <%= catalyst_subheading(alarm_action.persisted? ? "Editar Ação" : "Nova Ação") %>
   </div>
 
-  <div class="p-6 space-y-5">
-    <% if alarm_action.errors.any? %>
-      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
-        <p class="text-sm font-medium text-red-400">
-          <%= alarm_action.errors.count %> erro(s) impediu(iram) o salvamento:
-        </p>
-        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
-          <% alarm_action.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-        </ul>
+  <div class="p-6">
+    <%= form.error_summary %>
+
+    <%= form.field_group do %>
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :trigger_state, "Gatilho (Estado)" %>
+          <%= form.select :trigger_state,
+                [["Alarme", "alarm"], ["OK", "ok"], ["Dados Insuficientes", "insufficient_data"]] %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :action_type, "Tipo de Ação" %>
+          <%= form.select :action_type, [["Notificação", "notification"], ["Webhook", "webhook"]] %>
+        <% end %>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :min_severity, "Severidade Mínima" %>
+          <%= form.select :min_severity,
+                [["— Qualquer —", ""],
+                 ["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]] %>
+          <%= form.description "Disparar somente se a severidade atual atingir este nível." %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :enabled, "Status" %>
+          <%= form.select :enabled, [["Ativada", true], ["Desativada", false]] %>
+        <% end %>
       </div>
     <% end %>
-
-    <%# Trigger State + Action Type %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :trigger_state, "Gatilho (Estado)", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.select :trigger_state,
-              [["Alarme", "alarm"], ["OK", "ok"], ["Dados Insuficientes", "insufficient_data"]],
-              {},
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-      <div>
-        <%= form.label :action_type, "Tipo de Ação", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.select :action_type,
-              [["Notificação", "notification"], ["Webhook", "webhook"]],
-              {},
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-    </div>
-
-    <%# Severidade mínima + Status %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :min_severity, "Severidade Mínima", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.select :min_severity,
-              [["— Qualquer —", ""],
-               ["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]],
-              {},
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-        <p class="mt-1.5 text-xs text-zinc-400">Disparar somente se a severidade atual atingir este nível.</p>
-      </div>
-      <div>
-        <%= form.label :enabled, "Status", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.select :enabled,
-              [["Ativada", true], ["Desativada", false]],
-              {},
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-    </div>
   </div>
 
-  <%# Actions %>
   <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
-    <%= link_to "Cancelar", admin_alarm_path(alarm_action.alarm || @alarm),
-          class: "text-sm text-zinc-400 hover:text-white transition-colors" %>
-    <%= form.submit alarm_action.persisted? ? "Salvar" : "Criar Ação",
-          class: "rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-sky-500/90 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-zinc-950 cursor-pointer" %>
+    <%= catalyst_button_link "Cancelar", href: admin_alarm_path(alarm_action.alarm || @alarm), variant: :plain %>
+    <%= form.submit alarm_action.persisted? ? "Salvar Alterações" : "Criar Ação" %>
   </div>
 </div>

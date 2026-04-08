@@ -1,117 +1,75 @@
-<div class="rounded-xl border border-white/10 bg-zinc-900">
+<div class="rounded-xl border border-white/10 bg-zinc-800/50 shadow-sm">
   <div class="border-b border-white/10 px-6 py-4">
-    <h2 class="text-sm font-semibold text-white">Dados da Estação</h2>
+    <%= catalyst_subheading(monitoring_station.persisted? ? "Editar Estação" : "Nova Estação") %>
   </div>
 
-  <div class="p-6 space-y-5">
-    <% if monitoring_station.errors.any? %>
-      <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
-        <p class="text-sm font-medium text-red-400">
-          <%= monitoring_station.errors.count %> erro(s) impediu(iram) o salvamento:
-        </p>
-        <ul class="mt-2 list-disc pl-5 text-sm text-red-400/80">
-          <% monitoring_station.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-        </ul>
+  <div class="p-6">
+    <%= form.error_summary %>
+
+    <%= form.field_group do %>
+      <%= form.field do %>
+        <%= form.label :name, "Nome" %>
+        <%= form.text_field :name, required: true, placeholder: "Ex: Pluviômetro Centro" %>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :external_id, "ID Externo" %>
+          <%= form.text_field :external_id, required: true, placeholder: "Ex: PLUV-001" %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :data_source, "Fonte de Dados" %>
+          <%= form.text_field :data_source, required: true, placeholder: "Ex: cemaden, ana, inmet" %>
+        <% end %>
       </div>
+
+      <%= form.field do %>
+        <%= form.label :status, "Status" %>
+        <%= form.select :status, [["Ativo", "active"], ["Inativo", "inactive"], ["Manutenção", "maintenance"]] %>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :latitude, "Latitude" %>
+          <%= form.text_field :latitude,
+                value: monitoring_station.location&.y,
+                placeholder: "Ex: -25.4284",
+                inputmode: "decimal" %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :longitude, "Longitude" %>
+          <%= form.text_field :longitude,
+                value: monitoring_station.location&.x,
+                placeholder: "Ex: -49.2733",
+                inputmode: "decimal" %>
+        <% end %>
+      </div>
+
+      <%= form.field do %>
+        <%= form.label :elevation_m, "Elevação (m)" %>
+        <%= form.text_field :elevation_m, placeholder: "Ex: 934", inputmode: "decimal" %>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :neighborhood_id, "Bairro" %>
+          <%= form.select :neighborhood_id, Neighborhood.order(:name).pluck(:name, :id), { include_blank: "Nenhum" } %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :river_basin_id, "Bacia Hidrográfica" %>
+          <%= form.select :river_basin_id, RiverBasin.order(:name).pluck(:name, :id), { prompt: "Selecione a bacia" }, required: true %>
+        <% end %>
+      </div>
+
+      <%= form.field do %>
+        <%= form.label :river_id, "Rio" %>
+        <%= form.select :river_id, River.order(:name).pluck(:name, :id), { include_blank: "Nenhum" } %>
+      <% end %>
     <% end %>
-
-    <%# Nome %>
-    <div>
-      <%= form.label :name, "Nome", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.text_field :name, required: true,
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-            placeholder: "Ex: Pluviômetro Centro" %>
-    </div>
-
-    <%# ID Externo + Fonte de Dados %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :external_id, "ID Externo", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.text_field :external_id, required: true,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 font-mono text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "Ex: PLUV-001" %>
-      </div>
-      <div>
-        <%= form.label :data_source, "Fonte de Dados", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.text_field :data_source, required: true,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "Ex: cemaden, ana, inmet" %>
-      </div>
-    </div>
-
-    <%# Status %>
-    <div>
-      <%= form.label :status, "Status", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.select :status,
-            [["Ativo", "active"], ["Inativo", "inactive"], ["Manutenção", "maintenance"]],
-            {},
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-    </div>
-
-    <%# Latitude + Longitude %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :latitude, "Latitude", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.text_field :latitude,
-              value: monitoring_station.location&.y,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "Ex: -25.4284",
-              inputmode: "decimal" %>
-      </div>
-      <div>
-        <%= form.label :longitude, "Longitude", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.text_field :longitude,
-              value: monitoring_station.location&.x,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-              placeholder: "Ex: -49.2733",
-              inputmode: "decimal" %>
-      </div>
-    </div>
-
-    <%# Elevação %>
-    <div>
-      <%= form.label :elevation_m, "Elevação (m)", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.text_field :elevation_m,
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 tabular-nums text-white placeholder-zinc-400/50 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
-            placeholder: "Ex: 934",
-            inputmode: "decimal" %>
-    </div>
-
-    <%# Bairro + Bacia Hidrográfica %>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <div>
-        <%= form.label :neighborhood_id, "Bairro", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.select :neighborhood_id,
-              Neighborhood.order(:name).pluck(:name, :id),
-              { include_blank: "Nenhum" },
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-      <div>
-        <%= form.label :river_basin_id, "Bacia Hidrográfica", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-        <%= form.select :river_basin_id,
-              RiverBasin.order(:name).pluck(:name, :id),
-              { prompt: "Selecione a bacia" },
-              required: true,
-              class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-      </div>
-    </div>
-
-    <%# Rio %>
-    <div>
-      <%= form.label :river_id, "Rio", class: "mb-1.5 block text-sm font-medium text-zinc-400" %>
-      <%= form.select :river_id,
-            River.order(:name).pluck(:name, :id),
-            { include_blank: "Nenhum" },
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>
-    </div>
   </div>
 
-  <%# Actions %>
   <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
-    <%= link_to "Cancelar", admin_monitoring_stations_path, class: "text-sm text-zinc-400 hover:text-white transition-colors" %>
-    <%= form.submit monitoring_station.persisted? ? "Salvar" : "Criar Estação",
-          class: "rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-sky-500/90 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-zinc-950 cursor-pointer" %>
+    <%= catalyst_button_link "Cancelar", href: admin_monitoring_stations_path, variant: :plain %>
+    <%= form.submit monitoring_station.persisted? ? "Salvar Alterações" : "Criar Estação" %>
   </div>
 </div>
