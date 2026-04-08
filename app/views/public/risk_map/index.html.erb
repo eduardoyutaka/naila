@@ -1,0 +1,83 @@
+<% content_for(:title, "Mapa de Risco — Naila") %>
+
+<div class="mx-auto max-w-7xl px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-zinc-950">Mapa de Risco</h1>
+    <p class="mt-1 text-gray-600">Situação atual das bacias hidrográficas de Curitiba.</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <%# ── Basin List ── %>
+    <div class="lg:col-span-2">
+      <h2 class="mb-3 text-base font-semibold text-zinc-950">Bacias Hidrográficas</h2>
+      <div class="space-y-3">
+        <% @river_basins.each do |basin| %>
+          <%
+            level = basin.current_risk_level.to_s
+            border_colors = {
+              "normal"     => "border-l-green-400",
+              "attention"  => "border-l-yellow-400",
+              "alert"      => "border-l-orange-400",
+              "high_alert" => "border-l-red-400",
+              "emergency"  => "border-l-red-700",
+            }
+          %>
+          <div class="rounded-xl border border-gray-200 border-l-4 bg-white p-4 shadow-sm <%= border_colors[level] %>">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <h3 class="font-semibold text-zinc-950 truncate"><%= basin.name %></h3>
+                <% if basin.description.present? %>
+                  <p class="mt-0.5 text-sm text-gray-500 line-clamp-1"><%= basin.description %></p>
+                <% end %>
+                <% if basin.area_km2 %>
+                  <p class="mt-0.5 text-xs text-gray-400"><%= number_with_precision(basin.area_km2, precision: 1) %> km²</p>
+                <% end %>
+              </div>
+              <div class="shrink-0">
+                <%= risk_level_badge(basin.current_risk_level) %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @river_basins.empty? %>
+          <p class="text-sm text-gray-500">Nenhuma bacia ativa no momento.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── Active Alarms Sidebar ── %>
+    <div>
+      <h2 class="mb-3 text-base font-semibold text-zinc-950">Alarmes Ativos</h2>
+      <% if @active_alarms.empty? %>
+        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-6 text-center">
+          <svg class="mx-auto h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <p class="mt-2 text-sm font-medium text-green-800">Nenhum alarme ativo</p>
+          <p class="mt-1 text-xs text-green-700">Situação normal em todas as bacias.</p>
+        </div>
+      <% else %>
+        <div class="space-y-3">
+          <% @active_alarms.each do |alarm| %>
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div class="mb-1">
+                <%= severity_badge(alarm.current_severity) %>
+              </div>
+              <h3 class="mt-2 text-sm font-semibold text-zinc-950"><%= alarm.name %></h3>
+              <% if alarm.river_basin.present? %>
+                <p class="mt-1 text-xs text-gray-500"><%= alarm.river_basin.name %></p>
+              <% end %>
+              <% if alarm.state_changed_at %>
+                <p class="mt-1 text-xs text-gray-400"><%= time_ago_in_words(alarm.state_changed_at) %> atrás</p>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="text-center">
+            <%= link_to "Ver todos os alarmes", public_alarms_path, class: "text-sm font-medium text-blue-700 hover:text-blue-900" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
