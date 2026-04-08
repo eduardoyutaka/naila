@@ -44,7 +44,7 @@
       <div class="border-b border-white/10 px-6 py-4">
         <%= catalyst_subheading "Detalhes" %>
       </div>
-      <%= catalyst_dl do %>
+      <%= catalyst_dl class: "px-6" do %>
         <%= catalyst_dt "Área" %>
         <%= catalyst_dd @river_basin.area_km2 ? "#{number_with_precision(@river_basin.area_km2, precision: 1)} km²" : "—" %>
 
@@ -156,7 +156,7 @@
       <div class="border-b border-white/10 px-6 py-4">
         <%= catalyst_subheading "Estatísticas" %>
       </div>
-      <%= catalyst_dl do %>
+      <%= catalyst_dl class: "px-6" do %>
         <%= catalyst_dt "Total de Avaliações" %><%= catalyst_dd @river_basin.risk_assessments.count.to_s %>
         <%= catalyst_dt "Total de Alarmes" %><%= catalyst_dd @river_basin.alarms.count.to_s %>
         <%= catalyst_dt "Criada em" %><%= catalyst_dd @river_basin.created_at.strftime("%d/%m/%Y") %>

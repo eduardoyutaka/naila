@@ -191,7 +191,7 @@
         <div class="border-b border-white/10 px-6 py-4">
           <%= catalyst_subheading "Informações" %>
         </div>
-        <%= catalyst_dl do %>
+        <%= catalyst_dl class: "px-6" do %>
           <%= catalyst_dt "ID Externo" %><%= catalyst_dd @monitoring_station.external_id %>
           <%= catalyst_dt "Fonte de Dados" %><%= catalyst_dd @monitoring_station.data_source.upcase %>
           <% if @monitoring_station.elevation_m %>
@@ -205,7 +205,7 @@
           <div class="border-b border-white/10 px-6 py-4">
             <%= catalyst_subheading "Localização" %>
           </div>
-          <%= catalyst_dl do %>
+          <%= catalyst_dl class: "px-6" do %>
             <% if @monitoring_station.neighborhood %>
               <%= catalyst_dt "Bairro" %><%= catalyst_dd @monitoring_station.neighborhood.name %>
             <% end %>

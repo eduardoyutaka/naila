@@ -51,7 +51,7 @@
       <div class="border-b border-white/10 px-6 py-4">
         <%= catalyst_subheading "Configuração" %>
       </div>
-      <%= catalyst_dl do %>
+      <%= catalyst_dl class: "px-6" do %>
         <% if @alarm.metric? || @alarm.anomaly_detection? %>
           <%= catalyst_dt "Métrica" %><%= catalyst_dd @alarm.metric_name %>
           <%= catalyst_dt "Estatística" %><%= catalyst_dd @alarm.statistic %>
@@ -244,7 +244,7 @@
       <div class="border-b border-white/10 px-6 py-4">
         <%= catalyst_subheading "Informações" %>
       </div>
-      <%= catalyst_dl do %>
+      <%= catalyst_dl class: "px-6" do %>
         <%= catalyst_dt "Última Avaliação" %>
         <%= catalyst_dd @alarm.last_evaluated_at ? l(@alarm.last_evaluated_at, format: :short) : "—" %>
         <%= catalyst_dt "Mudança de Estado" %>
