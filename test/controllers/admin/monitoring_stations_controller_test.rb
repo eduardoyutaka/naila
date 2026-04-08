@@ -185,6 +185,6 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
 
   test "show full page contains back link" do
     get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
-    assert_select "a", text: /Voltar às estações/
+    assert_select "a[href='#{admin_monitoring_stations_path}']"
   end
 end

@@ -2,11 +2,7 @@
 
 <%
   state_label = { "ok" => "OK", "alarm" => "Alarme", "insufficient_data" => "Dados Insuficientes" }
-  state_color = {
-    "ok"                => "bg-risk-normal/20 text-risk-normal",
-    "alarm"             => "bg-risk-high/20 text-risk-high",
-    "insufficient_data" => "bg-zinc-800 text-zinc-400"
-  }
+  state_color = { "ok" => "green", "alarm" => "red", "insufficient_data" => "zinc" }
   type_label = { "metric" => "Métrica", "anomaly_detection" => "Anomalia", "composite" => "Composto" }
   trigger_label = { "alarm" => "Alarme", "ok" => "OK", "insufficient_data" => "Dados Insuficientes" }
   missing_data_label = {
@@ -15,40 +11,34 @@
   }
 %>
 
-<%# ── Back Link ── %>
-<div class="mb-4">
-  <%= link_to admin_alarms_path, class: "inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-sky-500 transition-colors" do %>
-    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+<%# ── Back + Actions Header ── %>
+<div class="mb-6 flex items-center gap-4">
+  <%= catalyst_button_link "Alarmes", href: admin_alarms_path, variant: :plain do %>
+    <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
     </svg>
-    Voltar aos alarmes
+    Voltar
   <% end %>
 </div>
 
-<%# ── Header ── %>
-<div class="mb-6">
-  <div class="flex flex-wrap items-center gap-2 mb-2">
-    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[@alarm.state] %>" data-testid="alarm-state">
-      <%= state_label[@alarm.state] %>
-    </span>
-    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-800 text-zinc-400">
-      <%= type_label[@alarm.alarm_type] %>
-    </span>
+<%# ── Page Heading ── %>
+<div class="mb-8">
+  <div class="mb-2 flex flex-wrap items-center gap-2">
+    <%= catalyst_badge state_label[@alarm.state], color: state_color[@alarm.state], data: { testid: "alarm-state" } %>
+    <%= catalyst_badge type_label[@alarm.alarm_type], color: "zinc" %>
     <% if @alarm.current_severity %>
       <%= severity_badge(@alarm.current_severity) %>
     <% end %>
     <% unless @alarm.enabled? %>
-      <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-attention/20 text-risk-attention">
-        Desativado
-      </span>
+      <%= catalyst_badge "Desativado", color: "yellow" %>
     <% end %>
   </div>
-  <h1 class="text-2xl font-bold text-white"><%= @alarm.name %></h1>
+  <%= catalyst_heading @alarm.name, level: 1 %>
   <% if @alarm.description.present? %>
-    <p class="mt-1 text-sm text-zinc-400"><%= @alarm.description %></p>
+    <%= catalyst_text @alarm.description, class: "mt-1" %>
   <% end %>
   <% if @alarm.state_reason.present? && !@alarm.ok? %>
-    <p class="mt-1 text-xs text-zinc-400"><%= @alarm.state_reason %></p>
+    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400"><%= @alarm.state_reason %></p>
   <% end %>
 </div>
 
@@ -57,80 +47,53 @@
   <div class="lg:col-span-2 space-y-6">
 
     <%# Configuration %>
-    <div class="rounded-xl border border-white/10 bg-zinc-900" data-testid="alarm-config">
-      <div class="border-b border-white/10 px-4 py-3">
-        <h2 class="text-sm font-semibold text-white">Configuração</h2>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-config">
+      <div class="border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Configuração" %>
       </div>
-      <div class="divide-y divide-white/10">
+      <%= catalyst_dl do %>
         <% if @alarm.metric? || @alarm.anomaly_detection? %>
-          <div class="flex items-center justify-between px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Métrica</span>
-            <span class="text-sm text-white"><%= @alarm.metric_name %></span>
-          </div>
-          <div class="flex items-center justify-between px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Estatística</span>
-            <span class="text-sm text-white"><%= @alarm.statistic %></span>
-          </div>
-          <div class="flex items-center justify-between px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Período</span>
-            <span class="text-sm tabular-nums text-white"><%= @alarm.period_seconds %>s</span>
-          </div>
-          <div class="flex items-center justify-between px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Avaliação</span>
-            <span class="text-sm tabular-nums text-white"><%= @alarm.datapoints_to_alarm %> de <%= @alarm.evaluation_periods %> períodos</span>
-          </div>
+          <%= catalyst_dt "Métrica" %><%= catalyst_dd @alarm.metric_name %>
+          <%= catalyst_dt "Estatística" %><%= catalyst_dd @alarm.statistic %>
+          <%= catalyst_dt "Período" %><%= catalyst_dd "#{@alarm.period_seconds}s" %>
+          <%= catalyst_dt "Avaliação" %><%= catalyst_dd "#{@alarm.datapoints_to_alarm} de #{@alarm.evaluation_periods} períodos" %>
           <% if @alarm.metric? && @alarm.alarm_thresholds.any? %>
-            <div class="px-4 py-3">
-              <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Faixas de Limiar</span>
-              <div class="mt-2 space-y-1">
+            <%= catalyst_dt "Faixas de Limiar" %>
+            <%= catalyst_dd do %>
+              <div class="space-y-1">
                 <% @alarm.alarm_thresholds.order(:severity).each do |t| %>
                   <div class="flex items-center gap-2">
                     <%= severity_badge(t.severity) %>
-                    <span class="text-sm tabular-nums text-zinc-400">
+                    <span class="tabular-nums text-xs text-zinc-500 dark:text-zinc-400">
                       <%= t.comparison_operator.gsub(/([A-Z])/, ' \1').strip %> <%= t.threshold_value %><%= t.unit %>
                     </span>
                   </div>
                 <% end %>
               </div>
-            </div>
+            <% end %>
           <% end %>
           <% if @alarm.anomaly_detection? %>
-            <div class="flex items-center justify-between px-4 py-3">
-              <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Banda de Anomalia</span>
-              <span class="text-sm tabular-nums text-white"><%= @alarm.anomaly_band_width %> desvios-padrão</span>
-            </div>
+            <%= catalyst_dt "Banda de Anomalia" %><%= catalyst_dd "#{@alarm.anomaly_band_width} desvios-padrão" %>
           <% end %>
-          <div class="flex items-center justify-between px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Dados Ausentes</span>
-            <span class="text-sm text-white"><%= missing_data_label[@alarm.missing_data_treatment] || @alarm.missing_data_treatment %></span>
-          </div>
+          <%= catalyst_dt "Dados Ausentes" %><%= catalyst_dd(missing_data_label[@alarm.missing_data_treatment] || @alarm.missing_data_treatment) %>
         <% elsif @alarm.composite? %>
-          <div class="px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Regra Composta</span>
-            <div class="mt-2 rounded-lg bg-zinc-800 px-3 py-2 font-mono text-sm text-white">
-              <%= @alarm.composite_rule %>
-            </div>
-          </div>
-          <div class="flex items-center justify-between px-4 py-3">
-            <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Suprimir Ações dos Filhos</span>
-            <span class="text-sm text-white"><%= @alarm.suppress_child_actions? ? "Sim" : "Não" %></span>
-          </div>
+          <%= catalyst_dt "Regra Composta" %>
+          <%= catalyst_dd do %>
+            <div class="rounded-lg bg-zinc-800 px-3 py-2 font-mono text-sm text-white"><%= @alarm.composite_rule %></div>
+          <% end %>
+          <%= catalyst_dt "Suprimir Ações dos Filhos" %><%= catalyst_dd @alarm.suppress_child_actions? ? "Sim" : "Não" %>
         <% end %>
-        <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Escopo</span>
-          <span class="text-sm text-white"><%= @alarm.river&.name || @alarm.river_basin&.name || "Global" %></span>
-        </div>
-      </div>
+        <%= catalyst_dt "Escopo" %><%= catalyst_dd(@alarm.river&.name || @alarm.river_basin&.name || "Global") %>
+      <% end %>
     </div>
 
     <%# Ações Configuradas %>
-    <div class="rounded-xl border border-white/10 bg-zinc-900" data-testid="alarm-actions">
-      <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h2 class="text-sm font-semibold text-white">Ações Configuradas</h2>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-actions">
+      <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Ações Configuradas" %>
         <% if policy(AlarmAction).create? %>
-          <%= link_to new_admin_alarm_alarm_action_path(@alarm),
-                class: "inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-sky-500/90" do %>
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <%= catalyst_button_link href: new_admin_alarm_alarm_action_path(@alarm), color: "sky" do %>
+            <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Nova Ação
@@ -138,45 +101,41 @@
         <% end %>
       </div>
       <% if @alarm_actions.empty? %>
-        <div class="px-4 py-6 text-center text-sm text-zinc-400">
-          Nenhuma ação configurada.
+        <div class="px-6 py-6 text-center">
+          <%= catalyst_text "Nenhuma ação configurada." %>
         </div>
       <% else %>
         <div class="divide-y divide-white/10">
           <% @alarm_actions.each do |action| %>
-            <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center justify-between px-6 py-3">
               <div class="flex flex-col gap-0.5">
                 <div class="flex items-center gap-3">
-                  <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[action.trigger_state] %>">
-                    <%= trigger_label[action.trigger_state] %>
-                  </span>
+                  <%= catalyst_badge trigger_label[action.trigger_state], color: state_color[action.trigger_state] || "zinc" %>
                   <span class="text-sm text-white"><%= action.action_type == "notification" ? "Notificação" : "Webhook" %></span>
                   <% unless action.enabled? %>
-                    <span class="text-xs text-zinc-400">(desativada)</span>
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400">(desativada)</span>
                   <% end %>
                 </div>
-                <%# Configuration summary %>
                 <% if action.action_type == "notification" && action.configuration["channels"].present? %>
-                  <span class="pl-0 text-xs text-zinc-400"><%= action.configuration["channels"].join(", ") %></span>
+                  <span class="text-xs text-zinc-500 dark:text-zinc-400"><%= action.configuration["channels"].join(", ") %></span>
                 <% elsif action.action_type == "webhook" && action.configuration["url"].present? %>
-                  <span class="text-xs text-zinc-400 truncate max-w-xs"><%= action.configuration["url"] %></span>
+                  <span class="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-xs"><%= action.configuration["url"] %></span>
                 <% end %>
               </div>
-              <div class="inline-flex items-center gap-1">
+              <div class="flex items-center gap-1">
                 <% if policy(action).update? %>
                   <%= link_to edit_admin_alarm_alarm_action_path(@alarm, action),
-                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-sky-500 transition-colors",
-                        title: "Editar ação",
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
                         aria: { label: "Editar ação #{trigger_label[action.trigger_state]}" } do %>
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
                     </svg>
                   <% end %>
                 <% end %>
                 <% if policy(action).destroy? %>
                   <%= button_to admin_alarm_alarm_action_path(@alarm, action),
                         method: :delete,
-                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-risk-high transition-colors",
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors",
                         form: { data: { turbo_confirm: "Remover esta ação?" } },
                         aria: { label: "Remover ação #{trigger_label[action.trigger_state]}" } do %>
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -193,20 +152,18 @@
 
     <%# Child Alarms (Composite only) %>
     <% if @alarm.composite? && @child_alarms.any? %>
-      <div class="rounded-xl border border-white/10 bg-zinc-900">
-        <div class="border-b border-white/10 px-4 py-3">
-          <h2 class="text-sm font-semibold text-white">Alarmes Filhos</h2>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+        <div class="border-b border-white/10 px-6 py-4">
+          <%= catalyst_subheading "Alarmes Filhos" %>
         </div>
         <div class="divide-y divide-white/10">
           <% @child_alarms.each do |child| %>
-            <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center justify-between px-6 py-3">
               <div class="flex items-center gap-2">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[child.state] %>">
-                  <%= state_label[child.state] %>
-                </span>
-                <%= link_to child.name, admin_alarm_path(child), class: "text-sm text-sky-500 hover:underline" %>
+                <%= catalyst_badge state_label[child.state], color: state_color[child.state] || "zinc" %>
+                <%= catalyst_text_link child.name, href: admin_alarm_path(child) %>
               </div>
-              <span class="text-xs text-zinc-400"><%= type_label[child.alarm_type] %></span>
+              <%= catalyst_text type_label[child.alarm_type] %>
             </div>
           <% end %>
         </div>
@@ -215,30 +172,25 @@
 
     <%# State History %>
     <% if @state_histories.any? %>
-      <div class="rounded-xl border border-white/10 bg-zinc-900" data-testid="alarm-history">
-        <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
-          <h2 class="text-sm font-semibold text-white">Histórico de Estados</h2>
-          <%= link_to "Ver tudo", history_admin_alarm_path(@alarm),
-                class: "text-xs text-sky-500 hover:underline" %>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-history">
+        <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+          <%= catalyst_subheading "Histórico de Estados" %>
+          <%= catalyst_text_link "Ver tudo", href: history_admin_alarm_path(@alarm) %>
         </div>
         <div class="divide-y divide-white/10">
           <% @state_histories.each do |history| %>
-            <div class="px-4 py-3">
+            <div class="px-6 py-3">
               <div class="flex items-center gap-2 mb-1">
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.previous_state] %>">
-                  <%= state_label[history.previous_state] %>
-                </span>
+                <%= catalyst_badge state_label[history.previous_state], color: state_color[history.previous_state] || "zinc" %>
                 <svg class="h-3 w-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
-                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.new_state] %>">
-                  <%= state_label[history.new_state] %>
-                </span>
-                <span class="text-xs tabular-nums text-zinc-400 ml-auto">
+                <%= catalyst_badge state_label[history.new_state], color: state_color[history.new_state] || "zinc" %>
+                <span class="ml-auto text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
                   <%= l(history.evaluated_at, format: :short) %>
                 </span>
               </div>
-              <div class="text-xs text-zinc-400"><%= history.reason %></div>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= history.reason %></p>
             </div>
           <% end %>
         </div>
@@ -251,51 +203,36 @@
   <div class="space-y-6">
 
     <%# Gerenciar Alarme %>
-    <div class="rounded-xl border border-white/10 bg-zinc-900">
-      <div class="border-b border-white/10 px-4 py-3">
-        <h2 class="text-sm font-semibold text-white">Gerenciar Alarme</h2>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+      <div class="border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Gerenciar" %>
       </div>
-      <div class="p-4 space-y-3">
+      <div class="p-4 space-y-2">
         <% if policy(@alarm).update? %>
-          <%= link_to edit_admin_alarm_path(@alarm),
-                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:border-sky-500 hover:text-sky-500" do %>
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+          <%= catalyst_button_link "Editar Alarme", href: edit_admin_alarm_path(@alarm), variant: :outline, color: "zinc", class: "w-full justify-center" do %>
+            <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
             </svg>
             Editar Alarme
           <% end %>
         <% end %>
         <% if policy(@alarm).update? && !@alarm.enabled? %>
-          <%= button_to admin_alarm_status_path(@alarm),
-                method: :patch,
-                params: { enabled: "true" },
-                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-normal/30 bg-risk-normal/10 px-4 py-2.5 text-sm font-medium text-risk-normal transition-colors hover:bg-risk-normal/20" do %>
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
-            </svg>
+          <%= button_to admin_alarm_status_path(@alarm), method: :patch, params: { enabled: "true" },
+                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-normal/30 bg-risk-normal/10 px-4 py-2.5 text-sm font-medium text-risk-normal hover:bg-risk-normal/20 transition-colors" do %>
             Ativar Alarme
           <% end %>
         <% end %>
         <% if policy(@alarm).update? && @alarm.enabled? %>
-          <%= button_to admin_alarm_status_path(@alarm),
-                method: :patch,
-                params: { enabled: "false" },
-                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-attention/30 bg-risk-attention/10 px-4 py-2.5 text-sm font-medium text-risk-attention transition-colors hover:bg-risk-attention/20" do %>
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-            </svg>
+          <%= button_to admin_alarm_status_path(@alarm), method: :patch, params: { enabled: "false" },
+                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-attention/30 bg-risk-attention/10 px-4 py-2.5 text-sm font-medium text-risk-attention hover:bg-risk-attention/20 transition-colors" do %>
             Desativar Alarme
           <% end %>
         <% end %>
         <% if policy(@alarm).destroy? %>
-          <hr class="border-white/10">
-          <%= button_to admin_alarm_path(@alarm),
-                method: :delete,
-                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-risk-high/30 bg-risk-high/10 px-4 py-2.5 text-sm font-medium text-risk-high transition-colors hover:bg-risk-high/20",
+          <%= catalyst_divider(soft: true) %>
+          <%= button_to admin_alarm_path(@alarm), method: :delete,
+                class: "flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-colors",
                 form: { data: { turbo_confirm: "Tem certeza que deseja remover este alarme? Esta ação não pode ser desfeita." } } do %>
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-            </svg>
             Remover Alarme
           <% end %>
         <% end %>
@@ -303,32 +240,20 @@
     </div>
 
     <%# Informações %>
-    <div class="rounded-xl border border-white/10 bg-zinc-900">
-      <div class="border-b border-white/10 px-4 py-3">
-        <h2 class="text-sm font-semibold text-white">Informações</h2>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+      <div class="border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Informações" %>
       </div>
-      <div class="divide-y divide-white/10">
-        <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Última Avaliação</span>
-          <span class="text-sm tabular-nums text-white">
-            <%= @alarm.last_evaluated_at ? l(@alarm.last_evaluated_at, format: :short) : "—" %>
-          </span>
-        </div>
-        <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Mudança de Estado</span>
-          <span class="text-sm tabular-nums text-white">
-            <%= @alarm.state_changed_at ? l(@alarm.state_changed_at, format: :short) : "—" %>
-          </span>
-        </div>
-        <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Total de Transições</span>
-          <span class="text-sm tabular-nums text-white"><%= @alarm.alarm_state_histories.count %></span>
-        </div>
-        <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Criado em</span>
-          <span class="text-sm tabular-nums text-white"><%= @alarm.created_at.strftime("%d/%m/%Y") %></span>
-        </div>
-      </div>
+      <%= catalyst_dl do %>
+        <%= catalyst_dt "Última Avaliação" %>
+        <%= catalyst_dd @alarm.last_evaluated_at ? l(@alarm.last_evaluated_at, format: :short) : "—" %>
+        <%= catalyst_dt "Mudança de Estado" %>
+        <%= catalyst_dd @alarm.state_changed_at ? l(@alarm.state_changed_at, format: :short) : "—" %>
+        <%= catalyst_dt "Total de Transições" %>
+        <%= catalyst_dd @alarm.alarm_state_histories.count.to_s %>
+        <%= catalyst_dt "Criado em" %>
+        <%= catalyst_dd @alarm.created_at.strftime("%d/%m/%Y") %>
+      <% end %>
     </div>
 
   </div>

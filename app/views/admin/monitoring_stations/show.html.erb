@@ -7,15 +7,10 @@
                  when "inactive" then "Inativo"
                  end
   status_color = case @monitoring_station.status
-                 when "active" then "text-sensor-online"
-                 when "maintenance" then "text-sensor-degraded"
-                 when "inactive" then "text-sensor-offline"
+                 when "active" then "green"
+                 when "maintenance" then "yellow"
+                 when "inactive" then "red"
                  end
-  status_badge_classes = case @monitoring_station.status
-                         when "active" then "bg-sensor-online/20 text-sensor-online"
-                         when "maintenance" then "bg-sensor-degraded/20 text-sensor-degraded"
-                         when "inactive" then "bg-sensor-offline/20 text-sensor-offline"
-                         end
   chart_config = {
     "precipitation" => { type: "bar",  color: "sensor-pluviometer", label: "Precipitação 24h" },
     "river_level"   => { type: "line", color: "sensor-river-gauge",  label: "Nível do Rio 24h" },
@@ -25,75 +20,231 @@
 
 <% if turbo_frame_request? %>
 <%= turbo_frame_tag "sensor_detail" do %>
-    <%# ════════════════════════════════════════════════════════════ %>
-    <%# SIDE-SHEET LAYOUT (compact, used when loaded via Turbo Frame) %>
-    <%# ════════════════════════════════════════════════════════════ %>
+  <%# ════════════════════════════════════════════════════════════ %>
+  <%# SIDE-SHEET LAYOUT — keep compact, avoid changing this block %>
+  <%# ════════════════════════════════════════════════════════════ %>
 
-    <%# ── Header ── %>
-    <div class="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-zinc-900 px-4 py-3">
-      <h2 class="truncate text-sm font-semibold text-white"><%= @monitoring_station.name %></h2>
-      <button data-action="admin--side-sheet#close"
-              class="flex h-6 w-6 items-center justify-center rounded text-zinc-400 hover:bg-zinc-800 hover:text-white"
-              title="Fechar">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+  <div class="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-zinc-900 px-4 py-3">
+    <h2 class="truncate text-sm font-semibold text-white"><%= @monitoring_station.name %></h2>
+    <button data-action="admin--side-sheet#close"
+            class="flex h-6 w-6 items-center justify-center rounded text-zinc-400 hover:bg-zinc-800 hover:text-white"
+            title="Fechar">
+      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
 
-    <div class="space-y-5 p-4">
-      <%# ── Station Info ── %>
-      <div>
-        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Informações</div>
-        <div class="space-y-2">
-          <div class="flex items-center gap-2">
-            <span class="flex items-center gap-1 text-xs <%= status_color %>">
-              <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
-              <%= status_label %>
-            </span>
+  <div class="space-y-5 p-4">
+    <div>
+      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Informações</div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 text-xs">
+            <span class="inline-block h-1.5 w-1.5 rounded-full <%= "bg-sensor-#{status_color == 'green' ? 'online' : status_color == 'yellow' ? 'degraded' : 'offline'}" %>"></span>
+            <span class="<%= "text-sensor-#{status_color == 'green' ? 'online' : status_color == 'yellow' ? 'degraded' : 'offline'}" %>"><%= status_label %></span>
+          </span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <span class="text-zinc-400">ID Externo</span>
+            <div class="font-mono text-white"><%= @monitoring_station.external_id %></div>
           </div>
-
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <span class="text-zinc-400">ID Externo</span>
-              <div class="font-mono text-white"><%= @monitoring_station.external_id %></div>
-            </div>
-            <div>
-              <span class="text-zinc-400">Fonte</span>
-              <div class="text-white"><%= @monitoring_station.data_source.upcase %></div>
-            </div>
-            <% if @monitoring_station.elevation_m %>
-              <div>
-                <span class="text-zinc-400">Elevação</span>
-                <div class="tabular-nums text-white"><%= number_with_precision(@monitoring_station.elevation_m, precision: 0) %> m</div>
-              </div>
-            <% end %>
+          <div>
+            <span class="text-zinc-400">Fonte</span>
+            <div class="text-white"><%= @monitoring_station.data_source.upcase %></div>
           </div>
+          <% if @monitoring_station.elevation_m %>
+            <div>
+              <span class="text-zinc-400">Elevação</span>
+              <div class="tabular-nums text-white"><%= number_with_precision(@monitoring_station.elevation_m, precision: 0) %> m</div>
+            </div>
+          <% end %>
         </div>
       </div>
+    </div>
 
-      <%# ── Sensors ── %>
-      <% if @monitoring_station.sensors.any? %>
+    <% if @monitoring_station.sensors.any? %>
+      <div>
+        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Sensores</div>
+        <div class="space-y-1.5">
+          <% @monitoring_station.sensors.each do |sensor| %>
+            <% sensor_status_css = case sensor.status
+                                   when "active" then "text-sensor-online"
+                                   when "maintenance" then "text-sensor-degraded"
+                                   else "text-sensor-offline"
+                                   end %>
+            <div class="flex items-center justify-between rounded-lg bg-zinc-800 px-3 py-2">
+              <div class="flex items-center gap-2">
+                <%= sensor_type_badge(sensor.sensor_type) %>
+                <% if sensor.last_reading_value %>
+                  <span class="tabular-nums text-xs text-white">
+                    <%= number_with_precision(sensor.last_reading_value, precision: 1) %> <%= sensor.unit %>
+                  </span>
+                <% end %>
+              </div>
+              <span class="flex items-center gap-1 text-xs <%= sensor_status_css %>">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <div>
+      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Localização</div>
+      <div class="space-y-1 text-xs">
+        <% if @monitoring_station.neighborhood %>
+          <div class="flex justify-between">
+            <span class="text-zinc-400">Bairro</span>
+            <span class="text-white"><%= @monitoring_station.neighborhood.name %></span>
+          </div>
+        <% end %>
+        <% if @monitoring_station.river %>
+          <div class="flex justify-between">
+            <span class="text-zinc-400">Rio</span>
+            <span class="text-white"><%= @monitoring_station.river.name %></span>
+          </div>
+        <% end %>
+        <% if @monitoring_station.location %>
+          <div class="flex justify-between">
+            <span class="text-zinc-400">Coordenadas</span>
+            <span class="font-mono tabular-nums text-white">
+              <%= number_with_precision(@monitoring_station.location.y, precision: 4) %>,
+              <%= number_with_precision(@monitoring_station.location.x, precision: 4) %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @monitoring_station.last_reading_value && @monitoring_station.last_reading_at %>
+      <div class="rounded-lg bg-zinc-800 p-3">
+        <div class="text-xs text-zinc-400">Última Leitura</div>
+        <div class="mt-1 text-2xl font-semibold tabular-nums text-white">
+          <%= number_with_precision(@monitoring_station.last_reading_value, precision: 1) %>
+        </div>
+        <div class="text-xs text-zinc-400">
+          <%= time_ago_in_words(@monitoring_station.last_reading_at) %> atrás
+        </div>
+      </div>
+    <% end %>
+
+    <% if @readings_by_type.any? %>
+      <% @readings_by_type.each do |reading_type, readings| %>
+        <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
         <div>
-          <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Sensores</div>
-          <div class="space-y-1.5">
+          <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400"><%= config[:label] %></div>
+          <div data-testid="reading-chart-<%= reading_type %>"
+               data-controller="admin--reading-chart"
+               data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
+               data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
+               data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
+               data-admin--reading-chart-color-value="<%= config[:color] %>"
+               data-admin--reading-chart-thresholds-value="[]">
+            <div data-admin--reading-chart-target="chart" class="h-40 w-full rounded-lg bg-zinc-800"></div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div>
+        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Leituras 24h</div>
+        <div class="rounded-lg border border-white/10 px-3 py-4 text-center text-xs text-zinc-400">
+          Nenhuma leitura disponível.
+        </div>
+      </div>
+    <% end %>
+
+    <div class="pt-1">
+      <%= link_to "Ver detalhes completos", admin_monitoring_station_path(@monitoring_station),
+            data: { turbo_frame: "_top" },
+            class: "block w-full rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-medium text-white hover:bg-sky-500/90 transition-colors" %>
+    </div>
+  </div>
+
+<% end %>
+<% else %>
+  <%# ════════════════════════════════════════════════════ %>
+  <%# FULL-PAGE LAYOUT %>
+  <%# ════════════════════════════════════════════════════ %>
+
+  <div class="mb-6 flex items-center gap-4">
+    <%= catalyst_button_link "Estações", href: admin_monitoring_stations_path, variant: :plain do %>
+      <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+      Voltar
+    <% end %>
+  </div>
+
+  <div class="mb-8">
+    <div class="mb-2 flex flex-wrap items-center gap-2">
+      <%= catalyst_badge status_label, color: status_color %>
+    </div>
+    <%= catalyst_heading @monitoring_station.name, level: 1 %>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+        <div class="border-b border-white/10 px-6 py-4">
+          <%= catalyst_subheading "Informações" %>
+        </div>
+        <%= catalyst_dl do %>
+          <%= catalyst_dt "ID Externo" %><%= catalyst_dd @monitoring_station.external_id %>
+          <%= catalyst_dt "Fonte de Dados" %><%= catalyst_dd @monitoring_station.data_source.upcase %>
+          <% if @monitoring_station.elevation_m %>
+            <%= catalyst_dt "Elevação" %><%= catalyst_dd "#{number_with_precision(@monitoring_station.elevation_m, precision: 0)} m" %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if @monitoring_station.neighborhood || @monitoring_station.river || @monitoring_station.location %>
+        <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+          <div class="border-b border-white/10 px-6 py-4">
+            <%= catalyst_subheading "Localização" %>
+          </div>
+          <%= catalyst_dl do %>
+            <% if @monitoring_station.neighborhood %>
+              <%= catalyst_dt "Bairro" %><%= catalyst_dd @monitoring_station.neighborhood.name %>
+            <% end %>
+            <% if @monitoring_station.river %>
+              <%= catalyst_dt "Rio" %><%= catalyst_dd @monitoring_station.river.name %>
+            <% end %>
+            <% if @monitoring_station.location %>
+              <%= catalyst_dt "Coordenadas" %>
+              <%= catalyst_dd "#{number_with_precision(@monitoring_station.location.y, precision: 4)}, #{number_with_precision(@monitoring_station.location.x, precision: 4)}" %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @monitoring_station.sensors.any? %>
+        <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+          <div class="border-b border-white/10 px-6 py-4">
+            <%= catalyst_subheading "Sensores" %>
+          </div>
+          <div class="divide-y divide-white/10">
             <% @monitoring_station.sensors.each do |sensor| %>
-              <% sensor_status_color = case sensor.status
-                                       when "active" then "text-sensor-online"
-                                       when "maintenance" then "text-sensor-degraded"
-                                       when "inactive" then "text-sensor-offline"
-                                       end %>
-              <div class="flex items-center justify-between rounded-lg bg-zinc-800 px-3 py-2">
-                <div class="flex items-center gap-2">
+              <% sensor_status_css = case sensor.status
+                                     when "active" then "text-sensor-online"
+                                     when "maintenance" then "text-sensor-degraded"
+                                     else "text-sensor-offline"
+                                     end %>
+              <div class="flex items-center justify-between px-6 py-3">
+                <div class="flex items-center gap-3">
                   <%= sensor_type_badge(sensor.sensor_type) %>
                   <% if sensor.last_reading_value %>
-                    <span class="tabular-nums text-xs text-white">
+                    <span class="tabular-nums text-sm text-white">
                       <%= number_with_precision(sensor.last_reading_value, precision: 1) %> <%= sensor.unit %>
                     </span>
                   <% end %>
                 </div>
-                <span class="flex items-center gap-1 text-xs <%= sensor_status_color %>">
+                <span class="flex items-center gap-1.5 text-xs <%= sensor_status_css %>">
                   <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
+                  <% case sensor.status
+                     when "active" then %>Ativo<% when "maintenance" then %>Manutenção<% else %>Inativo<% end %>
                 </span>
               </div>
             <% end %>
@@ -101,278 +252,75 @@
         </div>
       <% end %>
 
-      <%# ── Location ── %>
-      <div>
-        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Localização</div>
-        <div class="space-y-1 text-xs">
-          <% if @monitoring_station.neighborhood %>
-            <div class="flex justify-between">
-              <span class="text-zinc-400">Bairro</span>
-              <span class="text-white"><%= @monitoring_station.neighborhood.name %></span>
-            </div>
-          <% end %>
-          <% if @monitoring_station.river %>
-            <div class="flex justify-between">
-              <span class="text-zinc-400">Rio</span>
-              <span class="text-white"><%= @monitoring_station.river.name %></span>
-            </div>
-          <% end %>
-          <% if @monitoring_station.location %>
-            <div class="flex justify-between">
-              <span class="text-zinc-400">Coordenadas</span>
-              <span class="font-mono tabular-nums text-white">
-                <%= number_with_precision(@monitoring_station.location.y, precision: 4) %>,
-                <%= number_with_precision(@monitoring_station.location.x, precision: 4) %>
-              </span>
-            </div>
-          <% end %>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+        <div class="border-b border-white/10 px-6 py-4">
+          <%= catalyst_subheading "Leituras 24h" %>
         </div>
-      </div>
-
-      <%# ── Last Reading ── %>
-      <% if @monitoring_station.last_reading_value && @monitoring_station.last_reading_at %>
-        <div class="rounded-lg bg-zinc-800 p-3">
-          <div class="text-xs text-zinc-400">Última Leitura</div>
-          <div class="mt-1 text-2xl font-semibold tabular-nums text-white">
-            <%= number_with_precision(@monitoring_station.last_reading_value, precision: 1) %>
-          </div>
-          <div class="text-xs text-zinc-400">
-            <%= time_ago_in_words(@monitoring_station.last_reading_at) %> atrás
-          </div>
-        </div>
-      <% end %>
-
-      <%# ── Reading Charts ── %>
-      <% if @readings_by_type.any? %>
-        <% @readings_by_type.each do |reading_type, readings| %>
-          <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
-          <div>
-            <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400"><%= config[:label] %></div>
-            <div data-testid="reading-chart-<%= reading_type %>"
-                 data-controller="admin--reading-chart"
-                 data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
-                 data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
-                 data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
-                 data-admin--reading-chart-color-value="<%= config[:color] %>"
-                 data-admin--reading-chart-thresholds-value="[]">
-              <div data-admin--reading-chart-target="chart"
-                   class="h-40 w-full rounded-lg bg-zinc-800"></div>
-            </div>
-          </div>
-        <% end %>
-      <% else %>
-        <div>
-          <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Leituras 24h</div>
-          <div class="rounded-lg border border-white/10 px-3 py-4 text-center text-xs text-zinc-400">
-            Nenhuma leitura disponível.
-          </div>
-        </div>
-      <% end %>
-
-      <%# ── Full Details Link ── %>
-      <div class="pt-1">
-        <%= link_to "Ver detalhes completos", admin_monitoring_station_path(@monitoring_station),
-              data: { turbo_frame: "_top" },
-              class: "block w-full rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-medium text-white hover:bg-sky-500/90 transition-colors" %>
-      </div>
-    </div>
-
-<% end %>
-<% else %>
-  <%# ════════════════════════════════════════════════════ %>
-  <%# FULL-PAGE LAYOUT (direct navigation to /admin/monitoring_stations/:id) %>
-  <%# ════════════════════════════════════════════════════ %>
-
-    <%# ── Back Link ── %>
-    <div class="mb-4">
-      <%= link_to admin_monitoring_stations_path, class: "inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-sky-500 transition-colors" do %>
-        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-        Voltar às estações
-      <% end %>
-    </div>
-
-    <%# ── Header ── %>
-    <div class="mb-6">
-      <div class="mb-2 flex flex-wrap items-center gap-2">
-        <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= status_badge_classes %>"><%= status_label %></span>
-      </div>
-      <h1 class="text-2xl font-bold text-white"><%= @monitoring_station.name %></h1>
-    </div>
-
-    <div class="grid gap-6 lg:grid-cols-3">
-      <%# ── Left Column ── %>
-      <div class="lg:col-span-2 space-y-6">
-        <%# Informações %>
-        <div class="rounded-xl border border-white/10 bg-zinc-900">
-          <div class="border-b border-white/10 px-4 py-3">
-            <h2 class="text-sm font-semibold text-white">Informações</h2>
-          </div>
-          <div class="divide-y divide-white/10">
-            <div class="flex items-center justify-between px-4 py-3">
-              <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">ID Externo</span>
-              <span class="font-mono text-sm text-white"><%= @monitoring_station.external_id %></span>
-            </div>
-            <div class="flex items-center justify-between px-4 py-3">
-              <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Fonte de Dados</span>
-              <span class="text-sm text-white"><%= @monitoring_station.data_source.upcase %></span>
-            </div>
-            <% if @monitoring_station.elevation_m %>
-              <div class="flex items-center justify-between px-4 py-3">
-                <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Elevação</span>
-                <span class="tabular-nums text-sm text-white"><%= number_with_precision(@monitoring_station.elevation_m, precision: 0) %> m</span>
+        <div class="p-6 space-y-6">
+          <% if @readings_by_type.any? %>
+            <% @readings_by_type.each do |reading_type, readings| %>
+              <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
+              <div>
+                <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"><%= config[:label] %></div>
+                <div data-testid="reading-chart-<%= reading_type %>"
+                     data-controller="admin--reading-chart"
+                     data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
+                     data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
+                     data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
+                     data-admin--reading-chart-color-value="<%= config[:color] %>"
+                     data-admin--reading-chart-thresholds-value="[]">
+                  <div data-admin--reading-chart-target="chart" class="h-40 w-full rounded-lg bg-zinc-800"></div>
+                </div>
               </div>
+            <% end %>
+          <% else %>
+            <div class="py-4 text-center">
+              <%= catalyst_text "Nenhuma leitura disponível nas últimas 24 horas." %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+        <div class="border-b border-white/10 px-6 py-4">
+          <%= catalyst_subheading "Última Leitura" %>
+        </div>
+        <div class="p-6">
+          <% if @monitoring_station.last_reading_value && @monitoring_station.last_reading_at %>
+            <div class="text-3xl font-semibold tabular-nums text-white">
+              <%= number_with_precision(@monitoring_station.last_reading_value, precision: 1) %>
+            </div>
+            <div class="mt-1">
+              <%= catalyst_text "#{time_ago_in_words(@monitoring_station.last_reading_at)} atrás" %>
+            </div>
+          <% else %>
+            <%= catalyst_text "Sem leituras recentes." %>
+          <% end %>
+        </div>
+      </div>
+
+      <% if policy(@monitoring_station).update? || policy(@monitoring_station).destroy? %>
+        <div class="rounded-xl border border-white/10 bg-zinc-800/50">
+          <div class="border-b border-white/10 px-6 py-4">
+            <%= catalyst_subheading "Ações" %>
+          </div>
+          <div class="p-4 space-y-2">
+            <% if policy(@monitoring_station).update? %>
+              <%= catalyst_button_link "Editar Estação", href: edit_admin_monitoring_station_path(@monitoring_station), variant: :outline, color: "zinc", class: "w-full justify-center" %>
+            <% end %>
+            <% if policy(@monitoring_station).destroy? %>
+              <%= button_to admin_monitoring_station_path(@monitoring_station),
+                    method: :delete,
+                    class: "flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-colors",
+                    form: { data: { turbo_confirm: "Tem certeza que deseja excluir esta estação?" } } do %>
+                Excluir Estação
+              <% end %>
             <% end %>
           </div>
         </div>
-
-        <%# Localização %>
-        <% if @monitoring_station.neighborhood || @monitoring_station.river || @monitoring_station.location %>
-          <div class="rounded-xl border border-white/10 bg-zinc-900">
-            <div class="border-b border-white/10 px-4 py-3">
-              <h2 class="text-sm font-semibold text-white">Localização</h2>
-            </div>
-            <div class="divide-y divide-white/10">
-              <% if @monitoring_station.neighborhood %>
-                <div class="flex items-center justify-between px-4 py-3">
-                  <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Bairro</span>
-                  <span class="text-sm text-white"><%= @monitoring_station.neighborhood.name %></span>
-                </div>
-              <% end %>
-              <% if @monitoring_station.river %>
-                <div class="flex items-center justify-between px-4 py-3">
-                  <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Rio</span>
-                  <span class="text-sm text-white"><%= @monitoring_station.river.name %></span>
-                </div>
-              <% end %>
-              <% if @monitoring_station.location %>
-                <div class="flex items-center justify-between px-4 py-3">
-                  <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Coordenadas</span>
-                  <span class="font-mono tabular-nums text-sm text-white">
-                    <%= number_with_precision(@monitoring_station.location.y, precision: 4) %>,
-                    <%= number_with_precision(@monitoring_station.location.x, precision: 4) %>
-                  </span>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
-        <%# Sensores %>
-        <% if @monitoring_station.sensors.any? %>
-          <div class="rounded-xl border border-white/10 bg-zinc-900">
-            <div class="border-b border-white/10 px-4 py-3">
-              <h2 class="text-sm font-semibold text-white">Sensores</h2>
-            </div>
-            <div class="divide-y divide-white/10">
-              <% @monitoring_station.sensors.each do |sensor| %>
-                <% sensor_status_color = case sensor.status
-                                         when "active" then "text-sensor-online"
-                                         when "maintenance" then "text-sensor-degraded"
-                                         when "inactive" then "text-sensor-offline"
-                                         end %>
-                <div class="flex items-center justify-between px-4 py-3">
-                  <div class="flex items-center gap-3">
-                    <%= sensor_type_badge(sensor.sensor_type) %>
-                    <% if sensor.last_reading_value %>
-                      <span class="tabular-nums text-sm text-white">
-                        <%= number_with_precision(sensor.last_reading_value, precision: 1) %> <%= sensor.unit %>
-                      </span>
-                    <% end %>
-                  </div>
-                  <span class="flex items-center gap-1.5 text-xs <%= sensor_status_color %>">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
-                    <% case sensor.status
-                       when "active" then %>Ativo<% when "maintenance" then %>Manutenção<% else %>Inativo<% end %>
-                  </span>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
-        <%# Leituras 24h %>
-        <div class="rounded-xl border border-white/10 bg-zinc-900">
-          <div class="border-b border-white/10 px-4 py-3">
-            <h2 class="text-sm font-semibold text-white">Leituras 24h</h2>
-          </div>
-          <div class="p-4 space-y-6">
-            <% if @readings_by_type.any? %>
-              <% @readings_by_type.each do |reading_type, readings| %>
-                <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
-                <div>
-                  <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400"><%= config[:label] %></div>
-                  <div data-testid="reading-chart-<%= reading_type %>"
-                       data-controller="admin--reading-chart"
-                       data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
-                       data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
-                       data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
-                       data-admin--reading-chart-color-value="<%= config[:color] %>"
-                       data-admin--reading-chart-thresholds-value="[]">
-                    <div data-admin--reading-chart-target="chart"
-                         class="h-40 w-full rounded-lg bg-zinc-800"></div>
-                  </div>
-                </div>
-              <% end %>
-            <% else %>
-              <div class="py-4 text-center text-sm text-zinc-400">
-                Nenhuma leitura disponível nas últimas 24 horas.
-              </div>
-            <% end %>
-
-          </div>
-        </div>
-      </div>
-
-      <%# ── Right Column ── %>
-      <div class="space-y-6">
-        <%# Última Leitura %>
-        <div class="rounded-xl border border-white/10 bg-zinc-900">
-          <div class="border-b border-white/10 px-4 py-3">
-            <h2 class="text-sm font-semibold text-white">Última Leitura</h2>
-          </div>
-          <div class="p-4">
-            <% if @monitoring_station.last_reading_value && @monitoring_station.last_reading_at %>
-              <div class="text-3xl font-semibold tabular-nums text-white">
-                <%= number_with_precision(@monitoring_station.last_reading_value, precision: 1) %>
-              </div>
-              <div class="mt-1 text-sm text-zinc-400">
-                <%= time_ago_in_words(@monitoring_station.last_reading_at) %> atrás
-              </div>
-            <% else %>
-              <div class="text-sm text-zinc-400">Sem leituras recentes.</div>
-            <% end %>
-          </div>
-        </div>
-
-        <%# Ações %>
-        <% if policy(@monitoring_station).update? || policy(@monitoring_station).destroy? %>
-          <div class="rounded-xl border border-white/10 bg-zinc-900">
-            <div class="border-b border-white/10 px-4 py-3">
-              <h2 class="text-sm font-semibold text-white">Ações</h2>
-            </div>
-            <div class="p-4 space-y-3">
-              <% if policy(@monitoring_station).update? %>
-                <%= link_to edit_admin_monitoring_station_path(@monitoring_station),
-                      class: "flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800" do %>
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
-                  </svg>
-                  Editar Estação
-                <% end %>
-              <% end %>
-              <% if policy(@monitoring_station).destroy? %>
-                <%= button_to admin_monitoring_station_path(@monitoring_station),
-                      method: :delete,
-                      class: "w-full rounded-lg px-4 py-2.5 text-sm font-medium text-risk-high transition-colors hover:bg-risk-high/10",
-                      form: { data: { turbo_confirm: "Tem certeza que deseja excluir esta estação? Esta ação não pode ser desfeita." } } do %>
-                  Excluir Estação
-                <% end %>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-      </div>
+      <% end %>
     </div>
+  </div>
 <% end %>
