@@ -21,15 +21,15 @@
 <%# ── Summary Cards ── %>
 <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
   <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <%= catalyst_text "Total de Estações", class: "text-xs font-medium uppercase tracking-wider" %>
+    <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Estações</p>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @monitoring_stations.size %></div>
   </div>
   <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <%= catalyst_text "Online", class: "text-xs font-medium uppercase tracking-wider" %>
+    <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Online</p>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online" data-testid="summary-online-count"><%= online_stations.size %></div>
   </div>
   <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <%= catalyst_text "Em Manutenção", class: "text-xs font-medium uppercase tracking-wider" %>
+    <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Manutenção</p>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-degraded" data-testid="summary-maintenance-count"><%= maintenance_stations.size %></div>
   </div>
 </div>

@@ -4,7 +4,7 @@
     <div class="flex items-center gap-4 min-w-0">
       <span class="text-zinc-400"><%= render "shared/icons/cloud-rain" %></span>
       <div>
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Condições Atuais</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Condições Atuais</div>
         <% if current_weather %>
           <div class="mt-0.5 flex items-center gap-2 text-sm text-white">
             <% if current_weather.temperature_c %>
@@ -27,7 +27,7 @@
 
     <%# 6h forecast summary %>
     <div data-testid="forecast-precipitation">
-      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Previsão 6h</div>
+      <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Previsão 6h</div>
       <div class="mt-0.5 flex items-center gap-3 text-sm">
         <span class="inline-flex items-center gap-1 font-semibold tabular-nums text-white">
           <svg class="h-3.5 w-3.5 text-sensor-pluviometer flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

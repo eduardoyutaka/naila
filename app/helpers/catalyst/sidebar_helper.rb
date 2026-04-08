@@ -23,7 +23,7 @@ module Catalyst::SidebarHelper
     "dark:aria-[current=page]:*:data-[slot=icon]:fill-white",
   ].join(" ").freeze
 
-  SIDEBAR_HEADING_CLASSES = "mb-1 px-2 text-xs/6 font-medium text-zinc-500 dark:text-zinc-400".freeze
+  SIDEBAR_HEADING_CLASSES = "mb-1 px-2 text-xs/6 font-medium text-zinc-500 dark:text-zinc-300".freeze
 
   SIDEBAR_DIVIDER_CLASSES = "my-4 border-t border-zinc-950/5 lg:-mx-4 dark:border-white/5".freeze
 

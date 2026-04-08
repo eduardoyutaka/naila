@@ -5,19 +5,19 @@
 <%# ── Summary Cards ── %>
 <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
   <div class="rounded-xl border border-white/10 bg-zinc-900 p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Sensores Online</div>
+    <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Sensores Online</div>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @sensors_online %></div>
   </div>
   <% RiskHelper::SEVERITY_LABEL.each do |severity, label| %>
     <div class="rounded-xl border border-white/10 border-l-4 bg-zinc-900 p-4 <%= RiskHelper::SEVERITY_BORDER_CLASS[severity] %>">
-      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400"><%= label %></div>
+      <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300"><%= label %></div>
       <div class="mt-2 text-3xl font-semibold tabular-nums <%= RiskHelper::SEVERITY_TEXT_CLASS[severity] %>">
         <%= @alarms_by_severity.fetch(severity, 0) %>
       </div>
     </div>
   <% end %>
   <div class="rounded-xl border border-white/10 bg-zinc-900 p-4">
-    <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Bacias Monitoradas</div>
+    <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Bacias Monitoradas</div>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @river_basins.size %></div>
   </div>
 </div>

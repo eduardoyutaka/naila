@@ -5,20 +5,20 @@
   <div class="divide-y divide-white/10">
     <% if current_weather %>
       <div class="flex items-center justify-between px-4 py-3">
-        <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Temperatura</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Temperatura</span>
         <span class="text-sm tabular-nums text-white">
           <%= current_weather.temperature_c ? "#{number_with_precision(current_weather.temperature_c, precision: 1)}°C" : "—" %>
         </span>
       </div>
       <div class="flex items-center justify-between px-4 py-3">
-        <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Umidade</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Umidade</span>
         <span class="text-sm tabular-nums text-white">
           <%= current_weather.humidity_pct ? "#{number_with_precision(current_weather.humidity_pct, precision: 0)}%" : "—" %>
         </span>
       </div>
       <% if current_weather.precipitation_mm %>
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-xs font-medium uppercase tracking-wider text-zinc-400">Precipitação atual</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Precipitação atual</span>
           <span class="text-sm tabular-nums text-white">
             <%= "#{number_with_precision(current_weather.precipitation_mm, precision: 1)} mm" %>
           </span>
@@ -27,7 +27,7 @@
     <% end %>
 
     <div class="px-4 py-3">
-      <div class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-2">Previsão 6h</div>
+      <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">Previsão 6h</div>
       <div class="grid grid-cols-2 gap-2">
         <div class="flex items-center justify-between rounded-md bg-zinc-800 px-2 py-1.5">
           <span class="text-xs text-zinc-400">Total</span>

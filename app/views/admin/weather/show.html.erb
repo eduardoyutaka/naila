@@ -13,37 +13,37 @@
   <% if @current_conditions %>
     <div class="grid grid-cols-2 gap-0 divide-x divide-white/10 sm:grid-cols-3 lg:grid-cols-6">
       <div class="px-4 py-4">
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Temperatura</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Temperatura</div>
         <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
           <%= @current_conditions.temperature_c ? "#{number_with_precision(@current_conditions.temperature_c, precision: 1)}°C" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Umidade</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Umidade</div>
         <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
           <%= @current_conditions.humidity_pct ? "#{number_with_precision(@current_conditions.humidity_pct, precision: 0)}%" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Vento</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Vento</div>
         <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
           <%= @current_conditions.wind_speed_ms ? "#{number_with_precision(@current_conditions.wind_speed_ms, precision: 1)} m/s" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Pressão</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Pressão</div>
         <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
           <%= @current_conditions.pressure_hpa ? "#{number_with_precision(@current_conditions.pressure_hpa, precision: 0)} hPa" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Precipitação</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Precipitação</div>
         <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
           <%= @current_conditions.precipitation_mm ? "#{number_with_precision(@current_conditions.precipitation_mm, precision: 1)} mm" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-medium uppercase tracking-wider text-zinc-400">Condição</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Condição</div>
         <div class="mt-1.5 text-sm font-medium text-white capitalize">
           <%= @current_conditions.weather_condition.presence || "—" %>
         </div>

@@ -21,15 +21,15 @@
 <%# ── Summary Cards ── %>
 <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
   <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <%= catalyst_text "Total de Bacias", class: "text-xs font-medium uppercase tracking-wider" %>
+    <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Bacias</p>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @river_basins.size %></div>
   </div>
   <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <%= catalyst_text "Bacias Ativas", class: "text-xs font-medium uppercase tracking-wider" %>
+    <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Bacias Ativas</p>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-400" data-testid="summary-active-count"><%= active_basins.size %></div>
   </div>
   <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <%= catalyst_text "Bacias em Risco", class: "text-xs font-medium uppercase tracking-wider" %>
+    <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Bacias em Risco</p>
     <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention" data-testid="summary-at-risk-count"><%= at_risk_basins.size %></div>
   </div>
 </div>

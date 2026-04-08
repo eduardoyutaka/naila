@@ -37,7 +37,7 @@
 
   <div class="space-y-5 p-4">
     <div>
-      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Informações</div>
+      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-300">Informações</div>
       <div class="space-y-2">
         <div class="flex items-center gap-2">
           <span class="inline-flex items-center gap-1 text-xs">
@@ -66,7 +66,7 @@
 
     <% if @monitoring_station.sensors.any? %>
       <div>
-        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Sensores</div>
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-300">Sensores</div>
         <div class="space-y-1.5">
           <% @monitoring_station.sensors.each do |sensor| %>
             <% sensor_status_css = case sensor.status
@@ -93,7 +93,7 @@
     <% end %>
 
     <div>
-      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Localização</div>
+      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-300">Localização</div>
       <div class="space-y-1 text-xs">
         <% if @monitoring_station.neighborhood %>
           <div class="flex justify-between">
@@ -135,7 +135,7 @@
       <% @readings_by_type.each do |reading_type, readings| %>
         <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
         <div>
-          <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400"><%= config[:label] %></div>
+          <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-300"><%= config[:label] %></div>
           <div data-testid="reading-chart-<%= reading_type %>"
                data-controller="admin--reading-chart"
                data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
@@ -149,7 +149,7 @@
       <% end %>
     <% else %>
       <div>
-        <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Leituras 24h</div>
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-300">Leituras 24h</div>
         <div class="rounded-lg border border-white/10 px-3 py-4 text-center text-xs text-zinc-400">
           Nenhuma leitura disponível.
         </div>
@@ -261,7 +261,7 @@
             <% @readings_by_type.each do |reading_type, readings| %>
               <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type.humanize} 24h" } %>
               <div>
-                <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"><%= config[:label] %></div>
+                <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300"><%= config[:label] %></div>
                 <div data-testid="reading-chart-<%= reading_type %>"
                      data-controller="admin--reading-chart"
                      data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
