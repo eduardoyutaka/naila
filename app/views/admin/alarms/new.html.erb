@@ -1,7 +1,6 @@
 <% content_for(:title, "Naila — Novo Alarme") %>
 
-<div class="mx-auto max-w-3xl" data-controller="admin--alarm-form"
-     data-admin--alarm-form-type-value="<%= @alarm.alarm_type %>">
+<div class="mx-auto max-w-3xl" data-controller="admin--alarm-form">
   <div class="mb-2 flex items-center gap-3">
     <%= catalyst_button_link "Alarmes", href: admin_alarms_path, variant: :plain do %>
       <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

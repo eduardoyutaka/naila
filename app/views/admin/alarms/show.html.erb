@@ -3,7 +3,6 @@
 <%
   state_label = { "ok" => "OK", "alarm" => "Alarme", "insufficient_data" => "Dados Insuficientes" }
   state_color = { "ok" => "green", "alarm" => "red", "insufficient_data" => "zinc" }
-  type_label = { "metric" => "Métrica", "anomaly_detection" => "Anomalia", "composite" => "Composto" }
   trigger_label = { "alarm" => "Alarme", "ok" => "OK", "insufficient_data" => "Dados Insuficientes" }
   missing_data_label = {
     "missing" => "Ausente", "notBreaching" => "Não viola",
@@ -25,7 +24,7 @@
 <div class="mb-8">
   <div class="mb-2 flex flex-wrap items-center gap-2">
     <%= catalyst_badge state_label[@alarm.state], color: state_color[@alarm.state], data: { testid: "alarm-state" } %>
-    <%= catalyst_badge type_label[@alarm.alarm_type], color: "zinc" %>
+    <%= catalyst_badge "Métrica", color: "zinc" %>
     <% if @alarm.current_severity %>
       <%= severity_badge(@alarm.current_severity) %>
     <% end %>
@@ -52,37 +51,26 @@
         <%= catalyst_subheading "Configuração" %>
       </div>
       <%= catalyst_dl class: "px-6" do %>
-        <% if @alarm.metric? || @alarm.anomaly_detection? %>
-          <%= catalyst_dt "Métrica" %><%= catalyst_dd @alarm.metric_name %>
-          <%= catalyst_dt "Estatística" %><%= catalyst_dd @alarm.statistic %>
-          <%= catalyst_dt "Período" %><%= catalyst_dd "#{@alarm.period_seconds}s" %>
-          <%= catalyst_dt "Avaliação" %><%= catalyst_dd "#{@alarm.datapoints_to_alarm} de #{@alarm.evaluation_periods} períodos" %>
-          <% if @alarm.metric? && @alarm.alarm_thresholds.any? %>
-            <%= catalyst_dt "Faixas de Limiar" %>
-            <%= catalyst_dd do %>
-              <div class="space-y-1">
-                <% @alarm.alarm_thresholds.order(:severity).each do |t| %>
-                  <div class="flex items-center gap-2">
-                    <%= severity_badge(t.severity) %>
-                    <span class="tabular-nums text-xs text-zinc-500 dark:text-zinc-400">
-                      <%= t.comparison_operator.gsub(/([A-Z])/, ' \1').strip %> <%= t.threshold_value %><%= t.unit %>
-                    </span>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-          <% end %>
-          <% if @alarm.anomaly_detection? %>
-            <%= catalyst_dt "Banda de Anomalia" %><%= catalyst_dd "#{@alarm.anomaly_band_width} desvios-padrão" %>
-          <% end %>
-          <%= catalyst_dt "Dados Ausentes" %><%= catalyst_dd(missing_data_label[@alarm.missing_data_treatment] || @alarm.missing_data_treatment) %>
-        <% elsif @alarm.composite? %>
-          <%= catalyst_dt "Regra Composta" %>
+        <%= catalyst_dt "Métrica" %><%= catalyst_dd @alarm.metric_name %>
+        <%= catalyst_dt "Estatística" %><%= catalyst_dd @alarm.statistic %>
+        <%= catalyst_dt "Período" %><%= catalyst_dd "#{@alarm.period_seconds}s" %>
+        <%= catalyst_dt "Avaliação" %><%= catalyst_dd "#{@alarm.datapoints_to_alarm} de #{@alarm.evaluation_periods} períodos" %>
+        <% if @alarm.alarm_thresholds.any? %>
+          <%= catalyst_dt "Faixas de Limiar" %>
           <%= catalyst_dd do %>
-            <div class="rounded-lg bg-zinc-800 px-3 py-2 font-mono text-sm text-white"><%= @alarm.composite_rule %></div>
+            <div class="space-y-1">
+              <% @alarm.alarm_thresholds.order(:severity).each do |t| %>
+                <div class="flex items-center gap-2">
+                  <%= severity_badge(t.severity) %>
+                  <span class="tabular-nums text-xs text-zinc-500 dark:text-zinc-400">
+                    <%= t.comparison_operator.gsub(/([A-Z])/, ' \1').strip %> <%= t.threshold_value %><%= t.unit %>
+                  </span>
+                </div>
+              <% end %>
+            </div>
           <% end %>
-          <%= catalyst_dt "Suprimir Ações dos Filhos" %><%= catalyst_dd @alarm.suppress_child_actions? ? "Sim" : "Não" %>
         <% end %>
+        <%= catalyst_dt "Dados Ausentes" %><%= catalyst_dd(missing_data_label[@alarm.missing_data_treatment] || @alarm.missing_data_treatment) %>
         <%= catalyst_dt "Escopo" %><%= catalyst_dd(@alarm.river&.name || @alarm.river_basin&.name || "Global") %>
       <% end %>
     </div>
@@ -149,26 +137,6 @@
         </div>
       <% end %>
     </div>
-
-    <%# Child Alarms (Composite only) %>
-    <% if @alarm.composite? && @child_alarms.any? %>
-      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
-        <div class="border-b border-white/10 px-6 py-4">
-          <%= catalyst_subheading "Alarmes Filhos" %>
-        </div>
-        <div class="divide-y divide-white/10">
-          <% @child_alarms.each do |child| %>
-            <div class="flex items-center justify-between px-6 py-3">
-              <div class="flex items-center gap-2">
-                <%= catalyst_badge state_label[child.state], color: state_color[child.state] || "zinc" %>
-                <%= catalyst_text_link child.name, href: admin_alarm_path(child) %>
-              </div>
-              <%= catalyst_text type_label[child.alarm_type] %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
 
     <%# State History %>
     <% if @state_histories.any? %>

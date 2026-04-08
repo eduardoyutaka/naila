@@ -77,8 +77,8 @@ class AlarmThresholdTest < ActiveSupport::TestCase
   end
 
   test "same severity is valid for different alarms" do
-    # composite_flood_belem has no threshold bands — reuse it as a second alarm scope
-    t = valid_threshold(alarm: alarms(:composite_flood_belem), severity: 2)
+    # disabled_alarm has no threshold bands — use it as a second alarm scope
+    t = valid_threshold(alarm: alarms(:disabled_alarm), severity: 2)
     assert t.valid?
   end
 

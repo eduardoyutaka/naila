@@ -1,22 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["metricFields", "compositeFields", "thresholdFields", "anomalyFields", "thresholdList", "thresholdTemplate", "emptyWarning", "submit"]
-  static values = { type: String }
+  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit"]
 
   connect() {
-    this.toggleSections(this.typeValue)
-  }
-
-  typeChanged(event) {
-    this.toggleSections(event.target.value)
-  }
-
-  toggleSections(type = this.typeValue) {
-    this.#toggle(this.metricFieldsTarget, type !== "composite")
-    this.#toggle(this.compositeFieldsTarget, type === "composite")
-    this.#toggle(this.thresholdFieldsTarget, type === "metric")
-    this.#toggle(this.anomalyFieldsTarget, type === "anomaly_detection")
+    this.#updateSubmitState()
   }
 
   addThreshold() {
@@ -56,12 +44,5 @@ export default class extends Controller {
     if (this.hasSubmitTarget) this.submitTarget.disabled = isEmpty
 
     if (this.hasEmptyWarningTarget) this.emptyWarningTarget.hidden = !isEmpty
-  }
-
-  #toggle(target, visible) {
-    target.hidden = !visible
-    target.querySelectorAll("input, select, textarea").forEach(el => {
-      el.disabled = !visible
-    })
   }
 }

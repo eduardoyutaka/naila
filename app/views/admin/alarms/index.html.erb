@@ -92,14 +92,7 @@
           <% end %>
 
           <%# Tipo %>
-          <%
-            type_label = case alarm.alarm_type
-                         when "metric"            then "Métrica"
-                         when "anomaly_detection" then "Anomalia"
-                         else "Composto"
-                         end
-          %>
-          <%= catalyst_td type_label, class: "text-zinc-500 dark:text-zinc-300" %>
+          <%= catalyst_td "Métrica", class: "text-zinc-500 dark:text-zinc-300" %>
 
           <%# Severidade %>
           <%= catalyst_td do %>

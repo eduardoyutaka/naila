@@ -36,34 +36,6 @@ river_level_belem:
   last_evaluated_at: <%= 5.minutes.ago.iso8601 %>
   last_datapoints: '[{"period":1,"value":1.8,"breaching_severity":3},{"period":2,"value":1.6,"breaching_severity":3},{"period":3,"value":1.3,"breaching_severity":2}]'
 
-anomaly_precip_belem:
-  name: Anomalia Precipitação Belém
-  description: Detecção de anomalia na precipitação
-  alarm_type: anomaly_detection
-  state: insufficient_data
-  enabled: true
-  river_basin: bacia_belem
-  metric_name: precipitation_1h
-  statistic: Sum
-  period_seconds: 3600
-  evaluation_periods: 3
-  datapoints_to_alarm: 2
-  missing_data_treatment: missing
-  anomaly_band_width: 2.0
-  anomaly_baseline: precipitation_belem
-
-composite_flood_belem:
-  name: Risco de Enchente Belém
-  description: Alarme composto de risco de enchente
-  alarm_type: composite
-  state: ok
-  state_changed_at: <%= 1.hour.ago.iso8601 %>
-  state_reason: "Composite rule evaluated to false"
-  enabled: true
-  river_basin: bacia_belem
-  composite_rule: "ALARM(Precipitação 3h Bacia Belém) AND ALARM(Nível Rio Belém)"
-  suppress_child_actions: true
-
 disabled_alarm:
   name: Alarme Desativado
   description: Alarme desativado para teste

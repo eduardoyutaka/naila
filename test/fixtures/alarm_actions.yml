@@ -34,15 +34,6 @@ river_insufficient_data:
       - websocket
   enabled: true
 
-composite_alarm_civil_defense:
-  alarm: composite_flood_belem
-  trigger_state: alarm
-  action_type: notification
-  configuration:
-    channels:
-      - websocket
-  enabled: true
-
 disabled_action:
   alarm: precip_3h_belem
   trigger_state: alarm

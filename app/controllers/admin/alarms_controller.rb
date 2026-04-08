@@ -14,7 +14,7 @@ module Admin
       authorize @alarm
       @alarm_actions = @alarm.alarm_actions.order(trigger_state: :asc)
       @state_histories = @alarm.alarm_state_histories.order(evaluated_at: :desc).limit(20)
-      @child_alarms = @alarm.composite? ? @alarm.child_alarms.includes(:river_basin, :river) : []
+      @child_alarms = []
     end
 
     def new
@@ -73,8 +73,6 @@ module Admin
         :river_basin_id, :river_id,
         :metric_name, :statistic, :period_seconds, :evaluation_periods,
         :datapoints_to_alarm, :missing_data_treatment,
-        :anomaly_band_width, :anomaly_baseline_id,
-        :composite_rule, :suppress_child_actions,
         alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]
       )
     end

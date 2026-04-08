@@ -1,1 +1,0 @@
-[      89ms] [ERROR] Failed to register controller: shared--notification (controllers/shared/notification_controller) TypeError: Failed to resolve module specifier "@rails/actioncable". Relative references must start with either "/", "./", or "../". @ http://localhost:3000/assets/stimulus-loading-1fc53fe7.js:25

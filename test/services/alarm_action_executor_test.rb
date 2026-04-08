@@ -104,23 +104,4 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     end
   end
 
-  # ── Suppression ──
-
-  test "does not broadcast when alarm is suppressed by parent composite" do
-    alarm = alarms(:precip_3h_belem)
-
-    assert_no_broadcasts("alarms") do
-      AlarmActionExecutor.execute(alarm, "alarm")
-    end
-  end
-
-  test "broadcasts when parent composite does not suppress" do
-    composite = alarms(:composite_flood_belem)
-    composite.update!(suppress_child_actions: false)
-    alarm = alarms(:precip_3h_belem)
-
-    assert_broadcasts("alarms", 1) do
-      AlarmActionExecutor.execute(alarm, "alarm")
-    end
-  end
 end

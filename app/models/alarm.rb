@@ -1,6 +1,6 @@
 class Alarm < ApplicationRecord
   STATES = %w[ok alarm insufficient_data].freeze
-  ALARM_TYPES = %w[metric anomaly_detection composite].freeze
+  ALARM_TYPES = %w[metric].freeze
   STATISTICS = %w[Average Sum Minimum Maximum SampleCount].freeze
   COMPARISON_OPERATORS = %w[
     GreaterThanThreshold LessThanThreshold
@@ -12,14 +12,10 @@ class Alarm < ApplicationRecord
 
   belongs_to :river_basin, optional: true
   belongs_to :river, optional: true
-  belongs_to :anomaly_baseline, optional: true
 
   has_many :alarm_thresholds, dependent: :destroy
   has_many :alarm_actions, dependent: :destroy
   has_many :alarm_state_histories, dependent: :destroy
-  has_many :composite_alarm_children, foreign_key: :composite_alarm_id, dependent: :destroy
-  has_many :child_alarms, through: :composite_alarm_children
-  has_many :parent_composite_links, class_name: "CompositeAlarmChild", foreign_key: :child_alarm_id, dependent: :destroy
 
   accepts_nested_attributes_for :alarm_thresholds, allow_destroy: true, reject_if: :all_blank
 
@@ -29,33 +25,19 @@ class Alarm < ApplicationRecord
   validates :alarm_type, presence: true, inclusion: { in: ALARM_TYPES }
   validates :state, presence: true, inclusion: { in: STATES }
 
-  # Metric/anomaly alarm validations
-  with_options if: :metric_or_anomaly? do
-    validates :metric_name, presence: true
-    validates :statistic, presence: true, inclusion: { in: STATISTICS }
-    validates :period_seconds, presence: true, numericality: { greater_than: 0 }
-    validates :evaluation_periods, presence: true, numericality: { greater_than: 0 }
-    validates :datapoints_to_alarm, presence: true, numericality: { greater_than: 0 }
-  end
-
+  validates :metric_name, presence: true
+  validates :statistic, presence: true, inclusion: { in: STATISTICS }
+  validates :period_seconds, presence: true, numericality: { greater_than: 0 }
+  validates :evaluation_periods, presence: true, numericality: { greater_than: 0 }
+  validates :datapoints_to_alarm, presence: true, numericality: { greater_than: 0 }
   validates :missing_data_treatment, inclusion: { in: MISSING_DATA_TREATMENTS }, allow_nil: true
   validate :datapoints_cannot_exceed_evaluation_periods, if: -> { datapoints_to_alarm.present? && evaluation_periods.present? }
-  validate :metric_alarm_requires_threshold_band, if: :metric?
-
-  # Composite alarm validations
-  validates :composite_rule, presence: true, if: :composite?
-
-  # Anomaly detection validations
-  with_options if: :anomaly_detection? do
-    validates :anomaly_band_width, presence: true, numericality: { greater_than: 0 }
-  end
+  validate :metric_alarm_requires_threshold_band
 
   # ── Scopes ──
 
   scope :enabled, -> { where(enabled: true) }
   scope :metric_alarms, -> { where(alarm_type: "metric") }
-  scope :anomaly_alarms, -> { where(alarm_type: "anomaly_detection") }
-  scope :composite_alarms, -> { where(alarm_type: "composite") }
   scope :in_alarm, -> { where(state: "alarm") }
   scope :by_state, ->(s) { where(state: s) }
 
@@ -81,14 +63,6 @@ class Alarm < ApplicationRecord
 
   def metric?
     alarm_type == "metric"
-  end
-
-  def anomaly_detection?
-    alarm_type == "anomaly_detection"
-  end
-
-  def composite?
-    alarm_type == "composite"
   end
 
   # ── State machine ──
@@ -139,10 +113,6 @@ class Alarm < ApplicationRecord
       partial: "admin/dashboard/basin_alarm_severities",
       locals: { severity_by_basin: severity_by_basin }
     )
-  end
-
-  def metric_or_anomaly?
-    metric? || anomaly_detection?
   end
 
   def datapoints_cannot_exceed_evaluation_periods

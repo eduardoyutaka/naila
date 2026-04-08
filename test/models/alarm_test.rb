@@ -22,30 +22,6 @@ class AlarmTest < ActiveSupport::TestCase
     assert alarm.valid?
   end
 
-  test "valid composite alarm" do
-    alarm = Alarm.new(
-      name: "Composite Test",
-      alarm_type: "composite",
-      composite_rule: "ALARM(precip_3h_belem) AND ALARM(river_level_belem)"
-    )
-    assert alarm.valid?
-  end
-
-  test "valid anomaly detection alarm" do
-    alarm = Alarm.new(
-      name: "Anomaly Test",
-      alarm_type: "anomaly_detection",
-      metric_name: "precipitation_1h",
-      statistic: "Sum",
-      period_seconds: 3600,
-      evaluation_periods: 3,
-      datapoints_to_alarm: 2,
-      anomaly_band_width: 2.0,
-      anomaly_baseline: anomaly_baselines(:precipitation_belem)
-    )
-    assert alarm.valid?
-  end
-
   test "invalid without name" do
     alarm = alarms(:precip_3h_belem)
     alarm.name = nil
@@ -78,47 +54,45 @@ class AlarmTest < ActiveSupport::TestCase
     assert_equal "insufficient_data", alarm.state
   end
 
-  # ── Metric alarm validations ──
-
-  test "metric alarm requires metric_name" do
+  test "requires metric_name" do
     alarm = alarms(:precip_3h_belem)
     alarm.metric_name = nil
     assert_not alarm.valid?
     assert_includes alarm.errors[:metric_name], "não pode ficar em branco"
   end
 
-  test "metric alarm requires statistic" do
+  test "requires statistic" do
     alarm = alarms(:precip_3h_belem)
     alarm.statistic = nil
     assert_not alarm.valid?
     assert_includes alarm.errors[:statistic], "não pode ficar em branco"
   end
 
-  test "metric alarm requires period_seconds" do
+  test "requires period_seconds" do
     alarm = alarms(:precip_3h_belem)
     alarm.period_seconds = nil
     assert_not alarm.valid?
   end
 
-  test "metric alarm requires evaluation_periods" do
+  test "requires evaluation_periods" do
     alarm = alarms(:precip_3h_belem)
     alarm.evaluation_periods = nil
     assert_not alarm.valid?
   end
 
-  test "metric alarm requires datapoints_to_alarm" do
+  test "requires datapoints_to_alarm" do
     alarm = alarms(:precip_3h_belem)
     alarm.datapoints_to_alarm = nil
     assert_not alarm.valid?
   end
 
-  test "metric alarm invalid with unknown statistic" do
+  test "invalid with unknown statistic" do
     alarm = alarms(:precip_3h_belem)
     alarm.statistic = "Median"
     assert_not alarm.valid?
   end
 
-  test "metric alarm invalid with unknown missing_data_treatment" do
+  test "invalid with unknown missing_data_treatment" do
     alarm = alarms(:precip_3h_belem)
     alarm.missing_data_treatment = "unknown"
     assert_not alarm.valid?
@@ -138,7 +112,7 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not alarm.valid?
   end
 
-  test "metric alarm requires at least one threshold band" do
+  test "requires at least one threshold band" do
     alarm = Alarm.new(
       name: "No Thresholds",
       alarm_type: "metric",
@@ -150,39 +124,6 @@ class AlarmTest < ActiveSupport::TestCase
     )
     assert_not alarm.valid?
     assert alarm.errors[:base].any? { |e| e.include?("faixa de limiar") }
-  end
-
-  # ── Composite alarm validations ──
-
-  test "composite alarm requires composite_rule" do
-    alarm = alarms(:composite_flood_belem)
-    alarm.composite_rule = nil
-    assert_not alarm.valid?
-    assert_includes alarm.errors[:composite_rule], "não pode ficar em branco"
-  end
-
-  test "composite alarm does not require metric fields" do
-    alarm = Alarm.new(
-      name: "Composite",
-      alarm_type: "composite",
-      composite_rule: "ALARM(test)"
-    )
-    assert alarm.valid?
-  end
-
-  # ── Anomaly detection validations ──
-
-  test "anomaly alarm requires anomaly_band_width" do
-    alarm = alarms(:anomaly_precip_belem)
-    alarm.anomaly_band_width = nil
-    assert_not alarm.valid?
-    assert_includes alarm.errors[:anomaly_band_width], "não pode ficar em branco"
-  end
-
-  test "anomaly_band_width must be positive" do
-    alarm = alarms(:anomaly_precip_belem)
-    alarm.anomaly_band_width = 0
-    assert_not alarm.valid?
   end
 
   # ── Scopes ──
@@ -198,20 +139,6 @@ class AlarmTest < ActiveSupport::TestCase
     metrics = Alarm.metric_alarms
     assert_includes metrics, alarms(:precip_3h_belem)
     assert_includes metrics, alarms(:river_level_belem)
-    assert_not_includes metrics, alarms(:composite_flood_belem)
-    assert_not_includes metrics, alarms(:anomaly_precip_belem)
-  end
-
-  test "anomaly_alarms scope returns only anomaly_detection type" do
-    anomalies = Alarm.anomaly_alarms
-    assert_includes anomalies, alarms(:anomaly_precip_belem)
-    assert_not_includes anomalies, alarms(:precip_3h_belem)
-  end
-
-  test "composite_alarms scope returns only composite type" do
-    composites = Alarm.composite_alarms
-    assert_includes composites, alarms(:composite_flood_belem)
-    assert_not_includes composites, alarms(:precip_3h_belem)
   end
 
   test "in_alarm scope returns alarms in alarm state" do
@@ -236,11 +163,6 @@ class AlarmTest < ActiveSupport::TestCase
   test "belongs to river optionally" do
     assert_equal rivers(:belem), alarms(:river_level_belem).river
     assert_nil alarms(:precip_3h_belem).river
-  end
-
-  test "belongs to anomaly_baseline optionally" do
-    assert_equal anomaly_baselines(:precipitation_belem), alarms(:anomaly_precip_belem).anomaly_baseline
-    assert_nil alarms(:precip_3h_belem).anomaly_baseline
   end
 
   test "has many alarm_thresholds" do
@@ -269,12 +191,6 @@ class AlarmTest < ActiveSupport::TestCase
     assert_includes histories, alarm_state_histories(:river_to_alarm)
   end
 
-  test "composite alarm has many child_alarms through composite_alarm_children" do
-    composite = alarms(:composite_flood_belem)
-    assert_includes composite.child_alarms, alarms(:precip_3h_belem)
-    assert_includes composite.child_alarms, alarms(:river_level_belem)
-  end
-
   test "destroying alarm destroys dependent alarm_actions" do
     alarm = alarms(:precip_3h_belem)
     action_ids = alarm.alarm_actions.pluck(:id)
@@ -291,15 +207,6 @@ class AlarmTest < ActiveSupport::TestCase
 
     alarm.destroy
     assert_empty AlarmStateHistory.where(id: history_ids)
-  end
-
-  test "destroying composite alarm destroys composite_alarm_children" do
-    composite = alarms(:composite_flood_belem)
-    child_link_ids = composite.composite_alarm_children.pluck(:id)
-    assert child_link_ids.any?
-
-    composite.destroy
-    assert_empty CompositeAlarmChild.where(id: child_link_ids)
   end
 
   # ── State Machine: transition_to! ──
@@ -399,18 +306,10 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "insufficient_data? returns true when state is insufficient_data" do
-    assert alarms(:anomaly_precip_belem).insufficient_data?
+    assert alarms(:disabled_alarm).insufficient_data?
   end
 
   test "metric? returns true for metric type" do
     assert alarms(:precip_3h_belem).metric?
-  end
-
-  test "composite? returns true for composite type" do
-    assert alarms(:composite_flood_belem).composite?
-  end
-
-  test "anomaly_detection? returns true for anomaly_detection type" do
-    assert alarms(:anomaly_precip_belem).anomaly_detection?
   end
 end

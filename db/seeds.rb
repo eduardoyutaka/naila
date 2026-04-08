@@ -489,41 +489,6 @@ rivers.each do |river_name, river|
   river_alarms[river_name] = alarm
 end
 
-# Anomaly detection alarm — precipitation anomaly for Bacia do Rio Atuba
-Alarm.find_or_create_by!(name: "Anomalia Precipitação — Bacia do Rio Atuba") do |a|
-  a.alarm_type = "anomaly_detection"
-  a.enabled = true
-  a.river_basin = basins["Bacia do Rio Atuba"]
-  a.metric_name = "precipitation_1h"
-  a.statistic = "Sum"
-  a.period_seconds = 3600
-  a.evaluation_periods = 3
-  a.datapoints_to_alarm = 2
-  a.anomaly_band_width = 2.0
-  a.missing_data_treatment = "missing"
-  a.state = "insufficient_data"
-end
-
-# Composite alarm — flood risk combining precipitation + river level
-rivers.each do |river_name, river|
-  precip = precip_alarms[river.river_basin.name]
-  river_a = river_alarms[river_name]
-  next unless precip && river_a
-
-  alarm_name = "Risco de Enchente — #{river.name}"
-  composite = Alarm.find_or_create_by!(name: alarm_name) do |a|
-    a.alarm_type = "composite"
-    a.enabled = true
-    a.river_basin = river.river_basin
-    a.composite_rule = "ALARM(#{precip.name}) AND ALARM(#{river_a.name})"
-    a.suppress_child_actions = true
-    a.state = "insufficient_data"
-  end
-
-  CompositeAlarmChild.find_or_create_by!(composite_alarm: composite, child_alarm: precip)
-  CompositeAlarmChild.find_or_create_by!(composite_alarm: composite, child_alarm: river_a)
-end
-
 # Alarm actions — severity-aware notifications using min_severity
 Alarm.find_each do |alarm|
   next if alarm.alarm_actions.exists?
@@ -600,7 +565,7 @@ puts "  #{River.count} rivers"
 puts "  #{MonitoringStation.count} sensor stations"
 puts "  #{Sensor.count} sensors"
 puts "  #{SensorReading.count} sensor readings"
-puts "  #{Alarm.count} alarms (#{Alarm.metric_alarms.count} metric, #{Alarm.anomaly_alarms.count} anomaly, #{Alarm.composite_alarms.count} composite)"
+puts "  #{Alarm.count} alarms (#{Alarm.metric_alarms.count} metric)"
 puts "  #{AlarmAction.count} alarm actions"
 puts "  #{User.count} users"
 puts "  #{DataSource.count} data sources"

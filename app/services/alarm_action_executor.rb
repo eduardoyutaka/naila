@@ -8,8 +8,6 @@ class AlarmActionExecutor
   end
 
   def execute(new_state)
-    return if suppressed_by_parent?
-
     current_sev = @alarm.current_severity
     actions = @alarm.alarm_actions.enabled.for_state(new_state)
     actions.each do |action|
@@ -73,10 +71,4 @@ class AlarmActionExecutor
     }
   end
 
-  def suppressed_by_parent?
-    @alarm.parent_composite_links
-          .joins("INNER JOIN alarms ON alarms.id = composite_alarm_children.composite_alarm_id")
-          .where(alarms: { suppress_child_actions: true })
-          .exists?
-  end
 end

@@ -67,11 +67,6 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='alarm-actions']"
   end
 
-  test "show displays composite rule for composite alarms" do
-    get admin_alarm_path(alarms(:composite_flood_belem))
-    assert_select "div", text: /ALARM\(Precipitação 3h Bacia Belém\)/
-  end
-
   # ── New ──
 
   test "new renders successfully" do
@@ -83,7 +78,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     get new_admin_alarm_path
     assert_select "form" do
       assert_select "input[name='alarm[name]']"
-      assert_select "select[name='alarm[alarm_type]']"
+      assert_select "input[name='alarm[alarm_type]'][value='metric']"
     end
   end
 
