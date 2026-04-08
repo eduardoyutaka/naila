@@ -32,7 +32,7 @@ module Catalyst::TableHelper
   end
 
   def catalyst_table_head(**opts, &block)
-    css = ["text-zinc-500 dark:text-zinc-400", opts.delete(:class)].compact.join(" ")
+    css = ["text-zinc-500 dark:text-zinc-300", opts.delete(:class)].compact.join(" ")
     tag.thead(class: css, **opts, &block)
   end
 

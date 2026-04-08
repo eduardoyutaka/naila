@@ -57,7 +57,7 @@
           <%# Nome %>
           <%= catalyst_td do %>
             <div class="font-medium text-white"><%= station.name %></div>
-            <div class="font-mono text-zinc-500 dark:text-zinc-400"><%= station.external_id %></div>
+            <div class="font-mono text-zinc-500 dark:text-zinc-300"><%= station.external_id %></div>
           <% end %>
 
           <%# Sensores %>
@@ -67,7 +67,7 @@
                 <%= sensor_type_badge(sensor.sensor_type) %>
               <% end %>
               <% if station.sensors.empty? %>
-                <span class="text-zinc-500 dark:text-zinc-400">—</span>
+                <span class="text-zinc-500 dark:text-zinc-300">—</span>
               <% end %>
             </div>
           <% end %>
@@ -90,15 +90,15 @@
           <% end %>
 
           <%# Localização %>
-          <%= catalyst_td (station.neighborhood&.name || "—"), class: "text-zinc-500 dark:text-zinc-400" %>
+          <%= catalyst_td (station.neighborhood&.name || "—"), class: "text-zinc-500 dark:text-zinc-300" %>
 
           <%# Última Leitura %>
           <%= catalyst_td do %>
             <% if station.last_reading_value && station.last_reading_at %>
               <div class="tabular-nums text-white font-medium"><%= number_with_precision(station.last_reading_value, precision: 1) %></div>
-              <div class="text-zinc-500 dark:text-zinc-400"><%= time_ago_in_words(station.last_reading_at) %> atrás</div>
+              <div class="text-zinc-500 dark:text-zinc-300"><%= time_ago_in_words(station.last_reading_at) %> atrás</div>
             <% else %>
-              <span class="text-zinc-500 dark:text-zinc-400">—</span>
+              <span class="text-zinc-500 dark:text-zinc-300">—</span>
             <% end %>
           <% end %>
 

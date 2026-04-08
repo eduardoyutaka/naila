@@ -23,7 +23,7 @@
                 style: "mix-blend-mode: screen;" %>
           <div class="min-w-0">
             <div class="text-sm font-bold tracking-widest text-white">NAILA</div>
-            <div class="text-[10px] font-medium tracking-widest text-zinc-400 uppercase truncate">Tecnologia Ambiental</div>
+            <div class="text-xs font-medium tracking-widest text-zinc-300 uppercase truncate">Tecnologia Ambiental</div>
           </div>
         <% end %>
       <% end %>
@@ -45,15 +45,15 @@
         <div class="mt-1 rounded-lg bg-zinc-800/60 px-3 py-2.5 ring-1 ring-white/5">
           <div class="space-y-2">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-400">Sensores Online</span>
+              <span class="text-zinc-300">Sensores Online</span>
               <span class="tabular-nums font-medium text-sensor-online"><%= MonitoringStation.online.count %></span>
             </div>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-400">Bacias em Risco</span>
+              <span class="text-zinc-300">Bacias em Risco</span>
               <span class="tabular-nums font-medium text-risk-attention"><%= RiverBasin.at_risk.count %></span>
             </div>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-400">Alarmes Ativos</span>
+              <span class="text-zinc-300">Alarmes Ativos</span>
               <span class="tabular-nums font-medium text-risk-high"><%= Alarm.in_alarm.count %></span>
             </div>
           </div>
@@ -71,7 +71,7 @@
             <%= catalyst_avatar initials: current_user.name.split.map(&:first).join.upcase[0..1], class: "size-8 shrink-0" %>
             <div class="min-w-0 flex-1">
               <div class="truncate text-sm/5 font-medium text-white"><%= current_user.name %></div>
-              <div class="truncate text-xs/5 text-zinc-400"><%= current_user.email_address %></div>
+              <div class="truncate text-xs/5 text-zinc-300"><%= current_user.email_address %></div>
             </div>
             <%= button_to logout_path, method: :delete,
                   form: { class: "flex items-center" },

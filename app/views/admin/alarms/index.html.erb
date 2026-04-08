@@ -87,7 +87,7 @@
           <%= catalyst_td do %>
             <div class="font-medium text-white"><%= alarm.name %></div>
             <% if alarm.description.present? %>
-              <div class="text-zinc-500 dark:text-zinc-400 truncate max-w-xs"><%= alarm.description %></div>
+              <div class="text-zinc-500 dark:text-zinc-300 truncate max-w-xs"><%= alarm.description %></div>
             <% end %>
           <% end %>
 
@@ -99,7 +99,7 @@
                          else "Composto"
                          end
           %>
-          <%= catalyst_td type_label, class: "text-zinc-500 dark:text-zinc-400" %>
+          <%= catalyst_td type_label, class: "text-zinc-500 dark:text-zinc-300" %>
 
           <%# Severidade %>
           <%= catalyst_td do %>
@@ -107,10 +107,10 @@
           <% end %>
 
           <%# Escopo %>
-          <%= catalyst_td (alarm.river&.name || alarm.river_basin&.name || "Global"), class: "text-zinc-500 dark:text-zinc-400" %>
+          <%= catalyst_td (alarm.river&.name || alarm.river_basin&.name || "Global"), class: "text-zinc-500 dark:text-zinc-300" %>
 
           <%# Avaliado %>
-          <%= catalyst_td class: "text-zinc-500 dark:text-zinc-400" do %>
+          <%= catalyst_td class: "text-zinc-500 dark:text-zinc-300" do %>
             <%= alarm.last_evaluated_at ? time_ago_in_words(alarm.last_evaluated_at) + " atrás" : "—" %>
           <% end %>
 
