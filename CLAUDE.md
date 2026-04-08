@@ -61,8 +61,29 @@ Model hierarchy: `RiverBasin (1:1) → MonitoringStation → Sensor (1:many) →
 - **OpenLayers 10** and **ECharts 5** loaded via CDN ESM pins in `config/importmap.rb`.
 - **Stimulus controllers** in `app/javascript/controllers/{admin,public,shared}/`. Auto-discovered by `eagerLoadControllersFrom`. Naming convention: `admin--map` maps to `admin/map_controller.js`.
   - Key admin controllers: `admin--map` (OpenLayers sensor map), `admin--reading-chart` / `admin--timeseries` / `admin--sparkline` / `admin--heatmap` (ECharts wrappers), `admin--polygon-editor` / `admin--polygon-viewer` (basin geometry), `admin--side-sheet` (slide-over panel), `admin--realtime-counter` (live stats).
-  - Shared: `shared--notification` (flash/toast messages).
-- **Tailwind CSS 4** with `@theme` directive in `app/assets/tailwind/application.css`. Custom design tokens: `naila-*` (dark theme), `risk-*` (risk level colors), `sensor-*` (status colors), `public-*` (light theme). Compiled by `tailwindcss:watch` process in `Procfile.dev`.
+  - Shared: `shared--notification` (ActionCable subscription), `shared--dialog` (native `<dialog>`), `shared--dropdown` (Popover API), `shared--combobox` (autocomplete).
+- **Tailwind CSS 4** with `@theme` directive in `app/assets/tailwind/application.css`. Uses Catalyst's standard zinc palette with `dark:` variants for UI components. Custom domain tokens: `risk-*` (risk level colors), `sensor-*` (status colors). Compiled by `tailwindcss:watch` process in `Procfile.dev`.
+
+### Catalyst Design System
+
+The UI layer is built on **Catalyst** (by Tailwind Labs), ported from React/JSX to Rails helpers and a custom FormBuilder. Source reference: `/Users/eduardonakanishi/Developer/catalyst-ui-kit/javascript/`.
+
+- **CatalystFormBuilder** (`app/form_builders/catalyst_form_builder.rb`) — registered as `default_form_builder` in `ApplicationController`. Wraps all inputs in Catalyst's `<span data-slot="control">` pattern with pseudo-element focus rings. Overrides: `text_field`, `email_field`, `password_field`, `select`, `text_area`, `check_box`, `label`, `submit`. Adds: `field`, `field_group`, `description`, `error_message`, `error_summary`.
+- **Helpers** in `app/helpers/catalyst/` — each module is included via `ApplicationHelper`:
+  - `ButtonHelper` — `catalyst_button`, `catalyst_button_link` (solid/outline/plain variants, 20+ colors)
+  - `BadgeHelper` — `catalyst_badge` (18 colors)
+  - `TypographyHelper` — `catalyst_heading`, `catalyst_subheading`, `catalyst_text`, `catalyst_strong`, `catalyst_code`, `catalyst_text_link`
+  - `TableHelper` — `catalyst_table` (bleed/dense/grid/striped), `catalyst_table_head`, `catalyst_table_body`, `catalyst_table_row`, `catalyst_th`, `catalyst_td`
+  - `DescriptionListHelper` — `catalyst_dl`, `catalyst_dt`, `catalyst_dd`
+  - `DialogHelper` — `catalyst_dialog`, `catalyst_alert` (uses native `<dialog>` + `shared--dialog` Stimulus controller)
+  - `DropdownHelper` — `catalyst_dropdown`, `catalyst_dropdown_menu`, `catalyst_dropdown_item` (uses Popover API + `shared--dropdown` Stimulus controller)
+  - `ComboboxHelper` — `catalyst_combobox` (uses `shared--combobox` Stimulus controller)
+  - `SidebarHelper` — `catalyst_sidebar`, `catalyst_sidebar_item` (with `aria-current` active indicator)
+  - `NavbarHelper` — `catalyst_navbar`, `catalyst_navbar_item`
+  - `PaginationHelper` — `catalyst_pagination`
+  - `DividerHelper`, `AvatarHelper`
+- **Color strategy**: standard Tailwind zinc + `dark:` variants for all components. Admin layout has `<html class="dark">` so dark-mode classes apply automatically. Domain tokens (`risk-*`, `sensor-*`) are kept separately in `@theme`.
+- **Interactive components** use native browser APIs (no React, no Headless UI): `<dialog>` for modals, Popover API for dropdowns, CSS `peer-checked:` for checkboxes/radios/switches.
 
 ### Key data flow
 
@@ -84,7 +105,7 @@ External sources (CEMADEN, INMET, Open-Meteo, OpenWeatherMap)
 - All UI text in **pt-BR** (Portuguese). Variable names and code in English.
 - Git messages use **conventional commits** format: `feat(scope):`, `fix(scope):`, `chore(scope):`.
 - Commit after each completed task, not batched.
-- CSS: dark admin theme uses `bg-naila-bg`, `text-naila-text`, etc. Risk colors: `text-risk-normal`, `bg-risk-emergency`, glow classes: `.glow-high`, `.glow-emergency`.
+- CSS: uses Catalyst's zinc palette with `dark:` variants. Admin is always `<html class="dark">`. Use `catalyst_*` helpers for UI components instead of hand-writing Tailwind classes. Risk colors: `text-risk-normal`, `bg-risk-emergency`, glow classes: `.glow-high`, `.glow-emergency`. Primary action color is `sky` (sky-500).
 - **Test fixtures bypass model validations** — the DB receives values directly. A fixture that would fail a `validates :uniqueness` check still loads fine. Rely on model tests (not fixtures) to verify validation behaviour.
 
 ## Gotchas
@@ -92,6 +113,8 @@ External sources (CEMADEN, INMET, Open-Meteo, OpenWeatherMap)
 - **Partitioned table migrations**: `sensor_readings` is `PARTITION BY RANGE (recorded_at)`. All schema changes to this table must use `execute "ALTER TABLE sensor_readings ..."` raw SQL — ActiveRecord column helpers (`add_column`, `change_column_null`, etc.) silently fail or error on partitioned tables.
 - **`destroy_all` vs `delete_all` on associated records**: models with `dependent: :destroy` chains (e.g. `RiverBasin → MonitoringStation → Sensor → SensorReading`) require `destroy_all` to fire callbacks and respect FK constraints. `delete_all` bypasses Rails and will hit FK violations.
 - **Stimulus controller naming**: the directory separator becomes `--` in the identifier. `admin/map_controller.js` → `data-controller="admin--map"`. Values/targets follow the same prefix: `data-admin--map-sensors-value`.
+- **CatalystFormBuilder is the default**: all `form_with` calls use it automatically. Don't pass raw Tailwind class strings to form fields — the builder handles styling. If you need to customize, pass extra classes via the `class:` option (they're appended, not replaced).
+- **Catalyst data-slot attributes**: the FormBuilder emits `data-slot="control"`, `data-slot="label"`, etc. These are used by Catalyst's CSS spacing rules (e.g., `[&>[data-slot=label]+[data-slot=control]]:mt-3`). Don't remove them.
 
 ## Database
 
