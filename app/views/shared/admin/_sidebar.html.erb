@@ -1,48 +1,90 @@
 <%
   nav_items = [
-    { label: "Painel",    path: admin_root_path,         icon: "chart-bar" },
-    { label: "Estações",  path: admin_monitoring_stations_path, icon: "signal" },
-    { label: "Meteorologia", path: admin_weather_path,   icon: "cloud-rain" },
-    { label: "Alarmes",   path: admin_alarms_path,       icon: "adjustments-horizontal" },
-    { label: "Bacias",    path: admin_river_basins_path,  icon: "map" },
-    { label: "Usuários",  path: admin_users_path,        icon: "users" },
+    { label: "Painel",       path: admin_root_path,                icon: "chart-bar" },
+    { label: "Estações",     path: admin_monitoring_stations_path, icon: "signal" },
+    { label: "Meteorologia", path: admin_weather_path,             icon: "cloud-rain" },
+    { label: "Alarmes",      path: admin_alarms_path,              icon: "adjustments-horizontal" },
+    { label: "Bacias",       path: admin_river_basins_path,        icon: "map" },
+    { label: "Usuários",     path: admin_users_path,               icon: "users" },
   ]
 %>
 
-<nav data-controller="sidebar"
-     class="hidden lg:flex w-56 flex-col border-r border-white/10 bg-zinc-900"
-     data-sidebar-target="menu">
-  <div class="flex flex-1 flex-col gap-1 p-3">
-    <% nav_items.each do |item| %>
-      <%= link_to item[:path],
-            class: "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-colors
-              #{current_page?(item[:path]) ?
-                'border-l-2 border-sky-500 bg-sky-500/10 text-sky-500 pl-[10px] pr-3' :
-                'px-3 text-zinc-400 hover:bg-zinc-800 hover:text-white'}" do %>
-        <%= render "shared/icons/#{item[:icon]}" %>
-        <span><%= item[:label] %></span>
+<div class="flex h-full flex-col bg-zinc-900 ring-1 ring-white/10">
+  <%= catalyst_sidebar do %>
+
+    <%# ── Header: Brand ── %>
+    <%= catalyst_sidebar_header do %>
+      <%= catalyst_sidebar_section do %>
+        <div class="flex items-center gap-3 rounded-lg px-2 py-2.5">
+          <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 ring-1 ring-sky-500/30">
+            <svg class="size-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 14.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1M3 10.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1" />
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-white">NAILA</div>
+            <div class="text-xs text-zinc-400 truncate">Defesa Civil de Curitiba</div>
+          </div>
+        </div>
       <% end %>
     <% end %>
-  </div>
 
-  <%# Bottom section: system status %>
-  <div class="border-t border-white/10 p-3">
-    <div class="rounded-lg bg-zinc-800 p-3">
-      <div class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Status do Sistema</div>
-      <div class="space-y-1.5">
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-zinc-400">Sensores Online</span>
-          <span class="tabular-nums text-sensor-online"><%= MonitoringStation.online.count %></span>
+    <%# ── Body: Navigation ── %>
+    <%= catalyst_sidebar_body do %>
+      <%= catalyst_sidebar_section do %>
+        <% nav_items.each do |item| %>
+          <%= catalyst_sidebar_item item[:label],
+                href: item[:path],
+                current: current_page?(item[:path]) %>
+        <% end %>
+      <% end %>
+
+      <%# System status %>
+      <%= catalyst_sidebar_section do %>
+        <%= catalyst_sidebar_heading "Status do Sistema" %>
+        <div class="mt-1 rounded-lg bg-zinc-800/60 px-3 py-2.5 ring-1 ring-white/5">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-zinc-400">Sensores Online</span>
+              <span class="tabular-nums font-medium text-sensor-online"><%= MonitoringStation.online.count %></span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-zinc-400">Bacias em Risco</span>
+              <span class="tabular-nums font-medium text-risk-attention"><%= RiverBasin.at_risk.count %></span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-zinc-400">Alarmes Ativos</span>
+              <span class="tabular-nums font-medium text-risk-high"><%= Alarm.in_alarm.count %></span>
+            </div>
+          </div>
         </div>
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-zinc-400">Bacias em Risco</span>
-          <span class="tabular-nums text-risk-attention"><%= RiverBasin.at_risk.count %></span>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-zinc-400">Alarmes Ativos</span>
-          <span class="tabular-nums text-risk-high"><%= Alarm.in_alarm.count %></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
+      <% end %>
+
+      <%= catalyst_sidebar_spacer %>
+    <% end %>
+
+    <%# ── Footer: User ── %>
+    <% if current_user %>
+      <%= catalyst_sidebar_footer do %>
+        <%= catalyst_sidebar_section do %>
+          <div class="flex items-center gap-3 rounded-lg px-2 py-2.5">
+            <%= catalyst_avatar initials: current_user.name.split.map(&:first).join.upcase[0..1], class: "size-8 shrink-0" %>
+            <div class="min-w-0 flex-1">
+              <div class="truncate text-sm/5 font-medium text-white"><%= current_user.name %></div>
+              <div class="truncate text-xs/5 text-zinc-400"><%= current_user.email_address %></div>
+            </div>
+            <%= button_to logout_path, method: :delete,
+                  form: { class: "flex items-center" },
+                  class: "shrink-0 rounded-md p-1 text-zinc-400 hover:bg-white/5 hover:text-white transition-colors",
+                  title: "Sair" do %>
+              <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+              </svg>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+  <% end %>
+</div>
