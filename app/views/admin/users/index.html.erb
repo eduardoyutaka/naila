@@ -1,38 +1,40 @@
 <% content_for(:title, "Naila — Usuários") %>
 
-<%# ── Summary Cards ── %>
-<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-  <div class="rounded-xl border border-zinc-950/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Usuários</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-950 dark:text-white"><%= @users.size %></div>
-  </div>
-  <div class="rounded-xl border border-zinc-950/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Usuários Ativos</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @users.count(&:active?) %></div>
-  </div>
-  <div class="rounded-xl border border-zinc-950/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Recebem SMS</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @users.count(&:receives_sms_alerts?) %></div>
-  </div>
-</div>
-
-<%# ── Users Table ── %>
-<div class="rounded-xl border border-zinc-950/10 bg-white dark:border-white/10 dark:bg-zinc-900">
-  <div class="flex items-center justify-between border-b border-zinc-950/10 px-4 py-3 dark:border-white/10">
-    <%= catalyst_subheading "Usuários", class: "text-sm" %>
+<%# ── Page Header ── %>
+<div class="flex items-center justify-between mb-8">
+  <%= catalyst_heading "Usuários", level: 1 %>
+  <% if policy(User).create? %>
     <%= catalyst_button_link href: new_admin_user_path, color: "sky" do %>
       <svg class="h-4 w-4" data-slot="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
       Novo Usuário
     <% end %>
-  </div>
+  <% end %>
+</div>
 
-  <% if @users.empty? %>
-    <div class="px-4 py-8 text-center">
-      <%= catalyst_text "Nenhum usuário cadastrado." %>
-    </div>
-  <% else %>
+<%# ── Summary Cards ── %>
+<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Total de Usuários</p>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-white"><%= @users.size %></div>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Usuários Ativos</p>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @users.count(&:active?) %></div>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Recebem SMS</p>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @users.count(&:receives_sms_alerts?) %></div>
+  </div>
+</div>
+
+<%# ── Users Table ── %>
+<% if @users.empty? %>
+  <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
+    <%= catalyst_text "Nenhum usuário cadastrado." %>
+  </div>
+<% else %>
     <%= catalyst_table(dense: true) do %>
       <%= catalyst_table_head do %>
         <tr>
@@ -126,4 +128,3 @@
       <% end %>
     <% end %>
   <% end %>
-</div>
