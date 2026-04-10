@@ -1,0 +1,67 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "NAILA Monitoramento de Cheias" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: NAILA
+        - generic [ref=e6]: Monitoramento de Cheias
+      - navigation [ref=e7]:
+        - link "Mapa" [ref=e8] [cursor=pointer]:
+          - /url: /mapa
+        - link "Alarmes" [ref=e9] [cursor=pointer]:
+          - /url: /alertas
+        - link "Bairros" [ref=e10] [cursor=pointer]:
+          - /url: /bairros
+        - link "Segurança" [ref=e11] [cursor=pointer]:
+          - /url: /seguranca
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - paragraph [ref=e15]: Nível de Risco da Cidade
+      - heading "Alerta Máximo" [level=1] [ref=e16]
+      - paragraph [ref=e17]: 6 bacias hidrográficas em situação elevada de risco.
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: "6"
+          - generic [ref=e22]: Alarmes Ativos
+        - generic [ref=e23]:
+          - generic [ref=e24]: "6"
+          - generic [ref=e25]: Bacias em Risco
+        - generic [ref=e26]:
+          - generic [ref=e27]: "6"
+          - generic [ref=e28]: Bacias Monitoradas
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - paragraph [ref=e32]: Alarme mais severo
+          - heading "Precipitação 3h — Bacia do Ribeirão dos Padilhas" [level=2] [ref=e33]
+          - paragraph [ref=e34]: "3 of 3 evaluation periods breached threshold 80.0mm (severity 4) (values: [196.9, 248.9, 198.9])"
+        - link "Ver todos os alarmes" [ref=e35] [cursor=pointer]:
+          - /url: /alertas
+      - heading "Acesse" [level=2] [ref=e36]
+      - generic [ref=e37]:
+        - link "Mapa de Risco Visualize o risco por bacia hidrográfica" [ref=e38] [cursor=pointer]:
+          - /url: /mapa
+          - img [ref=e40]
+          - heading "Mapa de Risco" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Visualize o risco por bacia hidrográfica
+        - link "Alarmes Alertas ativos e histórico recente" [ref=e44] [cursor=pointer]:
+          - /url: /alertas
+          - img [ref=e46]
+          - heading "Alarmes" [level=3] [ref=e48]
+          - paragraph [ref=e49]: Alertas ativos e histórico recente
+        - link "Bairros Consulte o risco no seu bairro" [ref=e50] [cursor=pointer]:
+          - /url: /bairros
+          - img [ref=e52]
+          - heading "Bairros" [level=3] [ref=e54]
+          - paragraph [ref=e55]: Consulte o risco no seu bairro
+        - link "Segurança Rotas de evacuação e orientações" [ref=e56] [cursor=pointer]:
+          - /url: /seguranca
+          - img [ref=e58]
+          - heading "Segurança" [level=3] [ref=e60]
+          - paragraph [ref=e61]: Rotas de evacuação e orientações
+  - contentinfo [ref=e62]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - strong [ref=e66]: Naila
+        - text: — Sistema de Monitoramento de Risco de Enchentes
+      - generic [ref=e67]: Prefeitura Municipal de Curitiba · Defesa Civil

@@ -42,6 +42,3 @@
 
 # Vim
 *.swp
-
-# Playwright CLI
-.playwright-cli

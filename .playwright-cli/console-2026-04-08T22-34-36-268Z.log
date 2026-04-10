@@ -1,0 +1,3 @@
+[    1255ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3000/login:0
+[    1257ms] [ERROR] Failed to register controller: shared--notification (controllers/shared/notification_controller) TypeError: Failed to resolve module specifier "@rails/actioncable". Relative references must start with either "/", "./", or "../". @ http://localhost:3000/assets/stimulus-loading-1fc53fe7.js:25
+[    7286ms] [ERROR] OpenLayers not loaded @ http://localhost:3000/assets/controllers/admin/map_controller-4264b454.js:48

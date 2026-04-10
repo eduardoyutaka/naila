@@ -1,0 +1,103 @@
+- generic [ref=e2]:
+  - navigation [ref=e5]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e8] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e10]
+      - generic [ref=e11]:
+        - generic [ref=e12]: NAILA
+        - generic [ref=e13]: Tecnologia Ambiental
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - link "Painel" [ref=e17] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e19] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e22] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e24] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e26] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e28] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e29]:
+        - heading "Status do Sistema" [level=3] [ref=e30]
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Sensores Online
+            - generic [ref=e35]: "6"
+          - generic [ref=e36]:
+            - generic [ref=e37]: Bacias em Risco
+            - generic [ref=e38]: "6"
+          - generic [ref=e39]:
+            - generic [ref=e40]: Alarmes Ativos
+            - generic [ref=e41]: "6"
+    - generic [ref=e45]:
+      - img [ref=e47]:
+        - generic [ref=e48]: AN
+      - generic [ref=e49]:
+        - generic [ref=e50]: Administrador NAILA
+        - generic [ref=e51]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e53]:
+        - img [ref=e54]
+  - main [ref=e56]:
+    - generic [ref=e58]:
+      - generic [ref=e59]:
+        - heading "Meteorologia" [level=1] [ref=e60]
+        - paragraph [ref=e61]: Condições atuais e previsão de precipitação para Curitiba
+      - generic [ref=e62]:
+        - heading "Condições Atuais" [level=2] [ref=e64]
+        - generic [ref=e65]:
+          - generic [ref=e66]:
+            - generic [ref=e67]: Temperatura
+            - generic [ref=e68]: 21.2°C
+          - generic [ref=e69]:
+            - generic [ref=e70]: Umidade
+            - generic [ref=e71]: 80%
+          - generic [ref=e72]:
+            - generic [ref=e73]: Vento
+            - generic [ref=e74]: 3.1 m/s
+          - generic [ref=e75]:
+            - generic [ref=e76]: Pressão
+            - generic [ref=e77]: 1013 hPa
+          - generic [ref=e78]:
+            - generic [ref=e79]: Precipitação
+            - generic [ref=e80]: 0.0 mm
+          - generic [ref=e81]:
+            - generic [ref=e82]: Condição
+            - generic [ref=e83]: nuvens dispersas
+            - generic [ref=e84]: 08/04/2026 23:00 · open_weather_map
+      - generic [ref=e85]:
+        - heading "Previsão de Precipitação — Próximas 24h" [level=2] [ref=e87]
+        - generic [ref=e89]:
+          - generic:
+            - paragraph: Carregando previsão...
+      - generic [ref=e90]:
+        - heading "Fontes de Dados" [level=2] [ref=e92]
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e96]: CEMADEN
+            - generic [ref=e98]: Degradado · 1 falha(s)
+            - generic [ref=e99]: "Última atualização: aproximadamente 1 hora atrás"
+            - generic [ref=e100]: "Intervalo: 10 min"
+          - generic [ref=e101]:
+            - generic [ref=e103]: INMET
+            - generic [ref=e105]: Online
+            - generic [ref=e106]: "Última atualização: aproximadamente 1 hora atrás"
+            - generic [ref=e107]: "Intervalo: 10 min"
+          - generic [ref=e108]:
+            - generic [ref=e110]: Open-Meteo
+            - generic [ref=e112]: Degradado · 1 falha(s)
+            - generic [ref=e113]: "Última atualização: aproximadamente 1 hora atrás"
+            - generic [ref=e114]: "Intervalo: 30 min"
+          - generic [ref=e115]:
+            - generic [ref=e117]: OpenWeatherMap
+            - generic [ref=e119]: Online
+            - generic [ref=e120]: "Última atualização: 15 minutos atrás"
+            - generic [ref=e121]: "Intervalo: 30 min"
+          - generic [ref=e122]:
+            - generic [ref=e124]: SIMEPAR
+            - generic [ref=e126]: Online
+            - generic [ref=e127]: "Última atualização: aproximadamente 1 hora atrás"
+            - generic [ref=e128]: "Intervalo: 15 min"
+      - heading "Previsão vs Observado — Últimas 24h" [level=2] [ref=e131]

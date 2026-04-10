@@ -1,0 +1,91 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "NAILA Monitoramento de Cheias" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: NAILA
+        - generic [ref=e6]: Monitoramento de Cheias
+      - navigation [ref=e7]:
+        - link "Mapa" [ref=e8] [cursor=pointer]:
+          - /url: /mapa
+        - link "Alarmes" [ref=e9] [cursor=pointer]:
+          - /url: /alertas
+        - link "Bairros" [ref=e10] [cursor=pointer]:
+          - /url: /bairros
+        - link "Segurança" [ref=e11] [cursor=pointer]:
+          - /url: /seguranca
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - heading "Mapa de Risco" [level=1] [ref=e15]
+        - paragraph [ref=e16]: Situação atual das bacias hidrográficas de Curitiba.
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - heading "Bacias Hidrográficas" [level=2] [ref=e19]
+          - generic [ref=e20]:
+            - generic [ref=e22]:
+              - generic [ref=e23]:
+                - heading "Bacia do Rio Iguaçu" [level=3] [ref=e24]
+                - paragraph [ref=e25]: 308.0 km²
+              - generic [ref=e27]: Alerta Máximo
+            - generic [ref=e29]:
+              - generic [ref=e30]:
+                - heading "Bacia do Rio Barigui" [level=3] [ref=e31]
+                - paragraph [ref=e32]: 131.0 km²
+              - generic [ref=e34]: Alerta Máximo
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - heading "Bacia do Rio Belém" [level=3] [ref=e38]
+                - paragraph [ref=e39]: 87.8 km²
+              - generic [ref=e41]: Alerta Máximo
+            - generic [ref=e43]:
+              - generic [ref=e44]:
+                - heading "Bacia do Rio Atuba" [level=3] [ref=e45]
+                - paragraph [ref=e46]: 127.6 km²
+              - generic [ref=e48]: Alerta Máximo
+            - generic [ref=e50]:
+              - generic [ref=e51]:
+                - heading "Bacia do Rio Passaúna" [level=3] [ref=e52]
+                - paragraph [ref=e53]: 216.0 km²
+              - generic [ref=e55]: Alerta
+            - generic [ref=e57]:
+              - generic [ref=e58]:
+                - heading "Bacia do Ribeirão dos Padilhas" [level=3] [ref=e59]
+                - paragraph [ref=e60]: 33.0 km²
+              - generic [ref=e62]: Alerta
+        - generic [ref=e63]:
+          - heading "Alarmes Ativos" [level=2] [ref=e64]
+          - generic [ref=e65]:
+            - generic [ref=e66]:
+              - generic [ref=e68]: Emergência
+              - heading "Precipitação 3h — Bacia do Ribeirão dos Padilhas" [level=3] [ref=e69]
+              - paragraph [ref=e70]: Bacia do Ribeirão dos Padilhas
+              - paragraph [ref=e71]: 29 minutos atrás
+            - generic [ref=e72]:
+              - generic [ref=e74]: Emergência
+              - heading "Precipitação 3h — Bacia do Rio Iguaçu" [level=3] [ref=e75]
+              - paragraph [ref=e76]: Bacia do Rio Iguaçu
+              - paragraph [ref=e77]: 29 minutos atrás
+            - generic [ref=e78]:
+              - generic [ref=e80]: Emergência
+              - heading "Precipitação 3h — Bacia do Rio Barigui" [level=3] [ref=e81]
+              - paragraph [ref=e82]: Bacia do Rio Barigui
+              - paragraph [ref=e83]: 29 minutos atrás
+            - generic [ref=e84]:
+              - generic [ref=e86]: Emergência
+              - heading "Precipitação 3h — Bacia do Rio Belém" [level=3] [ref=e87]
+              - paragraph [ref=e88]: Bacia do Rio Belém
+              - paragraph [ref=e89]: 29 minutos atrás
+            - generic [ref=e90]:
+              - generic [ref=e92]: Emergência
+              - heading "Precipitação 3h — Bacia do Rio Atuba" [level=3] [ref=e93]
+              - paragraph [ref=e94]: Bacia do Rio Atuba
+              - paragraph [ref=e95]: aproximadamente 2 horas atrás
+            - link "Ver todos os alarmes" [ref=e97] [cursor=pointer]:
+              - /url: /alertas
+  - contentinfo [ref=e98]:
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - strong [ref=e102]: Naila
+        - text: — Sistema de Monitoramento de Risco de Enchentes
+      - generic [ref=e103]: Prefeitura Municipal de Curitiba · Defesa Civil

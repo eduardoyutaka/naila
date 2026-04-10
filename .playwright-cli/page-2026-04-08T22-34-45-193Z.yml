@@ -1,0 +1,206 @@
+- generic [ref=e44]:
+  - navigation [ref=e47]:
+    - link "Naila NAILA Tecnologia Ambiental" [ref=e50] [cursor=pointer]:
+      - /url: /admin
+      - img "Naila" [ref=e52]
+      - generic [ref=e53]:
+        - generic [ref=e54]: NAILA
+        - generic [ref=e55]: Tecnologia Ambiental
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - link "Painel" [ref=e60] [cursor=pointer]:
+          - /url: /admin
+        - link "Estações" [ref=e62] [cursor=pointer]:
+          - /url: /admin/monitoring_stations
+        - link "Meteorologia" [ref=e64] [cursor=pointer]:
+          - /url: /admin/weather
+        - link "Alarmes" [ref=e66] [cursor=pointer]:
+          - /url: /admin/alarms
+        - link "Bacias" [ref=e68] [cursor=pointer]:
+          - /url: /admin/river_basins
+        - link "Usuários" [ref=e70] [cursor=pointer]:
+          - /url: /admin/users
+      - generic [ref=e71]:
+        - heading "Status do Sistema" [level=3] [ref=e72]
+        - generic [ref=e74]:
+          - generic [ref=e75]:
+            - generic [ref=e76]: Sensores Online
+            - generic [ref=e77]: "6"
+          - generic [ref=e78]:
+            - generic [ref=e79]: Bacias em Risco
+            - generic [ref=e80]: "4"
+          - generic [ref=e81]:
+            - generic [ref=e82]: Alarmes Ativos
+            - generic [ref=e83]: "1"
+    - generic [ref=e87]:
+      - img [ref=e89]:
+        - generic [ref=e90]: AN
+      - generic [ref=e91]:
+        - generic [ref=e92]: Administrador NAILA
+        - generic [ref=e93]: admin@naila.curitiba.pr.gov.br
+      - button "Sair" [ref=e95]:
+        - img [ref=e96]
+  - main [ref=e98]:
+    - generic [ref=e100]:
+      - generic [ref=e101]: Login realizado com sucesso.
+      - heading "Painel de Monitoramento" [level=1] [ref=e102]
+      - generic [ref=e103]:
+        - generic [ref=e104]:
+          - generic [ref=e105]: Sensores Online
+          - generic [ref=e106]: "6"
+        - generic [ref=e107]:
+          - generic [ref=e108]: Atenção
+          - generic [ref=e109]: "0"
+        - generic [ref=e110]:
+          - generic [ref=e111]: Alerta
+          - generic [ref=e112]: "1"
+        - generic [ref=e113]:
+          - generic [ref=e114]: Alerta Máximo
+          - generic [ref=e115]: "0"
+        - generic [ref=e116]:
+          - generic [ref=e117]: Emergência
+          - generic [ref=e118]: "0"
+        - generic [ref=e119]:
+          - generic [ref=e120]: Bacias Monitoradas
+          - generic [ref=e121]: "6"
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - img [ref=e126]
+          - generic [ref=e129]:
+            - generic [ref=e130]: Condições Atuais
+            - generic [ref=e131]: Sem dados
+        - generic [ref=e133]:
+          - generic [ref=e134]: Previsão 6h
+          - generic [ref=e136]:
+            - img [ref=e137]
+            - text: 0.0 mm
+        - generic [ref=e139]:
+          - link "Ver detalhes meteorológicos" [ref=e140] [cursor=pointer]:
+            - /url: /admin/weather
+            - text: Ver detalhes
+            - img [ref=e141]
+          - paragraph [ref=e143]:
+            - text: Atualizado
+            - time [ref=e144]: agora
+      - generic [ref=e146]:
+        - heading "Mapa de Risco — Curitiba" [level=2] [ref=e147]
+        - generic [ref=e148]:
+          - generic [ref=e149]: Normal
+          - generic [ref=e151]: Atenção
+          - generic [ref=e153]: Alerta
+          - generic [ref=e155]:
+            - img [ref=e156]
+            - text: Alerta Máx
+          - generic [ref=e158]: Emergência
+          - generic [ref=e161]: Pluviômetro
+          - generic [ref=e163]: Fluviômetro
+          - generic [ref=e165]: Meteorológica
+      - generic [ref=e168]:
+        - generic [ref=e169]:
+          - generic [ref=e170]:
+            - heading "Alarmes Ativos" [level=2] [ref=e171]
+            - generic [ref=e172]: 1 alarme(s)
+          - generic [ref=e174]:
+            - generic [ref=e177]: "Alerta:"
+            - generic [ref=e178]:
+              - generic [ref=e179]:
+                - link "Precipitação 3h — Bacia do Rio Atuba" [ref=e180] [cursor=pointer]:
+                  - /url: /admin/alarms/4
+                - generic [ref=e181]: Alerta
+              - paragraph [ref=e182]: "2 de 3 períodos excederam 40mm (valores: [42.5, 38.2, 19.1])"
+              - generic [ref=e183]: aproximadamente 1 hora atrás · Bacia do Rio Atuba
+        - generic [ref=e184]:
+          - generic [ref=e185]:
+            - heading "Leituras Recentes" [level=2] [ref=e186]
+            - generic [ref=e187]: Últimas 10
+          - generic [ref=e188]:
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - img [ref=e192]
+                - generic [ref=e194]:
+                  - generic [ref=e195]: Estação Belém — Centro Cívico
+                  - generic [ref=e196]: Precipitation
+              - generic [ref=e197]:
+                - generic [ref=e198]: 8.9 mm
+                - generic [ref=e199]: 22:18
+            - generic [ref=e200]:
+              - generic [ref=e201]:
+                - img [ref=e203]
+                - generic [ref=e205]:
+                  - generic [ref=e206]: Estação Barigui — Parque Barigui
+                  - generic [ref=e207]: Precipitation
+              - generic [ref=e208]:
+                - generic [ref=e209]: 8.7 mm
+                - generic [ref=e210]: 22:18
+            - generic [ref=e211]:
+              - generic [ref=e212]:
+                - img [ref=e214]
+                - generic [ref=e216]:
+                  - generic [ref=e217]: Estação Passaúna
+                  - generic [ref=e218]: Precipitation
+              - generic [ref=e219]:
+                - generic [ref=e220]: 11.7 mm
+                - generic [ref=e221]: 22:18
+            - generic [ref=e222]:
+              - generic [ref=e223]:
+                - img [ref=e225]
+                - generic [ref=e227]:
+                  - generic [ref=e228]: Estação Ribeirão dos Padilhas
+                  - generic [ref=e229]: Precipitation
+              - generic [ref=e230]:
+                - generic [ref=e231]: 14.6 mm
+                - generic [ref=e232]: 22:18
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - img [ref=e236]
+                - generic [ref=e238]:
+                  - generic [ref=e239]: Estação Atuba — Cajuru
+                  - generic [ref=e240]: Precipitation
+              - generic [ref=e241]:
+                - generic [ref=e242]: 8.5 mm
+                - generic [ref=e243]: 22:18
+            - generic [ref=e244]:
+              - generic [ref=e245]:
+                - img [ref=e247]
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Estação Iguaçu — Ponte do Guabirotuba
+                  - generic [ref=e251]: Precipitation
+              - generic [ref=e252]:
+                - generic [ref=e253]: 8.7 mm
+                - generic [ref=e254]: 22:18
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - img [ref=e258]
+                - generic [ref=e260]:
+                  - generic [ref=e261]: Estação Atuba — Cajuru
+                  - generic [ref=e262]: River level
+              - generic [ref=e263]:
+                - generic [ref=e264]: 2.3 m
+                - generic [ref=e265]: 22:13
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - img [ref=e269]
+                - generic [ref=e271]:
+                  - generic [ref=e272]: Estação Iguaçu — Ponte do Guabirotuba
+                  - generic [ref=e273]: River level
+              - generic [ref=e274]:
+                - generic [ref=e275]: 2.6 m
+                - generic [ref=e276]: 22:13
+            - generic [ref=e277]:
+              - generic [ref=e278]:
+                - img [ref=e280]
+                - generic [ref=e282]:
+                  - generic [ref=e283]: Estação Barigui — Parque Barigui
+                  - generic [ref=e284]: River level
+              - generic [ref=e285]:
+                - generic [ref=e286]: 2.1 m
+                - generic [ref=e287]: 22:13
+            - generic [ref=e288]:
+              - generic [ref=e289]:
+                - img [ref=e291]
+                - generic [ref=e293]:
+                  - generic [ref=e294]: Estação Belém — Centro Cívico
+                  - generic [ref=e295]: River level
+              - generic [ref=e296]:
+                - generic [ref=e297]: 1.9 m
+                - generic [ref=e298]: 22:13

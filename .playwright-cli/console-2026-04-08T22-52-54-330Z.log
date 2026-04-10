@@ -1,0 +1,2 @@
+[    1385ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3000/login:0
+[    1394ms] [ERROR] Failed to register controller: shared--notification (controllers/shared/notification_controller) TypeError: Failed to resolve module specifier "@rails/actioncable". Relative references must start with either "/", "./", or "../". @ http://localhost:3000/assets/stimulus-loading-1fc53fe7.js:25
