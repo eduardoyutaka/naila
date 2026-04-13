@@ -12,8 +12,7 @@ class DataSource < ApplicationRecord
     "Open-Meteo" => "OpenMeteoClient",
     "OpenWeatherMap" => "OpenWeatherMapClient",
     "INMET" => "InmetClient",
-    "CEMADEN" => "CemadenClient",
-    "SIMEPAR" => "SimeparClient"
+    "CEMADEN" => "CemadenClient"
   }.freeze
 
   def due_for_fetch?

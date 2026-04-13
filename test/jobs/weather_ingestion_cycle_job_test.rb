@@ -17,7 +17,6 @@ class WeatherIngestionCycleJobTest < ActiveSupport::TestCase
     data_sources(:open_weather_map).update!(last_successful_fetch_at: 1.minute.ago)
     data_sources(:inmet).update!(last_successful_fetch_at: 1.minute.ago)
     data_sources(:cemaden).update!(last_successful_fetch_at: 1.minute.ago)
-    data_sources(:simepar).update!(last_successful_fetch_at: 1.minute.ago)
 
     assert_no_enqueued_jobs(only: [FetchOpenMeteoJob, FetchOpenWeatherMapJob, FetchInmetJob, FetchCemadenJob]) do
       WeatherIngestionCycleJob.perform_now

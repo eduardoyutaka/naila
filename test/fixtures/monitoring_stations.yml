@@ -17,9 +17,9 @@ cemaden_centro:
   river_basin: bacia_belem
 
 estacao_belem:
-  external_id: EST-BELEM-01
+  external_id: "6877"
   name: Estação Belém — Centro Cívico
-  data_source: SIMEPAR
+  data_source: CEMADEN
   status: active
   location: POINT(-49.2700 -25.4050)
   elevation_m: 910.0
@@ -30,9 +30,9 @@ estacao_belem:
   last_reading_value: 12.5
 
 estacao_barigui:
-  external_id: EST-BARIGUI-01
+  external_id: "6878"
   name: Estação Barigui — Parque Barigui
-  data_source: SIMEPAR
+  data_source: CEMADEN
   status: maintenance
   location: POINT(-49.3150 -25.4000)
   elevation_m: 920.0

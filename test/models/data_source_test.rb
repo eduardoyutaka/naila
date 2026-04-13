@@ -47,7 +47,6 @@ class DataSourceTest < ActiveSupport::TestCase
     assert_equal OpenWeatherMapClient, data_sources(:open_weather_map).client_class
     assert_equal InmetClient, data_sources(:inmet).client_class
     assert_equal CemadenClient, data_sources(:cemaden).client_class
-    assert_equal SimeparClient, data_sources(:simepar).client_class
   end
 
   test "client_class returns nil for unknown source" do

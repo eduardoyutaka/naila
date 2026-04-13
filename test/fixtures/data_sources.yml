@@ -34,15 +34,6 @@ cemaden:
   consecutive_failures: 0
   last_successful_fetch_at: <%= 15.minutes.ago.iso8601 %>
 
-simepar:
-  name: "SIMEPAR"
-  source_type: "api"
-  base_url: "https://www.simepar.br"
-  fetch_interval_seconds: 900
-  status: "active"
-  consecutive_failures: 0
-  last_successful_fetch_at: <%= 20.minutes.ago.iso8601 %>
-
 iot_municipal:
   name: "IoT Municipal"
   source_type: "mqtt"
