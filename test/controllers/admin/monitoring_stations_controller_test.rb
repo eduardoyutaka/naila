@@ -40,7 +40,29 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
   test "index shows empty state when no stations exist" do
     MonitoringStation.destroy_all
     get admin_monitoring_stations_path
-    assert_select "div", text: /Nenhuma estação cadastrada/
+    assert_select "div", text: /Nenhuma estação encontrada/
+  end
+
+  # ── Filters ──
+
+  test "index filters by status" do
+    get admin_monitoring_stations_path(q: { status: "maintenance" })
+    assert_response :success
+    assert_select "td", text: /Estação Barigui/
+    assert_select "td", text: /Estação Belém/, count: 0
+  end
+
+  test "index filters by search" do
+    get admin_monitoring_stations_path(q: { search: "Barigui" })
+    assert_response :success
+    assert_select "td", text: /Estação Barigui/
+    assert_select "td", text: /Estação Belém/, count: 0
+  end
+
+  test "index shows clear filters link when no results" do
+    get admin_monitoring_stations_path(q: { search: "nonexistent" })
+    assert_response :success
+    assert_select "a", text: /Limpar filtros/
   end
 
   # ── New ──

@@ -1,10 +1,5 @@
 <% content_for(:title, "Naila — Estações") %>
 
-<%
-  online_stations = @monitoring_stations.select { |s| s.status == "active" }
-  maintenance_stations = @monitoring_stations.select { |s| s.status == "maintenance" }
-%>
-
 <%# ── Page Header ── %>
 <div class="flex items-center justify-between mb-8">
   <%= catalyst_heading "Estações de Monitoramento", level: 1 %>
@@ -18,116 +13,144 @@
   <% end %>
 </div>
 
-<%# ── Summary Cards ── %>
-<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Estações</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @monitoring_stations.size %></div>
+<%= turbo_frame_tag "monitoring_stations_list" do %>
+  <%# ── Summary Cards ── %>
+  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Estações</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @summary_counts[:total] %></div>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Online</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online" data-testid="summary-online-count"><%= @summary_counts[:online] %></div>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Manutenção</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-degraded" data-testid="summary-maintenance-count"><%= @summary_counts[:maintenance] %></div>
+    </div>
   </div>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Online</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online" data-testid="summary-online-count"><%= online_stations.size %></div>
-  </div>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Manutenção</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-degraded" data-testid="summary-maintenance-count"><%= maintenance_stations.size %></div>
-  </div>
-</div>
 
-<%# ── Stations Table ── %>
-<% if @monitoring_stations.empty? %>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
-    <%= catalyst_text "Nenhuma estação cadastrada." %>
-  </div>
-<% else %>
-  <%= catalyst_table(dense: true) do %>
-    <%= catalyst_table_head do %>
-      <tr>
-        <%= catalyst_th "Nome" %>
-        <%= catalyst_th "Sensores" %>
-        <%= catalyst_th "Status" %>
-        <%= catalyst_th "Localização" %>
-        <%= catalyst_th "Última Leitura" %>
-        <%= catalyst_th "Ações", class: "text-right" %>
-      </tr>
-    <% end %>
-    <%= catalyst_table_body do %>
-      <% @monitoring_stations.each do |station| %>
-        <%= catalyst_table_row do %>
-          <%# Nome %>
-          <%= catalyst_td do %>
-            <div class="font-medium text-white"><%= station.name %></div>
-            <div class="font-mono text-zinc-500 dark:text-zinc-300"><%= station.external_id %></div>
-          <% end %>
+  <%# ── Filter Bar ── %>
+  <%= form_with url: admin_monitoring_stations_path, method: :get, scope: :q, data: { turbo_frame: "monitoring_stations_list" }, class: "mb-6 flex flex-wrap items-end gap-4" do |f| %>
+    <div class="min-w-[200px] flex-1">
+      <%= f.label :search, "Buscar", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.text_field :search, value: params.dig(:q, :search), placeholder: "Nome da estação...",
+            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "input->shared--auto-submit#submitDebounced" } %>
+    </div>
+    <div>
+      <%= f.label :status, "Status", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :status, options_for_select([["Todos", ""], ["Ativo", "active"], ["Manutenção", "maintenance"], ["Inativo", "inactive"]], params.dig(:q, :status)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+  <% end %>
 
-          <%# Sensores %>
-          <%= catalyst_td do %>
-            <div class="flex flex-wrap gap-1" data-testid="sensor-badges-<%= station.id %>">
-              <% station.sensors.each do |sensor| %>
-                <%= sensor_type_badge(sensor.sensor_type) %>
-              <% end %>
-              <% if station.sensors.empty? %>
+  <%# ── Stations Table ── %>
+  <% if @monitoring_stations.empty? %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
+      <%= catalyst_text "Nenhuma estação encontrada." %>
+      <% if params[:q].present? %>
+        <div class="mt-4">
+          <%= catalyst_button_link "Limpar filtros", href: admin_monitoring_stations_path, variant: :plain %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= catalyst_table(dense: true) do %>
+      <%= catalyst_table_head do %>
+        <tr>
+          <%= catalyst_th "Nome" %>
+          <%= catalyst_th "Sensores" %>
+          <%= catalyst_th "Status" %>
+          <%= catalyst_th "Localização" %>
+          <%= catalyst_th "Última Leitura" %>
+          <%= catalyst_th "Ações", class: "text-right" %>
+        </tr>
+      <% end %>
+      <%= catalyst_table_body do %>
+        <% @monitoring_stations.each do |station| %>
+          <%= catalyst_table_row do %>
+            <%# Nome %>
+            <%= catalyst_td do %>
+              <div class="font-medium text-white"><%= station.name %></div>
+              <div class="font-mono text-zinc-500 dark:text-zinc-300"><%= station.external_id %></div>
+            <% end %>
+
+            <%# Sensores %>
+            <%= catalyst_td do %>
+              <div class="flex flex-wrap gap-1" data-testid="sensor-badges-<%= station.id %>">
+                <% station.sensors.each do |sensor| %>
+                  <%= sensor_type_badge(sensor.sensor_type) %>
+                <% end %>
+                <% if station.sensors.empty? %>
+                  <span class="text-zinc-500 dark:text-zinc-300">—</span>
+                <% end %>
+              </div>
+            <% end %>
+
+            <%# Status %>
+            <%= catalyst_td do %>
+              <%
+                status_label = case station.status
+                               when "active"      then "Ativo"
+                               when "maintenance" then "Manutenção"
+                               else "Inativo"
+                               end
+                status_color = case station.status
+                               when "active"      then "green"
+                               when "maintenance" then "yellow"
+                               else "red"
+                               end
+              %>
+              <%= catalyst_badge status_label, color: status_color %>
+            <% end %>
+
+            <%# Localização %>
+            <%= catalyst_td (station.neighborhood&.name || "—"), class: "text-zinc-500 dark:text-zinc-300" %>
+
+            <%# Última Leitura %>
+            <%= catalyst_td do %>
+              <% if station.last_reading_value && station.last_reading_at %>
+                <div class="tabular-nums text-white font-medium"><%= number_with_precision(station.last_reading_value, precision: 1) %></div>
+                <div class="text-zinc-500 dark:text-zinc-300"><%= time_ago_in_words(station.last_reading_at) %> atrás</div>
+              <% else %>
                 <span class="text-zinc-500 dark:text-zinc-300">—</span>
               <% end %>
-            </div>
-          <% end %>
-
-          <%# Status %>
-          <%= catalyst_td do %>
-            <%
-              status_label = case station.status
-                             when "active"      then "Ativo"
-                             when "maintenance" then "Manutenção"
-                             else "Inativo"
-                             end
-              status_color = case station.status
-                             when "active"      then "green"
-                             when "maintenance" then "yellow"
-                             else "red"
-                             end
-            %>
-            <%= catalyst_badge status_label, color: status_color %>
-          <% end %>
-
-          <%# Localização %>
-          <%= catalyst_td (station.neighborhood&.name || "—"), class: "text-zinc-500 dark:text-zinc-300" %>
-
-          <%# Última Leitura %>
-          <%= catalyst_td do %>
-            <% if station.last_reading_value && station.last_reading_at %>
-              <div class="tabular-nums text-white font-medium"><%= number_with_precision(station.last_reading_value, precision: 1) %></div>
-              <div class="text-zinc-500 dark:text-zinc-300"><%= time_ago_in_words(station.last_reading_at) %> atrás</div>
-            <% else %>
-              <span class="text-zinc-500 dark:text-zinc-300">—</span>
             <% end %>
-          <% end %>
 
-          <%# Ações %>
-          <%= catalyst_td class: "text-right" do %>
-            <div class="flex items-center justify-end gap-2">
-              <%= link_to admin_monitoring_station_path(station),
-                    class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
-                    title: "Ver detalhes",
-                    aria: { label: "Ver detalhes de #{station.name}" } do %>
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
-              <% end %>
-              <% if policy(station).update? %>
-                <%= link_to edit_admin_monitoring_station_path(station),
+            <%# Ações %>
+            <%= catalyst_td class: "text-right" do %>
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to admin_monitoring_station_path(station),
                       class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
-                      title: "Editar",
-                      aria: { label: "Editar #{station.name}" } do %>
+                      title: "Ver detalhes",
+                      aria: { label: "Ver detalhes de #{station.name}" } do %>
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   </svg>
                 <% end %>
-              <% end %>
-            </div>
+                <% if policy(station).update? %>
+                  <%= link_to edit_admin_monitoring_station_path(station),
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
+                        title: "Editar",
+                        aria: { label: "Editar #{station.name}" } do %>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>
     <% end %>
+
+    <%# ── Pagination ── %>
+    <div class="mt-6">
+      <%= catalyst_pagy_nav(@pagy) %>
+    </div>
   <% end %>
 <% end %>

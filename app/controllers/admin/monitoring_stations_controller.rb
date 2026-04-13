@@ -1,12 +1,22 @@
 module Admin
   class MonitoringStationsController < BaseController
+    include Filterable
+
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
 
     before_action :set_monitoring_station, only: [ :show, :edit, :update, :destroy ]
 
     def index
-      @monitoring_stations = policy_scope(MonitoringStation).includes(:neighborhood, :river, :sensors).order(:name)
+      base_scope = policy_scope(MonitoringStation).includes(:neighborhood, :river, :sensors)
+      @summary_counts = station_summary_counts(base_scope)
+
+      q = filter_params(:search, :status)
+      scope = base_scope
+      scope = scope.search_by_name(q[:search]) if q[:search].present?
+      scope = scope.by_status(q[:status])      if q[:status].present?
+
+      @pagy, @monitoring_stations = pagy(scope.order(:name))
     end
 
     def show
@@ -61,6 +71,14 @@ module Admin
 
     def set_monitoring_station
       @monitoring_station = MonitoringStation.includes(:neighborhood, :river, :sensors).find(params[:id])
+    end
+
+    def station_summary_counts(scope)
+      {
+        total: scope.count,
+        online: scope.online.count,
+        maintenance: scope.by_status("maintenance").count
+      }
     end
 
     def monitoring_station_params
