@@ -1,13 +1,23 @@
 module Admin
   class AlarmsController < BaseController
+    include Filterable
+
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
 
     before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history ]
 
     def index
-      @alarms = policy_scope(Alarm).includes(:river_basin, :river)
-                                   .order(enabled: :desc, name: :asc)
+      base_scope = policy_scope(Alarm).includes(:river_basin, :river)
+      @summary_counts = alarm_summary_counts(base_scope)
+
+      q = filter_params(:search, :state, :enabled)
+      scope = base_scope
+      scope = scope.search_by_name(q[:search]) if q[:search].present?
+      scope = scope.by_state(q[:state])        if q[:state].present?
+      scope = scope.by_enabled(q[:enabled])    if q[:enabled].present?
+
+      @pagy, @alarms = pagy(scope.order(enabled: :desc, name: :asc))
     end
 
     def show
@@ -65,6 +75,15 @@ module Admin
 
     def set_alarm
       @alarm = Alarm.find(params[:id])
+    end
+
+    def alarm_summary_counts(scope)
+      {
+        total: scope.count,
+        enabled: scope.enabled.count,
+        alarm: scope.in_alarm.count,
+        insufficient: scope.by_state("insufficient_data").count
+      }
     end
 
     def alarm_params

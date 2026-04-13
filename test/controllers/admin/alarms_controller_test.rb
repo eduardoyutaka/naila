@@ -41,7 +41,36 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
   test "index shows empty state when no alarms exist" do
     Alarm.destroy_all
     get admin_alarms_path
-    assert_select "div", text: /Nenhum alarme cadastrado/
+    assert_select "div", text: /Nenhum alarme encontrado/
+  end
+
+  # ── Filters ──
+
+  test "index filters by state" do
+    get admin_alarms_path(q: { state: "alarm" })
+    assert_response :success
+    assert_select "td", text: /Nível Rio Belém/
+    assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
+  end
+
+  test "index filters by enabled" do
+    get admin_alarms_path(q: { enabled: "false" })
+    assert_response :success
+    assert_select "td", text: /Alarme Desativado/
+    assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
+  end
+
+  test "index filters by search" do
+    get admin_alarms_path(q: { search: "Nível" })
+    assert_response :success
+    assert_select "td", text: /Nível Rio Belém/
+    assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
+  end
+
+  test "index shows clear filters link when filters return no results" do
+    get admin_alarms_path(q: { search: "nonexistent" })
+    assert_response :success
+    assert_select "a", text: /Limpar filtros/
   end
 
   # ── Show ──

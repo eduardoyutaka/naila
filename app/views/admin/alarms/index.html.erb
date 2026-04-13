@@ -13,137 +13,170 @@
   <% end %>
 </div>
 
-<%# ── Summary Cards ── %>
-<% if @alarms.any? %>
-  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total"><%= @alarms.size %></div>
-    </div>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Ativos</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-400" data-testid="summary-enabled"><%= @alarms.count(&:enabled?) %></div>
-    </div>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Alarme</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high" data-testid="summary-alarm"><%= @alarms.count(&:alarm?) %></div>
-    </div>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Dados Insuficientes</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-400" data-testid="summary-insufficient"><%= @alarms.count(&:insufficient_data?) %></div>
-    </div>
-  </div>
-<% end %>
-
-<%# ── Alarms Table ── %>
-<% if @alarms.empty? %>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-12 text-center">
-    <%= catalyst_text "Nenhum alarme cadastrado." %>
-    <% if policy(Alarm).create? %>
-      <div class="mt-4">
-        <%= catalyst_button_link "Criar primeiro alarme", href: new_admin_alarm_path, color: "sky" do %>
-          <svg class="h-4 w-4" data-slot="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Criar primeiro alarme
-        <% end %>
+<%= turbo_frame_tag "alarms_list" do %>
+  <%# ── Summary Cards ── %>
+  <% if @summary_counts[:total] > 0 %>
+    <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+        <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total</p>
+        <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total"><%= @summary_counts[:total] %></div>
       </div>
-    <% end %>
-  </div>
-<% else %>
-  <%= catalyst_table(dense: true) do %>
-    <%= catalyst_table_head do %>
-      <tr>
-        <%= catalyst_th "Estado" %>
-        <%= catalyst_th "Nome" %>
-        <%= catalyst_th "Tipo" %>
-        <%= catalyst_th "Severidade" %>
-        <%= catalyst_th "Escopo" %>
-        <%= catalyst_th "Avaliado" %>
-        <%= catalyst_th "Ações", class: "text-right" %>
-      </tr>
-    <% end %>
-    <%= catalyst_table_body do %>
-      <% @alarms.each do |alarm| %>
-        <%= catalyst_table_row class: alarm.enabled? ? nil : "opacity-50" do %>
-          <%# Estado %>
-          <%= catalyst_td do %>
-            <%
-              state_color = case alarm.state
-                            when "ok"                then "green"
-                            when "alarm"             then "red"
-                            else "zinc"
-                            end
-              state_label = case alarm.state
-                            when "ok"                then "OK"
-                            when "alarm"             then "Alarme"
-                            else "Insuficiente"
-                            end
-            %>
-            <%= catalyst_badge state_label, color: state_color %>
-          <% end %>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+        <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Ativos</p>
+        <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-400" data-testid="summary-enabled"><%= @summary_counts[:enabled] %></div>
+      </div>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+        <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Alarme</p>
+        <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-high" data-testid="summary-alarm"><%= @summary_counts[:alarm] %></div>
+      </div>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+        <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Dados Insuficientes</p>
+        <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-400" data-testid="summary-insufficient"><%= @summary_counts[:insufficient] %></div>
+      </div>
+    </div>
+  <% end %>
 
-          <%# Nome %>
-          <%= catalyst_td do %>
-            <div class="font-medium text-white"><%= alarm.name %></div>
-            <% if alarm.description.present? %>
-              <div class="text-zinc-500 dark:text-zinc-300 truncate max-w-xs"><%= alarm.description %></div>
+  <%# ── Filter Bar ── %>
+  <%= form_with url: admin_alarms_path, method: :get, scope: :q, data: { turbo_frame: "alarms_list" }, class: "mb-6 flex flex-wrap items-end gap-4" do |f| %>
+    <div class="min-w-[200px] flex-1">
+      <%= f.label :search, "Buscar", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.text_field :search, value: params.dig(:q, :search), placeholder: "Nome do alarme...",
+            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "input->shared--auto-submit#submitDebounced" } %>
+    </div>
+    <div>
+      <%= f.label :state, "Estado", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :state, options_for_select([["Todos", ""], ["OK", "ok"], ["Alarme", "alarm"], ["Insuficiente", "insufficient_data"]], params.dig(:q, :state)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+    <div>
+      <%= f.label :enabled, "Ativação", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :enabled, options_for_select([["Todos", ""], ["Ativo", "true"], ["Desativado", "false"]], params.dig(:q, :enabled)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+  <% end %>
+
+  <%# ── Alarms Table ── %>
+  <% if @alarms.empty? %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-12 text-center">
+      <%= catalyst_text "Nenhum alarme encontrado." %>
+      <% if params[:q].present? %>
+        <div class="mt-4">
+          <%= catalyst_button_link "Limpar filtros", href: admin_alarms_path, variant: :plain %>
+        </div>
+      <% elsif policy(Alarm).create? %>
+        <div class="mt-4">
+          <%= catalyst_button_link "Criar primeiro alarme", href: new_admin_alarm_path, color: "sky" do %>
+            <svg class="h-4 w-4" data-slot="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Criar primeiro alarme
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= catalyst_table(dense: true) do %>
+      <%= catalyst_table_head do %>
+        <tr>
+          <%= catalyst_th "Estado" %>
+          <%= catalyst_th "Nome" %>
+          <%= catalyst_th "Tipo" %>
+          <%= catalyst_th "Severidade" %>
+          <%= catalyst_th "Escopo" %>
+          <%= catalyst_th "Avaliado" %>
+          <%= catalyst_th "Ações", class: "text-right" %>
+        </tr>
+      <% end %>
+      <%= catalyst_table_body do %>
+        <% @alarms.each do |alarm| %>
+          <%= catalyst_table_row class: alarm.enabled? ? nil : "opacity-50" do %>
+            <%# Estado %>
+            <%= catalyst_td do %>
+              <%
+                state_color = case alarm.state
+                              when "ok"                then "green"
+                              when "alarm"             then "red"
+                              else "zinc"
+                              end
+                state_label = case alarm.state
+                              when "ok"                then "OK"
+                              when "alarm"             then "Alarme"
+                              else "Insuficiente"
+                              end
+              %>
+              <%= catalyst_badge state_label, color: state_color %>
             <% end %>
-          <% end %>
 
-          <%# Tipo %>
-          <%= catalyst_td(RiskHelper::METRIC_NAME_LABEL.fetch(alarm.metric_name, alarm.metric_name.humanize), class: "text-zinc-500 dark:text-zinc-300") %>
-
-          <%# Severidade %>
-          <%= catalyst_td do %>
-            <%= severity_badge(alarm.current_severity) %>
-          <% end %>
-
-          <%# Escopo %>
-          <%= catalyst_td (alarm.river&.name || alarm.river_basin&.name || "Global"), class: "text-zinc-500 dark:text-zinc-300" %>
-
-          <%# Avaliado %>
-          <%= catalyst_td class: "text-zinc-500 dark:text-zinc-300" do %>
-            <%= alarm.last_evaluated_at ? time_ago_in_words(alarm.last_evaluated_at) + " atrás" : "—" %>
-          <% end %>
-
-          <%# Ações %>
-          <%= catalyst_td class: "text-right" do %>
-            <div class="flex items-center justify-end gap-2">
-              <%= link_to admin_alarm_path(alarm),
-                    class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
-                    title: "Ver detalhes",
-                    aria: { label: "Ver detalhes de #{alarm.name}" } do %>
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
+            <%# Nome %>
+            <%= catalyst_td do %>
+              <div class="font-medium text-white"><%= alarm.name %></div>
+              <% if alarm.description.present? %>
+                <div class="text-zinc-500 dark:text-zinc-300 truncate max-w-xs"><%= alarm.description %></div>
               <% end %>
-              <% if policy(alarm).update? %>
-                <%= link_to edit_admin_alarm_path(alarm),
+            <% end %>
+
+            <%# Tipo %>
+            <%= catalyst_td(RiskHelper::METRIC_NAME_LABEL.fetch(alarm.metric_name, alarm.metric_name.humanize), class: "text-zinc-500 dark:text-zinc-300") %>
+
+            <%# Severidade %>
+            <%= catalyst_td do %>
+              <%= severity_badge(alarm.current_severity) %>
+            <% end %>
+
+            <%# Escopo %>
+            <%= catalyst_td (alarm.river&.name || alarm.river_basin&.name || "Global"), class: "text-zinc-500 dark:text-zinc-300" %>
+
+            <%# Avaliado %>
+            <%= catalyst_td class: "text-zinc-500 dark:text-zinc-300" do %>
+              <%= alarm.last_evaluated_at ? time_ago_in_words(alarm.last_evaluated_at) + " atrás" : "—" %>
+            <% end %>
+
+            <%# Ações %>
+            <%= catalyst_td class: "text-right" do %>
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to admin_alarm_path(alarm),
                       class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
-                      title: "Editar",
-                      aria: { label: "Editar #{alarm.name}" } do %>
+                      title: "Ver detalhes",
+                      aria: { label: "Ver detalhes de #{alarm.name}" } do %>
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   </svg>
                 <% end %>
-              <% end %>
-              <% if policy(alarm).destroy? %>
-                <%= button_to admin_alarm_path(alarm),
-                      method: :delete,
-                      class: "rounded-md p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors",
-                      form: { data: { turbo_confirm: "Tem certeza que deseja remover este alarme?" } },
-                      aria: { label: "Remover #{alarm.name}" } do %>
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
+                <% if policy(alarm).update? %>
+                  <%= link_to edit_admin_alarm_path(alarm),
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
+                        title: "Editar",
+                        aria: { label: "Editar #{alarm.name}" } do %>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </div>
+                <% if policy(alarm).destroy? %>
+                  <%= button_to admin_alarm_path(alarm),
+                        method: :delete,
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors",
+                        form: { data: { turbo_confirm: "Tem certeza que deseja remover este alarme?" } },
+                        aria: { label: "Remover #{alarm.name}" } do %>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>
     <% end %>
+
+    <%# ── Pagination ── %>
+    <div class="mt-6">
+      <%= catalyst_pagy_nav(@pagy) %>
+    </div>
   <% end %>
 <% end %>
