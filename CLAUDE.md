@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Naila** is a real-time flood risk monitoring system for Curitiba, Brazil. It serves government officials (Defesa Civil) via a dark-themed command-center dashboard and citizens via a light-themed public website. Built with Rails 8, PostgreSQL + PostGIS, and Hotwire.
+**Naila** is a real-time flood risk monitoring system for Curitiba, Brazil. It serves government officials (Defesa Civil) via a dark-themed command-center dashboard. Citizens are notified about emergencies via SMS. Built with Rails 8, PostgreSQL + PostGIS, and Hotwire.
 
 ## Commands
 
@@ -23,11 +23,11 @@ bin/importmap audit              # JS dependency audit
 
 ## Architecture
 
-### Two interfaces, one app
+### Admin-only app
 
-- **Admin** (`/admin`) — dark command-center dashboard. `Admin::BaseController` requires authentication + Pundit authorization. Layout: `app/views/layouts/admin.html.erb`.
-- **Public** (`/`, `/mapa`, `/alertas`, `/bairros`, `/seguranca`) — light mobile-first citizen site. `Public::BaseController` with public layout. Portuguese URLs.
+- **Admin** (`/admin`, also `/` root) — dark command-center dashboard. `Admin::BaseController` requires authentication + Pundit authorization. Layout: `app/views/layouts/admin.html.erb`.
 - **API** (`/api/v1`) — sensor data ingestion endpoint (planned).
+- Root path redirects to admin dashboard (login required).
 
 ### Authentication & Authorization
 
