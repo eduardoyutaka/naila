@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include Pagy::Frontend
   include RiskHelper
   include Catalyst::ButtonHelper
   include Catalyst::BadgeHelper
