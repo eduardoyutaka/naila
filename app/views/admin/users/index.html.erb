@@ -13,28 +13,56 @@
   <% end %>
 </div>
 
-<%# ── Summary Cards ── %>
-<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Total de Usuários</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-white"><%= @users.size %></div>
+<%= turbo_frame_tag "users_list" do %>
+  <%# ── Summary Cards ── %>
+  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Total de Usuários</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-white"><%= @summary_counts[:total] %></div>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Usuários Ativos</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @summary_counts[:active] %></div>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Recebem SMS</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @summary_counts[:sms] %></div>
+    </div>
   </div>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Usuários Ativos</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online"><%= @users.count(&:active?) %></div>
-  </div>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Recebem SMS</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @users.count(&:receives_sms_alerts?) %></div>
-  </div>
-</div>
 
-<%# ── Users Table ── %>
-<% if @users.empty? %>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
-    <%= catalyst_text "Nenhum usuário cadastrado." %>
-  </div>
-<% else %>
+  <%# ── Filter Bar ── %>
+  <%= form_with url: admin_users_path, method: :get, scope: :q, data: { turbo_frame: "users_list" }, class: "mb-6 flex flex-wrap items-end gap-4" do |f| %>
+    <div class="min-w-[200px] flex-1">
+      <%= f.label :search, "Buscar", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.text_field :search, value: params.dig(:q, :search), placeholder: "Nome do usuário...",
+            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "input->shared--auto-submit#submitDebounced" } %>
+    </div>
+    <div>
+      <%= f.label :role, "Cargo", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :role, options_for_select([["Todos", ""], ["Administrador", "admin"], ["Coordenador", "coordinator"], ["Operador", "operator"]], params.dig(:q, :role)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+    <div>
+      <%= f.label :active, "Status", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :active, options_for_select([["Todos", ""], ["Ativo", "true"], ["Inativo", "false"]], params.dig(:q, :active)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+  <% end %>
+
+  <%# ── Users Table ── %>
+  <% if @users.empty? %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
+      <%= catalyst_text "Nenhum usuário encontrado." %>
+      <% if params[:q].present? %>
+        <div class="mt-4">
+          <%= catalyst_button_link "Limpar filtros", href: admin_users_path, variant: :plain %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
     <%= catalyst_table(dense: true) do %>
       <%= catalyst_table_head do %>
         <tr>
@@ -127,4 +155,10 @@
         <% end %>
       <% end %>
     <% end %>
+
+    <%# ── Pagination ── %>
+    <div class="mt-6">
+      <%= catalyst_pagy_nav(@pagy) %>
+    </div>
   <% end %>
+<% end %>

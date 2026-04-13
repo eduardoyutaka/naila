@@ -1,5 +1,7 @@
 module Admin
   class UsersController < BaseController
+    include Filterable
+
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
 
@@ -8,7 +10,16 @@ module Admin
     before_action -> { authorize @user }, only: [:edit, :update, :destroy]
 
     def index
-      @users = policy_scope(User).order(:name).includes(:sessions)
+      base_scope = policy_scope(User).includes(:sessions)
+      @summary_counts = user_summary_counts(base_scope)
+
+      q = filter_params(:search, :role, :active)
+      scope = base_scope
+      scope = scope.search_by_name(q[:search]) if q[:search].present?
+      scope = scope.by_role(q[:role])           if q[:role].present?
+      scope = scope.by_active(q[:active])       if q[:active].present?
+
+      @pagy, @users = pagy(scope.order(:name))
     end
 
     def new
@@ -50,6 +61,14 @@ module Admin
     end
 
     private
+
+    def user_summary_counts(scope)
+      {
+        total: scope.count,
+        active: scope.active.count,
+        sms: scope.sms_recipients.count
+      }
+    end
 
     def set_user
       @user = User.find(params[:id])
