@@ -7,6 +7,9 @@ class User < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :sms_recipients, -> { active.where(receives_sms_alerts: true).where.not(phone_number: nil) }
+  scope :by_role, ->(role) { where(role: role) }
+  scope :by_active, ->(val) { where(active: val) }
+  scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
 
   def admin?
     role == "admin"

@@ -153,6 +153,27 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not_includes ok_alarms, alarms(:river_level_belem)
   end
 
+  test "by_enabled scope filters by enabled flag" do
+    enabled = Alarm.by_enabled(true)
+    assert_includes enabled, alarms(:precip_3h_belem)
+    assert_not_includes enabled, alarms(:disabled_alarm)
+
+    disabled = Alarm.by_enabled(false)
+    assert_includes disabled, alarms(:disabled_alarm)
+    assert_not_includes disabled, alarms(:precip_3h_belem)
+  end
+
+  test "search_by_name scope filters by name with ILIKE" do
+    results = Alarm.search_by_name("precipitação")
+    assert_includes results, alarms(:precip_3h_belem)
+    assert_not_includes results, alarms(:river_level_belem)
+  end
+
+  test "search_by_name scope returns all when term is blank" do
+    assert_equal Alarm.count, Alarm.search_by_name("").count
+    assert_equal Alarm.count, Alarm.search_by_name(nil).count
+  end
+
   # ── Associations ──
 
   test "belongs to river basin optionally" do

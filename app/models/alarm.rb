@@ -40,6 +40,8 @@ class Alarm < ApplicationRecord
   scope :metric_alarms, -> { where(alarm_type: "metric") }
   scope :in_alarm, -> { where(state: "alarm") }
   scope :by_state, ->(s) { where(state: s) }
+  scope :by_enabled, ->(val) { where(enabled: val) }
+  scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
 
   def self.max_severity_by_basin
     in_alarm.where.not(river_basin_id: nil).group(:river_basin_id).maximum(:current_severity)

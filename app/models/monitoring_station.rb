@@ -15,6 +15,8 @@ class MonitoringStation < ApplicationRecord
   }, prefix: true
 
   scope :online, -> { where(status: "active") }
+  scope :by_status, ->(status) { where(status: status) }
+  scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
 
   def nearby_river_basin_ids
     return [] unless location

@@ -24,6 +24,9 @@ class RiverBasin < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :at_risk, -> { where.not(current_risk_level: :normal) }
+  scope :by_risk_level, ->(level) { where(current_risk_level: level) }
+  scope :by_active, ->(val) { where(active: val) }
+  scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
 
   private
 
