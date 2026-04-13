@@ -1,12 +1,23 @@
 module Admin
   class RiverBasinsController < BaseController
+    include Filterable
+
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
 
     before_action :set_river_basin, only: [:show, :edit, :update, :destroy]
 
     def index
-      @river_basins = policy_scope(RiverBasin).order(current_risk_level: :desc, name: :asc)
+      base_scope = policy_scope(RiverBasin)
+      @summary_counts = basin_summary_counts(base_scope)
+
+      q = filter_params(:search, :risk_level, :active)
+      scope = base_scope
+      scope = scope.search_by_name(q[:search])     if q[:search].present?
+      scope = scope.by_risk_level(q[:risk_level])   if q[:risk_level].present?
+      scope = scope.by_active(q[:active])            if q[:active].present?
+
+      @pagy, @river_basins = pagy(scope.order(current_risk_level: :desc, name: :asc))
     end
 
     def show
@@ -54,6 +65,14 @@ module Admin
     end
 
     private
+
+    def basin_summary_counts(scope)
+      {
+        total: scope.count,
+        active: scope.active.count,
+        at_risk: scope.at_risk.count
+      }
+    end
 
     def set_river_basin
       @river_basin = RiverBasin.find(params[:id])

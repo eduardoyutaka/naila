@@ -34,7 +34,29 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
   test "index shows empty state when no basins exist" do
     RiverBasin.destroy_all
     get admin_river_basins_path
-    assert_select "div", text: /Nenhuma bacia hidrográfica cadastrada/
+    assert_select "div", text: /Nenhuma bacia hidrográfica encontrada/
+  end
+
+  # ── Filters ──
+
+  test "index filters by risk level" do
+    get admin_river_basins_path(q: { risk_level: "alert" })
+    assert_response :success
+    assert_select "td", text: /Bacia do Rio Belém/
+    assert_select "td", text: /Bacia do Rio Barigui/, count: 0
+  end
+
+  test "index filters by search" do
+    get admin_river_basins_path(q: { search: "Barigui" })
+    assert_response :success
+    assert_select "td", text: /Bacia do Rio Barigui/
+    assert_select "td", text: /Bacia do Rio Belém/, count: 0
+  end
+
+  test "index shows clear filters link when no results" do
+    get admin_river_basins_path(q: { search: "nonexistent" })
+    assert_response :success
+    assert_select "a", text: /Limpar filtros/
   end
 
   test "index requires authentication" do

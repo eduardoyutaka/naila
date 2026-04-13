@@ -1,10 +1,5 @@
 <% content_for(:title, "Naila — Bacias Hidrográficas") %>
 
-<%
-  active_basins = @river_basins.select(&:active?)
-  at_risk_basins = @river_basins.reject(&:risk_normal?)
-%>
-
 <%# ── Page Header ── %>
 <div class="flex items-center justify-between mb-8">
   <%= catalyst_heading "Bacias Hidrográficas", level: 1 %>
@@ -18,102 +13,136 @@
   <% end %>
 </div>
 
-<%# ── Summary Cards ── %>
-<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Bacias</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @river_basins.size %></div>
+<%= turbo_frame_tag "river_basins_list" do %>
+  <%# ── Summary Cards ── %>
+  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Bacias</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @summary_counts[:total] %></div>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Bacias Ativas</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-400" data-testid="summary-active-count"><%= @summary_counts[:active] %></div>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Bacias em Risco</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention" data-testid="summary-at-risk-count"><%= @summary_counts[:at_risk] %></div>
+    </div>
   </div>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Bacias Ativas</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-400" data-testid="summary-active-count"><%= active_basins.size %></div>
-  </div>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
-    <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Bacias em Risco</p>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-risk-attention" data-testid="summary-at-risk-count"><%= at_risk_basins.size %></div>
-  </div>
-</div>
 
-<%# ── River Basins Table ── %>
-<% if @river_basins.empty? %>
-  <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
-    <%= catalyst_text "Nenhuma bacia hidrográfica cadastrada." %>
-  </div>
-<% else %>
-  <%= catalyst_table(dense: true) do %>
-    <%= catalyst_table_head do %>
-      <tr>
-        <%= catalyst_th "Nível" %>
-        <%= catalyst_th "Nome" %>
-        <%= catalyst_th "Área (km²)" %>
-        <%= catalyst_th "Score" %>
-        <%= catalyst_th "Ações", class: "text-right" %>
-      </tr>
-    <% end %>
-    <%= catalyst_table_body do %>
-      <% @river_basins.each do |basin| %>
-        <%= catalyst_table_row do %>
-          <%# Nível de Risco %>
-          <%= catalyst_td do %>
-            <%= risk_level_badge(basin.current_risk_level) %>
-          <% end %>
+  <%# ── Filter Bar ── %>
+  <%= form_with url: admin_river_basins_path, method: :get, scope: :q, data: { turbo_frame: "river_basins_list" }, class: "mb-6 flex flex-wrap items-end gap-4" do |f| %>
+    <div class="min-w-[200px] flex-1">
+      <%= f.label :search, "Buscar", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.text_field :search, value: params.dig(:q, :search), placeholder: "Nome da bacia...",
+            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "input->shared--auto-submit#submitDebounced" } %>
+    </div>
+    <div>
+      <%= f.label :risk_level, "Nível de Risco", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :risk_level, options_for_select([["Todos", ""], ["Normal", "normal"], ["Atenção", "attention"], ["Alerta", "alert"], ["Alerta Máximo", "high_alert"], ["Emergência", "emergency"]], params.dig(:q, :risk_level)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+    <div>
+      <%= f.label :active, "Status", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.select :active, options_for_select([["Todos", ""], ["Ativa", "true"], ["Inativa", "false"]], params.dig(:q, :active)),
+            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
+    </div>
+  <% end %>
 
-          <%# Nome %>
-          <%= catalyst_td do %>
-            <div class="font-medium text-white"><%= basin.name %></div>
-            <% if basin.description.present? %>
-              <div class="text-zinc-500 dark:text-zinc-300 truncate max-w-xs"><%= basin.description %></div>
+  <%# ── River Basins Table ── %>
+  <% if @river_basins.empty? %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
+      <%= catalyst_text "Nenhuma bacia hidrográfica encontrada." %>
+      <% if params[:q].present? %>
+        <div class="mt-4">
+          <%= catalyst_button_link "Limpar filtros", href: admin_river_basins_path, variant: :plain %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= catalyst_table(dense: true) do %>
+      <%= catalyst_table_head do %>
+        <tr>
+          <%= catalyst_th "Nível" %>
+          <%= catalyst_th "Nome" %>
+          <%= catalyst_th "Área (km²)" %>
+          <%= catalyst_th "Score" %>
+          <%= catalyst_th "Ações", class: "text-right" %>
+        </tr>
+      <% end %>
+      <%= catalyst_table_body do %>
+        <% @river_basins.each do |basin| %>
+          <%= catalyst_table_row do %>
+            <%# Nível de Risco %>
+            <%= catalyst_td do %>
+              <%= risk_level_badge(basin.current_risk_level) %>
             <% end %>
-          <% end %>
 
-          <%# Área %>
-          <%= catalyst_td class: "tabular-nums text-zinc-500 dark:text-zinc-300" do %>
-            <%= basin.area_km2 ? number_with_precision(basin.area_km2, precision: 1) : "—" %>
-          <% end %>
-
-          <%# Score %>
-          <%= catalyst_td class: "tabular-nums text-zinc-500 dark:text-zinc-300" do %>
-            <%= basin.current_risk_score ? number_to_percentage(basin.current_risk_score * 100, precision: 0) : "—" %>
-          <% end %>
-
-          <%# Ações %>
-          <%= catalyst_td class: "text-right" do %>
-            <div class="flex items-center justify-end gap-2">
-              <%= link_to admin_river_basin_path(basin),
-                    class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
-                    title: "Ver detalhes",
-                    aria: { label: "Ver detalhes de #{basin.name}" } do %>
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
+            <%# Nome %>
+            <%= catalyst_td do %>
+              <div class="font-medium text-white"><%= basin.name %></div>
+              <% if basin.description.present? %>
+                <div class="text-zinc-500 dark:text-zinc-300 truncate max-w-xs"><%= basin.description %></div>
               <% end %>
-              <% if policy(basin).update? %>
-                <%= link_to edit_admin_river_basin_path(basin),
+            <% end %>
+
+            <%# Área %>
+            <%= catalyst_td class: "tabular-nums text-zinc-500 dark:text-zinc-300" do %>
+              <%= basin.area_km2 ? number_with_precision(basin.area_km2, precision: 1) : "—" %>
+            <% end %>
+
+            <%# Score %>
+            <%= catalyst_td class: "tabular-nums text-zinc-500 dark:text-zinc-300" do %>
+              <%= basin.current_risk_score ? number_to_percentage(basin.current_risk_score * 100, precision: 0) : "—" %>
+            <% end %>
+
+            <%# Ações %>
+            <%= catalyst_td class: "text-right" do %>
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to admin_river_basin_path(basin),
                       class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
-                      title: "Editar",
-                      aria: { label: "Editar #{basin.name}" } do %>
+                      title: "Ver detalhes",
+                      aria: { label: "Ver detalhes de #{basin.name}" } do %>
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   </svg>
                 <% end %>
-              <% end %>
-              <% if policy(basin).destroy? %>
-                <%= button_to admin_river_basin_path(basin),
-                      method: :delete,
-                      class: "rounded-md p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors",
-                      title: "Remover",
-                      aria: { label: "Remover #{basin.name}" },
-                      form: { data: { turbo_confirm: "Tem certeza que deseja remover esta bacia hidrográfica?" } } do %>
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
+                <% if policy(basin).update? %>
+                  <%= link_to edit_admin_river_basin_path(basin),
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
+                        title: "Editar",
+                        aria: { label: "Editar #{basin.name}" } do %>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </div>
+                <% if policy(basin).destroy? %>
+                  <%= button_to admin_river_basin_path(basin),
+                        method: :delete,
+                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors",
+                        title: "Remover",
+                        aria: { label: "Remover #{basin.name}" },
+                        form: { data: { turbo_confirm: "Tem certeza que deseja remover esta bacia hidrográfica?" } } do %>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>
     <% end %>
+
+    <%# ── Pagination ── %>
+    <div class="mt-6">
+      <%= catalyst_pagy_nav(@pagy) %>
+    </div>
   <% end %>
 <% end %>
