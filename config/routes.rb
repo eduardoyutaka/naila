@@ -38,14 +38,6 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "/jobs"
   end
 
-  # ── Public ──
-  root "public/home#index"
-
-  scope module: :public do
-    get "mapa",      to: "risk_map#index",    as: :risk_map
-    get "alertas",   to: "alarms#index",      as: :public_alarms
-    get "bairros",   to: "neighborhoods#index", as: :neighborhoods
-    get "bairros/:code", to: "neighborhoods#show", as: :neighborhood
-    get "seguranca", to: "safety#index",      as: :safety
-  end
+  # Root redirects to admin dashboard (login required)
+  root "admin/dashboard#index"
 end

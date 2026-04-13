@@ -27,8 +27,8 @@ class AuthenticationTest < ApplicationSystemTestCase
     assert_current_path login_path
   end
 
-  test "public pages are accessible without login" do
+  test "root redirects to login when unauthenticated" do
     visit root_path
-    assert_current_path root_path
+    assert_current_path login_path
   end
 end
