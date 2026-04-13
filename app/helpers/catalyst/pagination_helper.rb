@@ -1,4 +1,21 @@
 module Catalyst::PaginationHelper
+  # Bridge: renders a Pagy instance using the Catalyst pagination component.
+  # Returns nil when there is only one page (nothing to paginate).
+  def catalyst_pagy_nav(pagy, **opts)
+    return nil if pagy.pages <= 1
+
+    series = pagy.series.map { |item| item.is_a?(String) ? item.to_i : item }
+
+    catalyst_pagination(
+      prev_href:    pagy.prev ? pagy_url_for(pagy, pagy.prev) : nil,
+      next_href:    pagy.next ? pagy_url_for(pagy, pagy.next) : nil,
+      pages:        series,
+      current_page: pagy.page,
+      page_href:    ->(page) { pagy_url_for(pagy, page) },
+      **opts
+    )
+  end
+
   # Renders Catalyst-styled pagination.
   #   catalyst_pagination(prev_href: "/page/1", next_href: "/page/3", pages: [1,2,3,4,5], current_page: 2, page_href: ->(p) { "/page/#{p}" })
   def catalyst_pagination(prev_href: nil, next_href: nil, pages: [], current_page: nil, page_href: nil, **opts)
