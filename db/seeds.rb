@@ -423,7 +423,6 @@ puts "  Creating data sources..."
   { name: "CEMADEN", source_type: "api", base_url: "https://mapservices.cemaden.gov.br", fetch_interval: 600 },
   { name: "OpenWeatherMap", source_type: "api", base_url: "https://api.openweathermap.org", fetch_interval: 1800 },
   { name: "Open-Meteo", source_type: "api", base_url: "https://api.open-meteo.com", fetch_interval: 1800 },
-  { name: "IoT Municipal", source_type: "mqtt", base_url: "mqtt://iot.curitiba.pr.gov.br", fetch_interval: 60 },
 ].each do |data|
   DataSource.find_or_create_by!(name: data[:name]) do |ds|
     ds.source_type = data[:source_type]
