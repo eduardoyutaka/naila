@@ -10,8 +10,10 @@ class BaseClient
     @data_source = data_source
   end
 
+  USER_AGENT = "Naila/1.0 (flood monitoring; +https://naila.curitiba.pr.gov.br)".freeze
+
   def connection
-    @connection ||= Faraday.new(url: data_source.base_url) do |f|
+    @connection ||= Faraday.new(url: data_source.base_url, headers: { "User-Agent" => USER_AGENT }) do |f|
       f.request :retry, max: MAX_RETRIES, interval: RETRY_INTERVAL,
                          backoff_factor: 2, exceptions: [Faraday::ConnectionFailed, Faraday::TimeoutError]
       f.response :json, content_type: /\bjson$/
