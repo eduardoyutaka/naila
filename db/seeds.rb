@@ -248,8 +248,7 @@ stations_data = [
     source: "CEMADEN", basin: "Bacia do Rio Iguaçu", river: "Rio Iguaçu",
     neighborhood: "boqueirao", lon: -49.284, lat: -25.555,
     sensors: [
-      { type: :river_gauge,  eid: "FLUV-IGUACU-01",  unit: "m",  reading_type: "river_level" },
-      { type: :pluviometer,  eid: "PLUV-IGUACU-01",  unit: "mm", reading_type: "precipitation" },
+      { type: :pluviometer, eid: "PLUV-IGUACU-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
@@ -257,8 +256,7 @@ stations_data = [
     source: "CEMADEN", basin: "Bacia do Rio Barigui", river: "Rio Barigui",
     neighborhood: "santa-felicidade", lon: -49.332, lat: -25.382,
     sensors: [
-      { type: :river_gauge,  eid: "FLUV-BARIGUI-01", unit: "m",  reading_type: "river_level" },
-      { type: :pluviometer,  eid: "PLUV-BARIGUI-01", unit: "mm", reading_type: "precipitation" },
+      { type: :pluviometer, eid: "PLUV-BARIGUI-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
@@ -266,7 +264,6 @@ stations_data = [
     source: "CEMADEN", basin: "Bacia do Rio Belém", river: "Rio Belém",
     neighborhood: "boa-vista", lon: -49.245, lat: -25.379,
     sensors: [
-      { type: :river_gauge, eid: "FLUV-BELEM-01", unit: "m",  reading_type: "river_level" },
       { type: :pluviometer, eid: "PLUV-BELEM-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
@@ -275,8 +272,7 @@ stations_data = [
     source: "CEMADEN", basin: "Bacia do Rio Atuba", river: "Rio Atuba",
     neighborhood: "cajuru", lon: -49.197, lat: -25.384,
     sensors: [
-      { type: :river_gauge,  eid: "FLUV-ATUBA-01",  unit: "m",  reading_type: "river_level" },
-      { type: :pluviometer,  eid: "PLUV-ATUBA-01",  unit: "mm", reading_type: "precipitation" },
+      { type: :pluviometer, eid: "PLUV-ATUBA-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
@@ -284,8 +280,7 @@ stations_data = [
     source: "CEMADEN", basin: "Bacia do Rio Passaúna",
     neighborhood: "cic", lon: -49.36184, lat: -25.41118,
     sensors: [
-      { type: :pluviometer,     eid: "PLUV-PASSAUNA-01",  unit: "mm", reading_type: "precipitation" },
-      { type: :weather_station, eid: "METEO-PASSAUNA-01", unit: "°C", reading_type: "temperature" },
+      { type: :pluviometer, eid: "PLUV-PASSAUNA-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
