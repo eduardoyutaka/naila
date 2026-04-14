@@ -1,24 +1,25 @@
 {
-  "estacoes": [
-    {
-      "codEstacao": "410690701A",
-      "nome": "Curitiba - Centro",
-      "latitude": -25.4284,
-      "longitude": -49.2733,
-      "medicoes": [
-        {
-          "dataHora": "2026-03-23 12:00:00",
-          "valor": 2.4
-        },
-        {
-          "dataHora": "2026-03-23 11:50:00",
-          "valor": 1.8
-        },
-        {
-          "dataHora": "2026-03-23 11:40:00",
-          "valor": 0.0
-        }
-      ]
+  "horarios": ["10h", "11h", "12h"],
+  "estacao": {
+    "idEstacao": 6877,
+    "nome": "Boa Vista",
+    "latitude": -25.379,
+    "longitude": -49.245,
+    "status": "ENABLED",
+    "codEstacao": "410690205A",
+    "idMunicipio": {
+      "idMunicipio": 1941,
+      "cidade": "CURITIBA",
+      "uf": "PR",
+      "codibge": 4106902
+    },
+    "idTipoestacao": {
+      "idTipoestacao": 1,
+      "descricao": "Pluviométrica"
     }
+  },
+  "datas": ["23/03/2026"],
+  "acumulados": [
+    [2.4, 1.8, 0.0]
   ]
 }

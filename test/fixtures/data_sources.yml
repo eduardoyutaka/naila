@@ -28,7 +28,7 @@ inmet:
 cemaden:
   name: "CEMADEN"
   source_type: "api"
-  base_url: "http://sjc.salvar.cemaden.gov.br"
+  base_url: "https://mapservices.cemaden.gov.br"
   fetch_interval_seconds: 600
   status: "active"
   consecutive_failures: 0
