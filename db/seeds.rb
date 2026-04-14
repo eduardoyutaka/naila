@@ -238,29 +238,33 @@ end.index_by(&:name)
 # ============================================================
 puts "  Creating sensor stations and sensors..."
 
+# Station identifiers match the real CEMADEN idEstacao values returned by
+# mapservices.cemaden.gov.br for Curitiba (IBGE 4106902) and the INMET A807
+# Curitiba automatic station. Coordinates below are the real station
+# locations, which the data source APIs use to report measurements.
 stations_data = [
   {
-    eid: "EST-IGUACU-01", name: "Estação Iguaçu — Ponte do Guabirotuba",
-    source: "SIMEPAR", basin: "Bacia do Rio Iguaçu", river: "Rio Iguaçu",
-    neighborhood: "boqueirao", lon: -49.275, lat: -25.465,
+    eid: "6882", name: "Estação Umbará (bacia Iguaçu)",
+    source: "CEMADEN", basin: "Bacia do Rio Iguaçu", river: "Rio Iguaçu",
+    neighborhood: "boqueirao", lon: -49.284, lat: -25.555,
     sensors: [
       { type: :river_gauge,  eid: "FLUV-IGUACU-01",  unit: "m",  reading_type: "river_level" },
       { type: :pluviometer,  eid: "PLUV-IGUACU-01",  unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
-    eid: "EST-BARIGUI-01", name: "Estação Barigui — Parque Barigui",
-    source: "SIMEPAR", basin: "Bacia do Rio Barigui", river: "Rio Barigui",
-    neighborhood: "santa-felicidade", lon: -49.315, lat: -25.400,
+    eid: "6878", name: "Estação Santa Felicidade (bacia Barigui)",
+    source: "CEMADEN", basin: "Bacia do Rio Barigui", river: "Rio Barigui",
+    neighborhood: "santa-felicidade", lon: -49.332, lat: -25.382,
     sensors: [
       { type: :river_gauge,  eid: "FLUV-BARIGUI-01", unit: "m",  reading_type: "river_level" },
       { type: :pluviometer,  eid: "PLUV-BARIGUI-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
-    eid: "EST-BELEM-01", name: "Estação Belém — Centro Cívico",
-    source: "SIMEPAR", basin: "Bacia do Rio Belém", river: "Rio Belém",
-    neighborhood: "centro-civico", lon: -49.270, lat: -25.405,
+    eid: "A807", name: "Estação INMET Curitiba (bacia Belém)",
+    source: "INMET", basin: "Bacia do Rio Belém", river: "Rio Belém",
+    neighborhood: "centro-civico", lon: -49.2306, lat: -25.4486,
     sensors: [
       { type: :river_gauge,     eid: "FLUV-BELEM-01",  unit: "m",  reading_type: "river_level" },
       { type: :pluviometer,     eid: "PLUV-BELEM-01",  unit: "mm", reading_type: "precipitation" },
@@ -268,27 +272,27 @@ stations_data = [
     ]
   },
   {
-    eid: "EST-ATUBA-01", name: "Estação Atuba — Cajuru",
-    source: "SIMEPAR", basin: "Bacia do Rio Atuba", river: "Rio Atuba",
-    neighborhood: "cajuru", lon: -49.230, lat: -25.400,
+    eid: "6880", name: "Estação Atuba",
+    source: "CEMADEN", basin: "Bacia do Rio Atuba", river: "Rio Atuba",
+    neighborhood: "cajuru", lon: -49.197, lat: -25.384,
     sensors: [
       { type: :river_gauge,  eid: "FLUV-ATUBA-01",  unit: "m",  reading_type: "river_level" },
       { type: :pluviometer,  eid: "PLUV-ATUBA-01",  unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
-    eid: "EST-PASSAUNA-01", name: "Estação Passaúna",
+    eid: "6873", name: "Estação Butiatuvinha (bacia Passaúna)",
     source: "CEMADEN", basin: "Bacia do Rio Passaúna",
-    neighborhood: "cic", lon: -49.380, lat: -25.430,
+    neighborhood: "cic", lon: -49.36184, lat: -25.41118,
     sensors: [
       { type: :pluviometer,     eid: "PLUV-PASSAUNA-01",  unit: "mm", reading_type: "precipitation" },
       { type: :weather_station, eid: "METEO-PASSAUNA-01", unit: "°C", reading_type: "temperature" },
     ]
   },
   {
-    eid: "EST-PADILHAS-01", name: "Estação Ribeirão dos Padilhas",
+    eid: "7297", name: "Estação Novo Mundo (ribeirão Padilhas)",
     source: "CEMADEN", basin: "Bacia do Ribeirão dos Padilhas",
-    neighborhood: "sitio-cercado", lon: -49.290, lat: -25.495,
+    neighborhood: "sitio-cercado", lon: -49.28797, lat: -25.48784,
     sensors: [
       { type: :pluviometer, eid: "PLUV-PADILHAS-01", unit: "mm", reading_type: "precipitation" },
     ]
