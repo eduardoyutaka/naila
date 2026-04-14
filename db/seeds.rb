@@ -369,53 +369,6 @@ basins.each do |basin_name, basin|
   precip_alarms[basin_name] = alarm
 end
 
-# One river level alarm per river with 2 threshold bands
-river_alarms = {}
-rivers.each do |river_name, river|
-  alarm_name = "Nível do rio — #{river.name}"
-  alarm = Alarm.find_by(name: alarm_name)
-  unless alarm
-    alarm = Alarm.new(
-      name: alarm_name,
-      alarm_type: "metric",
-      enabled: true,
-      river_basin: river.river_basin,
-      river: river,
-      metric_name: "river_level",
-      statistic: "Maximum",
-      period_seconds: 300,
-      evaluation_periods: 3,
-      datapoints_to_alarm: 2,
-      missing_data_treatment: "missing",
-      state: "insufficient_data"
-    )
-    [
-      { severity: 2, value: river.alert_level_m },
-      { severity: 3, value: river.flood_level_m },
-    ].each do |band|
-      alarm.alarm_thresholds.build(
-        severity: band[:severity],
-        comparison_operator: "GreaterThanOrEqualToThreshold",
-        threshold_value: band[:value],
-        unit: "m"
-      )
-    end
-    alarm.save!
-  else
-    [
-      { severity: 2, value: river.alert_level_m },
-      { severity: 3, value: river.flood_level_m },
-    ].each do |band|
-      AlarmThreshold.find_or_create_by!(alarm: alarm, severity: band[:severity]) do |t|
-        t.comparison_operator = "GreaterThanOrEqualToThreshold"
-        t.threshold_value = band[:value]
-        t.unit = "m"
-      end
-    end
-  end
-  river_alarms[river_name] = alarm
-end
-
 # Alarm actions — severity-aware notifications using min_severity
 Alarm.find_each do |alarm|
   next if alarm.alarm_actions.exists?
