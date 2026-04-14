@@ -58,55 +58,54 @@ puts "  Creating neighborhoods..."
 
 neighborhoods_data = [
   # Matriz region — central, dense, vulnerable to urban drainage
-  { name: "Centro",          code: "centro",          region: "MTZ", risk: :normal,    pop: 37_283, area: 3.30 },
-  { name: "Centro Cívico",   code: "centro-civico",   region: "MTZ", risk: :normal,    pop: 5_336,  area: 0.97 },
-  { name: "São Francisco",   code: "sao-francisco",   region: "MTZ", risk: :normal,    pop: 6_373,  area: 1.21 },
-  { name: "Rebouças",        code: "reboucas",        region: "MTZ", risk: :attention, pop: 15_618, area: 2.99 },
+  { name: "Centro",          code: "centro",          region: "MTZ", pop: 37_283, area: 3.30 },
+  { name: "Centro Cívico",   code: "centro-civico",   region: "MTZ", pop: 5_336,  area: 0.97 },
+  { name: "São Francisco",   code: "sao-francisco",   region: "MTZ", pop: 6_373,  area: 1.21 },
+  { name: "Rebouças",        code: "reboucas",        region: "MTZ", pop: 15_618, area: 2.99 },
 
   # Boqueirão — Iguaçu river basin, historically flooded
-  { name: "Boqueirão",       code: "boqueirao",       region: "BOQ", risk: :attention, pop: 68_495, area: 14.80 },
-  { name: "Hauer",           code: "hauer",           region: "BOQ", risk: :normal,    pop: 13_784, area: 4.02 },
-  { name: "Alto Boqueirão",  code: "alto-boqueirao",  region: "BOQ", risk: :normal,    pop: 52_441, area: 12.41 },
+  { name: "Boqueirão",       code: "boqueirao",       region: "BOQ", pop: 68_495, area: 14.80 },
+  { name: "Hauer",           code: "hauer",           region: "BOQ", pop: 13_784, area: 4.02 },
+  { name: "Alto Boqueirão",  code: "alto-boqueirao",  region: "BOQ", pop: 52_441, area: 12.41 },
 
   # Cajuru — Atuba river, recurrent floods
-  { name: "Cajuru",          code: "cajuru",          region: "CJR", risk: :alert,     pop: 96_200, area: 11.58 },
-  { name: "Uberaba",         code: "uberaba",         region: "CJR", risk: :attention, pop: 72_056, area: 14.43 },
+  { name: "Cajuru",          code: "cajuru",          region: "CJR", pop: 96_200, area: 11.58 },
+  { name: "Uberaba",         code: "uberaba",         region: "CJR", pop: 72_056, area: 14.43 },
 
   # Boa Vista — Barigui river, green areas
-  { name: "Boa Vista",       code: "boa-vista",       region: "BVS", risk: :normal,    pop: 29_961, area: 5.34 },
-  { name: "Bairro Alto",     code: "bairro-alto",     region: "BVS", risk: :normal,    pop: 46_106, area: 7.03 },
-  { name: "Atuba",           code: "atuba",           region: "BVS", risk: :attention, pop: 13_778, area: 4.26 },
+  { name: "Boa Vista",       code: "boa-vista",       region: "BVS", pop: 29_961, area: 5.34 },
+  { name: "Bairro Alto",     code: "bairro-alto",     region: "BVS", pop: 46_106, area: 7.03 },
+  { name: "Atuba",           code: "atuba",           region: "BVS", pop: 13_778, area: 4.26 },
 
   # Santa Felicidade — Barigui headwaters
-  { name: "Santa Felicidade", code: "santa-felicidade", region: "STF", risk: :normal, pop: 30_390, area: 12.27 },
-  { name: "Cascatinha",      code: "cascatinha",      region: "STF", risk: :normal,    pop: 2_478,  area: 2.59 },
+  { name: "Santa Felicidade", code: "santa-felicidade", region: "STF", pop: 30_390, area: 12.27 },
+  { name: "Cascatinha",      code: "cascatinha",      region: "STF", pop: 2_478,  area: 2.59 },
 
   # Portão
-  { name: "Portão",          code: "portao",          region: "PRT", risk: :normal,    pop: 42_662, area: 5.69 },
-  { name: "Água Verde",      code: "agua-verde",      region: "PRT", risk: :normal,    pop: 49_866, area: 4.76 },
+  { name: "Portão",          code: "portao",          region: "PRT", pop: 42_662, area: 5.69 },
+  { name: "Água Verde",      code: "agua-verde",      region: "PRT", pop: 49_866, area: 4.76 },
 
   # Pinheirinho — Barigui downstream
-  { name: "Pinheirinho",     code: "pinheirinho",     region: "PIN", risk: :attention, pop: 50_401, area: 10.74 },
-  { name: "Capão Raso",      code: "capao-raso",      region: "PIN", risk: :normal,    pop: 36_065, area: 5.06 },
+  { name: "Pinheirinho",     code: "pinheirinho",     region: "PIN", pop: 50_401, area: 10.74 },
+  { name: "Capão Raso",      code: "capao-raso",      region: "PIN", pop: 36_065, area: 5.06 },
 
   # CIC — Barigui industrial, flood-prone
-  { name: "Cidade Industrial", code: "cic",           region: "CIC", risk: :attention, pop: 172_573, area: 43.38 },
-  { name: "Riviera",         code: "riviera",         region: "CIC", risk: :normal,    pop: 3_295,  area: 3.09 },
+  { name: "Cidade Industrial", code: "cic",           region: "CIC", pop: 172_573, area: 43.38 },
+  { name: "Riviera",         code: "riviera",         region: "CIC", pop: 3_295,  area: 3.09 },
 
   # Bairro Novo — Iguaçu downstream
-  { name: "Sítio Cercado",   code: "sitio-cercado",   region: "BNV", risk: :attention, pop: 115_525, area: 11.12 },
-  { name: "Ganchinho",       code: "ganchinho",       region: "BNV", risk: :alert,     pop: 8_252,  area: 11.40 },
+  { name: "Sítio Cercado",   code: "sitio-cercado",   region: "BNV", pop: 115_525, area: 11.12 },
+  { name: "Ganchinho",       code: "ganchinho",       region: "BNV", pop: 8_252,  area: 11.40 },
 
   # Tatuquara
-  { name: "Tatuquara",       code: "tatuquara",       region: "TAT", risk: :attention, pop: 52_780, area: 11.18 },
-  { name: "Campo de Santana", code: "campo-de-santana", region: "TAT", risk: :normal,  pop: 32_808, area: 21.59 },
+  { name: "Tatuquara",       code: "tatuquara",       region: "TAT", pop: 52_780, area: 11.18 },
+  { name: "Campo de Santana", code: "campo-de-santana", region: "TAT", pop: 32_808, area: 21.59 },
 ]
 
 neighborhoods = neighborhoods_data.map do |data|
   Neighborhood.find_or_create_by!(code: data[:code]) do |n|
     n.name = data[:name]
     n.region = regions[data[:region]]
-    n.current_risk_level = data[:risk]
     n.population = data[:pop]
     n.area_km2 = data[:area]
   end
@@ -119,7 +118,7 @@ puts "  Creating river basins..."
 
 basins_data = [
   {
-    name: "Bacia do Rio Iguaçu", area: 308.0, risk: :attention, score: 0.35,
+    name: "Bacia do Rio Iguaçu", area: 308.0,
     coords: [
       [-49.32, -25.44], [-49.28, -25.44], [-49.24, -25.44], [-49.20, -25.45],
       [-49.20, -25.47], [-49.22, -25.49], [-49.26, -25.50], [-49.30, -25.50],
@@ -127,7 +126,7 @@ basins_data = [
     ]
   },
   {
-    name: "Bacia do Rio Barigui", area: 131.0, risk: :attention, score: 0.32,
+    name: "Bacia do Rio Barigui", area: 131.0,
     coords: [
       [-49.36, -25.35], [-49.33, -25.35], [-49.31, -25.37], [-49.29, -25.40],
       [-49.29, -25.43], [-49.30, -25.45], [-49.31, -25.47], [-49.34, -25.47],
@@ -135,7 +134,7 @@ basins_data = [
     ]
   },
   {
-    name: "Bacia do Rio Belém", area: 87.8, risk: :normal, score: 0.15,
+    name: "Bacia do Rio Belém", area: 87.8,
     coords: [
       [-49.28, -25.38], [-49.26, -25.38], [-49.25, -25.40], [-49.25, -25.42],
       [-49.25, -25.44], [-49.26, -25.46], [-49.28, -25.46], [-49.29, -25.44],
@@ -143,7 +142,7 @@ basins_data = [
     ]
   },
   {
-    name: "Bacia do Rio Atuba", area: 127.6, risk: :alert, score: 0.48,
+    name: "Bacia do Rio Atuba", area: 127.6,
     coords: [
       [-49.24, -25.34], [-49.21, -25.35], [-49.19, -25.37], [-49.19, -25.40],
       [-49.20, -25.42], [-49.22, -25.44], [-49.25, -25.44], [-49.26, -25.42],
@@ -151,7 +150,7 @@ basins_data = [
     ]
   },
   {
-    name: "Bacia do Rio Passaúna", area: 216.0, risk: :normal, score: 0.10,
+    name: "Bacia do Rio Passaúna", area: 216.0,
     coords: [
       [-49.40, -25.37], [-49.37, -25.37], [-49.36, -25.39], [-49.36, -25.42],
       [-49.37, -25.45], [-49.38, -25.47], [-49.41, -25.47], [-49.42, -25.44],
@@ -159,7 +158,7 @@ basins_data = [
     ]
   },
   {
-    name: "Bacia do Ribeirão dos Padilhas", area: 33.0, risk: :attention, score: 0.30,
+    name: "Bacia do Ribeirão dos Padilhas", area: 33.0,
     coords: [
       [-49.33, -25.48], [-49.31, -25.48], [-49.29, -25.49], [-49.28, -25.51],
       [-49.30, -25.52], [-49.32, -25.52], [-49.34, -25.51], [-49.34, -25.49],
@@ -171,8 +170,6 @@ basins_data = [
 basins = basins_data.map do |data|
   RiverBasin.find_or_create_by!(name: data[:name]) do |b|
     b.area_km2 = data[:area]
-    b.current_risk_level = data[:risk]
-    b.current_risk_score = data[:score]
     b.geometry = polygon(data[:coords])
     b.active = true
   end
