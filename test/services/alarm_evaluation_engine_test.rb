@@ -57,6 +57,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   # ── N-out-of-M evaluation ──
 
   test "alarm triggers when N of M periods breach threshold" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -74,6 +75,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   end
 
   test "alarm stays ok when fewer than N periods breach" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -93,6 +95,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   # ── Missing data treatment ──
 
   test "missing data treatment 'breaching' counts missing periods as breaching" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -112,6 +115,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   end
 
   test "missing data treatment 'notBreaching' counts missing periods as ok" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -130,6 +134,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   end
 
   test "all periods missing with treatment 'missing' transitions to insufficient_data" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -150,6 +155,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   end
 
   test "missing data treatment 'ignore' skips missing periods" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -170,6 +176,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   # ── LessThan comparison ──
 
   test "LessThanThreshold triggers when value is below threshold" do
+    create_river_gauge
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "river_level",
@@ -319,6 +326,27 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   end
 
   private
+
+  def create_river_gauge(readings: [[1.2, 5.minutes.ago], [1.1, 35.minutes.ago], [0.9, 2.hours.ago]])
+    sensor = Sensor.create!(
+      monitoring_station: monitoring_stations(:estacao_belem),
+      sensor_type: :river_gauge,
+      external_id: "TEST-FLUV-BELEM-01",
+      unit: "m",
+      reading_type: "river_level",
+      status: :active
+    )
+    readings.each do |value, recorded_at|
+      SensorReading.create!(
+        sensor: sensor,
+        value: value,
+        unit: "m",
+        reading_type: "river_level",
+        recorded_at: recorded_at
+      )
+    end
+    sensor
+  end
 
   def create_metric_alarm(overrides = {})
     # Extract threshold band fields — they go on AlarmThreshold, not Alarm

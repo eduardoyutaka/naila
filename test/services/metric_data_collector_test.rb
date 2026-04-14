@@ -44,9 +44,14 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
   end
 
   # ── river_level ──
+  #
+  # No river_gauge sensors are seeded (none of our live ingestion feeds them).
+  # These tests provision a river_gauge + readings at runtime to exercise the
+  # code path, which is kept in place for future river-level ingestion.
 
   test "collects latest river_level for river" do
-    # Latest fixture: 1.2m at 5 min ago
+    create_river_gauge(readings: [[1.2, 5.minutes.ago], [0.9, 2.hours.ago]])
+
     result = MetricDataCollector.collect(
       metric_name: "river_level",
       river_basin: @basin,
@@ -58,6 +63,8 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
   end
 
   test "river_level returns nil when no readings in window" do
+    create_river_gauge(readings: [[1.2, 5.minutes.ago]])
+
     result = MetricDataCollector.collect(
       metric_name: "river_level",
       river_basin: @basin,
@@ -69,6 +76,8 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
   end
 
   test "river_level returns nil when no river specified" do
+    create_river_gauge(readings: [[1.2, 5.minutes.ago]])
+
     result = MetricDataCollector.collect(
       metric_name: "river_level",
       river_basin: @basin,
@@ -133,6 +142,8 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
   end
 
   test "applies Maximum statistic to river_level readings" do
+    create_river_gauge(readings: [[1.1, 35.minutes.ago], [1.2, 5.minutes.ago]])
+
     result = MetricDataCollector.collect(
       metric_name: "river_level",
       river_basin: @basin,
@@ -142,5 +153,28 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
       statistic: "Maximum"
     )
     assert_in_delta 1.2, result, 0.01
+  end
+
+  private
+
+  def create_river_gauge(readings:)
+    sensor = Sensor.create!(
+      monitoring_station: monitoring_stations(:estacao_belem),
+      sensor_type: :river_gauge,
+      external_id: "TEST-FLUV-BELEM-01",
+      unit: "m",
+      reading_type: "river_level",
+      status: :active
+    )
+    readings.each do |value, recorded_at|
+      SensorReading.create!(
+        sensor: sensor,
+        value: value,
+        unit: "m",
+        reading_type: "river_level",
+        recorded_at: recorded_at
+      )
+    end
+    sensor
   end
 end
