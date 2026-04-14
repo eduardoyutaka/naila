@@ -10,9 +10,9 @@ owm_recent:
   weather_condition: "light rain"
   raw_data: '{}'
 
-inmet_station:
-  source: "inmet"
-  station_code: "A807"
+cemaden_station:
+  source: "cemaden"
+  station_code: "6877"
   observed_at: <%= 30.minutes.ago.iso8601 %>
   temperature_c: 19.8
   humidity_pct: 82.0

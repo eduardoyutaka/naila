@@ -45,7 +45,6 @@ class DataSourceTest < ActiveSupport::TestCase
   test "client_class returns correct class for each source" do
     assert_equal OpenMeteoClient, data_sources(:open_meteo).client_class
     assert_equal OpenWeatherMapClient, data_sources(:open_weather_map).client_class
-    assert_equal InmetClient, data_sources(:inmet).client_class
     assert_equal CemadenClient, data_sources(:cemaden).client_class
   end
 

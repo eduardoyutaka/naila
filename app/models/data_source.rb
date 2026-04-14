@@ -11,7 +11,6 @@ class DataSource < ApplicationRecord
   CLIENT_MAP = {
     "Open-Meteo" => "OpenMeteoClient",
     "OpenWeatherMap" => "OpenWeatherMapClient",
-    "INMET" => "InmetClient",
     "CEMADEN" => "CemadenClient"
   }.freeze
 

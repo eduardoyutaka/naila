@@ -1,12 +1,3 @@
-inmet_curitiba:
-  external_id: A807
-  name: Estação INMET Curitiba
-  data_source: INMET
-  status: active
-  location: POINT(-49.2733 -25.4284)
-  neighborhood: centro
-  river_basin: bacia_belem
-
 cemaden_centro:
   external_id: "6877"
   name: Estação CEMADEN Centro

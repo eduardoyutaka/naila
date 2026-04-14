@@ -239,9 +239,9 @@ end.index_by(&:name)
 puts "  Creating sensor stations and sensors..."
 
 # Station identifiers match the real CEMADEN idEstacao values returned by
-# mapservices.cemaden.gov.br for Curitiba (IBGE 4106902) and the INMET A807
-# Curitiba automatic station. Coordinates below are the real station
-# locations, which the data source APIs use to report measurements.
+# mapservices.cemaden.gov.br for Curitiba (IBGE 4106902). Coordinates below
+# are the real station locations, which the data source APIs use to report
+# measurements.
 stations_data = [
   {
     eid: "6882", name: "Estação Umbará (bacia Iguaçu)",
@@ -262,13 +262,12 @@ stations_data = [
     ]
   },
   {
-    eid: "A807", name: "Estação INMET Curitiba (bacia Belém)",
-    source: "INMET", basin: "Bacia do Rio Belém", river: "Rio Belém",
-    neighborhood: "centro-civico", lon: -49.2306, lat: -25.4486,
+    eid: "6877", name: "Estação Boa Vista (bacia Belém)",
+    source: "CEMADEN", basin: "Bacia do Rio Belém", river: "Rio Belém",
+    neighborhood: "boa-vista", lon: -49.245, lat: -25.379,
     sensors: [
-      { type: :river_gauge,     eid: "FLUV-BELEM-01",  unit: "m",  reading_type: "river_level" },
-      { type: :pluviometer,     eid: "PLUV-BELEM-01",  unit: "mm", reading_type: "precipitation" },
-      { type: :weather_station, eid: "METEO-BELEM-01", unit: "°C", reading_type: "temperature" },
+      { type: :river_gauge, eid: "FLUV-BELEM-01", unit: "m",  reading_type: "river_level" },
+      { type: :pluviometer, eid: "PLUV-BELEM-01", unit: "mm", reading_type: "precipitation" },
     ]
   },
   {
@@ -544,7 +543,6 @@ end
 puts "  Creating data sources..."
 
 [
-  { name: "INMET", source_type: "api", base_url: "https://apitempo.inmet.gov.br", fetch_interval: 600 },
   { name: "CEMADEN", source_type: "api", base_url: "https://mapservices.cemaden.gov.br", fetch_interval: 600 },
   { name: "OpenWeatherMap", source_type: "api", base_url: "https://api.openweathermap.org", fetch_interval: 1800 },
   { name: "Open-Meteo", source_type: "api", base_url: "https://api.open-meteo.com", fetch_interval: 1800 },

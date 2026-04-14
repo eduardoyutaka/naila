@@ -4,7 +4,6 @@ class WeatherIngestionCycleJob < ApplicationJob
   JOB_MAP = {
     "Open-Meteo" => FetchOpenMeteoJob,
     "OpenWeatherMap" => FetchOpenWeatherMapJob,
-    "INMET" => FetchInmetJob,
     "CEMADEN" => FetchCemadenJob
   }.freeze
 

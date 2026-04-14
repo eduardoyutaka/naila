@@ -88,8 +88,8 @@ The UI layer is built on **Catalyst** (by Tailwind Labs), ported from React/JSX 
 ### Key data flow
 
 ```
-External sources (CEMADEN, INMET, Open-Meteo, OpenWeatherMap)
-  → FetchCemadenJob / FetchInmetJob / FetchOpenMeteoJob / FetchOpenWeatherMapJob
+External sources (CEMADEN, Open-Meteo, OpenWeatherMap)
+  → FetchCemadenJob / FetchOpenMeteoJob / FetchOpenWeatherMapJob
   → SensorReading (via Sensor) / WeatherObservation
   → RiskAssessmentJob → RiskEngine (services/) → RiskAssessment
   → EscalationCheckJob → AlertThreshold evaluation → Alert creation

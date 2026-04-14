@@ -10,13 +10,13 @@ class WeatherObservationTest < ActiveSupport::TestCase
   test "in_last scope returns observations within duration" do
     recent = WeatherObservation.in_last(1.hour)
     assert_includes recent, weather_observations(:owm_recent)
-    assert_includes recent, weather_observations(:inmet_station)
+    assert_includes recent, weather_observations(:cemaden_station)
   end
 
   test "in_last scope excludes old observations" do
     # Both fixtures are within 1h, but none should be outside
     old_obs = WeatherObservation.create!(
-      source: "inmet",
+      source: "cemaden",
       observed_at: 3.hours.ago,
       raw_data: {}
     )
