@@ -131,26 +131,26 @@ class AlarmTest < ActiveSupport::TestCase
   test "enabled scope returns only enabled alarms" do
     enabled = Alarm.enabled
     assert_includes enabled, alarms(:precip_3h_belem)
-    assert_includes enabled, alarms(:river_level_belem)
+    assert_includes enabled, alarms(:flood_alert_belem)
     assert_not_includes enabled, alarms(:disabled_alarm)
   end
 
   test "metric_alarms scope returns only metric type" do
     metrics = Alarm.metric_alarms
     assert_includes metrics, alarms(:precip_3h_belem)
-    assert_includes metrics, alarms(:river_level_belem)
+    assert_includes metrics, alarms(:flood_alert_belem)
   end
 
   test "in_alarm scope returns alarms in alarm state" do
     in_alarm = Alarm.in_alarm
-    assert_includes in_alarm, alarms(:river_level_belem)
+    assert_includes in_alarm, alarms(:flood_alert_belem)
     assert_not_includes in_alarm, alarms(:precip_3h_belem)
   end
 
   test "by_state scope filters by state" do
     ok_alarms = Alarm.by_state("ok")
     assert_includes ok_alarms, alarms(:precip_3h_belem)
-    assert_not_includes ok_alarms, alarms(:river_level_belem)
+    assert_not_includes ok_alarms, alarms(:flood_alert_belem)
   end
 
   test "by_enabled scope filters by enabled flag" do
@@ -166,7 +166,7 @@ class AlarmTest < ActiveSupport::TestCase
   test "search_by_name scope filters by name with ILIKE" do
     results = Alarm.search_by_name("precipitação")
     assert_includes results, alarms(:precip_3h_belem)
-    assert_not_includes results, alarms(:river_level_belem)
+    assert_not_includes results, alarms(:flood_alert_belem)
   end
 
   test "search_by_name scope returns all when term is blank" do
@@ -182,14 +182,14 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "belongs to river optionally" do
-    assert_equal rivers(:belem), alarms(:river_level_belem).river
+    assert_equal rivers(:belem), alarms(:flood_alert_belem).river
     assert_nil alarms(:precip_3h_belem).river
   end
 
   test "has many alarm_thresholds" do
-    thresholds = alarms(:river_level_belem).alarm_thresholds
-    assert_includes thresholds, alarm_thresholds(:river_belem_sev2)
-    assert_includes thresholds, alarm_thresholds(:river_belem_sev3)
+    thresholds = alarms(:flood_alert_belem).alarm_thresholds
+    assert_includes thresholds, alarm_thresholds(:flood_belem_sev2)
+    assert_includes thresholds, alarm_thresholds(:flood_belem_sev3)
   end
 
   test "destroying alarm destroys dependent alarm_thresholds" do
@@ -208,8 +208,8 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "has many alarm_state_histories" do
-    histories = alarms(:river_level_belem).alarm_state_histories
-    assert_includes histories, alarm_state_histories(:river_to_alarm)
+    histories = alarms(:flood_alert_belem).alarm_state_histories
+    assert_includes histories, alarm_state_histories(:alarm_transition)
   end
 
   test "destroying alarm destroys dependent alarm_actions" do
@@ -222,7 +222,7 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "destroying alarm destroys dependent alarm_state_histories" do
-    alarm = alarms(:river_level_belem)
+    alarm = alarms(:flood_alert_belem)
     history_ids = alarm.alarm_state_histories.pluck(:id)
     assert history_ids.any?
 
@@ -253,7 +253,7 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "transition_to! clears current_severity when transitioning to ok" do
-    alarm = alarms(:river_level_belem)
+    alarm = alarms(:flood_alert_belem)
     assert_equal 3, alarm.current_severity
 
     alarm.transition_to!("ok", reason: "recovered")
@@ -262,7 +262,7 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "transition_to! records severity change while already in alarm" do
-    alarm = alarms(:river_level_belem)
+    alarm = alarms(:flood_alert_belem)
     assert_equal "alarm", alarm.state
     assert_equal 3, alarm.current_severity
 
@@ -323,7 +323,7 @@ class AlarmTest < ActiveSupport::TestCase
   end
 
   test "alarm? returns true when state is alarm" do
-    assert alarms(:river_level_belem).alarm?
+    assert alarms(:flood_alert_belem).alarm?
   end
 
   test "insufficient_data? returns true when state is insufficient_data" do

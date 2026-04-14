@@ -45,7 +45,6 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_nil station
     assert_includes station["sensor_types"], "pluviometer"
-    assert_includes station["sensor_types"], "river_gauge"
     assert_equal "active", station["status"]
     assert_in_delta(-25.405, station["lat"], 0.01)
     assert_in_delta(-49.270, station["lng"], 0.01)

@@ -15,43 +15,43 @@ class AlarmStateHistoryTest < ActiveSupport::TestCase
   end
 
   test "invalid without alarm" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.alarm = nil
     assert_not history.valid?
   end
 
   test "invalid without previous_state" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.previous_state = nil
     assert_not history.valid?
   end
 
   test "invalid without new_state" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.new_state = nil
     assert_not history.valid?
   end
 
   test "invalid without reason" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.reason = nil
     assert_not history.valid?
   end
 
   test "invalid without evaluated_at" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.evaluated_at = nil
     assert_not history.valid?
   end
 
   test "invalid with unknown previous_state" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.previous_state = "critical"
     assert_not history.valid?
   end
 
   test "invalid with unknown new_state" do
-    history = alarm_state_histories(:river_to_alarm)
+    history = alarm_state_histories(:alarm_transition)
     history.new_state = "critical"
     assert_not history.valid?
   end
@@ -59,7 +59,7 @@ class AlarmStateHistoryTest < ActiveSupport::TestCase
   # ── Associations ──
 
   test "belongs to alarm" do
-    assert_equal alarms(:river_level_belem), alarm_state_histories(:river_to_alarm).alarm
+    assert_equal alarms(:flood_alert_belem), alarm_state_histories(:alarm_transition).alarm
   end
 
   # ── Defaults ──

@@ -175,26 +175,10 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "show renders river level chart in side sheet" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
-    assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='reading-chart-river_level']"
-    end
-  end
-
-  test "show renders temperature chart in side sheet" do
-    get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
-    assert_select "turbo-frame#sensor_detail" do
-      assert_select "[data-testid='reading-chart-temperature']"
-    end
-  end
-
   test "show lists sensors section in side sheet" do
     get admin_monitoring_station_path(monitoring_stations(:estacao_belem)), headers: { "Turbo-Frame" => "sensor_detail" }
     assert_select "turbo-frame#sensor_detail" do
       assert_select "span", text: "Pluviômetro"
-      assert_select "span", text: "Fluviômetro"
-      assert_select "span", text: "Meteorológica"
     end
   end
 

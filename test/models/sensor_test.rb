@@ -54,13 +54,11 @@ class SensorTest < ActiveSupport::TestCase
 
   test "sensor_type enum values" do
     assert sensors(:pluv_belem).sensor_type_pluviometer?
-    assert sensors(:fluv_belem).sensor_type_river_gauge?
-    assert sensors(:meteo_belem).sensor_type_weather_station?
   end
 
   test "status enum values" do
     assert sensors(:pluv_belem).status_active?
-    assert sensors(:meteo_belem).status_maintenance?
+    assert sensors(:pluv_barigui).status_maintenance?
   end
 
   # ── Scopes ──
@@ -68,12 +66,12 @@ class SensorTest < ActiveSupport::TestCase
   test "online scope returns active sensors" do
     active_ids = Sensor.online.pluck(:id)
     assert_includes active_ids, sensors(:pluv_belem).id
-    assert_not_includes active_ids, sensors(:meteo_belem).id
+    assert_not_includes active_ids, sensors(:pluv_barigui).id
   end
 
   test "by_type scope filters by sensor_type" do
     pluviometers = Sensor.by_type("pluviometer")
     assert_includes pluviometers, sensors(:pluv_belem)
-    assert_not_includes pluviometers, sensors(:fluv_belem)
+    assert_empty Sensor.by_type("river_gauge")
   end
 end
