@@ -90,7 +90,7 @@ end
 group :test do
   # System testing [https://github.com/teamcapybara/capybara]
   gem "capybara", "~> 3.0"
-  gem "selenium-webdriver", "~> 4.0"
+  gem "selenium-webdriver", "~> 4.43"
   # HTTP request stubbing [https://github.com/bblimke/webmock]
   gem "webmock", "~> 3.0"
   # Record HTTP interactions [https://github.com/vcr/vcr]
