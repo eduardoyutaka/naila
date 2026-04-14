@@ -16,24 +16,6 @@ precip_ok_websocket:
       - websocket
   enabled: true
 
-river_alarm_all_channels:
-  alarm: river_level_belem
-  trigger_state: alarm
-  action_type: notification
-  configuration:
-    channels:
-      - websocket
-  enabled: true
-
-river_insufficient_data:
-  alarm: river_level_belem
-  trigger_state: insufficient_data
-  action_type: notification
-  configuration:
-    channels:
-      - websocket
-  enabled: true
-
 disabled_action:
   alarm: precip_3h_belem
   trigger_state: alarm

@@ -5,19 +5,19 @@ precip_belem_sev2:
   threshold_value: 40.0
   unit: mm
 
-river_belem_sev2:
-  alarm: river_level_belem
+flood_belem_sev2:
+  alarm: flood_alert_belem
   severity: 2
   comparison_operator: GreaterThanOrEqualToThreshold
-  threshold_value: 1.0
-  unit: m
+  threshold_value: 40.0
+  unit: mm
 
-river_belem_sev3:
-  alarm: river_level_belem
+flood_belem_sev3:
+  alarm: flood_alert_belem
   severity: 3
   comparison_operator: GreaterThanOrEqualToThreshold
-  threshold_value: 1.5
-  unit: m
+  threshold_value: 60.0
+  unit: mm
 
 disabled_alarm_sev1:
   alarm: disabled_alarm

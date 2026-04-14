@@ -16,25 +16,25 @@ precip_3h_belem:
   last_evaluated_at: <%= 10.minutes.ago.iso8601 %>
   last_datapoints: '[{"period":1,"value":12.3,"breaching_severity":0},{"period":2,"value":8.1,"breaching_severity":0},{"period":3,"value":5.0,"breaching_severity":0}]'
 
-river_level_belem:
-  name: Nível Rio Belém
-  description: Alarme de nível do rio Belém
+flood_alert_belem:
+  name: Alerta de Enchente Belém
+  description: Alarme disparado quando chuva acumulada excede níveis críticos
   alarm_type: metric
   state: alarm
   current_severity: 3
   state_changed_at: <%= 30.minutes.ago.iso8601 %>
-  state_reason: "2 of 3 evaluation periods breached threshold 1.5m (severity 3)"
+  state_reason: "2 of 3 evaluation periods breached threshold 60.0mm (severity 3)"
   enabled: true
   river_basin: bacia_belem
   river: belem
-  metric_name: river_level
-  statistic: Maximum
-  period_seconds: 300
+  metric_name: precipitation_3h
+  statistic: Sum
+  period_seconds: 3600
   evaluation_periods: 3
   datapoints_to_alarm: 2
   missing_data_treatment: missing
   last_evaluated_at: <%= 5.minutes.ago.iso8601 %>
-  last_datapoints: '[{"period":1,"value":1.8,"breaching_severity":3},{"period":2,"value":1.6,"breaching_severity":3},{"period":3,"value":1.3,"breaching_severity":2}]'
+  last_datapoints: '[{"period":1,"value":65.0,"breaching_severity":3},{"period":2,"value":62.0,"breaching_severity":3},{"period":3,"value":45.0,"breaching_severity":2}]'
 
 disabled_alarm:
   name: Alarme Desativado
