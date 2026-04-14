@@ -49,7 +49,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
   test "index filters by state" do
     get admin_alarms_path(q: { state: "alarm" })
     assert_response :success
-    assert_select "td", text: /Nível Rio Belém/
+    assert_select "td", text: /Alerta de Enchente Belém/
     assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
   end
 
@@ -61,9 +61,9 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index filters by search" do
-    get admin_alarms_path(q: { search: "Nível" })
+    get admin_alarms_path(q: { search: "Enchente" })
     assert_response :success
-    assert_select "td", text: /Nível Rio Belém/
+    assert_select "td", text: /Alerta de Enchente Belém/
     assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
   end
 

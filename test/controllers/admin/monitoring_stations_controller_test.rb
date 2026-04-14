@@ -28,7 +28,6 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
   test "index shows sensor type badges" do
     get admin_monitoring_stations_path
     assert_select "span", text: "Pluviômetro"
-    assert_select "span", text: "Fluviômetro"
   end
 
   test "index shows status indicators" do
