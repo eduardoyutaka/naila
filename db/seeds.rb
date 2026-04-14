@@ -323,78 +323,7 @@ stations = stations_data.map do |data|
 end.index_by { |s| s.external_id }
 
 # ============================================================
-# 6. Sample Sensor Readings (last 24 hours)
-# ============================================================
-puts "  Creating sample sensor readings..."
-
-now = Time.current
-
-Sensor.find_each do |sensor|
-  case sensor.sensor_type
-  when "river_gauge"
-    river = sensor.monitoring_station.river
-    next unless river
-
-    base_level = river.normal_level_m
-    96.times do |i|
-      time = now - (96 - i) * 15.minutes
-      # Simulate gradually rising levels
-      variation = Math.sin(i * 0.3) * 0.3 + (i > 80 ? (i - 80) * 0.08 : 0)
-      value = (base_level + variation).round(2).clamp(0, river.overflow_level_m)
-
-      SensorReading.find_or_create_by!(
-        sensor: sensor,
-        reading_type: "river_level",
-        recorded_at: time
-      ) do |r|
-        r.value = value
-        r.unit = "m"
-      end
-    end
-
-  when "pluviometer"
-    144.times do |i|
-      time = now - (144 - i) * 10.minutes
-      # Simulate rain event starting ~6 hours ago
-      value = if i > 108
-                (rand(0.5..8.0) + (i - 108) * 0.2).round(1)
-              else
-                rand(0.0..1.0).round(1)
-              end
-
-      SensorReading.find_or_create_by!(
-        sensor: sensor,
-        reading_type: "precipitation",
-        recorded_at: time
-      ) do |r|
-        r.value = value
-        r.unit = "mm"
-      end
-    end
-
-  when "weather_station"
-    96.times do |i|
-      time = now - (96 - i) * 15.minutes
-      # Simulate daily temperature curve (cooler at night, warmer midday)
-      hour = time.hour + time.min / 60.0
-      base_temp = 18.0
-      variation = 6.0 * Math.sin((hour - 6) * Math::PI / 12.0)
-      value = (base_temp + variation + rand(-0.5..0.5)).round(1)
-
-      SensorReading.find_or_create_by!(
-        sensor: sensor,
-        reading_type: "temperature",
-        recorded_at: time
-      ) do |r|
-        r.value = value
-        r.unit = "°C"
-      end
-    end
-  end
-end
-
-# ============================================================
-# 7. Alarms (CloudWatch-style, multi-threshold)
+# 6. Alarms (CloudWatch-style, multi-threshold)
 # ============================================================
 puts "  Creating alarms..."
 
@@ -565,7 +494,6 @@ puts "  #{RiverBasin.count} river basins"
 puts "  #{River.count} rivers"
 puts "  #{MonitoringStation.count} sensor stations"
 puts "  #{Sensor.count} sensors"
-puts "  #{SensorReading.count} sensor readings"
 puts "  #{Alarm.count} alarms (#{Alarm.metric_alarms.count} metric)"
 puts "  #{AlarmAction.count} alarm actions"
 puts "  #{User.count} users"
