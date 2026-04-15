@@ -24,11 +24,30 @@ class AlarmActionExecutor
 
   private
 
+  # Notification actions broadcast the state transition over ActionCable
+  # on every state change. Email and SMS dispatch is governed globally by
+  # NotificationRule records and only fires on transitions to "alarm".
   def execute_notification(action, new_state)
-    config = action.configuration
-    channels = config["channels"] || %w[websocket]
+    ActionCable.server.broadcast("alarms", build_payload(new_state))
 
-    payload = {
+    return unless new_state == "alarm"
+
+    severity = @alarm.current_severity
+    return if severity.blank?
+
+    rules = NotificationRule.enabled.triggered_by_severity(severity)
+
+    rules.for_channel("email").flat_map { |r| r.resolved_recipients.pluck(:id) }.uniq.each do |user_id|
+      SendAlarmEmailJob.perform_later(@alarm.id, user_id, severity)
+    end
+
+    rules.for_channel("sms").flat_map { |r| r.resolved_recipients.pluck(:id) }.uniq.each do |user_id|
+      SendAlarmSmsJob.perform_later(@alarm.id, user_id, severity)
+    end
+  end
+
+  def build_payload(new_state)
+    {
       event_type: "alarm_state_change",
       alarm_id: @alarm.id,
       alarm_name: @alarm.name,
@@ -37,15 +56,6 @@ class AlarmActionExecutor
       river_basin_id: @alarm.river_basin_id,
       reason: @alarm.state_reason
     }
-
-    channels.each do |channel|
-      case channel
-      when "websocket"
-        ActionCable.server.broadcast("alarms", payload)
-      when "sms", "push", "email", "civil_defense"
-        raise NotImplementedError, "Canal '#{channel}' ainda não está implementado."
-      end
-    end
   end
 
   def execute_webhook(action, new_state)
@@ -70,5 +80,4 @@ class AlarmActionExecutor
       timestamp: Time.current.iso8601
     }
   end
-
 end

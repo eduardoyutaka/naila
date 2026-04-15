@@ -104,8 +104,8 @@
                     <span class="text-xs text-zinc-500 dark:text-zinc-400">(desativada)</span>
                   <% end %>
                 </div>
-                <% if action.action_type == "notification" && action.configuration["channels"].present? %>
-                  <span class="text-xs text-zinc-500 dark:text-zinc-400"><%= action.configuration["channels"].join(", ") %></span>
+                <% if action.action_type == "notification" %>
+                  <span class="text-xs text-zinc-500 dark:text-zinc-400">Notificação global</span>
                 <% elsif action.action_type == "webhook" && action.configuration["url"].present? %>
                   <span class="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-xs"><%= action.configuration["url"] %></span>
                 <% end %>
