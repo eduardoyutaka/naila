@@ -224,5 +224,48 @@
       <% end %>
     </div>
 
+    <%# Notificações %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-notifications">
+      <div class="border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Notificações" %>
+      </div>
+      <div class="space-y-3 p-6">
+        <% if @alarm.current_severity.blank? %>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400">
+            Alarme em estado OK — nenhuma notificação será disparada até que a severidade seja atingida.
+          </p>
+        <% elsif @notification_preview.fires_any? %>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-zinc-300">Severidade atual</span>
+            <%= severity_badge(@alarm.current_severity) %>
+            <span class="text-sm text-zinc-300">dispara <strong class="text-white"><%= @notification_preview.rule_count %></strong> regra(s).</span>
+          </div>
+          <ul class="space-y-1 text-sm text-zinc-300">
+            <li class="flex items-center gap-2">
+              <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+              </svg>
+              Email: <strong class="text-white"><%= @notification_preview.email_recipient_count %></strong>
+              <%= @notification_preview.email_recipient_count == 1 ? "usuário" : "usuários" %>
+            </li>
+            <li class="flex items-center gap-2">
+              <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+              </svg>
+              SMS: <strong class="text-white"><%= @notification_preview.sms_recipient_count %></strong>
+              <%= @notification_preview.sms_recipient_count == 1 ? "usuário" : "usuários" %>
+            </li>
+          </ul>
+        <% else %>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-zinc-300">Severidade atual</span>
+            <%= severity_badge(@alarm.current_severity) %>
+            <span class="text-sm text-zinc-300">não dispara nenhuma regra.</span>
+          </div>
+        <% end %>
+        <%= catalyst_text_link "Ver regras globais", href: admin_notification_rules_path, class: "text-sm" %>
+      </div>
+    </div>
+
   </div>
 </div>

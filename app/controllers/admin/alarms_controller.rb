@@ -24,6 +24,7 @@ module Admin
       authorize @alarm
       @alarm_actions = @alarm.alarm_actions.order(trigger_state: :asc)
       @state_histories = @alarm.alarm_state_histories.order(evaluated_at: :desc).limit(20)
+      @notification_preview = NotificationRulePreview.for_alarm(@alarm)
       @child_alarms = []
     end
 
