@@ -1,0 +1,84 @@
+<div class="rounded-xl border border-zinc-950/10 bg-white shadow-sm dark:border-white/10 dark:bg-zinc-900">
+  <div class="border-b border-zinc-950/10 px-6 py-4 dark:border-white/10">
+    <%= catalyst_subheading(rule.persisted? ? "Editar Regra" : "Nova Regra") %>
+    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+      Esta regra se aplica a <strong>todos os alarmes</strong> que atingirem a severidade configurada.
+    </p>
+  </div>
+
+  <div class="p-6">
+    <%= form.error_summary %>
+
+    <%= form.field_group do %>
+      <%# ── Identificação ── %>
+      <%= form.field do %>
+        <%= form.label :name, "Nome" %>
+        <%= form.text_field :name, required: true, placeholder: "Ex: Email Administradores — Alerta" %>
+      <% end %>
+
+      <%= form.field do %>
+        <%= form.label :description, "Descrição" %>
+        <%= form.text_area :description, rows: 2, placeholder: "Opcional — contexto sobre quando e por que esta regra dispara." %>
+      <% end %>
+
+      <%# ── Disparo ── %>
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <%= form.field do %>
+          <%= form.label :channel, "Canal" %>
+          <%= form.select :channel, [ [ "Email", "email" ], [ "SMS", "sms" ] ] %>
+        <% end %>
+
+        <%= form.field do %>
+          <%= form.label :min_severity, "Severidade mínima" %>
+          <%= form.select :min_severity, [
+                [ "Atenção (1)", 1 ],
+                [ "Alerta (2)", 2 ],
+                [ "Alerta Máximo (3)", 3 ],
+                [ "Emergência (4)", 4 ]
+              ] %>
+          <%= form.description "A regra dispara quando a severidade do alarme for igual ou superior a este nível." %>
+        <% end %>
+      </div>
+
+      <%# ── Destinatários por Cargo ── %>
+      <div class="flex flex-col gap-4 rounded-lg border border-zinc-950/10 bg-zinc-50 p-4 dark:border-white/10 dark:bg-zinc-800">
+        <div>
+          <p class="text-sm font-semibold text-zinc-950 dark:text-white">Destinatários por Cargo</p>
+          <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Todos os usuários ativos com os cargos marcados receberão a notificação.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= form.check_box :target_admins, {}, "true", "false" %>
+          <%= form.label :target_admins, "Administradores" %>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= form.check_box :target_coordinators, {}, "true", "false" %>
+          <%= form.label :target_coordinators, "Coordenadores" %>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= form.check_box :target_operators, {}, "true", "false" %>
+          <%= form.label :target_operators, "Operadores" %>
+        </div>
+      </div>
+
+      <%# ── Destinatários Específicos ── %>
+      <%= form.field do %>
+        <%= form.label :user_ids, "Destinatários Específicos" %>
+        <%= form.collection_select :user_ids, User.active.order(:name), :id, :name,
+              { selected: rule.user_ids },
+              multiple: true, size: 6 %>
+        <%= form.description "Segure Ctrl/Cmd para selecionar múltiplos. Para SMS, o usuário precisa ter telefone cadastrado." %>
+      <% end %>
+
+      <%# ── Status ── %>
+      <%= form.field do %>
+        <%= form.label :enabled, "Status" %>
+        <%= form.select :enabled, [ [ "Ativada", "true" ], [ "Desativada", "false" ] ] %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-zinc-950/10 px-6 py-4 dark:border-white/10">
+    <%= catalyst_button_link "Cancelar", href: admin_notification_rules_path, variant: :plain %>
+    <%= form.submit rule.persisted? ? "Salvar Alterações" : "Criar Regra" %>
+  </div>
+</div>

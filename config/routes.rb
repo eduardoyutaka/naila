@@ -32,6 +32,7 @@ Rails.application.routes.draw do
       end
     end
     resources :river_basins, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
+    resources :notification_rules, only: [ :index, :new, :create, :edit, :update, :destroy ]
     resources :users, only: [ :index, :new, :create, :edit, :update, :destroy ]
     resource :weather, only: [ :show ], controller: "weather"
 

@@ -1,0 +1,17 @@
+<% content_for(:title, "Naila — Nova Regra de Notificação") %>
+
+<div class="mx-auto max-w-2xl">
+  <div class="mb-2 flex items-center gap-3">
+    <%= catalyst_button_link "Regras", href: admin_notification_rules_path, variant: :plain do %>
+      <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+      Voltar
+    <% end %>
+  </div>
+  <%= catalyst_heading "Nova Regra de Notificação", level: 1, class: "mb-6" %>
+
+  <%= form_with model: [ :admin, @rule ] do |f| %>
+    <%= render "form", form: f, rule: @rule %>
+  <% end %>
+</div>
