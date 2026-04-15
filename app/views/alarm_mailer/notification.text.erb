@@ -1,0 +1,16 @@
+NAILA — Defesa Civil de Curitiba
+Alarme: <%= @severity_label %>
+================================
+
+Olá, <%= @user.name %>.
+
+O alarme "<%= @alarm.name %>" atingiu o nível <%= @severity_label %>.
+
+Motivo:
+<%= @alarm.state_reason %>
+
+Acompanhe a situação no painel:
+<%= @alarm_url %>
+
+---
+Defesa Civil de Curitiba — Mensagem automática, não responda.

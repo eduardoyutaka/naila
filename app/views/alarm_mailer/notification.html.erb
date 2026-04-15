@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 0; }
+    .wrapper { max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 40px; }
+    .logo { font-size: 22px; font-weight: 700; color: #3b82f6; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .subtitle { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 32px; }
+    .severity { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 10px; border-radius: 6px; margin-bottom: 16px; }
+    h1 { font-size: 18px; font-weight: 600; color: #f1f5f9; margin: 0 0 12px; }
+    p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin: 0 0 20px; }
+    .reason { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 14px 16px; font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 24px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+    .btn { display: inline-block; background: #3b82f6; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 28px; border-radius: 8px; margin: 8px 0 24px; }
+    .footer { text-align: center; font-size: 11px; color: #475569; margin-top: 24px; }
+    .divider { border: none; border-top: 1px solid #334155; margin: 28px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="logo">NAILA</div>
+      <div class="subtitle">Defesa Civil de Curitiba</div>
+
+      <span class="severity" style="background: <%= @severity_color %>20; color: <%= @severity_color %>; border: 1px solid <%= @severity_color %>40;">
+        <%= @severity_label %>
+      </span>
+
+      <h1><%= @alarm.name %></h1>
+      <p>Olá, <%= @user.name %>.</p>
+      <p>O alarme acima atingiu o nível <strong><%= @severity_label %></strong>. Confira o motivo do disparo e acompanhe a situação no painel.</p>
+
+      <div class="reason"><%= @alarm.state_reason %></div>
+
+      <a href="<%= @alarm_url %>" class="btn">Ver alarme no painel</a>
+
+      <hr class="divider">
+
+      <p style="font-size: 12px;">Se o botão não funcionar, copie e cole o endereço abaixo no seu navegador:</p>
+      <p style="font-size: 11px; word-break: break-all; color: #64748b;"><%= @alarm_url %></p>
+    </div>
+
+    <div class="footer">
+      &copy; 2026 Defesa Civil de Curitiba &mdash; Mensagem automática, não responda.
+    </div>
+  </div>
+</body>
+</html>
