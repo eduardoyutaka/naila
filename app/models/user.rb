@@ -1,12 +1,13 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :notification_rule_users, dependent: :destroy
+  has_many :notification_rules, through: :notification_rule_users
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true
   validates :role, presence: true, inclusion: { in: %w[operator coordinator admin] }
 
   scope :active, -> { where(active: true) }
-  scope :sms_recipients, -> { active.where(receives_sms_alerts: true).where.not(phone_number: nil) }
   scope :by_role, ->(role) { where(role: role) }
   scope :by_active, ->(val) { where(active: val) }
   scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }

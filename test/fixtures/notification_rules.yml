@@ -1,0 +1,48 @@
+email_admins_alerta:
+  name: Email Administradores - Alerta
+  description: Email para todos os administradores quando um alarme atingir nível de alerta ou superior.
+  channel: email
+  min_severity: 2
+  target_admins: true
+  target_coordinators: false
+  target_operators: false
+  enabled: true
+
+sms_coordinators_emergency:
+  name: SMS Coordenadores - Emergência
+  description: SMS para coordenadores em situações de emergência.
+  channel: sms
+  min_severity: 4
+  target_admins: false
+  target_coordinators: true
+  target_operators: false
+  enabled: true
+
+email_specific_user:
+  name: Email Específico - Operador em alerta
+  description: Email direto para um operador sem depender do cargo.
+  channel: email
+  min_severity: 2
+  target_admins: false
+  target_coordinators: false
+  target_operators: false
+  enabled: true
+
+sms_all_roles_high:
+  name: SMS Todos - Alerta Máximo
+  description: SMS para todos os cargos a partir de Alerta Máximo.
+  channel: sms
+  min_severity: 3
+  target_admins: true
+  target_coordinators: true
+  target_operators: true
+  enabled: true
+
+disabled_rule:
+  name: Regra Desativada
+  channel: email
+  min_severity: 1
+  target_admins: true
+  target_coordinators: false
+  target_operators: false
+  enabled: false

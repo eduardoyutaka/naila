@@ -66,7 +66,7 @@ module Admin
       {
         total: scope.count,
         active: scope.active.count,
-        sms: scope.sms_recipients.count
+        sms_rules: NotificationRule.enabled.for_channel("sms").count
       }
     end
 
@@ -78,7 +78,7 @@ module Admin
       params.require(:user).permit(
         :name, :email_address, :role, :department, :phone_number,
         :password, :password_confirmation,
-        :active, :receives_sms_alerts
+        :active
       )
     end
   end

@@ -4,6 +4,7 @@ admin:
   password_digest: <%= BCrypt::Password.create("password123") %>
   role: admin
   department: Defesa Civil
+  phone_number: "+5541999000001"
   active: true
 
 coordinator:
@@ -12,6 +13,7 @@ coordinator:
   password_digest: <%= BCrypt::Password.create("password123") %>
   role: coordinator
   department: Defesa Civil
+  phone_number: "+5541999000002"
   active: true
 
 operator:
@@ -28,4 +30,5 @@ inactive:
   password_digest: <%= BCrypt::Password.create("password123") %>
   role: operator
   department: Defesa Civil
+  phone_number: "+5541999000004"
   active: false

@@ -1,0 +1,3 @@
+email_specific_user_operator:
+  notification_rule: email_specific_user
+  user: operator

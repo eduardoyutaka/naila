@@ -407,7 +407,6 @@ puts "  Creating users..."
     u.phone_number = data[:phone]
     u.password = "naila2026"
     u.active = true
-    u.receives_sms_alerts = data[:role] != "operator"
   end
 end
 
