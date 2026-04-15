@@ -411,6 +411,40 @@ puts "  Creating users..."
 end
 
 # ============================================================
+# 11. Notification Rules
+# ============================================================
+puts "  Creating notification rules..."
+
+notification_rules_data = [
+  {
+    name: "Email Administradores — Alerta",
+    description: "Envia email para todos os administradores a partir da severidade Alerta.",
+    channel: "email",
+    min_severity: 2,
+    target_admins: true
+  },
+  {
+    name: "SMS Coordenadores — Emergência",
+    description: "Envia SMS para coordenadores da Defesa Civil em situações de Emergência.",
+    channel: "sms",
+    min_severity: 4,
+    target_coordinators: true
+  }
+]
+
+notification_rules_data.each do |data|
+  NotificationRule.find_or_create_by!(name: data[:name]) do |rule|
+    rule.description          = data[:description]
+    rule.channel              = data[:channel]
+    rule.min_severity         = data[:min_severity]
+    rule.target_admins        = data[:target_admins]        || false
+    rule.target_coordinators  = data[:target_coordinators]  || false
+    rule.target_operators     = data[:target_operators]     || false
+    rule.enabled              = true
+  end
+end
+
+# ============================================================
 # 12. Data Sources
 # ============================================================
 puts "  Creating data sources..."
@@ -440,6 +474,7 @@ puts "  #{Sensor.count} sensors"
 puts "  #{Alarm.count} alarms (#{Alarm.metric_alarms.count} metric)"
 puts "  #{AlarmAction.count} alarm actions"
 puts "  #{User.count} users"
+puts "  #{NotificationRule.count} notification rules"
 puts "  #{DataSource.count} data sources"
 puts ""
 puts "Login: admin@naila.curitiba.pr.gov.br / naila2026"
