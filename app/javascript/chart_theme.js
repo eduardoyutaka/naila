@@ -53,7 +53,6 @@ export const CHART_THEME = {
   // Sensor type → fill color
   sensor: {
     pluviometer:     css("sensor-pluviometer"),
-    river_gauge:     css("sensor-river-gauge"),
     weather_station: css("sensor-weather"),
     online:          css("sensor-online"),
     degraded:        css("sensor-degraded"),

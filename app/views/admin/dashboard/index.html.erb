@@ -74,7 +74,6 @@
       </span>
       <span class="h-3 w-px bg-white/10" aria-hidden="true"></span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-sensor-pluviometer"></span> Pluviômetro</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-sensor-river-gauge"></span> Fluviômetro</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-weather"></span> Meteorológica</span>
     </div>
   </div>
@@ -182,11 +181,6 @@
                   <%# Droplet %>
                   <svg class="h-4 w-4 text-sensor-pluviometer" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c0 0-7 7.5-7 11.5a7 7 0 0 0 14 0C19 10.5 12 3 12 3Z" />
-                  </svg>
-                <% when "river_level" %>
-                  <%# Waves %>
-                  <svg class="h-4 w-4 text-sensor-river-gauge" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 14.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1M3 18.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1M3 10.5c1.5 0 2.5-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1" />
                   </svg>
                 <% when "temperature" %>
                   <%# Thermometer %>

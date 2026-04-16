@@ -7,7 +7,6 @@ class Sensor < ApplicationRecord
 
   enum :sensor_type, {
     pluviometer: "pluviometer",
-    river_gauge: "river_gauge",
     weather_station: "weather_station"
   }, prefix: true
 

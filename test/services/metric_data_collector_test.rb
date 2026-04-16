@@ -3,7 +3,6 @@ require "test_helper"
 class MetricDataCollectorTest < ActiveSupport::TestCase
   setup do
     @basin = river_basins(:bacia_belem)
-    @river = rivers(:belem)
   end
 
   # ── precipitation_1h ──
@@ -41,50 +40,6 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
       period_end: Time.current
     )
     assert_in_delta 23.8, result, 0.2
-  end
-
-  # ── river_level ──
-  #
-  # No river_gauge sensors are seeded (none of our live ingestion feeds them).
-  # These tests provision a river_gauge + readings at runtime to exercise the
-  # code path, which is kept in place for future river-level ingestion.
-
-  test "collects latest river_level for river" do
-    create_river_gauge(readings: [[1.2, 5.minutes.ago], [0.9, 2.hours.ago]])
-
-    result = MetricDataCollector.collect(
-      metric_name: "river_level",
-      river_basin: @basin,
-      river: @river,
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-    assert_in_delta 1.2, result, 0.01
-  end
-
-  test "river_level returns nil when no readings in window" do
-    create_river_gauge(readings: [[1.2, 5.minutes.ago]])
-
-    result = MetricDataCollector.collect(
-      metric_name: "river_level",
-      river_basin: @basin,
-      river: @river,
-      period_start: 2.days.ago,
-      period_end: 1.day.ago
-    )
-    assert_nil result
-  end
-
-  test "river_level returns nil when no river specified" do
-    create_river_gauge(readings: [[1.2, 5.minutes.ago]])
-
-    result = MetricDataCollector.collect(
-      metric_name: "river_level",
-      river_basin: @basin,
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-    assert_nil result
   end
 
   # ── risk_score ──
@@ -141,40 +96,4 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 20.7, result, 0.1
   end
 
-  test "applies Maximum statistic to river_level readings" do
-    create_river_gauge(readings: [[1.1, 35.minutes.ago], [1.2, 5.minutes.ago]])
-
-    result = MetricDataCollector.collect(
-      metric_name: "river_level",
-      river_basin: @basin,
-      river: @river,
-      period_start: 1.hour.ago,
-      period_end: Time.current,
-      statistic: "Maximum"
-    )
-    assert_in_delta 1.2, result, 0.01
-  end
-
-  private
-
-  def create_river_gauge(readings:)
-    sensor = Sensor.create!(
-      monitoring_station: monitoring_stations(:estacao_belem),
-      sensor_type: :river_gauge,
-      external_id: "TEST-FLUV-BELEM-01",
-      unit: "m",
-      reading_type: "river_level",
-      status: :active
-    )
-    readings.each do |value, recorded_at|
-      SensorReading.create!(
-        sensor: sensor,
-        value: value,
-        unit: "m",
-        reading_type: "river_level",
-        recorded_at: recorded_at
-      )
-    end
-    sensor
-  end
 end

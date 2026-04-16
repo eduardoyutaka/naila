@@ -19,7 +19,6 @@ const SEVERITY_TO_RISK = { 1: "attention", 2: "alert", 3: "high_alert", 4: "emer
 // Sensor station type → fill color (from design tokens)
 const SENSOR_TYPE_COLORS = {
   pluviometer:     CHART_THEME.sensor.pluviometer,
-  river_gauge:     CHART_THEME.sensor.river_gauge,
   weather_station: CHART_THEME.sensor.weather_station,
 }
 
@@ -196,10 +195,8 @@ export default class extends Controller {
   sensorStyle(feature) {
     const ol = this.ol
     const sensorTypes = feature.get("sensorTypes") || []
-    // Use primary type for styling (river_gauge > weather_station > pluviometer)
-    const primaryType = sensorTypes.includes("river_gauge") ? "river_gauge"
-                      : sensorTypes.includes("weather_station") ? "weather_station"
-                      : "pluviometer"
+    // Use primary type for styling (weather_station > pluviometer)
+    const primaryType = sensorTypes.includes("weather_station") ? "weather_station" : "pluviometer"
     const status = feature.get("status") || "active"
 
     const fillColor = SENSOR_TYPE_COLORS[primaryType] || SENSOR_TYPE_COLORS.pluviometer
@@ -210,9 +207,6 @@ export default class extends Controller {
 
     let image
     switch (primaryType) {
-      case "river_gauge":
-        image = new ol.style.Circle({ radius: 7, fill, stroke })
-        break
       case "weather_station":
         image = new ol.style.RegularShape({ points: 4, radius: 8, angle: Math.PI / 4, fill, stroke })
         break
@@ -294,7 +288,6 @@ export default class extends Controller {
 
     const typeLabels = {
       pluviometer: "Pluviômetro",
-      river_gauge: "Fluviômetro",
       weather_station: "Meteorológica",
     }
 

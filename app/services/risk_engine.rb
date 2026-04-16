@@ -1,9 +1,8 @@
 class RiskEngine
   WEIGHTS = {
-    precipitation: 0.35,
-    river_level: 0.25,
-    forecast: 0.25,
-    soil_moisture: 0.15
+    precipitation: 0.45,
+    forecast: 0.35,
+    soil_moisture: 0.20
   }.freeze
 
   PRECIPITATION_THRESHOLDS_1H = [10.0, 25.0, 50.0].freeze
@@ -27,7 +26,6 @@ class RiskEngine
   def assess
     scores = {
       precipitation: compute_precipitation_score,
-      river_level: compute_river_level_score,
       forecast: compute_forecast_score,
       soil_moisture: compute_soil_moisture_score
     }
@@ -60,29 +58,6 @@ class RiskEngine
 
     # Heavier weight on shorter windows
     ((score_1h * 0.5) + (score_3h * 0.3) + (score_6h * 0.2)).clamp(0.0, 1.0)
-  end
-
-  def compute_river_level_score
-    rivers = nearby_rivers
-    return 0.0 if rivers.empty?
-
-    scores = rivers.filter_map do |river|
-      gauge_ids = Sensor.joins(:monitoring_station)
-                        .where(monitoring_stations: { river_id: river.id })
-                        .where(sensor_type: :river_gauge, status: :active)
-                        .pluck(:id)
-      next if gauge_ids.empty?
-
-      latest = SensorReading.where(sensor_id: gauge_ids)
-                            .by_type("river_level")
-                            .recent
-                            .first
-      next unless latest
-
-      interpolate_river_level(latest.value, river)
-    end
-
-    scores.any? ? scores.max : 0.0
   end
 
   def compute_forecast_score
@@ -137,25 +112,6 @@ class RiskEngine
     end
   end
 
-  def interpolate_river_level(current_level, river)
-    normal = river.normal_level_m || 0.0
-    alert = river.alert_level_m || normal
-    flood = river.flood_level_m || alert
-    overflow = river.overflow_level_m || flood
-
-    if current_level >= overflow
-      1.0
-    elsif current_level >= flood
-      0.8 + 0.2 * ((current_level - flood) / (overflow - flood))
-    elsif current_level >= alert
-      0.6 + 0.2 * ((current_level - alert) / (flood - alert))
-    elsif current_level >= normal
-      0.1 + 0.5 * ((current_level - normal) / (alert - normal))
-    else
-      0.0
-    end
-  end
-
   def score_to_level(score)
     case score
     when 0.0...0.2 then 0
@@ -173,7 +129,6 @@ class RiskEngine
       risk_level: level,
       risk_score: weighted_score,
       precipitation_score: scores[:precipitation],
-      river_level_score: scores[:river_level],
       forecast_score: scores[:forecast],
       soil_moisture_score: scores[:soil_moisture],
       contributing_factors: scores.transform_values { |v| v.round(4) },
@@ -208,9 +163,5 @@ class RiskEngine
           .pluck(:id)
   rescue ActiveRecord::StatementInvalid
     []
-  end
-
-  def nearby_rivers
-    river_basin.rivers
   end
 end

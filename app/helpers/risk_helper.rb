@@ -63,7 +63,6 @@ module RiskHelper
     "precipitation_3h"  => "Precipitação (3h)",
     "precipitation_1h"  => "Precipitação (1h)",
     "precipitation_24h" => "Precipitação (24h)",
-    "river_level"       => "Nível do rio",
     "soil_moisture"     => "Umidade do solo",
     "temperature"       => "Temperatura",
     "humidity"          => "Umidade relativa"
@@ -71,13 +70,11 @@ module RiskHelper
 
   SENSOR_TYPE_LABEL = {
     "pluviometer"     => "Pluviômetro",
-    "river_gauge"     => "Fluviômetro",
     "weather_station" => "Meteorológica"
   }.freeze
 
   SENSOR_TYPE_BADGE_CLASSES = {
     "pluviometer"     => "bg-sensor-pluviometer/20 text-sensor-pluviometer",
-    "river_gauge"     => "bg-sensor-river-gauge/20 text-sensor-river-gauge",
     "weather_station" => "bg-sensor-weather/20 text-sensor-weather"
   }.freeze
 

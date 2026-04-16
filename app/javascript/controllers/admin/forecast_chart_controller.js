@@ -32,7 +32,7 @@ export default class extends Controller {
     const probData = forecasts.map((f) => f.probability)
 
     const t = CHART_THEME
-    const accentDark = t.sensor.river_gauge  // cyan — probability line
+    const accentDark = "#06b6d4"  // cyan — probability line
 
     this.chart.setOption({
       backgroundColor: t.bg,

@@ -328,12 +328,12 @@ CREATE TABLE public.monitoring_stations (
     river_basin_id bigint,
     river_id bigint,
     status character varying DEFAULT 'active'::character varying,
-    last_reading_at timestamp(6) without time zone,
-    last_reading_value double precision,
     metadata jsonb DEFAULT '{}'::jsonb,
     api_token_digest character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    last_reading_value double precision,
+    last_reading_at timestamp(6) without time zone
 );
 
 
@@ -394,6 +394,76 @@ ALTER SEQUENCE public.neighborhoods_id_seq OWNED BY public.neighborhoods.id;
 
 
 --
+-- Name: notification_rule_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notification_rule_users (
+    id bigint NOT NULL,
+    notification_rule_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: notification_rule_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.notification_rule_users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: notification_rule_users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.notification_rule_users_id_seq OWNED BY public.notification_rule_users.id;
+
+
+--
+-- Name: notification_rules; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notification_rules (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    description text,
+    channel character varying NOT NULL,
+    min_severity integer NOT NULL,
+    target_admins boolean DEFAULT false NOT NULL,
+    target_coordinators boolean DEFAULT false NOT NULL,
+    target_operators boolean DEFAULT false NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: notification_rules_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.notification_rules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: notification_rules_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.notification_rules_id_seq OWNED BY public.notification_rules.id;
+
+
+--
 -- Name: regions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -437,7 +507,6 @@ CREATE TABLE public.risk_assessments (
     risk_level integer NOT NULL,
     risk_score double precision NOT NULL,
     precipitation_score double precision,
-    river_level_score double precision,
     soil_moisture_score double precision,
     forecast_score double precision,
     contributing_factors jsonb DEFAULT '{}'::jsonb,
@@ -1048,11 +1117,11 @@ CREATE TABLE public.sensors (
     unit character varying(20),
     reading_type character varying(30),
     status character varying DEFAULT 'active'::character varying,
-    last_reading_at timestamp(6) without time zone,
-    last_reading_value double precision,
     metadata jsonb DEFAULT '{}'::jsonb,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    last_reading_value double precision,
+    last_reading_at timestamp(6) without time zone
 );
 
 
@@ -1491,7 +1560,6 @@ CREATE TABLE public.users (
     phone_number character varying,
     department character varying,
     active boolean DEFAULT true,
-    receives_sms_alerts boolean DEFAULT true,
     notification_preferences jsonb DEFAULT '{}'::jsonb,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
@@ -1833,6 +1901,20 @@ ALTER TABLE ONLY public.neighborhoods ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: notification_rule_users id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_rule_users ALTER COLUMN id SET DEFAULT nextval('public.notification_rule_users_id_seq'::regclass);
+
+
+--
+-- Name: notification_rules id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_rules ALTER COLUMN id SET DEFAULT nextval('public.notification_rules_id_seq'::regclass);
+
+
+--
 -- Name: regions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2064,6 +2146,22 @@ ALTER TABLE ONLY public.monitoring_stations
 
 ALTER TABLE ONLY public.neighborhoods
     ADD CONSTRAINT neighborhoods_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notification_rule_users notification_rule_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_rule_users
+    ADD CONSTRAINT notification_rule_users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notification_rules notification_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_rules
+    ADD CONSTRAINT notification_rules_pkey PRIMARY KEY (id);
 
 
 --
@@ -2629,6 +2727,34 @@ CREATE INDEX index_neighborhoods_on_current_risk_level ON public.neighborhoods U
 --
 
 CREATE INDEX index_neighborhoods_on_region_id ON public.neighborhoods USING btree (region_id);
+
+
+--
+-- Name: index_notification_rule_users_on_notification_rule_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notification_rule_users_on_notification_rule_id ON public.notification_rule_users USING btree (notification_rule_id);
+
+
+--
+-- Name: index_notification_rule_users_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notification_rule_users_on_user_id ON public.notification_rule_users USING btree (user_id);
+
+
+--
+-- Name: index_notification_rule_users_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_notification_rule_users_uniqueness ON public.notification_rule_users USING btree (notification_rule_id, user_id);
+
+
+--
+-- Name: index_notification_rules_for_lookup; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notification_rules_for_lookup ON public.notification_rules USING btree (enabled, channel, min_severity);
 
 
 --
@@ -4174,6 +4300,14 @@ ALTER TABLE ONLY public.monitoring_stations
 
 
 --
+-- Name: notification_rule_users fk_rails_2e0c3e47ed; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_rule_users
+    ADD CONSTRAINT fk_rails_2e0c3e47ed FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: alarm_state_histories fk_rails_2fec122d79; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4302,6 +4436,14 @@ ALTER TABLE ONLY public.risk_assessments
 
 
 --
+-- Name: notification_rule_users fk_rails_e7feafc408; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_rule_users
+    ADD CONSTRAINT fk_rails_e7feafc408 FOREIGN KEY (notification_rule_id) REFERENCES public.notification_rules(id) ON DELETE CASCADE;
+
+
+--
 -- Name: neighborhoods fk_rails_ed97da2abb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4332,6 +4474,8 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260416144549'),
+('20260415120000'),
 ('20260408224604'),
 ('20260407011045'),
 ('20260406214826'),

@@ -50,7 +50,7 @@ Five risk levels used across `RiverBasin` and `Neighborhood`: `normal` (0), `att
 
 Model hierarchy: `RiverBasin (1:1) → MonitoringStation → Sensor (1:many) → SensorReading`
 
-- Each river basin has one monitoring station; each station has multiple sensors (pluviometer, river_gauge, weather_station).
+- Each river basin has one monitoring station; each station has multiple sensors (pluviometer, weather_station).
 - `sensor_readings.sensor_id` is the FK — not `monitoring_station_id`. Traverse readings via `station.sensor_readings` (through association) or `sensor.sensor_readings`.
 - `SensorReading` table uses raw SQL migration for PostgreSQL `PARTITION BY RANGE` (monthly partitions). This is intentional — Rails DSL doesn't support table partitioning. Any schema changes to `sensor_readings` must use `execute "ALTER TABLE ..."` raw SQL, not Rails column helpers.
 - The 1:1 RiverBasin↔MonitoringStation relationship is a design convention (enforced in seeds + admin UI), not a DB unique constraint — test fixtures may have multiple stations per basin for job testing.

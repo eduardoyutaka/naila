@@ -72,6 +72,6 @@ class SensorTest < ActiveSupport::TestCase
   test "by_type scope filters by sensor_type" do
     pluviometers = Sensor.by_type("pluviometer")
     assert_includes pluviometers, sensors(:pluv_belem)
-    assert_empty Sensor.by_type("river_gauge")
+    assert_empty Sensor.by_type("weather_station")
   end
 end

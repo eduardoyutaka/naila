@@ -36,7 +36,6 @@ class RiskEngineTest < ActiveSupport::TestCase
     assessment = RiskEngine.assess(@basin)
 
     assert assessment.precipitation_score.is_a?(Numeric)
-    assert assessment.river_level_score.is_a?(Numeric)
     assert assessment.forecast_score.is_a?(Numeric)
     assert assessment.soil_moisture_score.is_a?(Numeric)
   end
@@ -71,14 +70,6 @@ class RiskEngineTest < ActiveSupport::TestCase
   test "precipitation score uses nearby sensor readings" do
     engine = RiskEngine.new(@basin)
     score = engine.send(:compute_precipitation_score)
-
-    assert score >= 0.0
-    assert score <= 1.0
-  end
-
-  test "river level score uses river gauge readings" do
-    engine = RiskEngine.new(@basin)
-    score = engine.send(:compute_river_level_score)
 
     assert score >= 0.0
     assert score <= 1.0

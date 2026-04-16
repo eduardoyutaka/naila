@@ -14,8 +14,6 @@ class MetricDataCollector
     case metric_name
     when "precipitation_1h", "precipitation_3h"
       collect_precipitation(period_start, period_end, statistic)
-    when "river_level"
-      collect_river_level(period_start, period_end, statistic)
     when "risk_score"
       collect_risk_score(period_start, period_end, statistic)
     when "soil_moisture"
@@ -36,31 +34,6 @@ class MetricDataCollector
                             .where(recorded_at: period_start..period_end)
 
     apply_statistic(readings, statistic || "Sum")
-  end
-
-  def collect_river_level(period_start, period_end, statistic)
-    return nil unless @river
-
-    gauge_ids = Sensor.joins(:monitoring_station)
-                      .where(monitoring_stations: { river_id: @river.id })
-                      .where(sensor_type: :river_gauge, status: :active)
-                      .pluck(:id)
-    return nil if gauge_ids.empty?
-
-    readings = SensorReading.where(sensor_id: gauge_ids)
-                            .by_type("river_level")
-                            .where(recorded_at: period_start..period_end)
-
-    return nil if readings.none?
-
-    stat = statistic || "Maximum"
-    case stat
-    when "Maximum" then readings.maximum(:value)
-    when "Minimum" then readings.minimum(:value)
-    when "Average" then readings.average(:value)&.to_f
-    else
-      readings.order(recorded_at: :desc).first&.value
-    end
   end
 
   def collect_risk_score(period_start, period_end, statistic)

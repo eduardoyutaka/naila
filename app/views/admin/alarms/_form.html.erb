@@ -54,7 +54,7 @@
             <%= form.label :metric_name, "Métrica" %>
             <%= form.select :metric_name,
                   [["Precipitação 1h", "precipitation_1h"], ["Precipitação 3h", "precipitation_3h"],
-                   ["Nível do Rio", "river_level"], ["Score de Risco", "risk_score"],
+                   ["Score de Risco", "risk_score"],
                    ["Umidade do Solo", "soil_moisture"], ["Previsão Precip.", "forecast_precip"]],
                   { include_blank: "— Selecione —" } %>
           <% end %>
