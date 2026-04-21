@@ -84,7 +84,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Fake data generator [https://github.com/faker-ruby/faker]
-  gem "faker", "~> 3.0"
+  gem "faker", "~> 3.8"
 end
 
 group :test do
