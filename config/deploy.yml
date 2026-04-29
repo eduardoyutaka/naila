@@ -60,7 +60,7 @@ builder:
 # no manual `CREATE EXTENSION` step is required.
 accessories:
   db:
-    image: postgis/postgis:17-3.5
+    image: imresamu/postgis:17-3.5
     host: 178.105.23.147
     # Bind to localhost only — never expose Postgres on the public IP.
     port: "127.0.0.1:5432:5432"
