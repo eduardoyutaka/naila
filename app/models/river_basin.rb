@@ -28,6 +28,14 @@ class RiverBasin < ApplicationRecord
   scope :by_active, ->(val) { where(active: val) }
   scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
 
+  def alarm_severity
+    Alarm.in_alarm.where(river_basin_id: id).maximum(:current_severity) || 0
+  end
+
+  def monitored?
+    alarms.exists?
+  end
+
   private
 
   def parse_geometry_geojson
