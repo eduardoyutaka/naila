@@ -1,15 +1,13 @@
 # Name of your application. Used to uniquely configure containers.
 service: naila
 
-# Name of the container image. Replace <DOCKERHUB_USERNAME> with the Docker Hub
-# account that owns the naila repository.
-image: <DOCKERHUB_USERNAME>/naila
+# Name of the container image.
+image: eduardonakanishi/naila
 
-# Deploy to these servers. Replace <HETZNER_PUBLIC_IP> with the public IPv4 of
-# the Hetzner Cloud server.
+# Deploy to these servers.
 servers:
   web:
-    - <HETZNER_PUBLIC_IP>
+    - 178.105.23.147
 
 # SSL termination by the kamal-proxy. Requires DNS for nailariscos.com to point
 # at the server above. force_ssl is enabled in production.rb.
@@ -20,7 +18,7 @@ proxy:
 # Container registry — Docker Hub.
 registry:
   server: docker.io
-  username: <DOCKERHUB_USERNAME>
+  username: eduardonakanishi
   password:
     - KAMAL_REGISTRY_PASSWORD
 
@@ -63,7 +61,7 @@ builder:
 accessories:
   db:
     image: postgis/postgis:17-3.5
-    host: <HETZNER_PUBLIC_IP>
+    host: 178.105.23.147
     # Bind to localhost only — never expose Postgres on the public IP.
     port: "127.0.0.1:5432:5432"
     env:
