@@ -30,8 +30,6 @@ class FetchCemadenJob < ApplicationJob
       affected_basin_ids.merge(station.nearby_river_basin_ids)
     end
 
-    affected_basin_ids.each do |basin_id|
-      RiskAssessmentJob.perform_later(basin_id)
-    end
+    AlarmEvaluationJob.perform_later("all") if affected_basin_ids.any?
   end
 end

@@ -18,6 +18,6 @@ class FetchOpenMeteoJob < ApplicationJob
       end
     end
 
-    RiskAssessmentJob.perform_later("all")
+    AlarmEvaluationJob.perform_later("all")
   end
 end
