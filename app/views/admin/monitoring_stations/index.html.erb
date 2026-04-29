@@ -111,9 +111,10 @@
 
             <%# Última Leitura %>
             <%= catalyst_td do %>
-              <% if station.last_reading_value && station.last_reading_at %>
-                <div class="tabular-nums text-white font-medium"><%= number_with_precision(station.last_reading_value, precision: 1) %></div>
-                <div class="text-zinc-500 dark:text-zinc-300"><%= time_ago_in_words(station.last_reading_at) %> atrás</div>
+              <% last = station.last_reading %>
+              <% if last %>
+                <div class="tabular-nums text-white font-medium"><%= number_with_precision(last.value, precision: 1) %></div>
+                <div class="text-zinc-500 dark:text-zinc-300"><%= time_ago_in_words(last.recorded_at) %> atrás</div>
               <% else %>
                 <span class="text-zinc-500 dark:text-zinc-300">—</span>
               <% end %>

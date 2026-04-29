@@ -13,8 +13,6 @@ pluv_belem:
   unit: mm
   reading_type: precipitation
   status: active
-  last_reading_at: <%= 10.minutes.ago.iso8601 %>
-  last_reading_value: 12.5
 
 pluv_barigui:
   monitoring_station: estacao_barigui
@@ -23,5 +21,3 @@ pluv_barigui:
   unit: mm
   reading_type: precipitation
   status: maintenance
-  last_reading_at: <%= 1.hour.ago.iso8601 %>
-  last_reading_value: 22.3

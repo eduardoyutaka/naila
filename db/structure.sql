@@ -331,9 +331,7 @@ CREATE TABLE public.monitoring_stations (
     metadata jsonb DEFAULT '{}'::jsonb,
     api_token_digest character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    last_reading_value double precision,
-    last_reading_at timestamp(6) without time zone
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -1119,9 +1117,7 @@ CREATE TABLE public.sensors (
     status character varying DEFAULT 'active'::character varying,
     metadata jsonb DEFAULT '{}'::jsonb,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    last_reading_value double precision,
-    last_reading_at timestamp(6) without time zone
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4476,6 +4472,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20260416144549'),
 ('20260415120000'),
+('20260414214143'),
 ('20260408224604'),
 ('20260407011045'),
 ('20260406214826'),

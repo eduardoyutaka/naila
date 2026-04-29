@@ -42,6 +42,7 @@
        }
      }.to_json %>"
      data-admin--map-sensors-value="<%= @monitoring_stations.map { |s|
+       last = s.last_reading
        {
          id: s.id,
          name: s.name,
@@ -51,8 +52,8 @@
          lng: s.location&.x,
          neighborhood: s.neighborhood&.name,
          river: s.river&.name,
-         last_reading_at: s.last_reading_at&.iso8601,
-         last_reading_value: s.last_reading_value
+         last_reading_at: last&.recorded_at&.iso8601,
+         last_reading_value: last&.value
        }
      }.to_json %>"
      data-admin--map-center-value="[-49.2733, -25.4284]"

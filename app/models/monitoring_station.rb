@@ -25,4 +25,8 @@ class MonitoringStation < ApplicationRecord
               .where("ST_DWithin(geometry::geography, ?::geography, 5000)", location)
               .pluck(:id)
   end
+
+  def last_reading
+    sensor_readings.recent.first
+  end
 end

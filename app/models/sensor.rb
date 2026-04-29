@@ -19,6 +19,10 @@ class Sensor < ApplicationRecord
   scope :online, -> { where(status: "active") }
   scope :by_type, ->(type) { where(sensor_type: type) }
 
+  def last_reading
+    sensor_readings.recent.first
+  end
+
   # Returns active pluviometers within radius_m metres of river_basin's centroid.
   # Falls back to pluviometers assigned to the basin's monitoring stations when
   # no geometry is set or no spatial results are found.

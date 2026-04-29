@@ -17,8 +17,6 @@ estacao_belem:
   neighborhood: centro
   river_basin: bacia_belem
   river: belem
-  last_reading_at: <%= 10.minutes.ago.iso8601 %>
-  last_reading_value: 12.5
 
 estacao_barigui:
   external_id: "6878"
@@ -29,5 +27,3 @@ estacao_barigui:
   elevation_m: 920.0
   neighborhood: batel
   river_basin: bacia_barigui
-  last_reading_at: <%= 1.hour.ago.iso8601 %>
-  last_reading_value: 22.3
