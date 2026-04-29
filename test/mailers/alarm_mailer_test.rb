@@ -18,7 +18,7 @@ class AlarmMailerTest < ActionMailer::TestCase
 
   test "notification sends from the NAILA noreply address" do
     mail = AlarmMailer.notification(@alarm, @user, 3)
-    assert_match "noreply@naila.curitiba.pr.gov.br", mail.from.first
+    assert_match "noreply@nailariscos.com", mail.from.first
   end
 
   test "html body contains alarm name, severity label, state reason, and a link" do

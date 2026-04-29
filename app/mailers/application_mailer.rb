@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "NAILA — Defesa Civil <noreply@naila.curitiba.pr.gov.br>"
+  default from: -> { Rails.application.credentials.dig(:mailer, :from) || "NAILA — Defesa Civil <noreply@nailariscos.com>" }
   layout "mailer"
 end

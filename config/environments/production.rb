@@ -25,13 +25,13 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
@@ -59,14 +59,14 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries   = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "naila.curitiba.pr.gov.br", protocol: "https" }
+  config.action_mailer.default_url_options = { host: "nailariscos.com", protocol: "https" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address:              Rails.application.credentials.dig(:smtp, :address),
     port:                 Rails.application.credentials.dig(:smtp, :port) || 587,
-    domain:               Rails.application.credentials.dig(:smtp, :domain) || "naila.curitiba.pr.gov.br",
+    domain:               Rails.application.credentials.dig(:smtp, :domain) || "nailariscos.com",
     user_name:            Rails.application.credentials.dig(:smtp, :user_name),
     password:             Rails.application.credentials.dig(:smtp, :password),
     authentication:       :plain,
@@ -84,11 +84,8 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
+  config.hosts = [ "nailariscos.com", "www.nailariscos.com" ]
+
   # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
