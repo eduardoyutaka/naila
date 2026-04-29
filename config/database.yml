@@ -90,6 +90,7 @@ production:
     database: naila_production
     username: naila
     password: <%= ENV["NAILA_DATABASE_PASSWORD"] %>
+    host: <%= ENV["DB_HOST"] %>
   cache:
     <<: *primary_production
     database: naila_production_cache
