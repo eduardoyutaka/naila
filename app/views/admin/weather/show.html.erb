@@ -1,4 +1,5 @@
 <% content_for(:title, "Naila — Meteorologia") %>
+<% source_labels = { "open_weather_map" => "OpenWeatherMap", "open_meteo" => "Open-Meteo" } %>
 
 <div class="mb-8">
   <%= catalyst_heading "Meteorologia", level: 1 %>
@@ -48,7 +49,7 @@
           <%= @current_conditions.weather_condition.presence || "—" %>
         </div>
         <div class="mt-1 text-xs text-zinc-400">
-          <%= l(@current_conditions.observed_at, format: :short) %> · <%= @current_conditions.source %>
+          <%= l(@current_conditions.observed_at, format: :short) %> · <%= source_labels[@current_conditions.source] || @current_conditions.source %>
         </div>
       </div>
     </div>
@@ -60,26 +61,43 @@
 </div>
 
 <%# ── Section 2: Precipitation Forecast 24h ── %>
-<div class="mb-6 rounded-xl border border-white/10 bg-zinc-900">
-  <div class="border-b border-white/10 px-4 py-3">
+<%
+  grouped_forecasts = @forecasts_24h.group_by(&:source)
+  sources_chart_data = grouped_forecasts.transform_values do |forecasts|
+    forecasts.map do |f|
+      {
+        time: f.valid_from.strftime("%d/%m %H:%M"),
+        precipitation_mm: f.precipitation_mm.to_f.round(1),
+        probability: f.precipitation_probability.to_f.round(0)
+      }
+    end
+  end
+  first_source_key = grouped_forecasts.keys.first
+%>
+<div class="mb-6 rounded-xl border border-white/10 bg-zinc-900"
+     data-controller="admin--source-switcher"
+     data-admin--source-switcher-sources-value="<%= sources_chart_data.to_json %>">
+  <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
     <h2 class="text-sm font-semibold text-white">Previsão de Precipitação — Próximas 24h</h2>
+    <% if grouped_forecasts.size > 1 %>
+      <select data-action="admin--source-switcher#switch"
+              class="rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
+        <% grouped_forecasts.each_key do |source_key| %>
+          <option value="<%= source_key %>"><%= source_labels[source_key] || source_key %></option>
+        <% end %>
+      </select>
+    <% end %>
   </div>
-  <% if @forecasts_24h.any? %>
-    <%
-      forecast_data = @forecasts_24h.map do |f|
-        {
-          time: f.valid_from.strftime("%d/%m %H:%M"),
-          precipitation_mm: f.precipitation_mm.to_f.round(1),
-          probability: f.precipitation_probability.to_f.round(0)
-        }
-      end
-    %>
-    <div data-controller="admin--forecast-chart"
-         data-admin--forecast-chart-forecasts-value="<%= forecast_data.to_json %>"
-         data-admin--forecast-chart-title-value="">
-      <div data-admin--forecast-chart-target="chart" class="h-[320px] w-full px-2 pb-2 relative">
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none" data-forecast-fallback>
-          <p class="text-sm text-zinc-500">Carregando previsão...</p>
+  <% if grouped_forecasts.any? %>
+    <div class="p-4">
+      <div data-admin--source-switcher-target="chart"
+           data-controller="admin--forecast-chart"
+           data-admin--forecast-chart-forecasts-value="<%= sources_chart_data[first_source_key].to_json %>"
+           data-admin--forecast-chart-title-value="">
+        <div data-admin--forecast-chart-target="chart" class="h-[320px] w-full relative">
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none" data-forecast-fallback>
+            <p class="text-sm text-zinc-500">Carregando previsão...</p>
+          </div>
         </div>
       </div>
     </div>
@@ -150,13 +168,17 @@
         [obs.observed_at.iso8601, obs.precipitation_mm.to_f.round(1)]
       end
 
-      forecast_series = @past_forecasts.map do |f|
-        [f.valid_from.iso8601, f.precipitation_mm.to_f.round(1)]
+      forecast_by_source = @past_forecasts.group_by(&:source).map do |source_key, forecasts|
+        {
+          name: source_labels[source_key] || source_key,
+          data: forecasts.map { |f| [f.valid_from.iso8601, f.precipitation_mm.to_f.round(1)] },
+          color: source_key == "open_weather_map" ? "#f59e0b" : "#8b5cf6"
+        }
       end
 
       comparison_series = [
         { name: "Observado", data: observed_series, color: "#06b6d4" },
-        { name: "Previsto", data: forecast_series, color: "#3b82f6" }
+        *forecast_by_source
       ]
     %>
     <div data-controller="admin--timeseries"
