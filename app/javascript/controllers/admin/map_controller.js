@@ -5,6 +5,7 @@ import { CHART_THEME } from "chart_theme"
 function buildRiskColors() {
   const s = CHART_THEME.severity
   return {
+    untracked: { fill: "rgba(113, 113, 122, 0.10)", stroke: "rgba(161, 161, 170, 0.55)",         glow: "rgba(113, 113, 122, 0.15)" },
     normal:     { fill: "rgba(34, 197, 94, 0.15)",  stroke: CHART_THEME.sensor.online,          glow: "rgba(34, 197, 94, 0.25)" },
     attention:  { fill: "rgba(234, 179, 8, 0.15)",   stroke: s[1],                               glow: "rgba(234, 179, 8, 0.25)" },
     alert:      { fill: "rgba(249, 115, 22, 0.20)",  stroke: s[2],                               glow: "rgba(249, 115, 22, 0.30)" },
@@ -13,8 +14,14 @@ function buildRiskColors() {
   }
 }
 
-// Alert severity (1–4) → risk level name
+// Alert severity (1–4) → risk level name. 0/null = "normal" when monitored, "untracked" when not.
 const SEVERITY_TO_RISK = { 1: "attention", 2: "alert", 3: "high_alert", 4: "emergency" }
+
+function basinRiskLevel(monitored, alertSeverity) {
+  if (!monitored) return "untracked"
+  if (alertSeverity == null) return "normal"
+  return SEVERITY_TO_RISK[alertSeverity] || "normal"
+}
 
 // Sensor station type → fill color (from design tokens)
 const SENSOR_TYPE_COLORS = {
@@ -135,7 +142,7 @@ export default class extends Controller {
       feature.set("featureType", "riverBasin")
       feature.set("basinId", basin.id)
       feature.set("basinName", basin.name)
-      feature.set("riskLevel", basin.risk_level)
+      feature.set("monitored", basin.monitored !== false)
       feature.set("alertSeverity", basin.alert_severity ?? null)
 
       this.basinSource.addFeature(feature)
@@ -152,10 +159,9 @@ export default class extends Controller {
 
   basinStyle(feature) {
     const ol = this.ol
+    const monitored = feature.get("monitored") !== false
     const alertSeverity = feature.get("alertSeverity")
-    const riskLevel = alertSeverity != null
-      ? (SEVERITY_TO_RISK[alertSeverity] || "normal")
-      : (feature.get("riskLevel") || "normal")
+    const riskLevel = basinRiskLevel(monitored, alertSeverity)
     const colors = this.RISK_COLORS[riskLevel] || this.RISK_COLORS.normal
 
     return new ol.style.Style({
@@ -246,20 +252,20 @@ export default class extends Controller {
 
   showBasinPopup(feature, pixel) {
     const name = feature.get("basinName")
+    const monitored = feature.get("monitored") !== false
     const alertSeverity = feature.get("alertSeverity")
-    const riskLevel = alertSeverity != null
-      ? (SEVERITY_TO_RISK[alertSeverity] || "normal")
-      : (feature.get("riskLevel") || "normal")
+    const riskLevel = basinRiskLevel(monitored, alertSeverity)
 
     const riskLabels = {
-      normal: "Normal",
+      untracked: "Não monitorada",
+      normal: "Sem alarmes",
       attention: "Atenção",
       alert: "Alerta",
       high_alert: "Alerta Máximo",
       emergency: "Emergência",
     }
 
-    const label = alertSeverity != null ? "Alerta" : "Risco"
+    const label = !monitored ? "Status" : "Alarme"
     const color = (this.RISK_COLORS[riskLevel] || this.RISK_COLORS.normal).stroke
 
     this.popupEl.textContent = ""

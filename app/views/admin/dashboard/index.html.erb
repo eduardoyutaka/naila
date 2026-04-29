@@ -36,7 +36,7 @@
        {
          id: b.id,
          name: b.name,
-         risk_level: b.current_risk_level,
+         monitored: b.monitored?,
          alert_severity: @active_alarm_severity_by_basin[b.id],
          geometry: b.geometry ? RGeo::GeoJSON.encode(b.geometry) : nil
        }
@@ -62,6 +62,7 @@
   <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
     <h2 class="text-sm font-semibold text-white">Mapa de Risco — Curitiba</h2>
     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-zinc-500/60"></span> Não monitorada</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-normal"></span> Normal</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-attention"></span> Atenção</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> Alerta</span>
