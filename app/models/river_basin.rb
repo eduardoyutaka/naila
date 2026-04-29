@@ -13,14 +13,6 @@ class RiverBasin < ApplicationRecord
 
   before_validation :parse_geometry_geojson
 
-  enum :current_risk_level, {
-    normal: 0,
-    attention: 1,
-    alert: 2,
-    high_alert: 3,
-    emergency: 4
-  }, prefix: :risk
-
   RISK_LEVEL_SEVERITIES = {
     "normal"     => 0,
     "attention"  => 1,

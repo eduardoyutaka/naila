@@ -366,7 +366,6 @@ CREATE TABLE public.neighborhoods (
     boundary public.geometry(Polygon,4326),
     area_km2 double precision,
     population integer,
-    current_risk_level integer DEFAULT 0,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -495,45 +494,6 @@ ALTER SEQUENCE public.regions_id_seq OWNED BY public.regions.id;
 
 
 --
--- Name: risk_assessments; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.risk_assessments (
-    id bigint NOT NULL,
-    river_basin_id bigint NOT NULL,
-    assessed_at timestamp(6) without time zone NOT NULL,
-    risk_level integer NOT NULL,
-    risk_score double precision NOT NULL,
-    precipitation_score double precision,
-    soil_moisture_score double precision,
-    forecast_score double precision,
-    contributing_factors jsonb DEFAULT '{}'::jsonb,
-    sensor_data_snapshot jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: risk_assessments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.risk_assessments_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: risk_assessments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.risk_assessments_id_seq OWNED BY public.risk_assessments.id;
-
-
---
 -- Name: river_basins; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -541,11 +501,6 @@ CREATE TABLE public.river_basins (
     id bigint NOT NULL,
     name character varying NOT NULL,
     geometry public.geometry(Polygon,4326),
-    base_risk_level integer DEFAULT 0,
-    current_risk_level integer DEFAULT 0,
-    current_risk_score double precision,
-    risk_factors jsonb DEFAULT '{}'::jsonb,
-    risk_updated_at timestamp(6) without time zone,
     active boolean DEFAULT true,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
@@ -1918,13 +1873,6 @@ ALTER TABLE ONLY public.regions ALTER COLUMN id SET DEFAULT nextval('public.regi
 
 
 --
--- Name: risk_assessments id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.risk_assessments ALTER COLUMN id SET DEFAULT nextval('public.risk_assessments_id_seq'::regclass);
-
-
---
 -- Name: river_basins id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2166,14 +2114,6 @@ ALTER TABLE ONLY public.notification_rules
 
 ALTER TABLE ONLY public.regions
     ADD CONSTRAINT regions_pkey PRIMARY KEY (id);
-
-
---
--- Name: risk_assessments risk_assessments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.risk_assessments
-    ADD CONSTRAINT risk_assessments_pkey PRIMARY KEY (id);
 
 
 --
@@ -2712,13 +2652,6 @@ CREATE UNIQUE INDEX index_neighborhoods_on_code ON public.neighborhoods USING bt
 
 
 --
--- Name: index_neighborhoods_on_current_risk_level; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_neighborhoods_on_current_risk_level ON public.neighborhoods USING btree (current_risk_level);
-
-
---
 -- Name: index_neighborhoods_on_region_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2765,34 +2698,6 @@ CREATE INDEX index_regions_on_boundary ON public.regions USING gist (boundary);
 --
 
 CREATE UNIQUE INDEX index_regions_on_code ON public.regions USING btree (code);
-
-
---
--- Name: index_risk_assessments_on_risk_level; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_risk_assessments_on_risk_level ON public.risk_assessments USING btree (risk_level);
-
-
---
--- Name: index_risk_assessments_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_risk_assessments_on_river_basin_id ON public.risk_assessments USING btree (river_basin_id);
-
-
---
--- Name: index_risk_assessments_on_river_basin_id_and_assessed_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_risk_assessments_on_river_basin_id_and_assessed_at ON public.risk_assessments USING btree (river_basin_id, assessed_at);
-
-
---
--- Name: index_river_basins_on_current_risk_level; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_river_basins_on_current_risk_level ON public.river_basins USING btree (current_risk_level);
 
 
 --
@@ -4424,14 +4329,6 @@ ALTER TABLE ONLY public.solid_queue_scheduled_executions
 
 
 --
--- Name: risk_assessments fk_rails_dfc4c4b3ee; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.risk_assessments
-    ADD CONSTRAINT fk_rails_dfc4c4b3ee FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
-
-
---
 -- Name: notification_rule_users fk_rails_e7feafc408; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4470,6 +4367,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260429210000'),
 ('20260416144549'),
 ('20260415120000'),
 ('20260414214143'),
