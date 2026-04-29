@@ -8,6 +8,10 @@ alarm_evaluation:
   args: ["all"]
   schedule: every 5 minutes
 
+sensor_readings_partitions:
+  class: SensorReadingPartitionsJob
+  schedule: every day at 3:00
+
 production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
