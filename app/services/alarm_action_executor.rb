@@ -13,12 +13,7 @@ class AlarmActionExecutor
     actions.each do |action|
       next if action.min_severity.present? && (current_sev.nil? || current_sev < action.min_severity)
 
-      case action.action_type
-      when "notification"
-        execute_notification(action, new_state)
-      when "webhook"
-        execute_webhook(action, new_state)
-      end
+      execute_notification(action, new_state) if action.action_type == "notification"
     end
   end
 
@@ -55,29 +50,6 @@ class AlarmActionExecutor
       current_severity: @alarm.current_severity,
       river_basin_id: @alarm.river_basin_id,
       reason: @alarm.state_reason
-    }
-  end
-
-  def execute_webhook(action, new_state)
-    config = action.configuration
-
-    SendWebhookJob.perform_later(
-      config["url"],
-      config["method"] || "POST",
-      build_webhook_payload(new_state),
-      config["headers"] || {}
-    )
-  end
-
-  def build_webhook_payload(new_state)
-    {
-      alarm_id: @alarm.id,
-      alarm_name: @alarm.name,
-      alarm_type: @alarm.alarm_type,
-      new_state: new_state,
-      current_severity: @alarm.current_severity,
-      reason: @alarm.state_reason,
-      timestamp: Time.current.iso8601
     }
   end
 end

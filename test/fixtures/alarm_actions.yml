@@ -19,8 +19,8 @@ precip_ok_websocket:
 disabled_action:
   alarm: precip_3h_belem
   trigger_state: alarm
-  action_type: webhook
+  action_type: notification
   configuration:
-    url: "https://example.com/hook"
-    method: POST
+    channels:
+      - sms
   enabled: false

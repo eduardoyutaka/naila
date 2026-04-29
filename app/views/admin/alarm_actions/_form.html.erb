@@ -6,6 +6,8 @@
   <div class="p-6">
     <%= form.error_summary %>
 
+    <%= form.hidden_field :action_type, value: "notification" %>
+
     <%= form.field_group do %>
       <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
         <%= form.field do %>
@@ -14,24 +16,18 @@
                 [["Alarme", "alarm"], ["OK", "ok"], ["Dados Insuficientes", "insufficient_data"]] %>
         <% end %>
         <%= form.field do %>
-          <%= form.label :action_type, "Tipo de Ação" %>
-          <%= form.select :action_type, [["Notificação", "notification"], ["Webhook", "webhook"]] %>
-        <% end %>
-      </div>
-
-      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <%= form.field do %>
           <%= form.label :min_severity, "Severidade Mínima" %>
           <%= form.select :min_severity,
                 [["— Qualquer —", ""],
                  ["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]] %>
           <%= form.description "Disparar somente se a severidade atual atingir este nível." %>
         <% end %>
-        <%= form.field do %>
-          <%= form.label :enabled, "Status" %>
-          <%= form.select :enabled, [["Ativada", true], ["Desativada", false]] %>
-        <% end %>
       </div>
+
+      <%= form.field do %>
+        <%= form.label :enabled, "Status" %>
+        <%= form.select :enabled, [["Ativada", true], ["Desativada", false]] %>
+      <% end %>
     <% end %>
   </div>
 
