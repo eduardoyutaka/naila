@@ -60,9 +60,6 @@ gem "web-push", "~> 3.0"
 # SMS via Twilio [https://github.com/twilio/twilio-ruby]
 gem "twilio-ruby", "~> 7.0"
 
-# MQTT client for IoT sensor data ingestion [https://github.com/njh/ruby-mqtt]
-gem "mqtt", "~> 0.6"
-
 # Pagination [https://github.com/ddnexus/pagy]
 gem "pagy", "~> 9.0"
 # Charts [https://github.com/ankane/chartkick]

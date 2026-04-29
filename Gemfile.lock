@@ -219,8 +219,6 @@ GEM
       railties (>= 7.1)
       stimulus-rails
       turbo-rails
-    mqtt (0.7.0)
-      logger
     msgpack (1.8.0)
     multi_json (1.19.1)
     net-http (0.9.1)
@@ -497,7 +495,6 @@ DEPENDENCIES
   importmap-rails
   kamal
   mission_control-jobs
-  mqtt (~> 0.6)
   noticed (~> 2.0)
   pagy (~> 9.0)
   pg (~> 1.1)
