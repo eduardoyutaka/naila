@@ -65,7 +65,7 @@ class RiverBasin < ApplicationRecord
   end
 
   def monitored?
-    alarms.exists?
+    alarms.any?
   end
 
   private

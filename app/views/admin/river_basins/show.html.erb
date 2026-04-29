@@ -57,59 +57,8 @@
 
         <%= catalyst_dt "Rios" %>
         <%= catalyst_dd @river_basin.rivers.any? ? @river_basin.rivers.pluck(:name).join(", ") : "—" %>
-
-        <%= catalyst_dt "Score Atual" %>
-        <%= catalyst_dd @river_basin.current_risk_score ? number_to_percentage(@river_basin.current_risk_score * 100, precision: 1) : "—" %>
-
-        <% if @river_basin.risk_factors.present? %>
-          <%= catalyst_dt "Fatores de Risco" %>
-          <%= catalyst_dd do %>
-            <div class="grid grid-cols-2 gap-2">
-              <% @river_basin.risk_factors.each do |factor, score| %>
-                <div class="flex items-center justify-between rounded-md bg-zinc-800 px-2 py-1.5">
-                  <span class="text-xs text-zinc-400 truncate"><%= factor.humanize %></span>
-                  <span class="text-xs tabular-nums text-white ml-2"><%= number_to_percentage(score * 100, precision: 0) %></span>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-        <% end %>
-
-        <%= catalyst_dt "Última Avaliação" %>
-        <%= catalyst_dd @river_basin.risk_updated_at ? l(@river_basin.risk_updated_at, format: :short) : "—" %>
       <% end %>
     </div>
-
-    <%# Recent Assessments %>
-    <% if @recent_assessments.any? %>
-      <div class="rounded-xl border border-white/10 bg-zinc-800/50" style="--gutter: 1.5rem">
-        <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
-          <%= catalyst_subheading "Avaliações Recentes" %>
-          <%= catalyst_text @recent_assessments.size.to_s %>
-        </div>
-        <%= catalyst_table(dense: true) do %>
-          <%= catalyst_table_head do %>
-            <tr>
-              <%= catalyst_th "Data/Hora" %>
-              <%= catalyst_th "Nível" %>
-              <%= catalyst_th "Score" %>
-            </tr>
-          <% end %>
-          <%= catalyst_table_body do %>
-            <% @recent_assessments.each do |assessment| %>
-              <%= catalyst_table_row do %>
-                <%= catalyst_td assessment.assessed_at.strftime("%d/%m/%Y %H:%M"), class: "tabular-nums text-zinc-500 dark:text-zinc-400" %>
-                <%= catalyst_td do %>
-                  <%= tag.span(RiskHelper::ASSESSMENT_LEVEL_LABEL[assessment.risk_level],
-                        class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{RiskHelper::ASSESSMENT_LEVEL_BADGE_CLASSES[assessment.risk_level]}") %>
-                <% end %>
-                <%= catalyst_td number_to_percentage(assessment.risk_score * 100, precision: 1), class: "tabular-nums" %>
-              <% end %>
-            <% end %>
-          <% end %>
-        <% end %>
-      </div>
-    <% end %>
 
     <%# Active Alarms %>
     <% if @active_alarms.any? %>
@@ -164,7 +113,6 @@
         <%= catalyst_subheading "Estatísticas" %>
       </div>
       <%= catalyst_dl class: "px-6" do %>
-        <%= catalyst_dt "Total de Avaliações" %><%= catalyst_dd @river_basin.risk_assessments.count.to_s %>
         <%= catalyst_dt "Total de Alarmes" %><%= catalyst_dd @river_basin.alarms.count.to_s %>
         <%= catalyst_dt "Criada em" %><%= catalyst_dd @river_basin.created_at.strftime("%d/%m/%Y") %>
       <% end %>

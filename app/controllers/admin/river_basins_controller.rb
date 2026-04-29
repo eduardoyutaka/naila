@@ -17,12 +17,12 @@ module Admin
       scope = scope.by_risk_level(q[:risk_level])   if q[:risk_level].present?
       scope = scope.by_active(q[:active])            if q[:active].present?
 
-      @pagy, @river_basins = pagy(scope.ordered_by_alarm_severity)
+      @active_alarm_severity_by_basin = Alarm.max_severity_by_basin
+      @pagy, @river_basins = pagy(scope.ordered_by_alarm_severity.includes(:alarms))
     end
 
     def show
       authorize @river_basin
-      @recent_assessments = @river_basin.risk_assessments.order(assessed_at: :desc).limit(10)
       @active_alarms = @river_basin.alarms.in_alarm.order(current_severity: :desc)
       @forecast_summary = WeatherForecast.aggregate_next_hours(6)
       @current_weather = WeatherObservation.current_conditions
