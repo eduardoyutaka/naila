@@ -14,8 +14,6 @@ class MetricDataCollector
     case metric_name
     when "precipitation_1h", "precipitation_3h"
       collect_precipitation(period_start, period_end, statistic)
-    when "risk_score"
-      collect_risk_score(period_start, period_end, statistic)
     when "soil_moisture"
       collect_soil_moisture(period_start, period_end)
     when "forecast_precip"
@@ -34,19 +32,6 @@ class MetricDataCollector
                             .where(recorded_at: period_start..period_end)
 
     apply_statistic(readings, statistic || "Sum")
-  end
-
-  def collect_risk_score(period_start, period_end, statistic)
-    assessments = RiskAssessment.where(river_basin: @river_basin)
-                                .where(assessed_at: period_start..period_end)
-    return nil if assessments.none?
-
-    case statistic || "Maximum"
-    when "Maximum" then assessments.maximum(:risk_score)
-    when "Minimum" then assessments.minimum(:risk_score)
-    when "Average" then assessments.average(:risk_score)&.to_f
-    else assessments.order(assessed_at: :desc).first&.risk_score
-    end
   end
 
   def collect_soil_moisture(period_start, period_end)
