@@ -22,11 +22,43 @@ class RiverBasin < ApplicationRecord
     emergency: 4
   }, prefix: :risk
 
+  RISK_LEVEL_SEVERITIES = {
+    "normal"     => 0,
+    "attention"  => 1,
+    "alert"      => 2,
+    "high_alert" => 3,
+    "emergency"  => 4
+  }.freeze
+
   scope :active, -> { where(active: true) }
-  scope :at_risk, -> { where.not(current_risk_level: :normal) }
-  scope :by_risk_level, ->(level) { where(current_risk_level: level) }
   scope :by_active, ->(val) { where(active: val) }
   scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
+
+  scope :at_risk, -> {
+    where(id: Alarm.in_alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id))
+  }
+
+  scope :by_risk_level, ->(level) {
+    severity = RISK_LEVEL_SEVERITIES[level.to_s]
+    next all if severity.nil?
+
+    in_alarm_basins = Alarm.in_alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id)
+    if severity.zero?
+      where.not(id: in_alarm_basins)
+    else
+      where(id: Alarm.in_alarm.where.not(river_basin_id: nil)
+        .group(:river_basin_id)
+        .having("MAX(current_severity) = ?", severity)
+        .select(:river_basin_id))
+    end
+  }
+
+  scope :ordered_by_alarm_severity, -> {
+    left_joins(:alarms).group("river_basins.id").order(
+      Arel.sql("MAX(CASE WHEN alarms.state = 'alarm' THEN alarms.current_severity END) DESC NULLS LAST"),
+      :name
+    )
+  }
 
   def alarm_severity
     Alarm.in_alarm.where(river_basin_id: id).maximum(:current_severity) || 0

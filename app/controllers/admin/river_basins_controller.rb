@@ -17,7 +17,7 @@ module Admin
       scope = scope.by_risk_level(q[:risk_level])   if q[:risk_level].present?
       scope = scope.by_active(q[:active])            if q[:active].present?
 
-      @pagy, @river_basins = pagy(scope.order(current_risk_level: :desc, name: :asc))
+      @pagy, @river_basins = pagy(scope.ordered_by_alarm_severity)
     end
 
     def show
