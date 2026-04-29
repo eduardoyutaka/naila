@@ -4,6 +4,7 @@ const DARK_TILES_URL = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.pn
 const CURITIBA_CENTER = [-49.2733, -25.4284]
 
 const RISK_COLORS = {
+  untracked: { fill: "rgba(113, 113, 122, 0.10)", stroke: "rgba(161, 161, 170, 0.55)" },
   normal:     { fill: "rgba(34, 197, 94, 0.15)",  stroke: "#22c55e" },
   attention:  { fill: "rgba(234, 179, 8, 0.15)",   stroke: "#eab308" },
   alert:      { fill: "rgba(249, 115, 22, 0.20)",  stroke: "#f97316" },
@@ -11,11 +12,21 @@ const RISK_COLORS = {
   emergency:  { fill: "rgba(168, 85, 247, 0.30)",  stroke: "#a855f7" },
 }
 
+const SEVERITY_TO_RISK = { 1: "attention", 2: "alert", 3: "high_alert", 4: "emergency" }
+
+function basinRiskLevel(monitored, alertSeverity) {
+  if (!monitored) return "untracked"
+  if (alertSeverity == null || alertSeverity === 0) return "normal"
+  return SEVERITY_TO_RISK[alertSeverity] || "normal"
+}
+
 export default class extends Controller {
-  static targets = ["canvas"]
+  static targets = ["canvas", "alertSeverities"]
   static values = {
-    geometry:  { type: String, default: "" },
-    riskLevel: { type: String, default: "normal" },
+    geometry:       { type: String, default: "" },
+    basinId:        { type: Number, default: 0 },
+    monitored:      { type: Boolean, default: true },
+    alertSeverity:  { type: Number, default: 0 },
   }
 
   connect() {
@@ -43,7 +54,7 @@ export default class extends Controller {
     this.vectorSource = new ol.source.Vector()
     this.vectorLayer = new ol.layer.Vector({
       source: this.vectorSource,
-      style: (feature) => this.polygonStyle(feature),
+      style: () => this.polygonStyle(),
     })
 
     this.map = new ol.Map({
@@ -90,10 +101,20 @@ export default class extends Controller {
 
   polygonStyle() {
     const ol = this.ol
-    const colors = RISK_COLORS[this.riskLevelValue] || RISK_COLORS.normal
+    const level = basinRiskLevel(this.monitoredValue, this.alertSeverityValue)
+    const colors = RISK_COLORS[level] || RISK_COLORS.normal
     return new ol.style.Style({
       fill: new ol.style.Fill({ color: colors.fill }),
       stroke: new ol.style.Stroke({ color: colors.stroke, width: 2 }),
     })
+  }
+
+  // Re-renders when the broadcast turbo stream replaces the severities div.
+  alertSeveritiesTargetConnected(element) {
+    if (!this.vectorLayer) return
+    const raw = JSON.parse(element.dataset.value || "{}")
+    const severity = raw[this.basinIdValue] ?? raw[String(this.basinIdValue)] ?? 0
+    this.alertSeverityValue = severity
+    this.vectorLayer.changed()
   }
 }

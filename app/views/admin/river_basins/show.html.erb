@@ -11,9 +11,10 @@
   <% end %>
 </div>
 
+<%= turbo_stream_from "basin_alarms" %>
 <div class="mb-8">
   <div class="mb-2 flex flex-wrap items-center gap-2">
-    <%= risk_level_badge(@river_basin.current_risk_level) %>
+    <%= alarm_severity_badge(@river_basin.alarm_severity, monitored: @river_basin.monitored?) %>
     <%= catalyst_badge(@river_basin.active? ? "Ativa" : "Inativa", color: @river_basin.active? ? "green" : "zinc") %>
   </div>
   <%= catalyst_heading @river_basin.name, level: 1 %>
@@ -33,9 +34,15 @@
       <div class="p-1">
         <div data-controller="admin--polygon-viewer"
              data-admin--polygon-viewer-geometry-value="<%= geojson_str %>"
-             data-admin--polygon-viewer-risk-level-value="<%= @river_basin.current_risk_level %>"
+             data-admin--polygon-viewer-basin-id-value="<%= @river_basin.id %>"
+             data-admin--polygon-viewer-monitored-value="<%= @river_basin.monitored? %>"
+             data-admin--polygon-viewer-alert-severity-value="<%= @river_basin.alarm_severity %>"
              data-admin--polygon-viewer-target="canvas"
              class="h-[350px] w-full rounded-lg overflow-hidden"></div>
+        <div id="basin-alarm-severities"
+             data-admin--polygon-viewer-target="alertSeverities"
+             class="hidden"
+             data-value="<%= Alarm.max_severity_by_basin.to_json %>"></div>
       </div>
     </div>
 

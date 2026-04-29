@@ -85,11 +85,14 @@ module RiskHelper
     )
   end
 
-  def risk_level_badge(level)
-    tag.span(
-      RISK_LEVEL_LABEL[level.to_s],
-      class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{RISK_LEVEL_BADGE_CLASSES[level.to_s]}"
-    )
+  def alarm_severity_badge(severity, monitored: true)
+    if !monitored
+      tag.span("Não monitorada", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
+    elsif severity.to_i.zero?
+      tag.span("Sem alarmes", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-normal/20 text-risk-normal")
+    else
+      severity_badge(severity)
+    end
   end
 
   def sensor_type_badge(sensor_type)
