@@ -366,47 +366,38 @@ basins.each do |basin_name, basin|
   precip_alarms[basin_name] = alarm
 end
 
-# Alarm actions — severity-aware notifications using min_severity
+# Alarm actions — broadcast state changes over ActionCable.
+# Email/SMS dispatch is governed globally by NotificationRule records, not by
+# per-alarm channel configuration.
 Alarm.find_each do |alarm|
   next if alarm.alarm_actions.exists?
 
-  # Always notify via websocket
-  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
-                               configuration: { "channels" => %w[websocket] }, enabled: true)
-  # SMS at severity 2+
-  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
-                               configuration: { "channels" => %w[sms] }, min_severity: 2, enabled: true)
-  # Push at severity 3+
-  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
-                               configuration: { "channels" => %w[push] }, min_severity: 3, enabled: true)
-  # Email + civil defense at severity 4
-  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification",
-                               configuration: { "channels" => %w[email civil_defense] }, min_severity: 4, enabled: true)
-
-  alarm.alarm_actions.create!(trigger_state: "ok", action_type: "notification",
-                               configuration: { "channels" => %w[websocket] }, enabled: true)
+  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification", enabled: true)
+  alarm.alarm_actions.create!(trigger_state: "ok",    action_type: "notification", enabled: true)
 end
 
 # ============================================================
-# 10. Users
+# 10. Users (development/test only — production uses bin/kamal console)
 # ============================================================
-puts "  Creating users..."
+if Rails.env.development? || Rails.env.test?
+  puts "  Creating users..."
 
-[
-  { email: "admin@naila.curitiba.pr.gov.br", name: "Administrador NAILA", role: "admin",
-    department: "Tecnologia da Informação", phone: "+5541999000001" },
-  { email: "coord@defesacivil.curitiba.pr.gov.br", name: "Maria Silva", role: "coordinator",
-    department: "Defesa Civil", phone: "+5541999000002" },
-  { email: "operador@defesacivil.curitiba.pr.gov.br", name: "João Santos", role: "operator",
-    department: "Defesa Civil", phone: "+5541999000003" },
-].each do |data|
-  User.find_or_create_by!(email_address: data[:email]) do |u|
-    u.name = data[:name]
-    u.role = data[:role]
-    u.department = data[:department]
-    u.phone_number = data[:phone]
-    u.password = "naila2026"
-    u.active = true
+  [
+    { email: "admin@naila.curitiba.pr.gov.br", name: "Administrador NAILA", role: "admin",
+      department: "Tecnologia da Informação", phone: "+5541999000001" },
+    { email: "coord@defesacivil.curitiba.pr.gov.br", name: "Maria Silva", role: "coordinator",
+      department: "Defesa Civil", phone: "+5541999000002" },
+    { email: "operador@defesacivil.curitiba.pr.gov.br", name: "João Santos", role: "operator",
+      department: "Defesa Civil", phone: "+5541999000003" },
+  ].each do |data|
+    User.find_or_create_by!(email_address: data[:email]) do |u|
+      u.name = data[:name]
+      u.role = data[:role]
+      u.department = data[:department]
+      u.phone_number = data[:phone]
+      u.password = "naila2026"
+      u.active = true
+    end
   end
 end
 
@@ -459,7 +450,7 @@ puts "  Creating data sources..."
     ds.base_url = data[:base_url]
     ds.fetch_interval_seconds = data[:fetch_interval]
     ds.status = "active"
-    ds.last_successful_fetch_at = Time.current - rand(60..600).seconds
+    ds.last_successful_fetch_at = nil
     ds.consecutive_failures = 0
   end
 end
@@ -476,5 +467,3 @@ puts "  #{AlarmAction.count} alarm actions"
 puts "  #{User.count} users"
 puts "  #{NotificationRule.count} notification rules"
 puts "  #{DataSource.count} data sources"
-puts ""
-puts "Login: admin@naila.curitiba.pr.gov.br / naila2026"
