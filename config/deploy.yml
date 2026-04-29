@@ -54,7 +54,7 @@ asset_path: /rails/public/assets
 
 # Configure the image builder.
 builder:
-  arch: amd64
+  arch: arm64
 
 # Postgres + PostGIS accessory. The image ships with PostGIS preinstalled, so
 # no manual `CREATE EXTENSION` step is required.
