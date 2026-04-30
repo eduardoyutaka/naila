@@ -31,11 +31,11 @@ class FetchOpenWeatherMapJobTest < ActiveSupport::TestCase
     end
   end
 
-  test "enqueues RiskAssessmentJob after successful fetch" do
+  test "enqueues AlarmEvaluationJob after successful fetch" do
     stub_request(:get, /api\.openweathermap\.org\/data\/3\.0\/onecall/)
       .to_return(status: 200, body: @fixture, headers: { "Content-Type" => "application/json" })
 
-    assert_enqueued_with(job: RiskAssessmentJob) do
+    assert_enqueued_with(job: AlarmEvaluationJob) do
       FetchOpenWeatherMapJob.perform_now
     end
   end

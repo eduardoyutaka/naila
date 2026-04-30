@@ -23,7 +23,7 @@ class RiverBasin < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :by_active, ->(val) { where(active: val) }
-  scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
+  scope :search_by_name, ->(term) { where("river_basins.name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
 
   scope :at_risk, -> {
     where(id: Alarm.in_alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id))

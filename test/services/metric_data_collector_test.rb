@@ -42,35 +42,6 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 23.8, result, 0.2
   end
 
-  # ── risk_score ──
-
-  test "collects latest risk_score for basin" do
-    RiskAssessment.create!(
-      river_basin: @basin,
-      assessed_at: 10.minutes.ago,
-      risk_level: 2,
-      risk_score: 0.55
-    )
-
-    result = MetricDataCollector.collect(
-      metric_name: "risk_score",
-      river_basin: @basin,
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-    assert_in_delta 0.55, result, 0.01
-  end
-
-  test "risk_score returns nil when no assessments in window" do
-    result = MetricDataCollector.collect(
-      metric_name: "risk_score",
-      river_basin: @basin,
-      period_start: 2.days.ago,
-      period_end: 1.day.ago
-    )
-    assert_nil result
-  end
-
   # ── unknown metric ──
 
   test "returns nil for unknown metric_name" do

@@ -31,20 +31,20 @@ class FetchOpenMeteoJobTest < ActiveSupport::TestCase
     end
   end
 
-  test "enqueues RiskAssessmentJob after successful fetch" do
+  test "enqueues AlarmEvaluationJob after successful fetch" do
     stub_request(:get, /api\.open-meteo\.com\/v1\/forecast/)
       .to_return(status: 200, body: @fixture, headers: { "Content-Type" => "application/json" })
 
-    assert_enqueued_with(job: RiskAssessmentJob) do
+    assert_enqueued_with(job: AlarmEvaluationJob) do
       FetchOpenMeteoJob.perform_now
     end
   end
 
-  test "does not enqueue RiskAssessmentJob on failure" do
+  test "does not enqueue AlarmEvaluationJob on failure" do
     stub_request(:get, /api\.open-meteo\.com\/v1\/forecast/)
       .to_return(status: 500, body: "Error")
 
-    assert_no_enqueued_jobs(only: RiskAssessmentJob) do
+    assert_no_enqueued_jobs(only: AlarmEvaluationJob) do
       FetchOpenMeteoJob.perform_now
     end
   end

@@ -93,18 +93,19 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
 
   # ── Missing data treatment ──
 
-  # Missing-data tests use the risk_score metric because MetricDataCollector
-  # returns nil for it when no assessments exist in a period — the signal the
+  # Missing-data tests use the forecast_precip metric because MetricDataCollector
+  # returns nil for it when no forecasts exist in a period — the signal the
   # engine needs to treat a period as missing. Precipitation always returns 0.0
   # for empty windows, which would never look "missing" to the engine.
   test "missing data treatment 'breaching' counts missing periods as breaching" do
-    basin = RiverBasin.create!(name: "Missing-breaching #{SecureRandom.hex(4)}", active: true, current_risk_level: 0)
+    WeatherForecast.delete_all
+    basin = RiverBasin.create!(name: "Missing-breaching #{SecureRandom.hex(4)}", active: true)
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "risk_score",
+      metric_name: "forecast_precip",
       statistic: "Maximum",
-      threshold_value: 100.0,  # nothing breaches
-      period_seconds: 60,  # 1 min periods — all empty (no assessments)
+      threshold_value: 100.0,
+      period_seconds: 60,
       evaluation_periods: 3,
       datapoints_to_alarm: 2,
       missing_data_treatment: "breaching",
@@ -113,15 +114,15 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
 
     AlarmEvaluationEngine.evaluate_alarm(alarm)
 
-    # Empty periods counted as breaching → alarm
     assert_equal "alarm", alarm.reload.state
   end
 
   test "missing data treatment 'notBreaching' counts missing periods as ok" do
-    basin = RiverBasin.create!(name: "Missing-notbreaching #{SecureRandom.hex(4)}", active: true, current_risk_level: 0)
+    WeatherForecast.delete_all
+    basin = RiverBasin.create!(name: "Missing-notbreaching #{SecureRandom.hex(4)}", active: true)
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "risk_score",
+      metric_name: "forecast_precip",
       statistic: "Maximum",
       threshold_value: 100.0,
       period_seconds: 60,
@@ -137,10 +138,11 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   end
 
   test "all periods missing with treatment 'missing' transitions to insufficient_data" do
-    basin = RiverBasin.create!(name: "Missing-insufficient #{SecureRandom.hex(4)}", active: true, current_risk_level: 0)
+    WeatherForecast.delete_all
+    basin = RiverBasin.create!(name: "Missing-insufficient #{SecureRandom.hex(4)}", active: true)
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "risk_score",
+      metric_name: "forecast_precip",
       statistic: "Maximum",
       threshold_value: 0.5,
       period_seconds: 60,
@@ -149,27 +151,29 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       missing_data_treatment: "missing",
       river_basin: basin
     )
-    # No RiskAssessment records → all periods empty
+
     AlarmEvaluationEngine.evaluate_alarm(alarm)
 
     assert_equal "insufficient_data", alarm.reload.state
   end
 
   test "missing data treatment 'ignore' skips missing periods" do
-    basin = RiverBasin.create!(name: "Missing-ignore #{SecureRandom.hex(4)}", active: true, current_risk_level: 0)
-    # One assessment in period 1 (0-2h); periods 2 (2-4h) and 3 (4-6h) empty
-    RiskAssessment.create!(
-      river_basin: basin,
-      assessed_at: 30.minutes.ago,
-      risk_level: 2,
-      risk_score: 0.55
+    WeatherForecast.delete_all
+    basin = RiverBasin.create!(name: "Missing-ignore #{SecureRandom.hex(4)}", active: true)
+    # One forecast in period 1 (0-2h ago); periods 2 (2-4h) and 3 (4-6h) empty
+    WeatherForecast.create!(
+      source: "open_meteo",
+      issued_at: 1.hour.ago,
+      valid_from: 30.minutes.ago,
+      valid_until: 30.minutes.from_now,
+      precipitation_mm: 0.55
     )
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "risk_score",
+      metric_name: "forecast_precip",
       statistic: "Maximum",
-      threshold_value: 0.5,  # 0.55 breaches
-      period_seconds: 7200,  # 2h periods
+      threshold_value: 0.5,
+      period_seconds: 7200,
       evaluation_periods: 3,
       datapoints_to_alarm: 1,
       missing_data_treatment: "ignore",
@@ -340,7 +344,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   # values precisely. Returns the basin for binding to an alarm.
   def build_isolated_basin_with_pluviometer(readings:)
     suffix = SecureRandom.hex(4)
-    basin = RiverBasin.create!(name: "Test Basin #{suffix}", active: true, current_risk_level: 0)
+    basin = RiverBasin.create!(name: "Test Basin #{suffix}", active: true)
     station = MonitoringStation.create!(
       external_id: "TEST-STATION-#{suffix}",
       name: "Test Station #{suffix}",

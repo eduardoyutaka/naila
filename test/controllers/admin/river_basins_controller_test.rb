@@ -25,10 +25,11 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='summary-at-risk-count']"
   end
 
-  test "index shows risk level badges" do
+  test "index shows alarm severity badges" do
+    # Fixture: flood_alert_belem fires at severity 3 on bacia_belem; bacia_barigui has no alarms.
     get admin_river_basins_path
-    assert_select "span", text: "Alerta"
-    assert_select "span", text: "Normal"
+    assert_select "span", text: "Alerta Máximo"
+    assert_select "span", text: "Não monitorada"
   end
 
   test "index shows empty state when no basins exist" do
@@ -40,7 +41,8 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
   # ── Filters ──
 
   test "index filters by risk level" do
-    get admin_river_basins_path(q: { risk_level: "alert" })
+    # Fixture flood_alert_belem fires bacia_belem at severity 3 (high_alert).
+    get admin_river_basins_path(q: { risk_level: "high_alert" })
     assert_response :success
     assert_select "td", text: /Bacia do Rio Belém/
     assert_select "td", text: /Bacia do Rio Barigui/, count: 0
@@ -77,9 +79,9 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /Bacia do Rio Belém/
   end
 
-  test "show displays risk level badge" do
+  test "show displays alarm severity badge" do
     get admin_river_basin_path(river_basins(:bacia_belem))
-    assert_select "span", text: "Alerta"
+    assert_select "span", text: "Alerta Máximo"
   end
 
   test "show displays details section" do
