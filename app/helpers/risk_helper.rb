@@ -78,6 +78,20 @@ module RiskHelper
     "weather_station" => "bg-sensor-weather/20 text-sensor-weather"
   }.freeze
 
+  COMPARISON_SYMBOL = {
+    "GreaterThanThreshold"          => ">",
+    "GreaterThanOrEqualToThreshold" => "≥",
+    "LessThanThreshold"             => "<",
+    "LessThanOrEqualToThreshold"    => "≤"
+  }.freeze
+
+  SEVERITY_BAR_CLASS = {
+    1 => "bg-risk-attention",
+    2 => "bg-risk-alert",
+    3 => "bg-risk-high",
+    4 => "bg-risk-emergency"
+  }.freeze
+
   def severity_badge(severity)
     tag.span(
       SEVERITY_LABEL[severity.to_i],
@@ -100,5 +114,13 @@ module RiskHelper
       SENSOR_TYPE_LABEL[sensor_type.to_s],
       class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{SENSOR_TYPE_BADGE_CLASSES[sensor_type.to_s]}"
     )
+  end
+
+  def comparison_symbol(operator)
+    COMPARISON_SYMBOL[operator.to_s] || operator.to_s
+  end
+
+  def severity_bar_class(severity)
+    SEVERITY_BAR_CLASS[severity.to_i] || "bg-zinc-500"
   end
 end
