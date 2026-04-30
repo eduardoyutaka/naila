@@ -70,6 +70,7 @@ export default class extends Controller {
         axisLabel: { color: t.axis.label, fontSize: 9 },
         splitLine: { lineStyle: { color: t.axis.split, type: "dashed" } },
         min: isBar ? 0 : undefined,
+        max: this.#yAxisMax(readings),
       },
       series: [series],
     })
@@ -138,6 +139,18 @@ export default class extends Controller {
         }
       }),
     }
+  }
+
+  // Ensure threshold marklines are always visible by extending the y-axis to
+  // cover the highest threshold when readings stay below it. Returns undefined
+  // (ECharts auto-scales) when no thresholds are configured or readings already
+  // exceed them.
+  #yAxisMax(readings) {
+    if (this.thresholdsValue.length === 0) return undefined
+    const maxThreshold = Math.max(...this.thresholdsValue.map((t) => Number(t.value)))
+    const maxReading = readings.length > 0 ? Math.max(...readings.map(([_, v]) => Number(v) || 0)) : 0
+    if (maxReading >= maxThreshold) return undefined
+    return Math.ceil(maxThreshold * 1.1)
   }
 
   #lighten(hex) {

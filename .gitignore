@@ -40,5 +40,8 @@
 # Ignore local Claude Code settings.
 .claude/*
 
+# Playwright CLI artefacts (browser sessions, screenshots, traces).
+/.playwright-cli/
+
 # Vim
 *.swp
