@@ -13,10 +13,10 @@ class PasswordResetMailerTest < ActionMailer::TestCase
     assert_equal "Redefinição de senha — NAILA", mail.subject
   end
 
-  test "reset_instructions sends from noreply address" do
+  test "reset_instructions sends from the configured alerts address" do
     user = users(:admin)
     mail = PasswordResetMailer.reset_instructions(user)
-    assert_match "noreply@nailariscos.com", mail.from.first
+    assert_match "alertas@nailariscos.com", mail.from.first
   end
 
   test "reset_instructions body contains reset URL path" do
