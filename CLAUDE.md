@@ -40,11 +40,16 @@ bin/importmap audit              # JS dependency audit
 
 - All geographic models use PostGIS spatial types (`st_polygon`, `st_point`, `st_line_string`) with SRID 4326 and GiST indexes.
 - Adapter: `activerecord-postgis` gem (seuros fork, Rails 8 native). RGeo for geometry operations, `rgeo-geojson` for serialization.
-- Key spatial query: `MonitoringStation#nearby_river_basin_ids` uses `ST_DWithin` (used by background jobs). Risk/alert service queries go through `Sensor.joins(:monitoring_station).where("ST_DWithin(monitoring_stations.location::geography, ...)")`.
+- Key spatial query: `MonitoringStation#nearby_river_basin_ids` uses `ST_DWithin` (used by background jobs). Alarm-evaluation queries go through `Sensor.joins(:monitoring_station).where("ST_DWithin(monitoring_stations.location::geography, ...)")`.
 
-### Risk Model
+### Alarm-driven status model
 
-Five risk levels used across `RiverBasin` and `Neighborhood`: `normal` (0), `attention` (1), `alert` (2), `high_alert` (3), `emergency` (4). Composite risk score 0.0–1.0 from weighted factors (precipitation, river level, forecast, soil moisture, historical).
+Basin and dashboard status are **derived from alarm state**, not from a separately computed risk score. The five-level severity scale `1..4` (`attention`, `alert`, `high_alert`, `emergency`) lives on `Alarm#current_severity`; `0` is the implicit "no firing alarm" baseline.
+
+- `RiverBasin#alarm_severity` returns the maximum `current_severity` of any firing alarm on the basin (0..4).
+- `RiverBasin#monitored?` returns `true` when at least one alarm is configured for the basin. Untracked basins render gray on the map so coverage gaps are visible.
+- `Alarm.max_severity_by_basin` (Hash of `basin_id → severity`) is the bulk variant — the dashboard precomputes it once and embeds it in the page; it's also re-broadcast over the `basin_alarms` Turbo Stream when any alarm transitions, so polygons recolor live.
+- The map's color buckets map severity 1→attention, 2→alert, 3→high_alert, 4→emergency. Severity 0 + monitored = green ("normal"); not monitored = gray.
 
 ### Sensor Data
 
@@ -90,14 +95,15 @@ The UI layer is built on **Catalyst** (by Tailwind Labs), ported from React/JSX 
 ```
 External sources (CEMADEN, Open-Meteo, OpenWeatherMap)
   → FetchCemadenJob / FetchOpenMeteoJob / FetchOpenWeatherMapJob
-  → SensorReading (via Sensor) / WeatherObservation
-  → RiskAssessmentJob → RiskEngine (services/) → RiskAssessment
-  → EscalationCheckJob → AlertThreshold evaluation → Alert creation
-  → SendAlertNotificationJob → AlertNotification dispatch (WebSocket/SMS/Push)
-  → ActionCable broadcast → Turbo Stream UI updates
+  → SensorReading (via Sensor) / WeatherObservation / WeatherForecast
+  → AlarmEvaluationJob → AlarmEvaluationEngine → MetricDataCollector
+  → Alarm transitions (state, current_severity) + AlarmStateHistory
+  → AlarmActionExecutor → SendAlarmEmail / SendAlarmSms via NotificationRule
+  → after_update_commit broadcasts Alarm.max_severity_by_basin to "basin_alarms"
+  → Turbo Stream replaces the severities partial → maps recolor live
 ```
 
-`WeatherIngestionCycleJob` orchestrates the weather fetch jobs on a schedule.
+`WeatherIngestionCycleJob` orchestrates the weather fetch jobs on a schedule. Each fetch job enqueues `AlarmEvaluationJob.perform_later("all")` once after writing fresh data, so alarms re-evaluate against the latest readings without waiting for the 5-minute scheduled tick.
 
 ## Conventions
 
