@@ -14,7 +14,16 @@ precip_3h_belem:
   datapoints_to_alarm: 2
   missing_data_treatment: missing
   last_evaluated_at: <%= 10.minutes.ago.iso8601 %>
-  last_datapoints: '[{"period":1,"value":12.3,"breaching_severity":0},{"period":2,"value":8.1,"breaching_severity":0},{"period":3,"value":5.0,"breaching_severity":0}]'
+  last_datapoints:
+    - period: 1
+      value: 12.3
+      breaching_severity: 0
+    - period: 2
+      value: 8.1
+      breaching_severity: 0
+    - period: 3
+      value: 5.0
+      breaching_severity: 0
 
 flood_alert_belem:
   name: Alerta de Enchente Belém
@@ -34,7 +43,16 @@ flood_alert_belem:
   datapoints_to_alarm: 2
   missing_data_treatment: missing
   last_evaluated_at: <%= 5.minutes.ago.iso8601 %>
-  last_datapoints: '[{"period":1,"value":65.0,"breaching_severity":3},{"period":2,"value":62.0,"breaching_severity":3},{"period":3,"value":45.0,"breaching_severity":2}]'
+  last_datapoints:
+    - period: 1
+      value: 65.0
+      breaching_severity: 3
+    - period: 2
+      value: 62.0
+      breaching_severity: 3
+    - period: 3
+      value: 45.0
+      breaching_severity: 2
 
 disabled_alarm:
   name: Alarme Desativado

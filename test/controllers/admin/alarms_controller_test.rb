@@ -96,6 +96,50 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='alarm-actions']"
   end
 
+  test "show renders the metric history chart container with readings and thresholds" do
+    get admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "[data-controller~='admin--reading-chart']"
+      assert_select "[data-admin--reading-chart-readings-value]" do |elements|
+        readings = JSON.parse(elements.first["data-admin--reading-chart-readings-value"])
+        assert_kind_of Array, readings
+        assert_operator readings.length, :>, 0, "expected at least one period in chart series"
+      end
+      assert_select "[data-admin--reading-chart-thresholds-value]" do |elements|
+        thresholds = JSON.parse(elements.first["data-admin--reading-chart-thresholds-value"])
+        assert_equal 2, thresholds.length, "fixture has two thresholds (sev 2 and 3)"
+        assert_includes thresholds.map { |t| t["severity"] }, 3
+      end
+    end
+  end
+
+  test "show renders the current evaluation card with per-tier breach counts" do
+    get admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "[data-testid='alarm-evaluation']" do
+      assert_select "[data-testid='alarm-evaluation-tier-2']", text: /Disparado/
+      assert_select "[data-testid='alarm-evaluation-tier-3']", text: /Disparado/
+    end
+  end
+
+  test "show renders the recent datapoints table with values from last_datapoints" do
+    get admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "[data-testid='alarm-datapoints']" do
+      assert_select "td", text: /65[\.,]00/
+      assert_select "td", text: /62[\.,]00/
+      assert_select "td", text: /45[\.,]00/
+    end
+  end
+
+  test "show shows the awaiting-evaluation empty state when last_datapoints is blank" do
+    alarm = alarms(:disabled_alarm) # has 1 threshold but no last_datapoints
+    assert alarm.last_datapoints.blank?, "fixture precondition"
+
+    get admin_alarm_path(alarm)
+    assert_response :success
+    assert_select "[data-testid='alarm-evaluation']", text: /Aguardando primeira avaliação/
+    assert_select "[data-testid='alarm-datapoints']", count: 0
+  end
+
   # ── New ──
 
   test "new renders successfully" do

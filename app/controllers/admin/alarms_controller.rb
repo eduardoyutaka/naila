@@ -26,6 +26,7 @@ module Admin
       @state_histories = @alarm.alarm_state_histories.order(evaluated_at: :desc).limit(20)
       @notification_preview = NotificationRulePreview.for_alarm(@alarm)
       @child_alarms = []
+      assign_chart_data
     end
 
     def new
@@ -76,6 +77,22 @@ module Admin
 
     def set_alarm
       @alarm = Alarm.find(params[:id])
+    end
+
+    def assign_chart_data
+      @chart_thresholds = @alarm.alarm_thresholds.order(:severity).map { |t|
+        { value: t.threshold_value, severity: t.severity, label: RiskHelper::SEVERITY_LABEL[t.severity] }
+      }
+      @chart_unit = @alarm.alarm_thresholds.first&.unit
+
+      if @alarm.river_basin.blank? || @alarm.alarm_thresholds.empty?
+        @chart_readings = []
+        return
+      end
+
+      periods = (@alarm.evaluation_periods * 4).clamp(12, 48)
+      series = MetricDataCollector.history_series(alarm: @alarm, periods: periods)
+      @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
     end
 
     def alarm_summary_counts(scope)

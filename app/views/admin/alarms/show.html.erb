@@ -45,6 +45,131 @@
   <%# ── Left Column ── %>
   <div class="lg:col-span-2 space-y-6">
 
+    <%# Histórico do Métrico %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-history">
+      <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Histórico do Métrico" %>
+        <span class="text-xs text-zinc-500 dark:text-zinc-400">
+          <%= @chart_readings.length %> períodos de <%= distance_of_time_in_words(@alarm.period_seconds) %>
+        </span>
+      </div>
+      <% if @chart_readings.any? && @chart_readings.any? { |_, v| v.to_f.positive? } %>
+        <div class="px-6 py-4"
+             data-controller="admin--reading-chart"
+             data-admin--reading-chart-readings-value="<%= @chart_readings.to_json %>"
+             data-admin--reading-chart-unit-value="<%= @chart_unit %>"
+             data-admin--reading-chart-chart-type-value="bar"
+             data-admin--reading-chart-color-value="sky-500"
+             data-admin--reading-chart-thresholds-value="<%= @chart_thresholds.to_json %>">
+          <div data-admin--reading-chart-target="chart" class="h-48 w-full"></div>
+        </div>
+      <% else %>
+        <div class="px-6 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          Sem dados no período.
+        </div>
+      <% end %>
+    </div>
+
+    <%# Avaliação Atual %>
+    <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-evaluation">
+      <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <%= catalyst_subheading "Avaliação Atual" %>
+        <% if @alarm.last_evaluated_at %>
+          <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+            há <%= time_ago_in_words(@alarm.last_evaluated_at) %>
+          </span>
+        <% end %>
+      </div>
+      <% if @alarm.last_datapoints.blank? %>
+        <div class="px-6 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          Aguardando primeira avaliação.
+        </div>
+      <% else %>
+        <div class="border-b border-white/10 px-6 py-3 text-xs text-zinc-400">
+          Configurado: <strong class="text-zinc-200"><%= @alarm.datapoints_to_alarm %></strong> de
+          <strong class="text-zinc-200"><%= @alarm.evaluation_periods %></strong> períodos para disparar
+        </div>
+        <div class="divide-y divide-white/10">
+          <% @alarm.alarm_thresholds.order(:severity).each do |threshold| %>
+            <% breaching_count = @alarm.last_datapoints.count { |dp| dp["breaching_severity"].to_i >= threshold.severity } %>
+            <% triggered = breaching_count >= @alarm.datapoints_to_alarm %>
+            <% progress = [ (breaching_count.to_f / @alarm.datapoints_to_alarm * 100).round, 100 ].min %>
+            <div class="px-6 py-3" data-testid="alarm-evaluation-tier-<%= threshold.severity %>">
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                  <%= severity_badge(threshold.severity) %>
+                  <span class="tabular-nums text-sm text-zinc-200">
+                    <%= comparison_symbol(threshold.comparison_operator) %>
+                    <%= threshold.threshold_value %><%= threshold.unit %>
+                  </span>
+                </div>
+                <% if triggered %>
+                  <span class="rounded-full bg-risk-emergency/20 px-2 py-0.5 text-xs font-semibold text-risk-emergency">
+                    Disparado
+                  </span>
+                <% else %>
+                  <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                    <%= breaching_count %> de <%= @alarm.datapoints_to_alarm %> períodos violaram
+                  </span>
+                <% end %>
+              </div>
+              <div class="h-1.5 w-full overflow-hidden rounded-full bg-zinc-700/50">
+                <div class="h-full <%= triggered ? "bg-risk-emergency" : severity_bar_class(threshold.severity) %>"
+                     style="width: <%= progress %>%"></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Pontos de Dados Coletados %>
+    <% if @alarm.last_datapoints.present? %>
+      <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-datapoints">
+        <div class="border-b border-white/10 px-6 py-4">
+          <%= catalyst_subheading "Pontos de Dados Coletados" %>
+        </div>
+        <div class="px-6 py-2">
+          <%= catalyst_table do %>
+            <%= catalyst_table_head do %>
+              <%= catalyst_table_row do %>
+                <%= catalyst_th "Período" %>
+                <%= catalyst_th "Valor" %>
+                <%= catalyst_th "Severidade Disparada" %>
+              <% end %>
+            <% end %>
+            <%= catalyst_table_body do %>
+              <% @alarm.last_datapoints.each do |dp| %>
+                <%= catalyst_table_row do %>
+                  <%= catalyst_td do %>
+                    <span class="tabular-nums text-zinc-400">#<%= dp["period"] %></span>
+                  <% end %>
+                  <%= catalyst_td do %>
+                    <% if dp["value"].nil? %>
+                      <span class="text-zinc-500">—</span>
+                    <% else %>
+                      <span class="tabular-nums text-zinc-200">
+                        <%= number_with_precision(dp["value"], precision: 2) %><%= @chart_unit %>
+                      </span>
+                    <% end %>
+                  <% end %>
+                  <%= catalyst_td do %>
+                    <% if dp["breaching_severity"].nil? %>
+                      <span class="text-xs text-zinc-500">Sem dados</span>
+                    <% elsif dp["breaching_severity"].to_i.zero? %>
+                      <span class="text-xs text-zinc-500">Nenhuma</span>
+                    <% else %>
+                      <%= severity_badge(dp["breaching_severity"]) %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <%# Configuration %>
     <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="alarm-config">
       <div class="border-b border-white/10 px-6 py-4">
@@ -63,7 +188,7 @@
                 <div class="flex items-center gap-2">
                   <%= severity_badge(t.severity) %>
                   <span class="tabular-nums text-xs text-zinc-500 dark:text-zinc-400">
-                    <%= t.comparison_operator.gsub(/([A-Z])/, ' \1').strip %> <%= t.threshold_value %><%= t.unit %>
+                    <%= comparison_symbol(t.comparison_operator) %> <%= t.threshold_value %><%= t.unit %>
                   </span>
                 </div>
               <% end %>
