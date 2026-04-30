@@ -5,6 +5,18 @@ class MetricDataCollector
     new(river_basin: river_basin, river: river).collect(metric_name, period_start, period_end, statistic)
   end
 
+  def self.history_series(alarm:, periods:)
+    now = Time.current
+    length = alarm.period_seconds.seconds
+    collector = new(river_basin: alarm.river_basin, river: alarm.river)
+
+    (0...periods).map { |i|
+      period_end = now - (i * length)
+      value = collector.collect(alarm.metric_name, period_end - length, period_end, alarm.statistic)
+      { period_end: period_end, value: value }
+    }.reverse
+  end
+
   def initialize(river_basin:, river: nil)
     @river_basin = river_basin
     @river = river

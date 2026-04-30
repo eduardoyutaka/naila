@@ -67,4 +67,42 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 20.7, result, 0.1
   end
 
+  # ── history_series ──
+
+  test "history_series returns one entry per requested period, oldest first" do
+    alarm = alarms(:flood_alert_belem)
+
+    series = MetricDataCollector.history_series(alarm: alarm, periods: 4)
+
+    assert_equal 4, series.length
+    assert series.all? { |pt| pt.key?(:period_end) && pt.key?(:value) }
+    period_ends = series.map { |pt| pt[:period_end] }
+    assert_equal period_ends.sort, period_ends, "expected oldest → newest ordering"
+  end
+
+  test "history_series spans periods of the alarm's period_seconds length" do
+    alarm = alarms(:flood_alert_belem) # period_seconds: 3600
+
+    series = MetricDataCollector.history_series(alarm: alarm, periods: 3)
+
+    gap = series[-1][:period_end] - series[-2][:period_end]
+    assert_in_delta alarm.period_seconds, gap, 1
+  end
+
+  test "history_series most recent entry matches a single collect call for the same window" do
+    alarm = alarms(:flood_alert_belem)
+
+    series = MetricDataCollector.history_series(alarm: alarm, periods: 3)
+    latest = series.last
+
+    direct = MetricDataCollector.collect(
+      metric_name: alarm.metric_name,
+      river_basin: alarm.river_basin,
+      river: alarm.river,
+      period_start: latest[:period_end] - alarm.period_seconds.seconds,
+      period_end: latest[:period_end],
+      statistic: alarm.statistic
+    )
+    assert_equal direct, latest[:value]
+  end
 end
