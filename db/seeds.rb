@@ -112,68 +112,12 @@ neighborhoods = neighborhoods_data.map do |data|
 end.index_by(&:code)
 
 # ============================================================
-# 3. River Basins (with polygon boundaries)
+# 3. River Basins (imported from BD_geojson/)
 # ============================================================
-puts "  Creating river basins..."
+puts "  Importing river basins from BD_geojson/..."
 
-basins_data = [
-  {
-    name: "Bacia do Rio Iguaçu", area: 308.0,
-    coords: [
-      [-49.32, -25.44], [-49.28, -25.44], [-49.24, -25.44], [-49.20, -25.45],
-      [-49.20, -25.47], [-49.22, -25.49], [-49.26, -25.50], [-49.30, -25.50],
-      [-49.32, -25.49], [-49.33, -25.47], [-49.32, -25.44]
-    ]
-  },
-  {
-    name: "Bacia do Rio Barigui", area: 131.0,
-    coords: [
-      [-49.36, -25.35], [-49.33, -25.35], [-49.31, -25.37], [-49.29, -25.40],
-      [-49.29, -25.43], [-49.30, -25.45], [-49.31, -25.47], [-49.34, -25.47],
-      [-49.36, -25.45], [-49.37, -25.42], [-49.37, -25.38], [-49.36, -25.35]
-    ]
-  },
-  {
-    name: "Bacia do Rio Belém", area: 87.8,
-    coords: [
-      [-49.28, -25.38], [-49.26, -25.38], [-49.25, -25.40], [-49.25, -25.42],
-      [-49.25, -25.44], [-49.26, -25.46], [-49.28, -25.46], [-49.29, -25.44],
-      [-49.29, -25.42], [-49.29, -25.40], [-49.28, -25.38]
-    ]
-  },
-  {
-    name: "Bacia do Rio Atuba", area: 127.6,
-    coords: [
-      [-49.24, -25.34], [-49.21, -25.35], [-49.19, -25.37], [-49.19, -25.40],
-      [-49.20, -25.42], [-49.22, -25.44], [-49.25, -25.44], [-49.26, -25.42],
-      [-49.26, -25.39], [-49.25, -25.36], [-49.24, -25.34]
-    ]
-  },
-  {
-    name: "Bacia do Rio Passaúna", area: 216.0,
-    coords: [
-      [-49.40, -25.37], [-49.37, -25.37], [-49.36, -25.39], [-49.36, -25.42],
-      [-49.37, -25.45], [-49.38, -25.47], [-49.41, -25.47], [-49.42, -25.44],
-      [-49.42, -25.41], [-49.41, -25.38], [-49.40, -25.37]
-    ]
-  },
-  {
-    name: "Bacia do Ribeirão dos Padilhas", area: 33.0,
-    coords: [
-      [-49.33, -25.48], [-49.31, -25.48], [-49.29, -25.49], [-49.28, -25.51],
-      [-49.30, -25.52], [-49.32, -25.52], [-49.34, -25.51], [-49.34, -25.49],
-      [-49.33, -25.48]
-    ]
-  },
-]
-
-basins = basins_data.map do |data|
-  RiverBasin.find_or_create_by!(name: data[:name]) do |b|
-    b.area_km2 = data[:area]
-    b.geometry = polygon(data[:coords])
-    b.active = true
-  end
-end.index_by(&:name)
+RiverBasinGeojsonImporter.run!
+basins = RiverBasin.all.index_by(&:name)
 
 # ============================================================
 # 4. Rivers with real threshold levels
@@ -183,35 +127,35 @@ puts "  Creating rivers..."
 rivers_data = [
   {
     name: "Rio Iguaçu",
-    basin: "Bacia do Rio Iguaçu",
+    basin: "Área Alto Iguaçu",
     length: 72.0,
     normal: 1.5, alert: 3.0, flood: 4.5, overflow: 6.0,
     course: [[-49.35, -25.48], [-49.30, -25.47], [-49.25, -25.46], [-49.20, -25.44]]
   },
   {
     name: "Rio Barigui",
-    basin: "Bacia do Rio Barigui",
+    basin: "Rio Barigui",
     length: 60.0,
     normal: 1.0, alert: 2.5, flood: 3.5, overflow: 5.0,
     course: [[-49.33, -25.35], [-49.32, -25.38], [-49.30, -25.41], [-49.28, -25.45]]
   },
   {
     name: "Rio Belém",
-    basin: "Bacia do Rio Belém",
+    basin: "Rio Belém",
     length: 21.0,
     normal: 0.8, alert: 1.8, flood: 2.5, overflow: 3.5,
     course: [[-49.27, -25.38], [-49.27, -25.40], [-49.26, -25.43], [-49.25, -25.46]]
   },
   {
     name: "Rio Atuba",
-    basin: "Bacia do Rio Atuba",
+    basin: "Rio Atuba",
     length: 32.0,
     normal: 1.2, alert: 2.8, flood: 4.0, overflow: 5.5,
     course: [[-49.22, -25.35], [-49.23, -25.38], [-49.24, -25.41], [-49.25, -25.44]]
   },
   {
     name: "Rio Passaúna",
-    basin: "Bacia do Rio Passaúna",
+    basin: "Rio Passaúna",
     length: 48.0,
     normal: 1.0, alert: 2.2, flood: 3.2, overflow: 4.5,
     course: [[-49.38, -25.38], [-49.37, -25.40], [-49.36, -25.43], [-49.35, -25.46]]
@@ -242,7 +186,7 @@ puts "  Creating sensor stations and sensors..."
 stations_data = [
   {
     eid: "6882", name: "Estação Umbará (bacia Iguaçu)",
-    source: "CEMADEN", basin: "Bacia do Rio Iguaçu", river: "Rio Iguaçu",
+    source: "CEMADEN", basin: "Área Alto Iguaçu", river: "Rio Iguaçu",
     neighborhood: "boqueirao", lon: -49.284, lat: -25.555,
     sensors: [
       { type: :pluviometer, eid: "PLUV-IGUACU-01", unit: "mm", reading_type: "precipitation" },
@@ -250,7 +194,7 @@ stations_data = [
   },
   {
     eid: "6878", name: "Estação Santa Felicidade (bacia Barigui)",
-    source: "CEMADEN", basin: "Bacia do Rio Barigui", river: "Rio Barigui",
+    source: "CEMADEN", basin: "Rio Barigui", river: "Rio Barigui",
     neighborhood: "santa-felicidade", lon: -49.332, lat: -25.382,
     sensors: [
       { type: :pluviometer, eid: "PLUV-BARIGUI-01", unit: "mm", reading_type: "precipitation" },
@@ -258,7 +202,7 @@ stations_data = [
   },
   {
     eid: "6877", name: "Estação Boa Vista (bacia Belém)",
-    source: "CEMADEN", basin: "Bacia do Rio Belém", river: "Rio Belém",
+    source: "CEMADEN", basin: "Rio Belém", river: "Rio Belém",
     neighborhood: "boa-vista", lon: -49.245, lat: -25.379,
     sensors: [
       { type: :pluviometer, eid: "PLUV-BELEM-01", unit: "mm", reading_type: "precipitation" },
@@ -266,7 +210,7 @@ stations_data = [
   },
   {
     eid: "6880", name: "Estação Atuba",
-    source: "CEMADEN", basin: "Bacia do Rio Atuba", river: "Rio Atuba",
+    source: "CEMADEN", basin: "Rio Atuba", river: "Rio Atuba",
     neighborhood: "cajuru", lon: -49.197, lat: -25.384,
     sensors: [
       { type: :pluviometer, eid: "PLUV-ATUBA-01", unit: "mm", reading_type: "precipitation" },
@@ -274,7 +218,7 @@ stations_data = [
   },
   {
     eid: "6873", name: "Estação Butiatuvinha (bacia Passaúna)",
-    source: "CEMADEN", basin: "Bacia do Rio Passaúna",
+    source: "CEMADEN", basin: "Rio Passaúna",
     neighborhood: "cic", lon: -49.36184, lat: -25.41118,
     sensors: [
       { type: :pluviometer, eid: "PLUV-PASSAUNA-01", unit: "mm", reading_type: "precipitation" },
@@ -282,7 +226,7 @@ stations_data = [
   },
   {
     eid: "7297", name: "Estação Novo Mundo (ribeirão Padilhas)",
-    source: "CEMADEN", basin: "Bacia do Ribeirão dos Padilhas",
+    source: "CEMADEN", basin: "Rio Padilha",
     neighborhood: "sitio-cercado", lon: -49.28797, lat: -25.48784,
     sensors: [
       { type: :pluviometer, eid: "PLUV-PADILHAS-01", unit: "mm", reading_type: "precipitation" },
@@ -326,9 +270,13 @@ precip_bands = [
   { severity: 4, value: 80.0 },
 ]
 
-# One precipitation alarm per basin with 4 threshold bands
+# One precipitation alarm per basin that has at least one monitoring station.
+# Stationless basins (the 24 imported from BD_geojson without sensors yet) are
+# left without alarms so the dashboard renders them gray as coverage gaps.
 precip_alarms = {}
 basins.each do |basin_name, basin|
+  next if basin.monitoring_stations.empty?
+
   alarm_name = "Precipitação 3h — #{basin.name}"
   alarm = Alarm.find_by(name: alarm_name)
   unless alarm
