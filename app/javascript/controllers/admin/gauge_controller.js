@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { chartTheme } from "chart_theme"
 
 // Radial gauge for river water levels (current vs thresholds)
 export default class extends Controller {
@@ -22,14 +23,19 @@ export default class extends Controller {
 
     this.resizeObserver = new ResizeObserver(() => this.chart.resize())
     this.resizeObserver.observe(this.chartTarget)
+
+    this.onThemeChange = () => this.render()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     this.resizeObserver?.disconnect()
     this.chart?.dispose()
   }
 
   render() {
+    const t = chartTheme()
     const value = this.valueValue
     const min = this.minValue
     const max = this.maxValue
@@ -68,34 +74,34 @@ export default class extends Controller {
         axisTick: { show: false },
         splitLine: {
           length: 8,
-          lineStyle: { color: "#334155", width: 1 },
+          lineStyle: { color: t.axis.line, width: 1 },
         },
         axisLabel: {
           distance: 16,
-          color: "#94a3b8",
+          color: t.axis.label,
           fontSize: 10,
         },
         pointer: {
           width: 4,
           length: "60%",
-          itemStyle: { color: "#f1f5f9" },
+          itemStyle: { color: t.tooltip.text },
         },
         anchor: {
           show: true,
           size: 8,
-          itemStyle: { borderColor: "#334155", borderWidth: 2, color: "#1e293b" },
+          itemStyle: { borderColor: t.axis.line, borderWidth: 2, color: t.tooltip.bg },
         },
         title: {
           show: true,
           offsetCenter: [0, "70%"],
-          color: "#94a3b8",
+          color: t.axis.label,
           fontSize: 11,
         },
         detail: {
           valueAnimation: true,
           formatter: `{value} ${this.unitValue}`,
           offsetCenter: [0, "45%"],
-          color: "#f1f5f9",
+          color: t.tooltip.text,
           fontSize: 18,
           fontWeight: 600,
           fontFamily: "Inter, system-ui, sans-serif",

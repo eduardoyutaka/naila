@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { chartTheme } from "chart_theme"
 
 // Horizontal bar chart for accumulated rainfall by neighborhood
 export default class extends Controller {
@@ -18,14 +19,19 @@ export default class extends Controller {
 
     this.resizeObserver = new ResizeObserver(() => this.chart.resize())
     this.resizeObserver.observe(this.chartTarget)
+
+    this.onThemeChange = () => this.render()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     this.resizeObserver?.disconnect()
     this.chart?.dispose()
   }
 
   render() {
+    const t = chartTheme()
     const items = this.dataValue.sort((a, b) => b.value - a.value)
     const names = items.map((d) => d.name)
     const values = items.map((d) => d.value)
@@ -36,27 +42,27 @@ export default class extends Controller {
       title: {
         text: this.titleValue,
         left: "center",
-        textStyle: { color: "#f1f5f9", fontSize: 13, fontWeight: 600 },
+        textStyle: { color: t.tooltip.text, fontSize: 13, fontWeight: 600 },
       },
       tooltip: {
-        backgroundColor: "#1e293b",
-        borderColor: "#334155",
-        textStyle: { color: "#f1f5f9", fontSize: 11 },
+        backgroundColor: t.tooltip.bg,
+        borderColor: t.tooltip.border,
+        textStyle: { color: t.tooltip.text, fontSize: 11 },
         formatter: (params) => `${params.name}: <strong>${params.value} ${unit}</strong>`,
       },
       grid: { top: 36, right: 16, bottom: 8, left: 100 },
       xAxis: {
         type: "value",
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 10 },
-        splitLine: { lineStyle: { color: "#334155", type: "dashed" } },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 10 },
+        splitLine: { lineStyle: { color: t.axis.split, type: "dashed" } },
       },
       yAxis: {
         type: "category",
         data: names,
         inverse: true,
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 10, width: 90, overflow: "truncate" },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 10, width: 90, overflow: "truncate" },
       },
       series: [{
         type: "bar",

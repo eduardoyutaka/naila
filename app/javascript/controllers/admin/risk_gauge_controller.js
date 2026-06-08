@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { chartTheme } from "chart_theme"
 
 // Semi-circular gauge for zone risk score (0–100%)
 export default class extends Controller {
@@ -25,14 +26,19 @@ export default class extends Controller {
 
     this.resizeObserver = new ResizeObserver(() => this.chart.resize())
     this.resizeObserver.observe(this.chartTarget)
+
+    this.onThemeChange = () => this.render()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     this.resizeObserver?.disconnect()
     this.chart?.dispose()
   }
 
   render() {
+    const t = chartTheme()
     const score = this.scoreValue
     const percent = Math.round(score * 100)
 
@@ -57,24 +63,24 @@ export default class extends Controller {
         pointer: {
           width: 4,
           length: "55%",
-          itemStyle: { color: "#f1f5f9" },
+          itemStyle: { color: t.tooltip.text },
         },
         anchor: {
           show: true,
           size: 6,
-          itemStyle: { borderColor: "#334155", borderWidth: 2, color: "#1e293b" },
+          itemStyle: { borderColor: t.axis.line, borderWidth: 2, color: t.tooltip.bg },
         },
         title: {
           show: true,
           offsetCenter: [0, "30%"],
-          color: "#94a3b8",
+          color: t.axis.label,
           fontSize: 10,
         },
         detail: {
           valueAnimation: true,
           formatter: "{value}%",
           offsetCenter: [0, "0%"],
-          color: "#f1f5f9",
+          color: t.tooltip.text,
           fontSize: 20,
           fontWeight: 700,
           fontFamily: "Inter, system-ui, sans-serif",

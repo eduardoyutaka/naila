@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { chartTheme } from "chart_theme"
 
 // Mini inline line chart for trends (e.g., precipitation last 24h)
 export default class extends Controller {
@@ -18,14 +19,19 @@ export default class extends Controller {
 
     this.resizeObserver = new ResizeObserver(() => this.chart.resize())
     this.resizeObserver.observe(this.chartTarget)
+
+    this.onThemeChange = () => this.render()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     this.resizeObserver?.disconnect()
     this.chart?.dispose()
   }
 
   render() {
+    const t = chartTheme()
     const data = this.dataValue
     const color = this.colorValue
 
@@ -59,9 +65,9 @@ export default class extends Controller {
       }],
       tooltip: {
         trigger: "axis",
-        backgroundColor: "#1e293b",
-        borderColor: "#334155",
-        textStyle: { color: "#f1f5f9", fontSize: 11 },
+        backgroundColor: t.tooltip.bg,
+        borderColor: t.tooltip.border,
+        textStyle: { color: t.tooltip.text, fontSize: 11 },
         formatter: (params) => {
           const val = params[0]?.value ?? "—"
           return `${this.labelValue ? this.labelValue + ": " : ""}${val}`

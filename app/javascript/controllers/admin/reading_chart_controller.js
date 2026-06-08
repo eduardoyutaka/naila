@@ -21,9 +21,13 @@ export default class extends Controller {
 
     this.resizeObserver = new ResizeObserver(() => this.chart.resize())
     this.resizeObserver.observe(this.chartTarget)
+
+    this.onThemeChange = () => this.render()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     this.resizeObserver?.disconnect()
     this.chart?.dispose()
   }

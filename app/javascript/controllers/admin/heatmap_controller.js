@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { chartTheme } from "chart_theme"
 
 // Calendar heatmap for rainfall intensity by hour/day
 export default class extends Controller {
@@ -21,28 +22,38 @@ export default class extends Controller {
 
     this.resizeObserver = new ResizeObserver(() => this.chart.resize())
     this.resizeObserver.observe(this.chartTarget)
+
+    this.onThemeChange = () => this.render()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     this.resizeObserver?.disconnect()
     this.chart?.dispose()
   }
 
   render() {
+    const t = chartTheme()
+    const dark = document.documentElement.classList.contains("dark")
     const data = this.dataValue
     const maxVal = Math.max(...data.map((d) => d[2]), 1)
+    // Heat ramp: low end blends into the surface (light blue on light, near-black on dark)
+    const heatRamp = dark
+      ? ["#111827", "#1e3a5f", "#3b82f6", "#eab308", "#ef4444"]
+      : ["#eff6ff", "#bfdbfe", "#3b82f6", "#eab308", "#ef4444"]
 
     this.chart.setOption({
       backgroundColor: "transparent",
       title: {
         text: this.titleValue,
         left: "center",
-        textStyle: { color: "#f1f5f9", fontSize: 13, fontWeight: 600 },
+        textStyle: { color: t.tooltip.text, fontSize: 13, fontWeight: 600 },
       },
       tooltip: {
-        backgroundColor: "#1e293b",
-        borderColor: "#334155",
-        textStyle: { color: "#f1f5f9", fontSize: 11 },
+        backgroundColor: t.tooltip.bg,
+        borderColor: t.tooltip.border,
+        textStyle: { color: t.tooltip.text, fontSize: 11 },
         formatter: (params) => {
           const [hour, day, val] = params.data
           return `${this.constructor.DAYS[day]} ${this.constructor.HOURS[hour]}<br/>
@@ -53,15 +64,15 @@ export default class extends Controller {
       xAxis: {
         type: "category",
         data: this.constructor.HOURS,
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 9 },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 9 },
         splitArea: { show: false },
       },
       yAxis: {
         type: "category",
         data: this.constructor.DAYS,
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8", fontSize: 10 },
+        axisLine: { lineStyle: { color: t.axis.line } },
+        axisLabel: { color: t.axis.label, fontSize: 10 },
         splitArea: { show: false },
       },
       visualMap: {
@@ -71,9 +82,9 @@ export default class extends Controller {
         right: 0,
         top: "center",
         itemHeight: 100,
-        textStyle: { color: "#94a3b8", fontSize: 9 },
+        textStyle: { color: t.axis.label, fontSize: 9 },
         inRange: {
-          color: ["#111827", "#1e3a5f", "#3b82f6", "#eab308", "#ef4444"],
+          color: heatRamp,
         },
       },
       series: [{
