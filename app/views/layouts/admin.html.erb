@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <%# Apply the saved theme before first paint to avoid a flash. Default is light. %>
+    <%# Apply the saved theme before first paint (no flash). Default is light.
+        Re-apply on turbo:load so Turbo visits into the admin reflect the saved choice. %>
     <script>
       (function () {
-        try { if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark") } catch (e) {}
+        function applyTheme() {
+          try { document.documentElement.classList.toggle("dark", localStorage.getItem("theme") === "dark") } catch (e) {}
+        }
+        applyTheme()
+        if (!window.__nailaThemeBound) {
+          window.__nailaThemeBound = true
+          document.addEventListener("turbo:load", applyTheme)
+        }
       })()
     </script>
     <title><%= content_for(:title) || "Naila — Painel" %></title>

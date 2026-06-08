@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<%# Auth screens are intentionally dark via hardcoded classes (no `dark:` variants),
+    so no `.dark` on <html> — that avoids leaking the class into the themed admin
+    app across a Turbo visit after login. %>
+<html lang="pt-BR">
   <head>
     <title><%= content_for(:title) || "Naila" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">

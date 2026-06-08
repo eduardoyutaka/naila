@@ -54,7 +54,14 @@ export default class extends Controller {
   connect() {
     this.ol = window.ol
     if (!this.ol) {
-      console.error("OpenLayers not loaded")
+      // The OpenLayers CDN <script> may still be loading — notably on a Turbo visit,
+      // where the external script is fetched after controllers connect. Retry briefly.
+      this.olRetries = (this.olRetries || 0) + 1
+      if (this.olRetries <= 50) {
+        this.olRetryTimer = setTimeout(() => this.connect(), 100)
+      } else {
+        console.error("OpenLayers not loaded")
+      }
       return
     }
 
@@ -68,6 +75,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    if (this.olRetryTimer) clearTimeout(this.olRetryTimer)
     window.removeEventListener("theme:changed", this.onThemeChange)
     if (this.map) {
       this.map.setTarget(null)
