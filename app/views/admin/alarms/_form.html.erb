@@ -1,5 +1,5 @@
-<div class="rounded-xl border border-white/10 bg-zinc-800/50 shadow-sm">
-  <div class="border-b border-white/10 px-6 py-4">
+<div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 shadow-sm">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
     <%= catalyst_subheading(alarm.persisted? ? "Editar Alarme" : "Novo Alarme") %>
   </div>
 
@@ -86,7 +86,7 @@
           <div class="flex items-center justify-between mb-3">
             <span class="text-sm/6 font-medium text-zinc-950 dark:text-white">Faixas de Limiar</span>
             <button type="button"
-                    class="inline-flex items-center gap-1 rounded-md bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-zinc-400 border border-white/10 hover:text-sky-400 hover:border-sky-500/50 transition-colors"
+                    class="inline-flex items-center gap-1 rounded-md bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 border border-zinc-950/10 dark:border-white/10 hover:text-sky-400 hover:border-sky-500/50 transition-colors"
                     data-action="click->admin--alarm-form#addThreshold">
               <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -122,7 +122,7 @@
             <div class="threshold-row grid threshold-grid gap-2 items-center">
               <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
                       aria-labelledby="th-severity"
-                      class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden">
+                      class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-zinc-950/10 dark:border-white/10 dark:bg-white/5 focus:outline-hidden">
                 <option value="1">1 — Atenção</option>
                 <option value="2">2 — Alerta</option>
                 <option value="3">3 — Alarme</option>
@@ -130,7 +130,7 @@
               </select>
               <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"
                       aria-labelledby="th-operator"
-                      class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden">
+                      class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-zinc-950/10 dark:border-white/10 dark:bg-white/5 focus:outline-hidden">
                 <option value="GreaterThanThreshold">Maior que</option>
                 <option value="GreaterThanOrEqualToThreshold" selected>Maior ou igual</option>
                 <option value="LessThanThreshold">Menor que</option>
@@ -139,15 +139,15 @@
               <input type="number" step="any" placeholder="0.0"
                      name="alarm[alarm_thresholds_attributes][NEW_RECORD][threshold_value]"
                      aria-labelledby="th-threshold"
-                     class="relative block w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] text-sm/6 dark:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden" />
+                     class="relative block w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] text-sm/6 dark:text-white border border-zinc-950/10 dark:border-white/10 dark:bg-white/5 focus:outline-hidden" />
               <input type="text" placeholder="mm"
                      name="alarm[alarm_thresholds_attributes][NEW_RECORD][unit]"
                      aria-labelledby="th-unit"
-                     class="relative block w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] text-sm/6 dark:text-white border border-white/10 dark:bg-white/5 focus:outline-hidden" />
+                     class="relative block w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] text-sm/6 dark:text-white border border-zinc-950/10 dark:border-white/10 dark:bg-white/5 focus:outline-hidden" />
               <button type="button"
                       aria-label="Remover faixa"
                       title="Remover faixa"
-                      class="flex items-center justify-center rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-risk-high transition-colors"
+                      class="flex items-center justify-center rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-950/5 dark:hover:bg-white/5 hover:text-risk-high transition-colors"
                       data-action="click->admin--alarm-form#removeThreshold"
                       data-persisted="false">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -170,7 +170,7 @@
 
   </div>
 
-  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
+  <div class="flex items-center justify-end gap-3 border-t border-zinc-950/10 dark:border-white/10 px-6 py-4">
     <%= catalyst_button_link "Cancelar", href: admin_alarms_path, variant: :plain %>
     <%= form.submit alarm.persisted? ? "Salvar Alterações" : "Criar Alarme",
           data: { "admin--alarm-form-target": "submit" } %>

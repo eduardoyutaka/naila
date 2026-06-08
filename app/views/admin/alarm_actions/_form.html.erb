@@ -1,5 +1,5 @@
-<div class="rounded-xl border border-white/10 bg-zinc-800/50 shadow-sm">
-  <div class="border-b border-white/10 px-6 py-4">
+<div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 shadow-sm">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
     <%= catalyst_subheading(alarm_action.persisted? ? "Editar Ação" : "Nova Ação") %>
   </div>
 
@@ -31,7 +31,7 @@
     <% end %>
   </div>
 
-  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
+  <div class="flex items-center justify-end gap-3 border-t border-zinc-950/10 dark:border-white/10 px-6 py-4">
     <%= catalyst_button_link "Cancelar", href: admin_alarm_path(alarm_action.alarm || @alarm), variant: :plain %>
     <%= form.submit alarm_action.persisted? ? "Salvar Alterações" : "Criar Ação" %>
   </div>

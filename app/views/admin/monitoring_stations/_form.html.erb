@@ -1,5 +1,5 @@
-<div class="rounded-xl border border-white/10 bg-zinc-800/50 shadow-sm">
-  <div class="border-b border-white/10 px-6 py-4">
+<div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 shadow-sm">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
     <%= catalyst_subheading(monitoring_station.persisted? ? "Editar Estação" : "Nova Estação") %>
   </div>
 
@@ -68,7 +68,7 @@
     <% end %>
   </div>
 
-  <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
+  <div class="flex items-center justify-end gap-3 border-t border-zinc-950/10 dark:border-white/10 px-6 py-4">
     <%= catalyst_button_link "Cancelar", href: admin_monitoring_stations_path, variant: :plain %>
     <%= form.submit monitoring_station.persisted? ? "Salvar Alterações" : "Criar Estação" %>
   </div>

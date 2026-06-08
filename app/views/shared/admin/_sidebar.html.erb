@@ -44,18 +44,18 @@
       <%# System status %>
       <%= catalyst_sidebar_section do %>
         <%= catalyst_sidebar_heading "Status do Sistema" %>
-        <div class="mt-1 rounded-lg bg-zinc-800 px-3 py-2.5 ring-1 ring-white/5">
+        <div class="mt-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-3 py-2.5 ring-1 ring-zinc-950/5 dark:ring-white/5">
           <div class="space-y-2">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-300">Sensores Online</span>
+              <span class="text-zinc-700 dark:text-zinc-300">Sensores Online</span>
               <span class="tabular-nums font-medium text-sensor-online"><%= MonitoringStation.online.count %></span>
             </div>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-300">Bacias em Risco</span>
+              <span class="text-zinc-700 dark:text-zinc-300">Bacias em Risco</span>
               <span class="tabular-nums font-medium text-risk-attention"><%= RiverBasin.at_risk.count %></span>
             </div>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-300">Alarmes Ativos</span>
+              <span class="text-zinc-700 dark:text-zinc-300">Alarmes Ativos</span>
               <span class="tabular-nums font-medium text-risk-high"><%= Alarm.in_alarm.count %></span>
             </div>
           </div>
@@ -72,12 +72,12 @@
           <div class="flex items-center gap-3 rounded-lg px-2 py-2.5">
             <%= catalyst_avatar initials: current_user.name.split.map(&:first).join.upcase[0..1], class: "size-8 shrink-0" %>
             <div class="min-w-0 flex-1">
-              <div class="truncate text-sm/5 font-medium text-white"><%= current_user.name %></div>
-              <div class="truncate text-xs/5 text-zinc-300"><%= current_user.email_address %></div>
+              <div class="truncate text-sm/5 font-medium text-zinc-950 dark:text-white"><%= current_user.name %></div>
+              <div class="truncate text-xs/5 text-zinc-700 dark:text-zinc-300"><%= current_user.email_address %></div>
             </div>
             <%= button_to logout_path, method: :delete,
                   form: { class: "flex items-center" },
-                  class: "shrink-0 rounded-md p-1 text-zinc-400 hover:bg-white/5 hover:text-white transition-colors",
+                  class: "shrink-0 rounded-md p-1 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-950/5 dark:hover:bg-white/5 hover:text-zinc-950 dark:hover:text-white transition-colors",
                   title: "Sair" do %>
               <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />

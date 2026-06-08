@@ -7,54 +7,54 @@
 </div>
 
 <%# ── Section 1: Current Conditions Banner ── %>
-<div class="mb-6 rounded-xl border border-white/10 bg-zinc-900" data-testid="current-conditions">
-  <div class="border-b border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-white">Condições Atuais</h2>
+<div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900" data-testid="current-conditions">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Condições Atuais</h2>
   </div>
   <% if @current_conditions %>
-    <div class="grid grid-cols-2 gap-0 divide-x divide-white/10 sm:grid-cols-3 lg:grid-cols-6">
+    <div class="grid grid-cols-2 gap-0 divide-x divide-zinc-950/10 dark:divide-white/10 sm:grid-cols-3 lg:grid-cols-6">
       <div class="px-4 py-4">
-        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Temperatura</div>
-        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Temperatura</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-zinc-950 dark:text-white">
           <%= @current_conditions.temperature_c ? "#{number_with_precision(@current_conditions.temperature_c, precision: 1)}°C" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Umidade</div>
-        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Umidade</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-zinc-950 dark:text-white">
           <%= @current_conditions.humidity_pct ? "#{number_with_precision(@current_conditions.humidity_pct, precision: 0)}%" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Vento</div>
-        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Vento</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-zinc-950 dark:text-white">
           <%= @current_conditions.wind_speed_ms ? "#{number_with_precision(@current_conditions.wind_speed_ms, precision: 1)} m/s" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Pressão</div>
-        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Pressão</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-zinc-950 dark:text-white">
           <%= @current_conditions.pressure_hpa ? "#{number_with_precision(@current_conditions.pressure_hpa, precision: 0)} hPa" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Precipitação</div>
-        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-white">
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Precipitação</div>
+        <div class="mt-1.5 text-2xl font-semibold tabular-nums text-zinc-950 dark:text-white">
           <%= @current_conditions.precipitation_mm ? "#{number_with_precision(@current_conditions.precipitation_mm, precision: 1)} mm" : "—" %>
         </div>
       </div>
       <div class="px-4 py-4">
-        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Condição</div>
-        <div class="mt-1.5 text-sm font-medium text-white capitalize">
+        <div class="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Condição</div>
+        <div class="mt-1.5 text-sm font-medium text-zinc-950 dark:text-white capitalize">
           <%= @current_conditions.weather_condition.presence || "—" %>
         </div>
-        <div class="mt-1 text-xs text-zinc-400">
+        <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           <%= l(@current_conditions.observed_at, format: :short) %> · <%= source_labels[@current_conditions.source] || @current_conditions.source %>
         </div>
       </div>
     </div>
   <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-400">
+    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
       ☁️ Aguardando dados meteorológicos...
     </div>
   <% end %>
@@ -74,14 +74,14 @@
   end
   first_source_key = grouped_forecasts.keys.first
 %>
-<div class="mb-6 rounded-xl border border-white/10 bg-zinc-900"
+<div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900"
      data-controller="admin--source-switcher"
      data-admin--source-switcher-sources-value="<%= sources_chart_data.to_json %>">
-  <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-white">Previsão de Precipitação — Próximas 24h</h2>
+  <div class="flex items-center justify-between border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão de Precipitação — Próximas 24h</h2>
     <% if grouped_forecasts.size > 1 %>
       <select data-action="admin--source-switcher#switch"
-              class="rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
+              class="rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-950 dark:text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
         <% grouped_forecasts.each_key do |source_key| %>
           <option value="<%= source_key %>"><%= source_labels[source_key] || source_key %></option>
         <% end %>
@@ -102,23 +102,23 @@
       </div>
     </div>
   <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-400">
+    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
       Nenhuma previsão disponível para as próximas 24h.
     </div>
   <% end %>
 </div>
 
 <%# ── Section 3: Data Source Health ── %>
-<div class="mb-6 rounded-xl border border-white/10 bg-zinc-900" data-testid="data-source-health">
-  <div class="border-b border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-white">Fontes de Dados</h2>
+<div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900" data-testid="data-source-health">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Fontes de Dados</h2>
   </div>
   <% if @data_sources.any? %>
-    <div class="grid grid-cols-1 gap-0 divide-y divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 lg:divide-y-0">
+    <div class="grid grid-cols-1 gap-0 divide-y divide-zinc-950/10 dark:divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 lg:divide-y-0">
       <% @data_sources.each do |source| %>
         <div class="px-4 py-4" data-testid="data-source-card">
           <div class="flex items-center justify-between">
-            <span class="text-sm font-medium text-white truncate"><%= source.name %></span>
+            <span class="text-sm font-medium text-zinc-950 dark:text-white truncate"><%= source.name %></span>
             <% status_color = case source.status
                               when "active"   then "bg-sensor-online"
                               when "degraded" then "bg-risk-attention"
@@ -131,36 +131,36 @@
                             when "degraded" then "Degradado"
                             else "Offline"
                             end %>
-          <div class="mt-1 text-xs text-zinc-400">
+          <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             <%= status_label %>
             <% if source.consecutive_failures > 0 %>
               · <%= source.consecutive_failures %> falha(s)
             <% end %>
           </div>
-          <div class="mt-2 text-xs text-zinc-400">
+          <div class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
             <% if source.last_successful_fetch_at %>
               Última atualização: <%= time_ago_in_words(source.last_successful_fetch_at) %> atrás
             <% else %>
               Nunca atualizado
             <% end %>
           </div>
-          <div class="mt-1 text-xs text-zinc-400">
+          <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             Intervalo: <%= (source.fetch_interval_seconds / 60.0).round %> min
           </div>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-400">
+    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
       Nenhuma fonte de dados configurada.
     </div>
   <% end %>
 </div>
 
 <%# ── Section 4: Forecast vs Actual (last 24h) ── %>
-<div class="rounded-xl border border-white/10 bg-zinc-900">
-  <div class="border-b border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-white">Previsão vs Observado — Últimas 24h</h2>
+<div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão vs Observado — Últimas 24h</h2>
   </div>
   <% if @recent_observations.any? || @past_forecasts.any? %>
     <%
@@ -187,7 +187,7 @@
       <div data-admin--timeseries-target="chart" class="h-[280px] w-full px-2 pb-2"></div>
     </div>
   <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-400">
+    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
       Sem dados de comparação disponíveis para as últimas 24h.
     </div>
   <% end %>

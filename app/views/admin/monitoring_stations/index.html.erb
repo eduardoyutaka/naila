@@ -16,15 +16,15 @@
 <%= turbo_frame_tag "monitoring_stations_list" do %>
   <%# ── Summary Cards ── %>
   <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 p-4">
       <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Total de Estações</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-white" data-testid="summary-total-count"><%= @summary_counts[:total] %></div>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-950 dark:text-white" data-testid="summary-total-count"><%= @summary_counts[:total] %></div>
     </div>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 p-4">
       <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Online</p>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online" data-testid="summary-online-count"><%= @summary_counts[:online] %></div>
     </div>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 p-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 p-4">
       <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Em Manutenção</p>
       <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-degraded" data-testid="summary-maintenance-count"><%= @summary_counts[:maintenance] %></div>
     </div>
@@ -33,22 +33,22 @@
   <%# ── Filter Bar ── %>
   <%= form_with url: admin_monitoring_stations_path, method: :get, scope: :q, data: { turbo_frame: "monitoring_stations_list" }, class: "mb-6 flex flex-wrap items-end gap-4" do |f| %>
     <div class="min-w-[200px] flex-1">
-      <%= f.label :search, "Buscar", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.label :search, "Buscar", class: "block text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1" %>
       <%= f.text_field :search, value: params.dig(:q, :search), placeholder: "Nome da estação...",
-            class: "w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            class: "w-full rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
             data: { controller: "shared--auto-submit", action: "input->shared--auto-submit#submitDebounced" } %>
     </div>
     <div>
-      <%= f.label :status, "Status", class: "block text-sm font-medium text-zinc-400 mb-1" %>
+      <%= f.label :status, "Status", class: "block text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1" %>
       <%= f.select :status, options_for_select([["Todos", ""], ["Ativo", "active"], ["Manutenção", "maintenance"], ["Inativo", "inactive"]], params.dig(:q, :status)),
-            {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+            {}, class: "rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
             data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
     </div>
   <% end %>
 
   <%# ── Stations Table ── %>
   <% if @monitoring_stations.empty? %>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-8 text-center">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-8 text-center">
       <%= catalyst_text "Nenhuma estação encontrada." %>
       <% if params[:q].present? %>
         <div class="mt-4">
@@ -73,7 +73,7 @@
           <%= catalyst_table_row do %>
             <%# Nome %>
             <%= catalyst_td do %>
-              <div class="font-medium text-white"><%= station.name %></div>
+              <div class="font-medium text-zinc-950 dark:text-white"><%= station.name %></div>
               <div class="font-mono text-zinc-500 dark:text-zinc-300"><%= station.external_id %></div>
             <% end %>
 
@@ -113,7 +113,7 @@
             <%= catalyst_td do %>
               <% last = station.last_reading %>
               <% if last %>
-                <div class="tabular-nums text-white font-medium"><%= number_with_precision(last.value, precision: 1) %></div>
+                <div class="tabular-nums text-zinc-950 dark:text-white font-medium"><%= number_with_precision(last.value, precision: 1) %></div>
                 <div class="text-zinc-500 dark:text-zinc-300"><%= time_ago_in_words(last.recorded_at) %> atrás</div>
               <% else %>
                 <span class="text-zinc-500 dark:text-zinc-300">—</span>
@@ -124,7 +124,7 @@
             <%= catalyst_td class: "text-right" do %>
               <div class="flex items-center justify-end gap-2">
                 <%= link_to admin_monitoring_station_path(station),
-                      class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
+                      class: "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-950/5 dark:hover:bg-white/5 hover:text-sky-400 transition-colors",
                       title: "Ver detalhes",
                       data: { turbo_frame: "_top" },
                       aria: { label: "Ver detalhes de #{station.name}" } do %>
@@ -135,7 +135,7 @@
                 <% end %>
                 <% if policy(station).update? %>
                   <%= link_to edit_admin_monitoring_station_path(station),
-                        class: "rounded-md p-1.5 text-zinc-400 hover:bg-white/5 hover:text-sky-400 transition-colors",
+                        class: "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-950/5 dark:hover:bg-white/5 hover:text-sky-400 transition-colors",
                         title: "Editar",
                         data: { turbo_frame: "_top" },
                         aria: { label: "Editar #{station.name}" } do %>

@@ -76,7 +76,7 @@
               <% role_label = { "admin" => "Administrador", "coordinator" => "Coordenador", "operator" => "Operador" }[b.object.role] %>
               <% role_color = { "admin" => "purple", "coordinator" => "blue", "operator" => "zinc" }[b.object.role] %>
               <label class="flex cursor-pointer items-start gap-3">
-                <%= b.check_box(class: "mt-0.5 size-4 rounded-[0.3125rem] border border-zinc-950/15 bg-white shadow-sm checked:border-transparent checked:bg-zinc-900 focus:outline-2 focus:outline-offset-2 focus:outline-blue-500 dark:bg-white/5 dark:border-white/15 dark:checked:bg-zinc-600") %>
+                <%= b.check_box(class: "mt-0.5 size-4 rounded-[0.3125rem] border border-zinc-950/15 bg-white shadow-sm checked:border-transparent checked:bg-white dark:bg-zinc-900 focus:outline-2 focus:outline-offset-2 focus:outline-blue-500 dark:bg-white/5 dark:border-white/15 dark:checked:bg-zinc-600") %>
                 <span class="flex flex-col gap-0.5">
                   <span class="flex items-center gap-2 text-sm font-medium text-zinc-950 dark:text-white">
                     <%= b.object.name %>

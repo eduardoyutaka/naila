@@ -27,8 +27,8 @@
   <div class="lg:col-span-2 space-y-6">
 
     <%# Map — keep as-is (Stimulus controller) %>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50">
-      <div class="border-b border-white/10 px-6 py-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
+      <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
         <%= catalyst_subheading "Mapa da Bacia" %>
       </div>
       <div class="p-1">
@@ -47,8 +47,8 @@
     </div>
 
     <%# Details %>
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50" data-testid="basin-details">
-      <div class="border-b border-white/10 px-6 py-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="basin-details">
+      <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
         <%= catalyst_subheading "Detalhes" %>
       </div>
       <%= catalyst_dl class: "px-6" do %>
@@ -62,12 +62,12 @@
 
     <%# Active Alarms %>
     <% if @active_alarms.any? %>
-      <div class="rounded-xl border border-white/10 bg-zinc-800/50">
-        <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+      <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
+        <div class="flex items-center justify-between border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
           <%= catalyst_subheading "Alarmes Ativos" %>
           <%= catalyst_text @active_alarms.size.to_s %>
         </div>
-        <div class="divide-y divide-white/10">
+        <div class="divide-y divide-zinc-950/10 dark:divide-white/10">
           <% @active_alarms.each do |alarm| %>
             <div class="flex items-center justify-between px-6 py-3">
               <div class="flex items-center gap-2">
@@ -85,8 +85,8 @@
 
   <div class="space-y-6">
 
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50">
-      <div class="border-b border-white/10 px-6 py-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
+      <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
         <%= catalyst_subheading "Ações" %>
       </div>
       <div class="p-4 space-y-2">
@@ -108,8 +108,8 @@
         forecast_summary: @forecast_summary,
         current_weather: @current_weather %>
 
-    <div class="rounded-xl border border-white/10 bg-zinc-800/50">
-      <div class="border-b border-white/10 px-6 py-4">
+    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
+      <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
         <%= catalyst_subheading "Estatísticas" %>
       </div>
       <%= catalyst_dl class: "px-6" do %>
