@@ -109,6 +109,58 @@
 
 <%# ── Bottom panels ── %>
 <div class="grid gap-6 lg:grid-cols-2">
+  <%# Recent Readings %>
+  <div class="rounded-xl border border-white/10 bg-zinc-900">
+    <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
+      <h2 class="text-sm font-semibold text-white">Leituras Recentes</h2>
+      <span class="text-xs text-zinc-400">Últimas 10</span>
+    </div>
+    <div class="divide-y divide-white/10">
+      <% if @recent_readings.empty? %>
+        <div class="px-4 py-8 text-center text-sm text-zinc-400">
+          Nenhuma leitura recente disponível.
+        </div>
+      <% else %>
+        <% @recent_readings.each do |reading| %>
+          <div class="flex items-center justify-between px-4 py-2.5">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="flex-shrink-0 text-zinc-400">
+                <% case reading.reading_type %>
+                <% when "precipitation" %>
+                  <%# Droplet %>
+                  <svg class="h-4 w-4 text-sensor-pluviometer" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c0 0-7 7.5-7 11.5a7 7 0 0 0 14 0C19 10.5 12 3 12 3Z" />
+                  </svg>
+                <% when "temperature" %>
+                  <%# Thermometer %>
+                  <svg class="h-4 w-4 text-sensor-weather" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9.75a3 3 0 1 1-6 0V5.25a3 3 0 0 1 6 0v4.5ZM12 17.25a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                  </svg>
+                <% when "humidity" %>
+                  <%# Wind %>
+                  <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25h12a3 3 0 1 1-3 3M3 15.75h9a3 3 0 1 0-3-3" />
+                  </svg>
+                <% else %>
+                  <%# Signal / antenna %>
+                  <%= render "shared/icons/signal" %>
+                <% end %>
+              </span>
+              <div class="min-w-0">
+                <div class="text-sm font-medium text-white truncate"><%= reading.monitoring_station&.name || "—" %></div>
+                <div class="text-xs text-zinc-400"><%= reading_type_label(reading.reading_type) %></div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 ml-3">
+              <div class="text-sm font-semibold tabular-nums text-white"><%= number_with_precision(reading.value, precision: 1) %> <span class="text-zinc-400 font-normal"><%= reading.unit %></span></div>
+              <div class="text-xs text-zinc-400 tabular-nums"><%= reading.recorded_at&.strftime("%H:%M") %></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
   <%# Active Alarms %>
   <div class="rounded-xl border border-white/10 bg-zinc-900">
     <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
@@ -154,58 +206,6 @@
                   · <span class="text-sky-500"><%= alarm.river_basin.name %></span>
                 <% end %>
               </div>
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-
-  <%# Recent Readings %>
-  <div class="rounded-xl border border-white/10 bg-zinc-900">
-    <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
-      <h2 class="text-sm font-semibold text-white">Leituras Recentes</h2>
-      <span class="text-xs text-zinc-400">Últimas 10</span>
-    </div>
-    <div class="divide-y divide-white/10">
-      <% if @recent_readings.empty? %>
-        <div class="px-4 py-8 text-center text-sm text-zinc-400">
-          Nenhuma leitura recente disponível.
-        </div>
-      <% else %>
-        <% @recent_readings.each do |reading| %>
-          <div class="flex items-center justify-between px-4 py-2.5">
-            <div class="flex items-center gap-3 min-w-0">
-              <span class="flex-shrink-0 text-zinc-400">
-                <% case reading.reading_type %>
-                <% when "precipitation" %>
-                  <%# Droplet %>
-                  <svg class="h-4 w-4 text-sensor-pluviometer" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c0 0-7 7.5-7 11.5a7 7 0 0 0 14 0C19 10.5 12 3 12 3Z" />
-                  </svg>
-                <% when "temperature" %>
-                  <%# Thermometer %>
-                  <svg class="h-4 w-4 text-sensor-weather" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9.75a3 3 0 1 1-6 0V5.25a3 3 0 0 1 6 0v4.5ZM12 17.25a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                  </svg>
-                <% when "humidity" %>
-                  <%# Wind %>
-                  <svg class="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25h12a3 3 0 1 1-3 3M3 15.75h9a3 3 0 1 0-3-3" />
-                  </svg>
-                <% else %>
-                  <%# Signal / antenna %>
-                  <%= render "shared/icons/signal" %>
-                <% end %>
-              </span>
-              <div class="min-w-0">
-                <div class="text-sm font-medium text-white truncate"><%= reading.monitoring_station&.name || "—" %></div>
-                <div class="text-xs text-zinc-400"><%= reading.reading_type&.humanize %></div>
-              </div>
-            </div>
-            <div class="text-right flex-shrink-0 ml-3">
-              <div class="text-sm font-semibold tabular-nums text-white"><%= number_with_precision(reading.value, precision: 1) %> <span class="text-zinc-400 font-normal"><%= reading.unit %></span></div>
-              <div class="text-xs text-zinc-400 tabular-nums"><%= reading.recorded_at&.strftime("%H:%M") %></div>
             </div>
           </div>
         <% end %>

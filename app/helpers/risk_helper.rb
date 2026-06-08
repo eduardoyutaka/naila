@@ -68,6 +68,12 @@ module RiskHelper
     "humidity"          => "Umidade relativa"
   }.freeze
 
+  READING_TYPE_LABEL = {
+    "precipitation" => "Precipitação",
+    "temperature"   => "Temperatura",
+    "humidity"      => "Umidade"
+  }.freeze
+
   SENSOR_TYPE_LABEL = {
     "pluviometer"     => "Pluviômetro",
     "weather_station" => "Meteorológica"
@@ -118,6 +124,10 @@ module RiskHelper
 
   def comparison_symbol(operator)
     COMPARISON_SYMBOL[operator.to_s] || operator.to_s
+  end
+
+  def reading_type_label(reading_type)
+    READING_TYPE_LABEL[reading_type.to_s] || reading_type.to_s.humanize
   end
 
   def severity_bar_class(severity)
