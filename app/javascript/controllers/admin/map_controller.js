@@ -1,12 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
-import { CHART_THEME } from "chart_theme"
+import { chartTheme } from "chart_theme"
 
-// Risk level → color mapping (resolved from CSS custom properties via CHART_THEME)
+// Risk level → color mapping (resolved from CSS custom properties via chartTheme())
 function buildRiskColors() {
-  const s = CHART_THEME.severity
+  const s = chartTheme().severity
   return {
     untracked: { fill: "rgba(113, 113, 122, 0.10)", stroke: "rgba(161, 161, 170, 0.55)",         glow: "rgba(113, 113, 122, 0.15)" },
-    normal:     { fill: "rgba(34, 197, 94, 0.15)",  stroke: CHART_THEME.sensor.online,          glow: "rgba(34, 197, 94, 0.25)" },
+    normal:     { fill: "rgba(34, 197, 94, 0.15)",  stroke: chartTheme().sensor.online,          glow: "rgba(34, 197, 94, 0.25)" },
     attention:  { fill: "rgba(234, 179, 8, 0.15)",   stroke: s[1],                               glow: "rgba(234, 179, 8, 0.25)" },
     alert:      { fill: "rgba(249, 115, 22, 0.20)",  stroke: s[2],                               glow: "rgba(249, 115, 22, 0.30)" },
     high_alert: { fill: "rgba(239, 68, 68, 0.25)",   stroke: s[3],                               glow: "rgba(239, 68, 68, 0.40)" },
@@ -25,15 +25,15 @@ function basinRiskLevel(monitored, alertSeverity) {
 
 // Sensor station type → fill color (from design tokens)
 const SENSOR_TYPE_COLORS = {
-  pluviometer:     CHART_THEME.sensor.pluviometer,
-  weather_station: CHART_THEME.sensor.weather_station,
+  pluviometer:     chartTheme().sensor.pluviometer,
+  weather_station: chartTheme().sensor.weather_station,
 }
 
 // Sensor status → stroke color (from design tokens)
 const SENSOR_STATUS_COLORS = {
-  active:      CHART_THEME.sensor.online,
-  maintenance: CHART_THEME.sensor.degraded,
-  inactive:    CHART_THEME.sensor.offline,
+  active:      chartTheme().sensor.online,
+  maintenance: chartTheme().sensor.degraded,
+  inactive:    chartTheme().sensor.offline,
 }
 
 // CartoDB Dark Matter tile URL
@@ -303,7 +303,7 @@ export default class extends Controller {
       inactive: "Inativo",
     }
 
-    const statusColor = SENSOR_STATUS_COLORS[status] || CHART_THEME.sensor.online
+    const statusColor = SENSOR_STATUS_COLORS[status] || chartTheme().sensor.online
     const typesDisplay = sensorTypes.map(t => typeLabels[t] || t).join(", ")
 
     this.popupEl.textContent = ""

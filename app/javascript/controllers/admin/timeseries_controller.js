@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { CHART_THEME, resolveColor } from "chart_theme"
+import { chartTheme, resolveColor } from "chart_theme"
 
 // Full historical area/line chart with zoom and pan
 export default class extends Controller {
@@ -30,7 +30,7 @@ export default class extends Controller {
     const seriesData = this.seriesValue
     const unit = this.unitValue
 
-    const t = CHART_THEME
+    const t = chartTheme()
 
     this.chart.setOption({
       backgroundColor: t.bg,

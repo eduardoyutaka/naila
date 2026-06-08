@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { CHART_THEME } from "chart_theme"
+import { chartTheme } from "chart_theme"
 
 // Dual y-axis ECharts chart for precipitation forecast (bars) + probability (line)
 export default class extends Controller {
@@ -31,7 +31,7 @@ export default class extends Controller {
     const precipData = forecasts.map((f) => f.precipitation_mm)
     const probData = forecasts.map((f) => f.probability)
 
-    const t = CHART_THEME
+    const t = chartTheme()
     const accentDark = "#06b6d4"  // cyan — probability line
 
     this.chart.setOption({

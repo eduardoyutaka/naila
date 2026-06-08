@@ -36,6 +36,30 @@
   --animate-blink: blink 1.5s step-end infinite;
 }
 
+/* ============================================
+   Chart semantic tokens — consumed by chart_theme.js (getComputedStyle).
+   Defined as plain CSS so `.dark` can override them at runtime; ECharts
+   re-reads these whenever a chart re-renders after a theme switch.
+   ============================================ */
+:root {
+  --color-chart-surface: #ffffff;
+  --color-chart-text: #18181b;
+  --color-chart-muted: #71717a;
+  --color-chart-axis: rgba(9, 9, 11, 0.10);
+  --color-chart-split: rgba(9, 9, 11, 0.06);
+  --color-chart-border: rgba(9, 9, 11, 0.10);
+  --color-chart-zoom-bg: #f4f4f5;
+}
+.dark {
+  --color-chart-surface: #27272a;
+  --color-chart-text: #ffffff;
+  --color-chart-muted: #a1a1aa;
+  --color-chart-axis: rgba(255, 255, 255, 0.10);
+  --color-chart-split: rgba(255, 255, 255, 0.10);
+  --color-chart-border: rgba(255, 255, 255, 0.10);
+  --color-chart-zoom-bg: #18181b;
+}
+
 /* Custom keyframes */
 @keyframes pulse-slow {
   0%, 100% { opacity: 1; }

@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { CHART_THEME, resolveColor } from "chart_theme"
+import { chartTheme, resolveColor } from "chart_theme"
 
 // Compact chart for sensor readings over time (bar or line, configurable)
 export default class extends Controller {
@@ -33,7 +33,7 @@ export default class extends Controller {
     const unit = this.unitValue
     const color = resolveColor(this.colorValue)
     const isBar = this.chartTypeValue === "bar"
-    const t = CHART_THEME
+    const t = chartTheme()
 
     const series = isBar ? this.#barSeries(readings, color) : this.#lineSeries(readings, color)
     if (this.thresholdsValue.length > 0) {
@@ -123,8 +123,9 @@ export default class extends Controller {
   }
 
   #thresholdMarkLines(thresholds) {
-    const severityColors = CHART_THEME.severity
-    const fallback = CHART_THEME.axis.label
+    const t = chartTheme()
+    const severityColors = t.severity
+    const fallback = t.axis.label
     return {
       silent: true,
       symbol: ["none", "none"],
