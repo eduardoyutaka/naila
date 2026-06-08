@@ -36,8 +36,10 @@ const SENSOR_STATUS_COLORS = {
   inactive:    chartTheme().sensor.offline,
 }
 
-// CartoDB Dark Matter tile URL
+// CartoDB basemaps: Voyager (light, Google-Maps-like) for light mode, Dark Matter for dark.
+const LIGHT_TILES_URL = "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
 const DARK_TILES_URL = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+const tilesUrl = () => document.documentElement.classList.contains("dark") ? DARK_TILES_URL : LIGHT_TILES_URL
 
 export default class extends Controller {
   static targets = ["canvas", "alertSeverities", "placeholder"]
@@ -60,22 +62,31 @@ export default class extends Controller {
     this.initMap()
     this.addRiverBasins()
     this.addSensors()
+
+    this.onThemeChange = () => this.swapBasemap()
+    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
+    window.removeEventListener("theme:changed", this.onThemeChange)
     if (this.map) {
       this.map.setTarget(null)
       this.map = null
     }
   }
 
+  // Swap the basemap tiles to match the active theme (light ⇄ dark).
+  swapBasemap() {
+    this.tileLayer?.getSource().setUrl(tilesUrl())
+  }
+
   initMap() {
     const ol = this.ol
 
-    // Dark tile layer
+    // Basemap tile layer — follows the active theme
     this.tileLayer = new ol.layer.Tile({
       source: new ol.source.XYZ({
-        url: DARK_TILES_URL,
+        url: tilesUrl(),
         attributions: '&copy; <a href="https://carto.com/">CARTO</a>',
         maxZoom: 19,
       }),
@@ -117,7 +128,7 @@ export default class extends Controller {
 
     // Popup overlay for hover
     this.popupEl = document.createElement("div")
-    this.popupEl.className = "ol-popup rounded-lg border border-white/10 bg-zinc-800 px-3 py-2 text-xs text-white shadow-lg"
+    this.popupEl.className = "ol-popup rounded-lg border border-zinc-950/10 bg-white px-3 py-2 text-xs text-zinc-900 shadow-lg dark:border-white/10 dark:bg-zinc-800 dark:text-white"
     this.popupEl.style.cssText = "position: absolute; pointer-events: none; white-space: nowrap; display: none;"
     this.canvasTarget.appendChild(this.popupEl)
 
