@@ -1,61 +1,71 @@
-<div class="flex min-h-screen">
+<div class="flex min-h-screen" style="height: 100vh;">
 
   <%# Left decorative panel — hidden on mobile %>
-  <div class="relative hidden lg:flex lg:w-5/12 flex-col items-center justify-center overflow-hidden bg-zinc-900 border-r border-white/10"
-       style="background-image: radial-gradient(circle, #162d50 1px, transparent 1px); background-size: 28px 28px;">
+  <div class="relative hidden lg:flex lg:w-5/12 flex-col items-center overflow-hidden bg-zinc-900 border-r border-white/10"
+       style="height: 100%; background-image: radial-gradient(circle, #162d50 1px, transparent 1px); background-size: 28px 28px;">
 
-    <%# Radar rings %>
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div class="absolute rounded-full border border-sky-500/40"
-           style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 0s;"></div>
-      <div class="absolute rounded-full border border-sky-500/30"
-           style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 1s;"></div>
-      <div class="absolute rounded-full border border-sky-500/20"
-           style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 2s;"></div>
-      <%# Center dot %>
-      <div class="absolute w-3 h-3 rounded-full bg-sky-500" style="box-shadow: 0 0 12px #0ea5e9, 0 0 24px #0ea5e980;"></div>
-    </div>
+    <%# Branding — centered, fills remaining height above footer %>
+    <div class="flex-1 flex flex-col items-center justify-center">
+      <div class="relative text-center px-10">
 
-    <%# Branding %>
-    <div class="relative text-center px-10">
-      <div class="flex flex-col items-center mb-8">
-        <%= image_tag "logo.jpeg",
-              alt: "Naila",
-              class: "w-24 h-24 object-contain mb-4",
-              style: "mix-blend-mode: screen;" %>
-        <div class="text-4xl font-bold tracking-widest text-white">NAILA</div>
-        <div class="mt-1 text-xs font-medium tracking-widest text-zinc-300 uppercase">Tecnologia Ambiental</div>
-      </div>
-      <div class="text-sm font-medium text-zinc-300 tracking-widest uppercase mb-2">
-        Defesa Civil de Curitiba
-      </div>
-      <div class="mx-auto mb-10 h-px w-16 bg-white/10"></div>
-      <p class="text-sm text-zinc-300 leading-relaxed max-w-xs">
-        Monitoramento em tempo real de risco de enchentes para a Região Metropolitana de Curitiba.
-      </p>
-    </div>
-
-    <%# Status indicators %>
-    <div class="relative z-10 mt-12 flex flex-col gap-3 w-52">
-      <div class="flex items-center justify-between rounded-lg border border-white/10 bg-zinc-800/60 px-4 py-2.5">
-        <span class="text-xs text-zinc-400">Sensores Online</span>
-        <div class="flex items-center gap-1.5">
-          <span class="inline-block h-1.5 w-1.5 rounded-full bg-sensor-online"></span>
-          <span class="text-xs font-semibold text-white tabular-nums"><%= @sensors_online %></span>
+        <%# Logo + NAILA name %>
+        <div class="flex flex-col items-center mb-8">
+          <%= image_tag "logo.jpeg",
+                alt: "Naila",
+                class: "object-contain mb-4",
+                style: "width: 144px; height: 144px; mix-blend-mode: screen;" %>
+          <div class="text-4xl font-bold tracking-widest text-white">NAILA</div>
+          <div class="mt-1 text-xs font-medium tracking-widest text-zinc-300 uppercase">Tecnologia Ambiental</div>
         </div>
-      </div>
-      <div class="flex items-center justify-between rounded-lg border border-white/10 bg-zinc-800/60 px-4 py-2.5">
-        <span class="text-xs text-zinc-400">Bacias Monitoradas</span>
-        <div class="flex items-center gap-1.5">
-          <span class="inline-block h-1.5 w-1.5 rounded-full bg-sky-500"></span>
-          <span class="text-xs font-semibold text-white tabular-nums"><%= @river_basins_count %></span>
+
+        <div class="text-sm font-medium text-zinc-300 tracking-widest uppercase mb-2">
+          Defesa Civil de Curitiba
         </div>
+
+        <%# Radar rings + center dot — anchored between the two texts %>
+        <div class="relative flex items-center justify-center my-6">
+          <div class="absolute rounded-full border border-sky-500/40"
+               style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 0s;"></div>
+          <div class="absolute rounded-full border border-sky-500/30"
+               style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 1s;"></div>
+          <div class="absolute rounded-full border border-sky-500/20"
+               style="width: 160px; height: 160px; animation: ping-slow 3s ease-out infinite; animation-delay: 2s;"></div>
+          <%# Center dot %>
+          <div class="relative w-3 h-3 rounded-full bg-sky-500" style="box-shadow: 0 0 12px #0ea5e9, 0 0 24px #0ea5e980;"></div>
+        </div>
+
+        <p class="text-sm text-zinc-300 leading-relaxed max-w-xs">
+          Monitoramento em tempo real de risco de enchentes para a Região Metropolitana de Curitiba.
+        </p>
+
       </div>
     </div>
+
+    <%# Partner logos footer %>
+    <div class="relative z-10 pb-8 flex flex-col items-center gap-3">
+      <p class="text-xs text-zinc-500 tracking-widest uppercase">Com o apoio de</p>
+      <div class="flex items-center gap-6">
+        <%= image_tag "partners/anjo_inovador.png",
+              alt: "Anjo Inovador",
+              class: "object-contain opacity-60",
+              style: "height: 24px; max-width: 100px; filter: brightness(0) invert(1);" %>
+        <div class="h-5 w-px bg-white/10"></div>
+        <%= image_tag "partners/seia.png",
+              alt: "SEIA",
+              class: "object-contain opacity-60",
+              style: "height: 24px; max-width: 100px; filter: brightness(0) invert(1);" %>
+        <div class="h-5 w-px bg-white/10"></div>
+        <%= image_tag "partners/defesa_civil_curitiba.png",
+              alt: "Defesa Civil de Curitiba",
+              class: "object-contain opacity-60",
+              style: "height: 24px; max-width: 80px; filter: brightness(0) invert(1);" %>
+      </div>
+    </div>
+
   </div>
 
   <%# Right login panel %>
-  <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
+  <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12 overflow-y-auto">
 
     <%# Mobile-only logo %>
     <div class="mb-8 flex flex-col items-center lg:hidden">
