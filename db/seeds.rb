@@ -185,7 +185,7 @@ puts "  Creating sensor stations and sensors..."
 # measurements.
 stations_data = [
   {
-    eid: "6882", name: "Estação Umbará (bacia Iguaçu)",
+    eid: "6882", name: "Estação Umbará",
     source: "CEMADEN", basin: "Área Alto Iguaçu", river: "Rio Iguaçu",
     neighborhood: "boqueirao", lon: -49.284, lat: -25.555,
     sensors: [
@@ -193,7 +193,7 @@ stations_data = [
     ]
   },
   {
-    eid: "6878", name: "Estação Santa Felicidade (bacia Barigui)",
+    eid: "6878", name: "Estação Santa Felicidade",
     source: "CEMADEN", basin: "Rio Barigui", river: "Rio Barigui",
     neighborhood: "santa-felicidade", lon: -49.332, lat: -25.382,
     sensors: [
@@ -201,7 +201,7 @@ stations_data = [
     ]
   },
   {
-    eid: "6877", name: "Estação Boa Vista (bacia Belém)",
+    eid: "6877", name: "Estação Boa Vista",
     source: "CEMADEN", basin: "Rio Belém", river: "Rio Belém",
     neighborhood: "boa-vista", lon: -49.245, lat: -25.379,
     sensors: [
@@ -217,7 +217,7 @@ stations_data = [
     ]
   },
   {
-    eid: "6873", name: "Estação Butiatuvinha (bacia Passaúna)",
+    eid: "6873", name: "Estação Butiatuvinha",
     source: "CEMADEN", basin: "Rio Passaúna",
     neighborhood: "cic", lon: -49.36184, lat: -25.41118,
     sensors: [
@@ -225,7 +225,7 @@ stations_data = [
     ]
   },
   {
-    eid: "7297", name: "Estação Novo Mundo (ribeirão Padilhas)",
+    eid: "7297", name: "Estação Novo Mundo",
     source: "CEMADEN", basin: "Rio Padilha",
     neighborhood: "sitio-cercado", lon: -49.28797, lat: -25.48784,
     sensors: [
