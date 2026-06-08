@@ -2,15 +2,15 @@ module RiskHelper
   SEVERITY_LABEL = {
     1 => "Atenção",
     2 => "Alerta",
-    3 => "Alerta Máximo",
+    3 => "Alarme",
     4 => "Emergência"
   }.freeze
 
   RISK_LEVEL_LABEL = {
-    "normal"     => "Normal",
+    "normal"     => "Vigilância",
     "attention"  => "Atenção",
     "alert"      => "Alerta",
-    "high_alert" => "Alerta Máximo",
+    "high_alert" => "Alarme",
     "emergency"  => "Emergência"
   }.freeze
 
@@ -44,10 +44,10 @@ module RiskHelper
   }.freeze
 
   ASSESSMENT_LEVEL_LABEL = {
-    0 => "Normal",
+    0 => "Vigilância",
     1 => "Atenção",
     2 => "Alerta",
-    3 => "Alerta Máximo",
+    3 => "Alarme",
     4 => "Emergência"
   }.freeze
 
@@ -103,7 +103,7 @@ module RiskHelper
     if !monitored
       tag.span("Não monitorada", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
     elsif severity.to_i.zero?
-      tag.span("Sem alarmes", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-normal/20 text-risk-normal")
+      tag.span("Vigilância", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-normal/20 text-risk-normal")
     else
       severity_badge(severity)
     end

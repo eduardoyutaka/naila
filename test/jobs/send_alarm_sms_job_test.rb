@@ -24,7 +24,7 @@ class SendAlarmSmsJobTest < ActiveJob::TestCase
     calls = SmsDispatcher.adapter.calls
     assert_equal 1, calls.size
     assert_equal @user.phone_number, calls.first[:to]
-    assert_match "Alerta Máximo", calls.first[:body]
+    assert_match "Alarme", calls.first[:body]
   end
 
   test "is a no-op when the alarm is missing" do

@@ -2,7 +2,7 @@ class AlarmSmsRenderer
   SEVERITY_LABELS = {
     1 => "Atenção",
     2 => "Alerta",
-    3 => "Alerta Máximo",
+    3 => "Alarme",
     4 => "Emergência"
   }.freeze
 

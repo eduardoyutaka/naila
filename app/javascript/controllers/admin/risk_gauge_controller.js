@@ -9,10 +9,10 @@ export default class extends Controller {
   }
 
   static RISK_COLORS = [
-    [0.20, "#22c55e"],  // Normal — green
+    [0.20, "#22c55e"],  // Vigilância — green
     [0.40, "#eab308"],  // Atenção — yellow
     [0.60, "#f97316"],  // Alerta — orange
-    [0.80, "#ef4444"],  // Alerta Máximo — red
+    [0.80, "#ef4444"],  // Alarme — red
     [1.00, "#a855f7"],  // Emergência — purple
   ]
 

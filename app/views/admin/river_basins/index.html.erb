@@ -40,7 +40,7 @@
     </div>
     <div>
       <%= f.label :risk_level, "Nível de Risco", class: "block text-sm font-medium text-zinc-400 mb-1" %>
-      <%= f.select :risk_level, options_for_select([["Todos", ""], ["Normal", "normal"], ["Atenção", "attention"], ["Alerta", "alert"], ["Alerta Máximo", "high_alert"], ["Emergência", "emergency"]], params.dig(:q, :risk_level)),
+      <%= f.select :risk_level, options_for_select([["Todos", ""], ["Vigilância", "normal"], ["Atenção", "attention"], ["Alerta", "alert"], ["Alarme", "high_alert"], ["Emergência", "emergency"]], params.dig(:q, :risk_level)),
             {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
             data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
     </div>

@@ -6,7 +6,7 @@ class AlarmSmsRendererTest < ActiveSupport::TestCase
     body = AlarmSmsRenderer.render(alarm, 3)
 
     assert body.start_with?("[NAILA]"), "expected body to start with [NAILA], got: #{body}"
-    assert_includes body, "Alerta Máximo"
+    assert_includes body, "Alarme"
     assert_includes body, alarm.name
     assert_includes body, "Acesse o painel."
   end
@@ -25,7 +25,7 @@ class AlarmSmsRendererTest < ActiveSupport::TestCase
 
     assert_includes AlarmSmsRenderer.render(alarm, 1), "Atenção"
     assert_includes AlarmSmsRenderer.render(alarm, 2), "Alerta"
-    assert_includes AlarmSmsRenderer.render(alarm, 3), "Alerta Máximo"
+    assert_includes AlarmSmsRenderer.render(alarm, 3), "Alarme"
     assert_includes AlarmSmsRenderer.render(alarm, 4), "Emergência"
   end
 end

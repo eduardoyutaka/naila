@@ -13,7 +13,7 @@ class AlarmMailerTest < ActionMailer::TestCase
 
   test "notification subject includes severity label and alarm name" do
     mail = AlarmMailer.notification(@alarm, @user, 3)
-    assert_equal "[NAILA] Alerta Máximo — #{@alarm.name}", mail.subject
+    assert_equal "[NAILA] Alarme — #{@alarm.name}", mail.subject
   end
 
   test "notification sends from the configured alerts address" do
@@ -26,7 +26,7 @@ class AlarmMailerTest < ActionMailer::TestCase
     body = mail.html_part.body.encoded
 
     assert_match @alarm.name, body
-    assert_match "Alerta Máximo", body
+    assert_match "Alarme", body
     assert_match @alarm.state_reason, body
     assert_match %r{/admin/alarms/#{@alarm.id}}, body
   end
@@ -36,7 +36,7 @@ class AlarmMailerTest < ActionMailer::TestCase
     body = mail.text_part.body.encoded
 
     assert_match @alarm.name, body
-    assert_match "Alerta Máximo", body
+    assert_match "Alarme", body
     assert_match @alarm.state_reason, body
     assert_match %r{/admin/alarms/#{@alarm.id}}, body
   end

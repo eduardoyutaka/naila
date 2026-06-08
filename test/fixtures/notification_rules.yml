@@ -29,8 +29,8 @@ email_specific_user:
   enabled: true
 
 sms_all_roles_high:
-  name: SMS Todos - Alerta Máximo
-  description: SMS para todos os cargos a partir de Alerta Máximo.
+  name: SMS Todos - Alarme
+  description: SMS para todos os cargos a partir de Alarme.
   channel: sms
   min_severity: 3
   target_admins: true

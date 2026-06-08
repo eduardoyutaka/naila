@@ -52,7 +52,7 @@
   </div>
   <div>
     <%= f.label :min_severity, "Severidade", class: "block text-sm font-medium text-zinc-400 mb-1" %>
-    <%= f.select :min_severity, options_for_select([ [ "Todas", "" ], [ "Atenção (1+)", "1" ], [ "Alerta (2+)", "2" ], [ "Alerta Máximo (3+)", "3" ], [ "Emergência (4)", "4" ] ], params.dig(:q, :min_severity)),
+    <%= f.select :min_severity, options_for_select([ [ "Todas", "" ], [ "Atenção (1+)", "1" ], [ "Alerta (2+)", "2" ], [ "Alarme (3+)", "3" ], [ "Emergência (4)", "4" ] ], params.dig(:q, :min_severity)),
           {}, class: "rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
           data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
   </div>

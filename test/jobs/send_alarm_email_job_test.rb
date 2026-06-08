@@ -22,7 +22,7 @@ class SendAlarmEmailJobTest < ActiveJob::TestCase
 
     delivered = ActionMailer::Base.deliveries.last
     assert_equal [ @user.email_address ], delivered.to
-    assert_match "Alerta Máximo", delivered.subject
+    assert_match "Alarme", delivered.subject
   end
 
   test "is a no-op when the alarm is missing" do

@@ -28,7 +28,7 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
   test "index shows alarm severity badges" do
     # Fixture: flood_alert_belem fires at severity 3 on bacia_belem; bacia_barigui has no alarms.
     get admin_river_basins_path
-    assert_select "span", text: "Alerta Máximo"
+    assert_select "span", text: "Alarme"
     assert_select "span", text: "Não monitorada"
   end
 
@@ -81,7 +81,7 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
 
   test "show displays alarm severity badge" do
     get admin_river_basin_path(river_basins(:bacia_belem))
-    assert_select "span", text: "Alerta Máximo"
+    assert_select "span", text: "Alarme"
   end
 
   test "show displays details section" do

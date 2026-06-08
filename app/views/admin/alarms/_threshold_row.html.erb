@@ -3,7 +3,7 @@
   <%= tf.hidden_field :_destroy, value: "0", data: { destroy_field: true } %>
 
   <%= tf.select :severity,
-        [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alerta Máximo", 3], ["4 — Emergência", 4]],
+        [["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alarme", 3], ["4 — Emergência", 4]],
         {},
         aria: { labelledby: "th-severity" },
         class: "rounded-md border border-white/10 bg-zinc-800 px-2 py-2 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" %>

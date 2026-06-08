@@ -258,10 +258,10 @@ export default class extends Controller {
 
     const riskLabels = {
       untracked: "Não monitorada",
-      normal: "Sem alarmes",
+      normal: "Vigilância",
       attention: "Atenção",
       alert: "Alerta",
-      high_alert: "Alerta Máximo",
+      high_alert: "Alarme",
       emergency: "Emergência",
     }
 
