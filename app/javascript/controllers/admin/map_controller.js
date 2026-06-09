@@ -36,10 +36,9 @@ const SENSOR_STATUS_COLORS = {
   inactive:    chartTheme().sensor.offline,
 }
 
-// CartoDB basemaps: Voyager (light, Google-Maps-like) for light mode, Dark Matter for dark.
-const LIGHT_TILES_URL = "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
-const DARK_TILES_URL = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
-const tilesUrl = () => document.documentElement.classList.contains("dark") ? DARK_TILES_URL : LIGHT_TILES_URL
+// CartoDB Voyager basemap — light, Google-Maps-like. Used in BOTH themes by design:
+// users expect a familiar light map even when the dashboard chrome is dark.
+const TILES_URL = "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
 
 export default class extends Controller {
   static targets = ["canvas", "alertSeverities", "placeholder"]
@@ -69,32 +68,23 @@ export default class extends Controller {
     this.initMap()
     this.addRiverBasins()
     this.addSensors()
-
-    this.onThemeChange = () => this.swapBasemap()
-    window.addEventListener("theme:changed", this.onThemeChange)
   }
 
   disconnect() {
     if (this.olRetryTimer) clearTimeout(this.olRetryTimer)
-    window.removeEventListener("theme:changed", this.onThemeChange)
     if (this.map) {
       this.map.setTarget(null)
       this.map = null
     }
   }
 
-  // Swap the basemap tiles to match the active theme (light ⇄ dark).
-  swapBasemap() {
-    this.tileLayer?.getSource().setUrl(tilesUrl())
-  }
-
   initMap() {
     const ol = this.ol
 
-    // Basemap tile layer — follows the active theme
+    // Basemap tile layer — always the light Voyager basemap
     this.tileLayer = new ol.layer.Tile({
       source: new ol.source.XYZ({
-        url: tilesUrl(),
+        url: TILES_URL,
         attributions: '&copy; <a href="https://carto.com/">CARTO</a>',
         maxZoom: 19,
       }),
@@ -136,7 +126,7 @@ export default class extends Controller {
 
     // Popup overlay for hover
     this.popupEl = document.createElement("div")
-    this.popupEl.className = "ol-popup rounded-lg border border-zinc-950/10 bg-white px-3 py-2 text-xs text-zinc-900 shadow-lg dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+    this.popupEl.className = "ol-popup rounded-lg border border-zinc-950/10 bg-white px-3 py-2 text-xs text-zinc-900 shadow-lg"
     this.popupEl.style.cssText = "position: absolute; pointer-events: none; white-space: nowrap; display: none;"
     this.canvasTarget.appendChild(this.popupEl)
 
