@@ -37,4 +37,67 @@ class Admin::WeatherControllerTest < ActionDispatch::IntegrationTest
     get admin_weather_path
     assert_response :success
   end
+
+  # ── Per-chart date-range pickers ──
+
+  test "show renders a turbo frame for each range-driven chart" do
+    get admin_weather_path
+    assert_select "turbo-frame#weather_forecast"
+    assert_select "turbo-frame#weather_comparison"
+  end
+
+  test "show renders a range form for each chart" do
+    get admin_weather_path
+    assert_select "input[type=datetime-local][name='forecast[from]']"
+    assert_select "input[type=datetime-local][name='forecast[to]']"
+    assert_select "input[type=datetime-local][name='comparison[from]']"
+    assert_select "input[type=datetime-local][name='comparison[to]']"
+  end
+
+  test "show defaults to recent observations in the comparison chart" do
+    get admin_weather_path
+    assert_select "[data-testid='comparison-chart']"
+  end
+
+  test "show defaults to upcoming forecasts in the forecast chart" do
+    get admin_weather_path
+    assert_select "[data-testid='forecast-chart']"
+  end
+
+  test "comparison range with no data shows the empty state" do
+    get admin_weather_path, params: { comparison: { from: 10.days.ago.iso8601, to: 9.days.ago.iso8601 } }
+    assert_response :success
+    assert_select "[data-testid='comparison-empty']"
+    assert_select "[data-testid='comparison-chart']", count: 0
+  end
+
+  test "forecast range with no data shows the empty state" do
+    get admin_weather_path, params: { forecast: { from: 5.days.from_now.iso8601, to: 6.days.from_now.iso8601 } }
+    assert_response :success
+    assert_select "[data-testid='forecast-empty']"
+    assert_select "[data-testid='forecast-chart']", count: 0
+  end
+
+  test "accepts a future comparison range" do
+    get admin_weather_path, params: { comparison: { from: 1.day.from_now.iso8601, to: 2.days.from_now.iso8601 } }
+    assert_response :success
+  end
+
+  test "accepts a past forecast range" do
+    get admin_weather_path, params: { forecast: { from: 10.hours.ago.iso8601, to: 1.hour.ago.iso8601 } }
+    assert_response :success
+    assert_select "[data-testid='forecast-chart']"
+  end
+
+  test "invalid datetime params fall back to defaults" do
+    get admin_weather_path, params: { comparison: { from: "not-a-date", to: "garbage" } }
+    assert_response :success
+    assert_select "[data-testid='comparison-chart']"
+  end
+
+  test "reversed range is tolerated by swapping bounds" do
+    get admin_weather_path, params: { comparison: { from: Time.current.iso8601, to: 24.hours.ago.iso8601 } }
+    assert_response :success
+    assert_select "[data-testid='comparison-chart']"
+  end
 end

@@ -60,53 +60,65 @@
   <% end %>
 </div>
 
-<%# ── Section 2: Precipitation Forecast 24h ── %>
-<%
-  grouped_forecasts = @forecasts_24h.group_by(&:source)
-  sources_chart_data = grouped_forecasts.transform_values do |forecasts|
-    forecasts.map do |f|
-      {
-        time: f.valid_from.strftime("%d/%m %H:%M"),
-        precipitation_mm: f.precipitation_mm.to_f.round(1),
-        probability: f.precipitation_probability.to_f.round(0)
-      }
+<%# ── Section 2: Precipitation Forecast ── %>
+<%= turbo_frame_tag "weather_forecast" do %>
+  <%
+    grouped_forecasts = @forecasts_in_range.group_by(&:source)
+    sources_chart_data = grouped_forecasts.transform_values do |forecasts|
+      forecasts.map do |f|
+        {
+          time: f.valid_from.strftime("%d/%m %H:%M"),
+          precipitation_mm: f.precipitation_mm.to_f.round(1),
+          probability: f.precipitation_probability.to_f.round(0)
+        }
+      end
     end
-  end
-  first_source_key = grouped_forecasts.keys.first
-%>
-<div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900"
-     data-controller="admin--source-switcher"
-     data-admin--source-switcher-sources-value="<%= sources_chart_data.to_json %>">
-  <div class="flex items-center justify-between border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão de Precipitação — Próximas 24h</h2>
-    <% if grouped_forecasts.size > 1 %>
-      <select data-action="admin--source-switcher#switch"
-              class="rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-950 dark:text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
-        <% grouped_forecasts.each_key do |source_key| %>
-          <option value="<%= source_key %>"><%= source_labels[source_key] || source_key %></option>
+    first_source_key = grouped_forecasts.keys.first
+  %>
+  <div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900"
+       data-controller="admin--source-switcher"
+       data-admin--source-switcher-sources-value="<%= sources_chart_data.to_json %>">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+      <div>
+        <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão de Precipitação</h2>
+        <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
+          <%= l(@forecast_from, format: :short) %> → <%= l(@forecast_to, format: :short) %>
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <%= render "range_form", frame: "weather_forecast", scope: :forecast, from: @forecast_from, to: @forecast_to %>
+        <% if grouped_forecasts.size > 1 %>
+          <select data-action="admin--source-switcher#switch"
+                  aria-label="Fonte de dados"
+                  class="rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-950 dark:text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
+            <% grouped_forecasts.each_key do |source_key| %>
+              <option value="<%= source_key %>"><%= source_labels[source_key] || source_key %></option>
+            <% end %>
+          </select>
         <% end %>
-      </select>
-    <% end %>
-  </div>
-  <% if grouped_forecasts.any? %>
-    <div class="p-4">
-      <div data-admin--source-switcher-target="chart"
-           data-controller="admin--forecast-chart"
-           data-admin--forecast-chart-forecasts-value="<%= sources_chart_data[first_source_key].to_json %>"
-           data-admin--forecast-chart-title-value="">
-        <div data-admin--forecast-chart-target="chart" class="h-[320px] w-full relative">
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none" data-forecast-fallback>
-            <p class="text-sm text-zinc-500">Carregando previsão...</p>
+      </div>
+    </div>
+    <% if grouped_forecasts.any? %>
+      <div class="p-4">
+        <div data-admin--source-switcher-target="chart"
+             data-testid="forecast-chart"
+             data-controller="admin--forecast-chart"
+             data-admin--forecast-chart-forecasts-value="<%= sources_chart_data[first_source_key].to_json %>"
+             data-admin--forecast-chart-title-value="">
+          <div data-admin--forecast-chart-target="chart" class="h-[320px] w-full relative">
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none" data-forecast-fallback>
+              <p class="text-sm text-zinc-500">Carregando previsão...</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-      Nenhuma previsão disponível para as próximas 24h.
-    </div>
-  <% end %>
-</div>
+    <% else %>
+      <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400" data-testid="forecast-empty">
+        Nenhuma previsão disponível para o período selecionado.
+      </div>
+    <% end %>
+  </div>
+<% end %>
 
 <%# ── Section 3: Data Source Health ── %>
 <div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900" data-testid="data-source-health">
@@ -157,38 +169,47 @@
   <% end %>
 </div>
 
-<%# ── Section 4: Forecast vs Actual (last 24h) ── %>
-<div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900">
-  <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão vs Observado — Últimas 24h</h2>
+<%# ── Section 4: Forecast vs Actual ── %>
+<%= turbo_frame_tag "weather_comparison" do %>
+  <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+      <div>
+        <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão vs Observado</h2>
+        <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
+          <%= l(@comparison_from, format: :short) %> → <%= l(@comparison_to, format: :short) %>
+        </p>
+      </div>
+      <%= render "range_form", frame: "weather_comparison", scope: :comparison, from: @comparison_from, to: @comparison_to %>
+    </div>
+    <% if @observations_in_range.any? || @comparison_forecasts.any? %>
+      <%
+        observed_series = @observations_in_range.map do |obs|
+          [obs.observed_at.iso8601, obs.precipitation_mm.to_f.round(1)]
+        end
+
+        forecast_by_source = @comparison_forecasts.group_by(&:source).map do |source_key, forecasts|
+          {
+            name: source_labels[source_key] || source_key,
+            data: forecasts.map { |f| [f.valid_from.iso8601, f.precipitation_mm.to_f.round(1)] },
+            color: source_key == "open_weather_map" ? "#f59e0b" : "#8b5cf6"
+          }
+        end
+
+        comparison_series = [
+          { name: "Observado", data: observed_series, color: "#06b6d4" },
+          *forecast_by_source
+        ]
+      %>
+      <div data-controller="admin--timeseries"
+           data-testid="comparison-chart"
+           data-admin--timeseries-series-value="<%= comparison_series.to_json %>"
+           data-admin--timeseries-unit-value="mm">
+        <div data-admin--timeseries-target="chart" class="h-[280px] w-full px-2 pb-2"></div>
+      </div>
+    <% else %>
+      <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400" data-testid="comparison-empty">
+        Sem dados de comparação disponíveis para o período selecionado.
+      </div>
+    <% end %>
   </div>
-  <% if @recent_observations.any? || @past_forecasts.any? %>
-    <%
-      observed_series = @recent_observations.map do |obs|
-        [obs.observed_at.iso8601, obs.precipitation_mm.to_f.round(1)]
-      end
-
-      forecast_by_source = @past_forecasts.group_by(&:source).map do |source_key, forecasts|
-        {
-          name: source_labels[source_key] || source_key,
-          data: forecasts.map { |f| [f.valid_from.iso8601, f.precipitation_mm.to_f.round(1)] },
-          color: source_key == "open_weather_map" ? "#f59e0b" : "#8b5cf6"
-        }
-      end
-
-      comparison_series = [
-        { name: "Observado", data: observed_series, color: "#06b6d4" },
-        *forecast_by_source
-      ]
-    %>
-    <div data-controller="admin--timeseries"
-         data-admin--timeseries-series-value="<%= comparison_series.to_json %>"
-         data-admin--timeseries-unit-value="mm">
-      <div data-admin--timeseries-target="chart" class="h-[280px] w-full px-2 pb-2"></div>
-    </div>
-  <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-      Sem dados de comparação disponíveis para as últimas 24h.
-    </div>
-  <% end %>
-</div>
+<% end %>

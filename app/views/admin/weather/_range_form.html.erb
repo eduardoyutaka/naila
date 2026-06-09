@@ -1,0 +1,24 @@
+<%# locals: frame:, scope:, from:, to: %>
+<%
+  input_classes = "rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 " \
+                  "px-2.5 py-1.5 text-xs font-medium text-zinc-950 dark:text-white " \
+                  "[color-scheme:light] dark:[color-scheme:dark] " \
+                  "focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+%>
+<form action="<%= admin_weather_path %>" method="get" data-turbo-frame="<%= frame %>" class="flex flex-wrap items-center gap-1.5">
+  <input type="datetime-local"
+         name="<%= scope %>[from]"
+         value="<%= from.strftime("%Y-%m-%dT%H:%M") %>"
+         aria-label="Início do período"
+         class="<%= input_classes %>">
+  <span class="text-xs text-zinc-500 dark:text-zinc-400">até</span>
+  <input type="datetime-local"
+         name="<%= scope %>[to]"
+         value="<%= to.strftime("%Y-%m-%dT%H:%M") %>"
+         aria-label="Fim do período"
+         class="<%= input_classes %>">
+  <button type="submit"
+          class="rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500">
+    Aplicar
+  </button>
+</form>

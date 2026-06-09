@@ -4,17 +4,38 @@ module Admin
       authorize :weather, :show?
 
       @current_conditions = WeatherObservation.current_conditions
-      @recent_observations = WeatherObservation.in_last(24.hours).order(observed_at: :desc).limit(20)
 
-      @forecasts_24h = WeatherForecast.current.valid_in_next(24.hours).ordered_timeline
-      @forecasts_by_source = WeatherForecast.current.ordered_timeline.group_by(&:source)
+      @comparison_from, @comparison_to =
+        parse_range(params[:comparison], default_from: 24.hours.ago, default_to: Time.current)
+      @forecast_from, @forecast_to =
+        parse_range(params[:forecast], default_from: Time.current, default_to: 24.hours.from_now)
+
+      # Section 4 — observed precipitation vs forecast over the comparison range
+      @observations_in_range = WeatherObservation.where(observed_at: @comparison_from..@comparison_to)
+                                                 .order(observed_at: :asc)
+      @comparison_forecasts = WeatherForecast.where(valid_from: @comparison_from..@comparison_to)
+                                             .ordered_timeline
+
+      # Section 2 — forecast bars/probability over the forecast range
+      @forecasts_in_range = WeatherForecast.where(valid_from: @forecast_from..@forecast_to).ordered_timeline
 
       @data_sources = DataSource.where(source_type: "api").order(:name)
+    end
 
-      # Forecast vs actual comparison data (last 24h)
-      @past_forecasts = WeatherForecast.in_last(24.hours)
-                                       .where("valid_from <= ?", Time.current)
-                                       .ordered_timeline
+    private
+
+    # Parses a `{ from:, to: }` scope into an ordered [from, to] pair,
+    # falling back to defaults and tolerating reversed bounds.
+    def parse_range(scoped, default_from:, default_to:)
+      from = parse_time(scoped&.dig(:from)) || default_from
+      to   = parse_time(scoped&.dig(:to))   || default_to
+      from > to ? [ to, from ] : [ from, to ]
+    end
+
+    def parse_time(value)
+      value.present? ? Time.zone.parse(value.to_s) : nil
+    rescue ArgumentError
+      nil
     end
   end
 end
