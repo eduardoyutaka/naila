@@ -1,3 +1,21 @@
+// All time-axis charts display in São Paulo time regardless of the viewer's
+// browser timezone. ECharts has no native timezone option, so we format the
+// absolute instant (epoch-ms or ISO string) with Intl pinned to America/Sao_Paulo.
+const SP_TZ = "America/Sao_Paulo"
+const _spTime = new Intl.DateTimeFormat("pt-BR", { timeZone: SP_TZ, hour: "2-digit", minute: "2-digit", hour12: false })
+const _spDate = new Intl.DateTimeFormat("pt-BR", { timeZone: SP_TZ, day: "2-digit", month: "2-digit" })
+
+// "HH:mm" in São Paulo
+export function spTime(value) {
+  return _spTime.format(new Date(value))
+}
+
+// "dd/mm HH:mm" in São Paulo
+export function spDateTime(value) {
+  const d = new Date(value)
+  return `${_spDate.format(d)} ${_spTime.format(d)}`
+}
+
 // Reads a CSS custom property from the document root.
 const css = (name) =>
   getComputedStyle(document.documentElement).getPropertyValue(`--color-${name}`).trim()

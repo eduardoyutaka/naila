@@ -33,7 +33,9 @@ module Naila
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    # Curitiba/Brasília time — all displayed dates/times reflect São Paulo.
+    # Timestamps are still stored in UTC (active_record.default_timezone stays :utc).
+    config.time_zone = "America/Sao_Paulo"
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Default locale — all user-facing text and Rails helpers (time_ago_in_words, etc.) in pt-BR

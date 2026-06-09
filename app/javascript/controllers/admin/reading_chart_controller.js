@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { chartTheme, resolveColor } from "chart_theme"
+import { chartTheme, resolveColor, spTime } from "chart_theme"
 
 // Compact chart for sensor readings over time (bar or line, configurable)
 export default class extends Controller {
@@ -54,16 +54,14 @@ export default class extends Controller {
         formatter: (params) => {
           const p = params[0]
           if (!p) return ""
-          const date = new Date(p.axisValue)
-          const time = date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-          return `${time}<br/><strong>${p.value} ${unit}</strong>`
+          return `${spTime(p.axisValue)}<br/><strong>${p.value} ${unit}</strong>`
         },
       },
       grid: { top: 8, right: 8, bottom: 24, left: 36 },
       xAxis: {
         type: "time",
         axisLine: { lineStyle: { color: t.axis.line } },
-        axisLabel: { color: t.axis.label, fontSize: 9, formatter: "{HH}:{mm}" },
+        axisLabel: { color: t.axis.label, fontSize: 9, formatter: (value) => spTime(value) },
         splitLine: { show: false },
       },
       yAxis: {

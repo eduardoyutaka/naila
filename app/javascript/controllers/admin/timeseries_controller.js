@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { chartTheme, resolveColor } from "chart_theme"
+import { chartTheme, resolveColor, spDateTime } from "chart_theme"
 
 // Full historical area/line chart with zoom and pan
 export default class extends Controller {
@@ -48,7 +48,23 @@ export default class extends Controller {
         backgroundColor: t.tooltip.bg,
         borderColor: t.tooltip.border,
         textStyle: { color: t.tooltip.text, fontSize: 11 },
-        axisPointer: { type: "cross", lineStyle: { color: t.axis.line } },
+        axisPointer: {
+          type: "cross",
+          lineStyle: { color: t.axis.line },
+          label: {
+            formatter: (p) => (p.axisDimension === "x" ? spDateTime(p.value) : Number(p.value).toFixed(1)),
+          },
+        },
+        formatter: (params) => {
+          if (!params.length) return ""
+          const suffix = unit ? ` ${unit}` : ""
+          let html = `<div style="margin-bottom:4px;color:${t.tooltip.muted};font-size:10px">${spDateTime(params[0].axisValue)}</div>`
+          params.forEach((p) => {
+            const v = Array.isArray(p.value) ? p.value[1] : p.value
+            html += `<div>${p.marker}${p.seriesName}: <b>${v}${suffix}</b></div>`
+          })
+          return html
+        },
       },
       legend: {
         bottom: 0,
@@ -58,7 +74,7 @@ export default class extends Controller {
       xAxis: {
         type: "time",
         axisLine: { lineStyle: { color: t.axis.line } },
-        axisLabel: { color: t.axis.label, fontSize: 10 },
+        axisLabel: { color: t.axis.label, fontSize: 10, formatter: (value) => spDateTime(value) },
         splitLine: { show: false },
       },
       yAxis: {
