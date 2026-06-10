@@ -100,4 +100,29 @@ class Admin::WeatherControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-testid='comparison-chart']"
   end
+
+  # ── Overlap semantics + picker bounds ──
+
+  test "default forecast window includes an in-progress bucket via overlap" do
+    get admin_weather_path
+    el = css_select("[data-admin--source-switcher-sources-value]").first
+    data = JSON.parse(el["data-admin--source-switcher-sources-value"])
+    labels = data.values.flatten.map { |f| f["time"] }
+    # valid_from is 1h in the past but the bucket is still valid now, so a
+    # now-anchored window must still include it.
+    in_progress = weather_forecasts(:open_meteo_current)
+    assert_includes labels, in_progress.valid_from.strftime("%d/%m %H:%M")
+  end
+
+  test "forecast range inputs are bounded to the available data extent" do
+    get admin_weather_path
+    assert_select "input[name='forecast[from]'][min][max]"
+    assert_select "input[name='forecast[to]'][min][max]"
+  end
+
+  test "comparison range inputs are bounded to the available data extent" do
+    get admin_weather_path
+    assert_select "input[name='comparison[from]'][min][max]"
+    assert_select "input[name='comparison[to]'][min][max]"
+  end
 end

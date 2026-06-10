@@ -8,6 +8,24 @@ class WeatherForecastTest < ActiveSupport::TestCase
     assert_not_includes current, weather_forecasts(:open_meteo_expired)
   end
 
+  test "overlapping returns forecasts whose validity window intersects the range" do
+    from = Time.zone.parse("2026-06-09 12:00")
+    to   = Time.zone.parse("2026-06-09 14:00")
+
+    straddles_start = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: from - 1.hour, valid_until: from + 30.minutes)
+    fully_inside    = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: from + 15.minutes, valid_until: from + 45.minutes)
+    straddles_end    = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: to - 15.minutes, valid_until: to + 1.hour)
+    before_window   = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: from - 3.hours, valid_until: from - 2.hours)
+    after_window    = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: to + 1.hour, valid_until: to + 2.hours)
+
+    result = WeatherForecast.overlapping(from, to)
+    assert_includes result, straddles_start
+    assert_includes result, fully_inside
+    assert_includes result, straddles_end
+    assert_not_includes result, before_window
+    assert_not_includes result, after_window
+  end
+
   test "ordered_timeline returns forecasts in ascending valid_from order" do
     forecasts = WeatherForecast.current.ordered_timeline
     times = forecasts.map(&:valid_from)

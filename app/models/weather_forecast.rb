@@ -3,6 +3,9 @@ class WeatherForecast < ApplicationRecord
 
   scope :current, -> { where("valid_until >= ?", Time.current) }
   scope :valid_in_next, ->(duration) { where("valid_from <= ? AND valid_until >= ?", duration.from_now, Time.current) }
+  # Forecasts whose validity window intersects [from, to] — includes buckets that
+  # started before the window but are still in effect (e.g. the in-progress hour).
+  scope :overlapping, ->(from, to) { where("valid_from <= ? AND valid_until >= ?", to, from) }
   scope :by_source, ->(source) { where(source: source) }
   scope :ordered_timeline, -> { order(valid_from: :asc) }
   scope :in_last, ->(duration) { where("issued_at >= ?", duration.ago) }

@@ -13,11 +13,18 @@ module Admin
       # Section 4 — observed precipitation vs forecast over the comparison range
       @observations_in_range = WeatherObservation.where(observed_at: @comparison_from..@comparison_to)
                                                  .order(observed_at: :asc)
-      @comparison_forecasts = WeatherForecast.where(valid_from: @comparison_from..@comparison_to)
-                                             .ordered_timeline
+      @comparison_forecasts = WeatherForecast.overlapping(@comparison_from, @comparison_to).ordered_timeline
 
       # Section 2 — forecast bars/probability over the forecast range
-      @forecasts_in_range = WeatherForecast.where(valid_from: @forecast_from..@forecast_to).ordered_timeline
+      @forecasts_in_range = WeatherForecast.overlapping(@forecast_from, @forecast_to).ordered_timeline
+
+      # Bound each picker to the window where data actually exists, so the range
+      # can't roam into permanently-empty time.
+      @forecast_bounds = [ WeatherForecast.minimum(:valid_from), WeatherForecast.maximum(:valid_until) ]
+      @comparison_bounds = [
+        [ WeatherObservation.minimum(:observed_at), WeatherForecast.minimum(:valid_from) ].compact.min,
+        [ WeatherObservation.maximum(:observed_at), WeatherForecast.maximum(:valid_until) ].compact.max
+      ]
 
       @data_sources = DataSource.where(source_type: "api").order(:name)
     end

@@ -86,7 +86,7 @@
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <%= render "range_form", frame: "weather_forecast", scope: :forecast, from: @forecast_from, to: @forecast_to %>
+        <%= render "range_form", frame: "weather_forecast", scope: :forecast, from: @forecast_from, to: @forecast_to, min: @forecast_bounds[0], max: @forecast_bounds[1] %>
         <% if grouped_forecasts.size > 1 %>
           <select data-action="admin--source-switcher#switch"
                   aria-label="Fonte de dados"
@@ -179,7 +179,7 @@
           <%= l(@comparison_from, format: :short) %> → <%= l(@comparison_to, format: :short) %>
         </p>
       </div>
-      <%= render "range_form", frame: "weather_comparison", scope: :comparison, from: @comparison_from, to: @comparison_to %>
+      <%= render "range_form", frame: "weather_comparison", scope: :comparison, from: @comparison_from, to: @comparison_to, min: @comparison_bounds[0], max: @comparison_bounds[1] %>
     </div>
     <% if @observations_in_range.any? || @comparison_forecasts.any? %>
       <%
