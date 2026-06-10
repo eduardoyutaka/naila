@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { chartTheme } from "chart_theme"
+import { chartTheme, withAlpha } from "chart_theme"
 
 // Dual y-axis ECharts chart for precipitation forecast (bars) + probability (line)
 export default class extends Controller {
@@ -104,7 +104,7 @@ export default class extends Controller {
               x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
                 { offset: 0, color: t.accent },
-                { offset: 1, color: t.accent + "cc" },
+                { offset: 1, color: withAlpha(t.accent, 0.8) },
               ],
             },
             borderRadius: [3, 3, 0, 0],

@@ -20,6 +20,37 @@ export function spDateTime(value) {
 const css = (name) =>
   getComputedStyle(document.documentElement).getPropertyValue(`--color-${name}`).trim()
 
+// Resolves ANY CSS color (oklch, hex, rgb, named) to [r, g, b] by letting the
+// browser paint it and reading the pixel back. Tailwind 4 palette tokens are
+// oklch(), which canvas addColorStop accepts as a solid color but NOT when a
+// hex-alpha suffix is concatenated (`oklch(...)cc` → SyntaxError). Routing alpha
+// through here keeps gradients valid regardless of the source color space.
+const _probe = document.createElement("canvas")
+_probe.width = _probe.height = 1
+const _probeCtx = _probe.getContext("2d", { willReadFrequently: true })
+
+function toRgb(color) {
+  _probeCtx.clearRect(0, 0, 1, 1)
+  _probeCtx.fillStyle = "#000" // fallback if `color` is unparseable
+  _probeCtx.fillStyle = color
+  _probeCtx.fillRect(0, 0, 1, 1)
+  const [r, g, b] = _probeCtx.getImageData(0, 0, 1, 1).data
+  return [r, g, b]
+}
+
+// Canvas-safe `rgba()` for any CSS color + alpha (0..1).
+export function withAlpha(color, alpha) {
+  const [r, g, b] = toRgb(color)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+// Lightens any CSS color toward white by a flat per-channel amount (0..255).
+export function lighten(color, amount = 40) {
+  const [r, g, b] = toRgb(color)
+  const up = (c) => Math.min(255, c + amount)
+  return `rgb(${up(r)}, ${up(g)}, ${up(b)})`
+}
+
 // Resolves a color value. If the value looks like a CSS token name (no "#" or "rgb" prefix),
 // it is resolved from the document's custom properties. Otherwise returned as-is.
 export function resolveColor(value) {
@@ -53,7 +84,7 @@ export function chartTheme() {
     dataZoom: {
       border: css("chart-border"),
       bg:     css("chart-zoom-bg"),
-      filler: css("sky-500") + "26",   // ~15 % opacity
+      filler: withAlpha(css("sky-500"), 0.15),
       handle: css("sky-500"),
     },
 

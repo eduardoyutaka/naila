@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { chartTheme, resolveColor, spDateTime } from "chart_theme"
+import { chartTheme, resolveColor, spDateTime, withAlpha } from "chart_theme"
 
 // Full historical area/line chart with zoom and pan
 export default class extends Controller {
@@ -112,8 +112,8 @@ export default class extends Controller {
               type: "linear",
               x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
-                { offset: 0, color: color + "30" },
-                { offset: 1, color: color + "05" },
+                { offset: 0, color: withAlpha(color, 0.19) },
+                { offset: 1, color: withAlpha(color, 0.02) },
               ],
             },
           },

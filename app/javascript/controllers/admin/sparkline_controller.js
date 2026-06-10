@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { chartTheme } from "chart_theme"
+import { chartTheme, withAlpha } from "chart_theme"
 
 // Mini inline line chart for trends (e.g., precipitation last 24h)
 export default class extends Controller {
@@ -57,8 +57,8 @@ export default class extends Controller {
             type: "linear",
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: color + "40" },
-              { offset: 1, color: color + "05" },
+              { offset: 0, color: withAlpha(color, 0.25) },
+              { offset: 1, color: withAlpha(color, 0.02) },
             ],
           },
         },

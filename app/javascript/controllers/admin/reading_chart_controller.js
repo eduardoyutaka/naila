@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { chartTheme, resolveColor, spTime } from "chart_theme"
+import { chartTheme, resolveColor, spTime, withAlpha, lighten } from "chart_theme"
 
 // Compact chart for sensor readings over time (bar or line, configurable)
 export default class extends Controller {
@@ -96,7 +96,7 @@ export default class extends Controller {
           type: "linear",
           x: 0, y: 0, x2: 0, y2: 1,
           colorStops: [
-            { offset: 0, color: this.#lighten(color) },
+            { offset: 0, color: lighten(color) },
             { offset: 1, color },
           ],
         },
@@ -116,8 +116,8 @@ export default class extends Controller {
           type: "linear",
           x: 0, y: 0, x2: 0, y2: 1,
           colorStops: [
-            { offset: 0, color: color + "30" },
-            { offset: 1, color: color + "05" },
+            { offset: 0, color: withAlpha(color, 0.19) },
+            { offset: 1, color: withAlpha(color, 0.02) },
           ],
         },
       },
@@ -154,13 +154,5 @@ export default class extends Controller {
     const maxReading = readings.length > 0 ? Math.max(...readings.map(([_, v]) => Number(v) || 0)) : 0
     if (maxReading >= maxThreshold) return undefined
     return Math.ceil(maxThreshold * 1.1)
-  }
-
-  #lighten(hex) {
-    const r = parseInt(hex.slice(1, 3), 16)
-    const g = parseInt(hex.slice(3, 5), 16)
-    const b = parseInt(hex.slice(5, 7), 16)
-    const l = (c) => Math.min(255, c + 40)
-    return `#${l(r).toString(16).padStart(2, "0")}${l(g).toString(16).padStart(2, "0")}${l(b).toString(16).padStart(2, "0")}`
   }
 }
