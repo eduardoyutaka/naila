@@ -6,10 +6,59 @@
   <%= catalyst_text "Condições atuais e previsão de precipitação para Curitiba", class: "mt-1" %>
 </div>
 
-<%# ── Section 1: Current Conditions Banner ── %>
+<%# ── Section 1: Data Source Health ── %>
+<div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900" data-testid="data-source-health">
+  <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
+    <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Fontes de Dados</h2>
+  </div>
+  <% if @data_sources.any? %>
+    <div class="grid grid-cols-1 gap-0 divide-y divide-zinc-950/10 dark:divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 lg:divide-y-0">
+      <% @data_sources.each do |source| %>
+        <div class="px-4 py-4" data-testid="data-source-card">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-zinc-950 dark:text-white truncate"><%= source.name %></span>
+            <% status_color = case source.status
+                              when "active"   then "bg-sensor-online"
+                              when "degraded" then "bg-risk-attention"
+                              else "bg-risk-high"
+                              end %>
+            <span class="ml-2 flex-shrink-0 h-2 w-2 rounded-full <%= status_color %>"></span>
+          </div>
+          <% status_label = case source.status
+                            when "active"   then "Online"
+                            when "degraded" then "Degradado"
+                            else "Offline"
+                            end %>
+          <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <%= status_label %>
+            <% if source.consecutive_failures > 0 %>
+              · <%= source.consecutive_failures %> falha(s)
+            <% end %>
+          </div>
+          <div class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <% if source.last_successful_fetch_at %>
+              Última atualização: <%= time_ago_in_words(source.last_successful_fetch_at) %> atrás
+            <% else %>
+              Nunca atualizado
+            <% end %>
+          </div>
+          <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            Intervalo: <%= (source.fetch_interval_seconds / 60.0).round %> min
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+      Nenhuma fonte de dados configurada.
+    </div>
+  <% end %>
+</div>
+
+<%# ── Section 2: Current Conditions Banner ── %>
 <div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900" data-testid="current-conditions">
   <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Condições Atuais</h2>
+    <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Condições Atuais</h2>
   </div>
   <% if @current_conditions %>
     <div class="grid grid-cols-2 gap-0 divide-x divide-zinc-950/10 dark:divide-white/10 sm:grid-cols-3 lg:grid-cols-6">
@@ -60,7 +109,7 @@
   <% end %>
 </div>
 
-<%# ── Section 2: Precipitation Forecast ── %>
+<%# ── Section 3: Precipitation Forecast ── %>
 <%= turbo_frame_tag "weather_forecast" do %>
   <%
     grouped_forecasts = @forecasts_in_range.group_by(&:source)
@@ -80,7 +129,7 @@
        data-admin--source-switcher-sources-value="<%= sources_chart_data.to_json %>">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
       <div>
-        <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão de Precipitação</h2>
+        <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Previsão de Precipitação</h2>
         <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
           <%= l(@forecast_from, format: :short) %> → <%= l(@forecast_to, format: :short) %>
         </p>
@@ -120,61 +169,12 @@
   </div>
 <% end %>
 
-<%# ── Section 3: Data Source Health ── %>
-<div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900" data-testid="data-source-health">
-  <div class="border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Fontes de Dados</h2>
-  </div>
-  <% if @data_sources.any? %>
-    <div class="grid grid-cols-1 gap-0 divide-y divide-zinc-950/10 dark:divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 lg:divide-y-0">
-      <% @data_sources.each do |source| %>
-        <div class="px-4 py-4" data-testid="data-source-card">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-medium text-zinc-950 dark:text-white truncate"><%= source.name %></span>
-            <% status_color = case source.status
-                              when "active"   then "bg-sensor-online"
-                              when "degraded" then "bg-risk-attention"
-                              else "bg-risk-high"
-                              end %>
-            <span class="ml-2 flex-shrink-0 h-2 w-2 rounded-full <%= status_color %>"></span>
-          </div>
-          <% status_label = case source.status
-                            when "active"   then "Online"
-                            when "degraded" then "Degradado"
-                            else "Offline"
-                            end %>
-          <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            <%= status_label %>
-            <% if source.consecutive_failures > 0 %>
-              · <%= source.consecutive_failures %> falha(s)
-            <% end %>
-          </div>
-          <div class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-            <% if source.last_successful_fetch_at %>
-              Última atualização: <%= time_ago_in_words(source.last_successful_fetch_at) %> atrás
-            <% else %>
-              Nunca atualizado
-            <% end %>
-          </div>
-          <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Intervalo: <%= (source.fetch_interval_seconds / 60.0).round %> min
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-      Nenhuma fonte de dados configurada.
-    </div>
-  <% end %>
-</div>
-
 <%# ── Section 4: Forecast vs Actual ── %>
 <%= turbo_frame_tag "weather_comparison" do %>
   <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
       <div>
-        <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Previsão vs Observado</h2>
+        <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Previsão vs Observado</h2>
         <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
           <%= l(@comparison_from, format: :short) %> → <%= l(@comparison_to, format: :short) %>
         </p>

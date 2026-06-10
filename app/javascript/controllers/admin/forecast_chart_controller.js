@@ -75,7 +75,7 @@ export default class extends Controller {
       yAxis: [
         {
           type: "value",
-          name: "mm",
+          name: "Precipitação (mm)",
           nameTextStyle: { color: t.axis.label, fontSize: 10 },
           axisLine: { show: false },
           axisLabel: { color: t.axis.label, fontSize: 10 },
@@ -83,7 +83,7 @@ export default class extends Controller {
         },
         {
           type: "value",
-          name: "%",
+          name: "Probabilidade (%)",
           min: 0,
           max: 100,
           nameTextStyle: { color: t.axis.label, fontSize: 10 },

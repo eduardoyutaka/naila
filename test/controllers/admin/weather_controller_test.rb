@@ -20,6 +20,13 @@ class Admin::WeatherControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='data-source-health']"
   end
 
+  test "data sources card is rendered above current conditions" do
+    get admin_weather_path
+    assert_operator response.body.index('data-testid="data-source-health"'),
+                     :<,
+                     response.body.index('data-testid="current-conditions"')
+  end
+
   test "show requires authentication" do
     reset!
     get admin_weather_path
