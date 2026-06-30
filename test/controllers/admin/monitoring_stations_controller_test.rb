@@ -18,11 +18,16 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /Estação Barigui/
   end
 
-  test "index shows summary cards with counts" do
+  test "index shows summary cards with active and inactive counts" do
+    MonitoringStation.status_active.first.status_inactive!
+    active_count   = MonitoringStation.status_active.count
+    inactive_count = MonitoringStation.status_inactive.count
+    assert_operator inactive_count, :>=, 1
+
     get admin_monitoring_stations_path
     assert_select "[data-testid='summary-total-count']"
-    assert_select "[data-testid='summary-online-count']"
-    assert_select "[data-testid='summary-maintenance-count']"
+    assert_select "[data-testid='summary-active-count']",   text: active_count.to_s
+    assert_select "[data-testid='summary-inactive-count']", text: inactive_count.to_s
   end
 
   test "index shows sensor type badges" do

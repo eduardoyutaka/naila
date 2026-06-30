@@ -76,8 +76,8 @@ module Admin
     def station_summary_counts(scope)
       {
         total: scope.count,
-        online: scope.online.count,
-        maintenance: scope.by_status("maintenance").count
+        active: scope.status_active.count,
+        inactive: scope.status_inactive.count
       }
     end
 
