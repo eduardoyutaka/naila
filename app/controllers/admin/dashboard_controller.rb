@@ -6,8 +6,9 @@ module Admin
       @river_basins = RiverBasin.active
       @active_alarms = Alarm.in_alarm.includes(:river_basin).order(current_severity: :desc, state_changed_at: :desc).limit(10)
       @recent_readings = SensorReading.recent.includes(sensor: :monitoring_station).limit(10)
-      @sensors_online = MonitoringStation.online.count
       @alarms_by_severity = Alarm.in_alarm.group(:current_severity).count
+      # Severity 0 ("Vigilância"): enabled alarms actively monitoring with no firing condition.
+      @alarms_by_severity[0] = Alarm.enabled.by_state("ok").count
       @monitoring_stations = MonitoringStation.where.not(location: nil).includes(:neighborhood, :river, :sensors)
       @active_alarm_severity_by_basin = Alarm.max_severity_by_basin
       @current_weather = WeatherObservation.current_conditions

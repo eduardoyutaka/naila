@@ -59,6 +59,11 @@ module RiskHelper
     4 => "bg-risk-emergency/20 text-risk-emergency"
   }.freeze
 
+  # Assessment levels add the baseline 0 ("Vigilância") to the firing severities (1..4),
+  # reusing the severity colors so the dashboard cards stay visually consistent.
+  ASSESSMENT_LEVEL_TEXT_CLASS = SEVERITY_TEXT_CLASS.merge(0 => "text-risk-normal").freeze
+  ASSESSMENT_LEVEL_BORDER_CLASS = SEVERITY_BORDER_CLASS.merge(0 => "border-l-risk-normal").freeze
+
   METRIC_NAME_LABEL = {
     "precipitation_3h"  => "Precipitação (3h)",
     "precipitation_1h"  => "Precipitação (1h)",

@@ -50,4 +50,30 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_in_delta(-49.270, station["lng"], 0.01)
     assert_equal "Centro", station["neighborhood"]
   end
+
+  test "dashboard replaces the Sensores Online card with a Vigilância card" do
+    get admin_root_path
+    assert_response :success
+
+    # Scope to the summary cards grid — "Sensores Online" / .text-sensor-online also appear
+    # in the sidebar (part of the layout), so the check must be local to the cards.
+    assert_select "[data-testid=summary-cards]" do
+      # The old "Sensores Online" summary card (its count used .text-sensor-online) is gone.
+      assert_select ".text-sensor-online", count: 0
+
+      # The lowest severity level (Vigilância = 0) is now a summary card styled like the
+      # other severity cards, with a left border in the normal-severity color.
+      assert_select "div.border-l-risk-normal", { text: /Vigilância/ },
+        "expected a Vigilância summary card with the normal-severity left border"
+    end
+  end
+
+  test "dashboard Vigilância card counts enabled alarms in the ok (monitoring) state" do
+    get admin_root_path
+    assert_response :success
+
+    # Fixtures: only precip_3h_belem is enabled + ok → the severity-0 (Vigilância) bucket = 1.
+    assert_equal 1, Alarm.enabled.by_state("ok").count
+    assert_select "div.border-l-risk-normal .tabular-nums", text: "1"
+  end
 end
