@@ -222,10 +222,10 @@ export default class extends Controller {
 
     let image
     switch (primaryType) {
-      case "weather_station":
+      case "weather_station": // square (flat top — angle π/4)
         image = new ol.style.RegularShape({ points: 4, radius: 8, angle: Math.PI / 4, fill, stroke })
         break
-      default: // pluviometer — square
+      default: // pluviometer — diamond (point up — angle 0)
         image = new ol.style.RegularShape({ points: 4, radius: 7, angle: 0, fill, stroke })
         break
     }

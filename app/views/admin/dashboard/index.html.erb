@@ -57,21 +57,16 @@
      data-admin--map-admin--side-sheet-outlet="#sensor-side-sheet">
   <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
     <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Mapa de Risco — Curitiba</h2>
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400" data-testid="map-legend">
+      <%# Severity is shown on the map by basin color only — keep all swatches as circles so the shape carries no extra meaning. %>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-normal"></span> Vigilância</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-attention"></span> Atenção</span>
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> Alerta</span>
-      <span class="flex items-center gap-1">
-        <svg class="h-2.5 w-2.5 text-risk-high" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2L14.9 14H1.1z"/></svg>
-        Alarme
-      </span>
-      <span class="flex items-center gap-1">
-        <span class="inline-block h-2.5 w-2.5 rotate-45 bg-risk-emergency"></span>
-        Emergência
-      </span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-high"></span> Alarme</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-emergency"></span> Emergência</span>
       <span class="h-3 w-px bg-white/10" aria-hidden="true"></span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-sm bg-sensor-pluviometer"></span> Pluviômetro</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-weather"></span> Meteorológica</span>
+      <%# Pluviometer markers are blue diamonds on the map (RegularShape points:4, angle:0). %>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-pluviometer"></span> Pluviômetro</span>
     </div>
   </div>
   <div id="basin-alarm-severities"

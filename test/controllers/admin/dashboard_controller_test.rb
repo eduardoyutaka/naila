@@ -93,4 +93,19 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
       assert_select "div", { text: "Bacias Monitoradas", count: 0 }
     end
   end
+
+  test "dashboard map legend lists all severities and the pluviometer, without Meteorológica" do
+    get admin_root_path
+    assert_response :success
+
+    legend = css_select("[data-testid=map-legend]").first
+    assert_not_nil legend, "expected a map legend with data-testid=map-legend"
+    text = legend.text
+
+    ["Vigilância", "Atenção", "Alerta", "Alarme", "Emergência", "Pluviômetro"].each do |label|
+      assert_includes text, label, "legend should list #{label}"
+    end
+    # Weather stations aren't shown on the map for now.
+    assert_not_includes text, "Meteorológica"
+  end
 end
