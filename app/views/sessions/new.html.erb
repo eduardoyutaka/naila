@@ -8,18 +8,13 @@
     <div class="flex-1 flex flex-col items-center justify-center">
       <div class="relative text-center px-10">
 
-        <%# Logo + NAILA name %>
+        <%# Logo — vertical imagotipo already includes the NAILA wordmark %>
         <div class="flex flex-col items-center mb-8">
-          <%= image_tag "logo.jpeg",
+          <%= image_tag "imagotipo-vertical-branco.png",
                 alt: "Naila",
-                class: "object-contain mb-1",
-                style: "width: 144px; height: 144px; mix-blend-mode: screen;" %>
-          <div class="text-4xl font-bold tracking-widest text-white">NAILA</div>
-          <div class="mt-1 text-xs font-medium tracking-widest text-zinc-300 uppercase">Sistema de Gerenciamento de Riscos</div>
-        </div>
-
-        <div class="text-sm font-medium text-zinc-300 tracking-widest uppercase mb-2">
-          Defesa Civil de Curitiba
+                class: "object-contain mb-3",
+                style: "width: 200px; height: auto;" %>
+          <div class="text-xs font-medium tracking-widest text-zinc-300 uppercase">Sistema de Gerenciamento de Riscos</div>
         </div>
 
         <%# Radar rings + center dot — anchored between the two texts %>
@@ -35,30 +30,25 @@
         </div>
 
         <p class="text-sm text-zinc-300 leading-relaxed max-w-sm">
-          Monitoramento em tempo real de risco de enchentes para a Região Metropolitana de Curitiba.
+          Monitoramento em tempo real de risco de enchentes para Curitiba e Região Metropolitana.
         </p>
 
       </div>
     </div>
 
     <%# Partner logos footer %>
-    <div class="relative z-10 flex flex-col items-center gap-3" style="padding-bottom: 2rem;">
-      <p class="text-xs text-zinc-500 tracking-widest uppercase">Com o apoio de</p>
-      <div class="flex items-center gap-8">
+    <div class="relative z-10 flex flex-col items-center gap-3 w-full" style="padding-bottom: 2rem;">
+      <p class="text-sm font-semibold text-zinc-300 tracking-widest uppercase">Apoio</p>
+      <div class="flex items-center justify-center gap-8 w-full">
         <%= image_tag "partners/anjo_inovador.png",
               alt: "Anjo Inovador",
-              class: "object-contain opacity-70",
-              style: "height: 40px; max-width: 140px; filter: brightness(0) invert(1);" %>
-        <div class="h-8 w-px bg-white/10"></div>
+              class: "object-contain opacity-90",
+              style: "height: 72px; max-width: 240px; filter: brightness(0) invert(1);" %>
+        <div class="h-12 w-px bg-white/10"></div>
         <%= image_tag "partners/seia.png",
               alt: "SEIA",
-              class: "object-contain opacity-70",
-              style: "height: 40px; max-width: 120px; filter: brightness(0) invert(1);" %>
-        <div class="h-8 w-px bg-white/10"></div>
-        <%= image_tag "partners/defesa_civil_curitiba.png",
-              alt: "Defesa Civil de Curitiba",
-              class: "object-contain opacity-75",
-              style: "height: 44px; max-width: 60px;" %>
+              class: "object-contain opacity-100",
+              style: "height: 92px; max-width: 220px; filter: brightness(0) invert(1);" %>
       </div>
     </div>
 
@@ -67,14 +57,12 @@
   <%# Right login panel %>
   <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12 overflow-y-auto">
 
-    <%# Mobile-only logo %>
+    <%# Mobile-only logo — vertical imagotipo already includes the NAILA wordmark %>
     <div class="mb-8 flex flex-col items-center lg:hidden">
-      <%= image_tag "logo.jpeg",
+      <%= image_tag "imagotipo-vertical-branco.png",
             alt: "Naila",
-            class: "w-16 h-16 object-contain",
-            style: "mix-blend-mode: screen;" %>
-      <div class="mt-2 text-2xl font-bold tracking-widest text-white">NAILA</div>
-      <p class="mt-0.5 text-xs text-zinc-400 tracking-widest uppercase">Defesa Civil de Curitiba</p>
+            class: "object-contain",
+            style: "width: 110px; height: auto;" %>
     </div>
 
     <div class="w-full max-w-sm animate-fade-in">
