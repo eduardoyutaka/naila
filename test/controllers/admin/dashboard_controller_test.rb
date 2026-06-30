@@ -76,4 +76,21 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, Alarm.enabled.by_state("ok").count
     assert_select "div.border-l-risk-normal .tabular-nums", text: "1"
   end
+
+  test "dashboard shows a Sensores Ativos card with active over total sensor count" do
+    get admin_root_path
+    assert_response :success
+
+    # Fixtures: 2 active sensors (pluv_cemaden_centro, pluv_belem) out of 3 total.
+    assert_equal 2, Sensor.online.count
+    assert_equal 3, Sensor.count
+
+    assert_select "[data-testid=summary-cards]" do
+      assert_select "div", { text: /Sensores Ativos/ }, "expected a Sensores Ativos card"
+      assert_select "div.tabular-nums", { text: /2\/3/ },
+        "expected the card to show active/total as 2/3"
+      # The old "Bacias Monitoradas" card is gone.
+      assert_select "div", { text: "Bacias Monitoradas", count: 0 }
+    end
+  end
 end

@@ -14,8 +14,8 @@
     </div>
   <% end %>
   <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 p-4">
-    <div class="text-sm font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Bacias Monitoradas</div>
-    <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @river_basins.size %></div>
+    <div class="text-sm font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Sensores Ativos</div>
+    <div class="mt-2 text-3xl font-semibold tabular-nums text-sky-500"><%= @active_sensors %><span class="font-normal text-zinc-500 dark:text-zinc-400">/<%= @total_sensors %></span></div>
   </div>
 </div>
 
