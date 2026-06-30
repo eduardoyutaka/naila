@@ -1,0 +1,53 @@
+/*
+ * Magistral — official brand font (see manual-da-marca.jpeg / project brand manual).
+ * Self-hosted woff2, served by Propshaft. The url() references are rewritten to
+ * digested paths by Propshaft's CssAssetUrls compiler at request/precompile time.
+ *
+ * The vendor stylesheet split the weights across three family names
+ * ('Magistral', 'Magistral Book', 'Magistral Extra'); these declarations
+ * normalize them into a single "Magistral" family spanning weights 300–800 so
+ * the standard font-weight utilities (font-light … font-extrabold) just work.
+ *
+ * Exposed to Tailwind via the --font-magistral token (app/assets/tailwind/application.css),
+ * which generates the `font-magistral` utility.
+ */
+
+@font-face {
+  font-family: "Magistral";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("Magistral-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Magistral";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("Magistral-Book.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Magistral";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("Magistral-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Magistral";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("Magistral-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Magistral";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("Magistral-ExtraBold.woff2") format("woff2");
+}

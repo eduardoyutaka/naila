@@ -27,6 +27,8 @@
   /* Typography */
   --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Magistral — official brand font (@font-face in stylesheets/fonts.css) */
+  --font-magistral: "Magistral", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 
   /* Custom animations */
   --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;

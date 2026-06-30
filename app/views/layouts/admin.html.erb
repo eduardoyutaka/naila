@@ -28,6 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <link rel="icon" href="/icon.png" type="image/png">
+    <%= stylesheet_link_tag "fonts", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.5.0/ol.css">
     <script src="https://cdn.jsdelivr.net/npm/ol@10.5.0/dist/ol.js"></script>
@@ -57,7 +58,7 @@
         <div class="min-w-0 flex-1 flex items-center gap-2 py-1.5">
           <%= link_to admin_root_path, class: "flex items-center gap-2" do %>
             <%= image_tag "logo.png", alt: "Naila", class: "size-9 shrink-0 object-contain" %>
-            <span class="text-sm font-bold tracking-widest text-zinc-950 dark:text-white">NAILA</span>
+            <span class="font-magistral text-sm font-bold tracking-widest text-zinc-950 dark:text-white">NAILA</span>
           <% end %>
         </div>
         <%= render "shared/admin/theme_toggle" %>
