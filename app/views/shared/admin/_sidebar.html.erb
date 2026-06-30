@@ -42,8 +42,8 @@
         <div class="mt-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-3 py-2.5 ring-1 ring-zinc-950/5 dark:ring-white/5">
           <div class="space-y-2">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-zinc-700 dark:text-zinc-300">Sensores Online</span>
-              <span class="tabular-nums font-medium text-sensor-online"><%= MonitoringStation.online.count %></span>
+              <span class="text-zinc-700 dark:text-zinc-300">Estações Ativas</span>
+              <span class="tabular-nums font-medium text-sensor-online"><%= MonitoringStation.status_active.count %></span>
             </div>
             <div class="flex items-center justify-between text-xs">
               <span class="text-zinc-700 dark:text-zinc-300">Bacias em Risco</span>
