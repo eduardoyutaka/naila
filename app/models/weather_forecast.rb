@@ -1,4 +1,7 @@
 class WeatherForecast < ApplicationRecord
+  # Forecast providers, in the order we prefer them when picking a default.
+  FORECAST_SOURCES = %w[open_weather_map open_meteo].freeze
+
   validates :source, :issued_at, :valid_from, :valid_until, presence: true
 
   scope :current, -> { where("valid_until >= ?", Time.current) }

@@ -113,20 +113,16 @@
 <%= turbo_frame_tag "weather_forecast" do %>
   <%
     grouped_forecasts = @forecasts_in_range.group_by(&:source)
-    sources_chart_data = grouped_forecasts.transform_values do |forecasts|
-      forecasts.map do |f|
-        {
-          time: f.valid_from.strftime("%d/%m %H:%M"),
-          precipitation_mm: f.precipitation_mm.to_f.round(1),
-          probability: f.precipitation_probability.to_f.round(0)
-        }
-      end
+    selected_chart_data = (grouped_forecasts[@forecast_source] || []).map do |f|
+      {
+        time: f.valid_from.strftime("%d/%m %H:%M"),
+        precipitation_mm: f.precipitation_mm.to_f.round(1),
+        probability: f.precipitation_probability.to_f.round(0)
+      }
     end
-    first_source_key = grouped_forecasts.keys.first
+    source_options = WeatherForecast::FORECAST_SOURCES.map { |key| [ source_labels[key] || key, key ] }
   %>
-  <div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900"
-       data-controller="admin--source-switcher"
-       data-admin--source-switcher-sources-value="<%= sources_chart_data.to_json %>">
+  <div class="mb-6 rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
       <div>
         <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Previsão de Precipitação</h2>
@@ -134,25 +130,15 @@
           <%= l(@forecast_from, format: :short) %> → <%= l(@forecast_to, format: :short) %>
         </p>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <%= render "range_form", frame: "weather_forecast", scope: :forecast, from: @forecast_from, to: @forecast_to, min: @forecast_bounds[0], max: @forecast_bounds[1] %>
-        <% if grouped_forecasts.size > 1 %>
-          <select data-action="admin--source-switcher#switch"
-                  aria-label="Fonte de dados"
-                  class="rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-950 dark:text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
-            <% grouped_forecasts.each_key do |source_key| %>
-              <option value="<%= source_key %>"><%= source_labels[source_key] || source_key %></option>
-            <% end %>
-          </select>
-        <% end %>
-      </div>
+      <%= render "range_form", frame: "weather_forecast", scope: :forecast,
+            from: @forecast_from, to: @forecast_to, min: @forecast_bounds[0], max: @forecast_bounds[1],
+            source_param: "forecast_source", source_options: source_options, selected_source: @forecast_source %>
     </div>
-    <% if grouped_forecasts.any? %>
+    <% if selected_chart_data.any? %>
       <div class="p-4">
-        <div data-admin--source-switcher-target="chart"
-             data-testid="forecast-chart"
+        <div data-testid="forecast-chart"
              data-controller="admin--forecast-chart"
-             data-admin--forecast-chart-forecasts-value="<%= sources_chart_data[first_source_key].to_json %>"
+             data-admin--forecast-chart-forecasts-value="<%= selected_chart_data.to_json %>"
              data-admin--forecast-chart-title-value="">
           <div data-admin--forecast-chart-target="chart" class="h-[320px] w-full relative">
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none" data-forecast-fallback>

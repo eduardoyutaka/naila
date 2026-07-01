@@ -1,4 +1,4 @@
-<%# locals: (frame:, scope:, from:, to:, min: nil, max: nil) %>
+<%# locals: (frame:, scope:, from:, to:, min: nil, max: nil, source_param: nil, source_options: nil, selected_source: nil) %>
 <%
   input_classes = "rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 " \
                   "px-2.5 py-1.5 text-xs font-medium text-zinc-950 dark:text-white " \
@@ -13,6 +13,12 @@
   <span class="text-xs text-zinc-500 dark:text-zinc-400">até</span>
   <%= tag.input type: "datetime-local", name: "#{scope}[to]", value: fmt.call(to),
         aria: { label: "Fim do período" }, class: input_classes, **range_attrs %>
+  <% if source_param %>
+    <%= select_tag source_param, options_for_select(source_options, selected_source),
+          aria: { label: "Fonte de dados" },
+          data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" },
+          class: input_classes %>
+  <% end %>
   <button type="submit"
           class="rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500">
     Aplicar
