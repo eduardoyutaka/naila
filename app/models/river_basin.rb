@@ -35,7 +35,10 @@ class RiverBasin < ApplicationRecord
 
     in_alarm_basins = Alarm.in_alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id)
     if severity.zero?
-      where.not(id: in_alarm_basins)
+      # "Vigilância" = monitored (has an alarm configured) but nothing firing. Unmonitored
+      # basins have no alarms and render as "Não monitorada", so they are NOT Vigilância.
+      monitored_basins = Alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id)
+      where(id: monitored_basins).where.not(id: in_alarm_basins)
     else
       where(id: Alarm.in_alarm.where.not(river_basin_id: nil)
         .group(:river_basin_id)

@@ -48,6 +48,13 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /Bacia do Rio Barigui/, count: 0
   end
 
+  test "index filter by Vigilância (normal) excludes unmonitored basins" do
+    # bacia_barigui has no alarms → "Não monitorada", so it must not appear under Vigilância.
+    get admin_river_basins_path(q: { risk_level: "normal" })
+    assert_response :success
+    assert_select "td", text: /Bacia do Rio Barigui/, count: 0
+  end
+
   test "index filters by search" do
     get admin_river_basins_path(q: { search: "Barigui" })
     assert_response :success
