@@ -65,8 +65,7 @@ module Admin
     def user_summary_counts(scope)
       {
         total: scope.count,
-        active: scope.active.count,
-        sms_rules: NotificationRule.enabled.for_channel("sms").count
+        active: scope.active.count
       }
     end
 
