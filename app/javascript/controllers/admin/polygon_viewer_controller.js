@@ -1,6 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-const DARK_TILES_URL = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+// CartoDB Voyager basemap — light, Google-Maps-like. Matches the dashboard map
+// (admin--map); used in both themes by design so it stays legible in light mode.
+const TILES_URL = "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
 const CURITIBA_CENTER = [-49.2733, -25.4284]
 
 const RISK_COLORS = {
@@ -62,7 +64,7 @@ export default class extends Controller {
       layers: [
         new ol.layer.Tile({
           source: new ol.source.XYZ({
-            url: DARK_TILES_URL,
+            url: TILES_URL,
             attributions: '&copy; <a href="https://carto.com/">CARTO</a>',
             maxZoom: 19,
           }),
