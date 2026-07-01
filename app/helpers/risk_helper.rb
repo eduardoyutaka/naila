@@ -110,6 +110,16 @@ module RiskHelper
     )
   end
 
+  # Full assessment scale (0..4): like severity_badge but includes the baseline
+  # "Vigilância" (0), shown when an alarm isn't firing (current_severity is nil).
+  def assessment_level_badge(severity)
+    level = severity.to_i
+    tag.span(
+      ASSESSMENT_LEVEL_LABEL[level],
+      class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{ASSESSMENT_LEVEL_BADGE_CLASSES[level]}"
+    )
+  end
+
   def alarm_severity_badge(severity, monitored: true)
     if !monitored
       tag.span("Não monitorada", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")

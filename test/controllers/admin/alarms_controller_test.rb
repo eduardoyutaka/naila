@@ -38,6 +38,12 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "span", text: "Alarme"
   end
 
+  test "index shows the Vigilância baseline in the severity column for non-firing alarms" do
+    # precip_3h_belem is state ok with no current_severity → its Severidade cell reads Vigilância.
+    get admin_alarms_path
+    assert_select "span", text: "Vigilância"
+  end
+
   test "index shows empty state when no alarms exist" do
     Alarm.destroy_all
     get admin_alarms_path
