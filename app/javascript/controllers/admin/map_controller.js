@@ -46,6 +46,7 @@ export default class extends Controller {
   static values = {
     riverBasins: { type: Array, default: [] },
     sensors:     { type: Array, default: [] },
+    floodZones:  { type: Array, default: [] },
     center: { type: Array, default: [-49.2733, -25.4284] },
     zoom: { type: Number, default: 12 },
   }
@@ -65,9 +66,11 @@ export default class extends Controller {
     }
 
     this.RISK_COLORS = buildRiskColors()
+    this.selectedReturnPeriod = 100
     this.initMap()
     this.addRiverBasins()
     this.addSensors()
+    this.addFloodZones()
   }
 
   disconnect() {
@@ -105,10 +108,19 @@ export default class extends Controller {
       zIndex: 10,
     })
 
+    // Flood-inundation "manchas" layer — above basins, below sensors; hidden until toggled
+    this.floodSource = new ol.source.Vector()
+    this.floodLayer = new ol.layer.Vector({
+      source: this.floodSource,
+      style: (feature) => this.floodStyle(feature),
+      zIndex: 5,
+      visible: false,
+    })
+
     // Create map
     this.map = new ol.Map({
       target: this.canvasTarget,
-      layers: [this.tileLayer, this.basinLayer, this.sensorLayer],
+      layers: [this.tileLayer, this.basinLayer, this.floodLayer, this.sensorLayer],
       view: new ol.View({
         center: ol.proj.fromLonLat(this.centerValue),
         zoom: this.zoomValue,
@@ -233,6 +245,45 @@ export default class extends Controller {
     return new ol.style.Style({ image })
   }
 
+  // ── Flood Zones (manchas de inundação) ──
+
+  addFloodZones() {
+    const ol = this.ol
+    const geojsonFormat = new ol.format.GeoJSON()
+
+    this.floodZonesValue.forEach((zone) => {
+      if (!zone.geometry) return
+
+      const feature = geojsonFormat.readFeature(zone.geometry, {
+        dataProjection: "EPSG:4326",
+        featureProjection: "EPSG:3857",
+      })
+      feature.set("featureType", "floodZone")
+      feature.set("returnPeriod", zone.return_period)
+      this.floodSource.addFeature(feature)
+    })
+  }
+
+  // Only the selected return period is drawn; others get an empty (invisible) style.
+  floodStyle(feature) {
+    const ol = this.ol
+    if (feature.get("returnPeriod") !== this.selectedReturnPeriod) return new ol.style.Style({})
+
+    return new ol.style.Style({
+      fill: new ol.style.Fill({ color: "rgba(59, 130, 246, 0.35)" }),
+      stroke: new ol.style.Stroke({ color: "#2563eb", width: 1.5 }),
+    })
+  }
+
+  selectFloodPeriod(event) {
+    this.selectedReturnPeriod = parseInt(event.target.value, 10)
+    this.floodLayer?.changed()
+  }
+
+  toggleFloodLayer(event) {
+    this.floodLayer?.setVisible(event.target.checked)
+  }
+
   // ── Interactions ──
 
   handlePointerMove(e) {
@@ -250,6 +301,8 @@ export default class extends Controller {
       this.showSensorPopup(feature, e.pixel)
     } else if (featureType === "riverBasin") {
       this.showBasinPopup(feature, e.pixel)
+    } else if (featureType === "floodZone") {
+      this.showFloodPopup(feature, e.pixel)
     } else {
       this.popupEl.style.display = "none"
       this.canvasTarget.style.cursor = ""
@@ -342,6 +395,16 @@ export default class extends Controller {
     this.showPopupAt(pixel)
   }
 
+  showFloodPopup(feature, pixel) {
+    this.popupEl.textContent = ""
+    const strong = document.createElement("strong")
+    strong.textContent = "Mancha de inundação"
+    this.popupEl.appendChild(strong)
+    this.popupEl.appendChild(document.createElement("br"))
+    this.popupEl.appendChild(document.createTextNode(`Tempo de retorno: ${feature.get("returnPeriod")} anos`))
+    this.showPopupAt(pixel)
+  }
+
   showPopupAt(pixel) {
     this.popupEl.style.display = "block"
     this.popupEl.style.left = `${pixel[0] + 12}px`
@@ -387,6 +450,12 @@ export default class extends Controller {
     if (!this.map || !this.sensorSource) return
     this.sensorSource.clear()
     this.addSensors()
+  }
+
+  floodZonesValueChanged() {
+    if (!this.map || !this.floodSource) return
+    this.floodSource.clear()
+    this.addFloodZones()
   }
 
   // ── Helpers ──

@@ -16,6 +16,21 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-admin--map-sensors-value]"
   end
 
+  test "dashboard passes flood-zone overlay data to the map" do
+    get admin_root_path
+    assert_response :success
+    assert_select "[data-admin--map-flood-zones-value]"
+    json = css_select("[data-admin--map-flood-zones-value]").first["data-admin--map-flood-zones-value"]
+    periods = JSON.parse(json).map { |z| z["return_period"] }.sort
+    assert_equal [ 5, 10, 25, 100, 200, 500 ], periods
+  end
+
+  test "dashboard renders flood-zone controls with a return-period option per period" do
+    get admin_root_path
+    assert_select "[data-testid='flood-controls']"
+    assert_select "select[data-action*='selectFloodPeriod'] option", count: 6
+  end
+
   test "dashboard sensor data includes only stations with location" do
     get admin_root_path
     sensor_json = css_select("[data-admin--map-sensors-value]").first["data-admin--map-sensors-value"]

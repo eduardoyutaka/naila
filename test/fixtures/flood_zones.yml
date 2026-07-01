@@ -1,0 +1,20 @@
+# On bacia_barigui so bacia_belem stays free for the model uniqueness test.
+# geometry is nullable, so fixtures need only the basin + return period.
+barigui_5:
+  river_basin: bacia_barigui
+  return_period: 5
+barigui_10:
+  river_basin: bacia_barigui
+  return_period: 10
+barigui_25:
+  river_basin: bacia_barigui
+  return_period: 25
+barigui_100:
+  river_basin: bacia_barigui
+  return_period: 100
+barigui_200:
+  river_basin: bacia_barigui
+  return_period: 200
+barigui_500:
+  river_basin: bacia_barigui
+  return_period: 500

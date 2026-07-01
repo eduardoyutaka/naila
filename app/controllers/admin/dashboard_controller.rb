@@ -13,6 +13,7 @@ module Admin
       @total_sensors = Sensor.count
       @monitoring_stations = MonitoringStation.where.not(location: nil).includes(:neighborhood, :river, :sensors)
       @active_alarm_severity_by_basin = Alarm.max_severity_by_basin
+      @flood_zones = FloodZone.order(:return_period)
       @current_weather = WeatherObservation.current_conditions
       @forecast_summary = WeatherForecast.aggregate_next_hours(6)
     end

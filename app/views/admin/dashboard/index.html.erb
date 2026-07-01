@@ -52,6 +52,9 @@
          last_reading_value: last&.value
        }
      }.to_json %>"
+     data-admin--map-flood-zones-value="<%= @flood_zones.map { |fz|
+       { return_period: fz.return_period, geometry: fz.geometry ? RGeo::GeoJSON.encode(fz.geometry) : nil }
+     }.to_json %>"
      data-admin--map-center-value="[-49.2733, -25.4284]"
      data-admin--map-zoom-value="12"
      data-admin--map-admin--side-sheet-outlet="#sensor-side-sheet">
@@ -69,6 +72,28 @@
       <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-pluviometer"></span> Pluviômetro</span>
     </div>
   </div>
+  <% if @flood_zones.any? %>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-zinc-950/10 dark:border-white/10 px-4 py-2 text-xs" data-testid="flood-controls">
+      <label class="flex items-center gap-1.5 font-medium text-zinc-700 dark:text-zinc-300">
+        <input type="checkbox" data-action="change->admin--map#toggleFloodLayer" class="h-3.5 w-3.5 accent-sky-500">
+        Manchas de inundação
+      </label>
+      <label class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+        Tempo de retorno
+        <select data-action="change->admin--map#selectFloodPeriod"
+                aria-label="Tempo de retorno da mancha de inundação"
+                class="rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs text-zinc-950 dark:text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
+          <% FloodZone::RETURN_PERIODS.each do |rp| %>
+            <option value="<%= rp %>" <%= "selected" if rp == 100 %>>TR <%= rp %> anos</option>
+          <% end %>
+        </select>
+      </label>
+      <span class="flex items-center gap-1 text-zinc-500 dark:text-zinc-400">
+        <span class="inline-block h-2.5 w-2.5 rounded-sm" style="background-color: rgba(59, 130, 246, 0.55)"></span>
+        Área inundável
+      </span>
+    </div>
+  <% end %>
   <div id="basin-alarm-severities"
        data-admin--map-target="alertSeverities"
        class="hidden"
