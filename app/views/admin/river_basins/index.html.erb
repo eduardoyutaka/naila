@@ -1,8 +1,8 @@
-<% content_for(:title, "Naila — Bacias Hidrográficas") %>
+<% content_for(:title, "Naila — Áreas Monitoradas") %>
 
 <%# ── Page Header ── %>
 <div class="flex items-center justify-between mb-8">
-  <%= catalyst_heading "Bacias Hidrográficas", level: 1 %>
+  <%= catalyst_heading "Áreas Monitoradas", level: 1 %>
   <% if policy(RiverBasin).create? %>
     <%= catalyst_button_link href: new_admin_river_basin_path, color: "sky" do %>
       <svg class="h-4 w-4" data-slot="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
