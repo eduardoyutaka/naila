@@ -314,6 +314,40 @@ ALTER SEQUENCE public.evacuation_routes_id_seq OWNED BY public.evacuation_routes
 
 
 --
+-- Name: flood_zones; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.flood_zones (
+    id bigint NOT NULL,
+    river_basin_id bigint NOT NULL,
+    return_period integer NOT NULL,
+    area_m2 double precision,
+    geometry public.geometry(MultiPolygon,4326),
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: flood_zones_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.flood_zones_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flood_zones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.flood_zones_id_seq OWNED BY public.flood_zones.id;
+
+
+--
 -- Name: monitoring_stations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1838,6 +1872,13 @@ ALTER TABLE ONLY public.evacuation_routes ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
+-- Name: flood_zones id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flood_zones ALTER COLUMN id SET DEFAULT nextval('public.flood_zones_id_seq'::regclass);
+
+
+--
 -- Name: monitoring_stations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2074,6 +2115,14 @@ ALTER TABLE ONLY public.escalation_rules
 
 ALTER TABLE ONLY public.evacuation_routes
     ADD CONSTRAINT evacuation_routes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flood_zones flood_zones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flood_zones
+    ADD CONSTRAINT flood_zones_pkey PRIMARY KEY (id);
 
 
 --
@@ -2593,6 +2642,27 @@ CREATE INDEX index_evacuation_routes_on_path ON public.evacuation_routes USING g
 --
 
 CREATE INDEX index_evacuation_routes_on_river_basin_id ON public.evacuation_routes USING btree (river_basin_id);
+
+
+--
+-- Name: index_flood_zones_on_geometry; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_flood_zones_on_geometry ON public.flood_zones USING gist (geometry);
+
+
+--
+-- Name: index_flood_zones_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_flood_zones_on_river_basin_id ON public.flood_zones USING btree (river_basin_id);
+
+
+--
+-- Name: index_flood_zones_on_river_basin_id_and_return_period; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_flood_zones_on_river_basin_id_and_return_period ON public.flood_zones USING btree (river_basin_id, return_period);
 
 
 --
@@ -4265,6 +4335,14 @@ ALTER TABLE ONLY public.solid_queue_blocked_executions
 
 
 --
+-- Name: flood_zones fk_rails_5fd5bc5f87; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flood_zones
+    ADD CONSTRAINT fk_rails_5fd5bc5f87 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
+
+
+--
 -- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4367,6 +4445,8 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260701000002'),
+('20260701000001'),
 ('20260608215909'),
 ('20260603121201'),
 ('20260429210000'),

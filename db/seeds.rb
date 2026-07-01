@@ -117,6 +117,10 @@ end.index_by(&:code)
 puts "  Importing river basins from BD_geojson/..."
 
 RiverBasinGeojsonImporter.run!
+
+puts "  Importing Córrego Bigorrilho watershed + flood zones..."
+BigorrilhoImporter.run!
+
 basins = RiverBasin.all.index_by(&:name)
 
 # ============================================================

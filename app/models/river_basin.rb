@@ -6,6 +6,7 @@ class RiverBasin < ApplicationRecord
   has_many :sensor_readings, through: :sensors
   has_many :alarms, dependent: :nullify
   has_many :evacuation_routes, dependent: :destroy
+  has_many :flood_zones, dependent: :destroy
 
   attr_writer :geometry_geojson
 
