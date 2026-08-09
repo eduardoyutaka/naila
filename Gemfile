@@ -58,7 +58,7 @@ gem "noticed", "~> 2.0"
 # Web Push API for browser notifications [https://github.com/pushpad/web-push]
 gem "web-push", "~> 3.0"
 # SMS via Twilio [https://github.com/twilio/twilio-ruby]
-gem "twilio-ruby", "~> 7.0"
+gem "twilio-ruby", "~> 7.10"
 
 # Pagination [https://github.com/ddnexus/pagy]
 gem "pagy", "~> 9.0"
