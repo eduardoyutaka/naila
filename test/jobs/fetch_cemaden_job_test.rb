@@ -53,4 +53,30 @@ class FetchCemadenJobTest < ActiveSupport::TestCase
       FetchCemadenJob.perform_now
     end
   end
+
+  test "marks a station disconnected when its fetch fails" do
+    stub_request(:get, %r{mapservices\.cemaden\.gov\.br/MapaInterativoWS/resources/horario/\d+/\d+})
+      .to_return(status: 500, body: "Error")
+
+    station = monitoring_stations(:cemaden_centro)
+    assert station.connection_status_connected?
+
+    FetchCemadenJob.perform_now
+
+    assert station.reload.connection_status_disconnected?
+    assert_not_nil station.last_failed_fetch_at
+  end
+
+  test "marks a disconnected station connected again after a successful fetch" do
+    stub_request(:get, %r{mapservices\.cemaden\.gov\.br/MapaInterativoWS/resources/horario/\d+/\d+})
+      .to_return(status: 200, body: @fixture, headers: { "Content-Type" => "application/json" })
+
+    station = monitoring_stations(:estacao_belem)
+    assert station.connection_status_disconnected?
+
+    FetchCemadenJob.perform_now
+
+    assert station.reload.connection_status_connected?
+    assert_not_nil station.last_successful_fetch_at
+  end
 end

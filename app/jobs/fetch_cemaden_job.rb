@@ -13,6 +13,13 @@ class FetchCemadenJob < ApplicationJob
       next unless sensor
 
       readings = client.call(station_code: station.external_id)
+
+      if readings.nil?
+        station.record_fetch_failure!
+        next
+      end
+
+      station.record_fetch_success!
       next if readings.empty?
 
       readings.each do |attrs|
