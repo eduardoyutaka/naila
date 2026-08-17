@@ -52,4 +52,13 @@ class MonitoringStationTest < ActiveSupport::TestCase
     assert station.connection_status_disconnected?
     assert_not_nil station.last_failed_fetch_at
   end
+
+  test "defaults to unknown connectivity for a station that has never been polled" do
+    station = MonitoringStation.new(
+      external_id: "TEST-UNPOLLED", name: "Estação Nunca Consultada",
+      data_source: "CEMADEN", river_basin: river_basins(:bacia_belem)
+    )
+
+    assert station.connection_status_unknown?
+  end
 end

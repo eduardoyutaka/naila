@@ -15,6 +15,7 @@ class MonitoringStation < ApplicationRecord
   }, prefix: true
 
   enum :connection_status, {
+    unknown: "unknown",
     connected: "connected",
     disconnected: "disconnected"
   }, prefix: true

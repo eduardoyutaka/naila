@@ -37,7 +37,9 @@ const SENSOR_STATUS_COLORS = {
 }
 
 // Connection status (is the station actually delivering data?) → text color
+// "unknown" (never polled) is a neutral zinc-500, matching the "untracked" basin convention.
 const CONNECTION_STATUS_COLORS = {
+  unknown:      "#71717a",
   connected:    chartTheme().sensor.online,
   disconnected: chartTheme().sensor.offline,
 }
@@ -374,12 +376,13 @@ export default class extends Controller {
     }
 
     const connectionLabels = {
+      unknown: "Sem dados",
       connected: "Conectado",
       disconnected: "Desconectado",
     }
 
     const statusColor = SENSOR_STATUS_COLORS[status] || chartTheme().sensor.online
-    const connectionColor = CONNECTION_STATUS_COLORS[connectionStatus] || chartTheme().sensor.offline
+    const connectionColor = CONNECTION_STATUS_COLORS[connectionStatus] || CONNECTION_STATUS_COLORS.unknown
     const typesDisplay = sensorTypes.map(t => typeLabels[t] || t).join(", ")
 
     this.popupEl.textContent = ""

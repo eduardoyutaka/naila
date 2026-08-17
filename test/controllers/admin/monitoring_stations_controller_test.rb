@@ -46,6 +46,16 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "span", text: "Desconectado"
   end
 
+  test "index shows 'Sem dados' for a station that has never been polled" do
+    MonitoringStation.create!(
+      external_id: "NUNCA-POLLED", name: "Estação Nunca Consultada",
+      data_source: "CEMADEN", river_basin: river_basins(:bacia_belem)
+    )
+
+    get admin_monitoring_stations_path
+    assert_select "span", text: "Sem dados"
+  end
+
   test "index shows empty state when no stations exist" do
     MonitoringStation.destroy_all
     get admin_monitoring_stations_path

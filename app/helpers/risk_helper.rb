@@ -90,11 +90,13 @@ module RiskHelper
   }.freeze
 
   CONNECTION_STATUS_LABEL = {
+    "unknown"      => "Sem dados",
     "connected"    => "Conectado",
     "disconnected" => "Desconectado"
   }.freeze
 
   CONNECTION_STATUS_TEXT_CLASS = {
+    "unknown"      => "text-zinc-500 dark:text-zinc-400",
     "connected"    => "text-sensor-online",
     "disconnected" => "text-sensor-offline"
   }.freeze
