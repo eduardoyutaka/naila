@@ -63,6 +63,7 @@
           <%= catalyst_th "Nome" %>
           <%= catalyst_th "Sensores" %>
           <%= catalyst_th "Status" %>
+          <%= catalyst_th "Conectividade" %>
           <%= catalyst_th "Localização" %>
           <%= catalyst_th "Última Leitura" %>
           <%= catalyst_th "Ações", class: "text-right" %>
@@ -103,10 +104,12 @@
                                else "red"
                                end
               %>
-              <div class="flex flex-col items-start gap-1">
-                <%= catalyst_badge status_label, color: status_color %>
-                <%= connection_status_indicator(station.connection_status) %>
-              </div>
+              <%= catalyst_badge status_label, color: status_color %>
+            <% end %>
+
+            <%# Conectividade %>
+            <%= catalyst_td do %>
+              <%= connection_status_indicator(station.connection_status) %>
             <% end %>
 
             <%# Localização %>
