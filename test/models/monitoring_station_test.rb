@@ -22,4 +22,34 @@ class MonitoringStationTest < ActiveSupport::TestCase
     assert_equal MonitoringStation.count, MonitoringStation.search_by_name("").count
     assert_equal MonitoringStation.count, MonitoringStation.search_by_name(nil).count
   end
+
+  # ── Connectivity ──
+
+  test "connected and disconnected scopes filter by connection_status" do
+    connected = MonitoringStation.connected
+    assert_includes connected, monitoring_stations(:cemaden_centro)
+    assert_not_includes connected, monitoring_stations(:estacao_belem)
+
+    disconnected = MonitoringStation.disconnected
+    assert_includes disconnected, monitoring_stations(:estacao_belem)
+    assert_not_includes disconnected, monitoring_stations(:cemaden_centro)
+  end
+
+  test "record_fetch_success! marks the station connected and stamps last_successful_fetch_at" do
+    station = monitoring_stations(:estacao_belem)
+
+    station.record_fetch_success!
+
+    assert station.connection_status_connected?
+    assert_not_nil station.last_successful_fetch_at
+  end
+
+  test "record_fetch_failure! marks the station disconnected and stamps last_failed_fetch_at" do
+    station = monitoring_stations(:cemaden_centro)
+
+    station.record_fetch_failure!
+
+    assert station.connection_status_disconnected?
+    assert_not_nil station.last_failed_fetch_at
+  end
 end

@@ -3,6 +3,7 @@ cemaden_centro:
   name: Estação CEMADEN Centro
   data_source: CEMADEN
   status: active
+  connection_status: connected
   location: POINT(-49.2733 -25.4284)
   neighborhood: centro
   river_basin: bacia_belem
@@ -12,6 +13,7 @@ estacao_belem:
   name: Estação Belém — Centro Cívico
   data_source: CEMADEN
   status: active
+  connection_status: disconnected
   location: POINT(-49.2700 -25.4050)
   elevation_m: 910.0
   neighborhood: centro
@@ -23,6 +25,7 @@ estacao_barigui:
   name: Estação Barigui — Parque Barigui
   data_source: CEMADEN
   status: maintenance
+  connection_status: disconnected
   location: POINT(-49.3150 -25.4000)
   elevation_m: 920.0
   neighborhood: batel
