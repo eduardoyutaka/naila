@@ -71,6 +71,14 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /Estação Belém/, count: 0
   end
 
+  test "index filters by connection_status" do
+    get admin_monitoring_stations_path(q: { connection_status: "disconnected" })
+    assert_response :success
+    assert_select "td", text: /Estação Belém/
+    assert_select "td", text: /Estação Barigui/
+    assert_select "td", text: /Estação CEMADEN Centro/, count: 0
+  end
+
   test "index filters by search" do
     get admin_monitoring_stations_path(q: { search: "Barigui" })
     assert_response :success

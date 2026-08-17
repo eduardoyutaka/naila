@@ -25,6 +25,7 @@ class MonitoringStation < ApplicationRecord
   scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
   scope :connected, -> { where(connection_status: "connected") }
   scope :disconnected, -> { where(connection_status: "disconnected") }
+  scope :by_connection_status, ->(connection_status) { where(connection_status: connection_status) }
 
   def nearby_river_basin_ids
     return [] unless location
