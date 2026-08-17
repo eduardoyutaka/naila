@@ -44,6 +44,7 @@
          name: s.name,
          sensor_types: s.sensors.map(&:sensor_type),
          status: s.status,
+         connection_status: s.connection_status,
          lat: s.location&.y,
          lng: s.location&.x,
          neighborhood: s.neighborhood&.name,
