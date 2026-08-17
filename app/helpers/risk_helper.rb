@@ -89,6 +89,16 @@ module RiskHelper
     "weather_station" => "bg-sensor-weather/20 text-sensor-weather"
   }.freeze
 
+  CONNECTION_STATUS_LABEL = {
+    "connected"    => "Conectado",
+    "disconnected" => "Desconectado"
+  }.freeze
+
+  CONNECTION_STATUS_TEXT_CLASS = {
+    "connected"    => "text-sensor-online",
+    "disconnected" => "text-sensor-offline"
+  }.freeze
+
   COMPARISON_SYMBOL = {
     "GreaterThanThreshold"          => ">",
     "GreaterThanOrEqualToThreshold" => "≥",
@@ -143,6 +153,17 @@ module RiskHelper
 
   def reading_type_label(reading_type)
     READING_TYPE_LABEL[reading_type.to_s] || reading_type.to_s.humanize
+  end
+
+  # Small colored dot + label pairing, shown next to the manual status badge
+  # to surface whether a station is actually delivering data right now.
+  def connection_status_indicator(connection_status)
+    css_class = CONNECTION_STATUS_TEXT_CLASS[connection_status.to_s] || "text-sensor-offline"
+    label = CONNECTION_STATUS_LABEL[connection_status.to_s] || connection_status.to_s.humanize
+
+    tag.span(class: "inline-flex items-center gap-1 text-xs #{css_class}") do
+      tag.span(class: "inline-block h-1.5 w-1.5 rounded-full bg-current") + tag.span(label)
+    end
   end
 
   def severity_bar_class(severity)

@@ -76,6 +76,8 @@ module Admin
     def station_summary_counts(scope)
       {
         total: scope.count,
+        connected: scope.connection_status_connected.count,
+        disconnected: scope.connection_status_disconnected.count,
         active: scope.status_active.count,
         inactive: scope.status_inactive.count
       }

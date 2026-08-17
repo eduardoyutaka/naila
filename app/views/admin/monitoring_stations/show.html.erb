@@ -43,6 +43,7 @@
             <span class="inline-block h-1.5 w-1.5 rounded-full <%= "bg-sensor-#{status_color == 'green' ? 'online' : status_color == 'yellow' ? 'degraded' : 'offline'}" %>"></span>
             <span class="<%= "text-sensor-#{status_color == 'green' ? 'online' : status_color == 'yellow' ? 'degraded' : 'offline'}" %>"><%= status_label %></span>
           </span>
+          <%= connection_status_indicator(@monitoring_station.connection_status) %>
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs">
           <div>
@@ -182,6 +183,7 @@
   <div class="mb-8">
     <div class="mb-2 flex flex-wrap items-center gap-2">
       <%= catalyst_badge status_label, color: status_color %>
+      <%= connection_status_indicator(@monitoring_station.connection_status) %>
     </div>
     <%= catalyst_heading @monitoring_station.name, level: 1 %>
   </div>
@@ -197,6 +199,12 @@
           <%= catalyst_dt "Fonte de Dados" %><%= catalyst_dd @monitoring_station.data_source.upcase %>
           <% if @monitoring_station.elevation_m %>
             <%= catalyst_dt "Elevação" %><%= catalyst_dd "#{number_with_precision(@monitoring_station.elevation_m, precision: 0)} m" %>
+          <% end %>
+          <% if @monitoring_station.last_successful_fetch_at %>
+            <%= catalyst_dt "Última Coleta Bem-Sucedida" %><%= catalyst_dd "#{time_ago_in_words(@monitoring_station.last_successful_fetch_at)} atrás" %>
+          <% end %>
+          <% if @monitoring_station.connection_status_disconnected? && @monitoring_station.last_failed_fetch_at %>
+            <%= catalyst_dt "Última Falha de Coleta" %><%= catalyst_dd "#{time_ago_in_words(@monitoring_station.last_failed_fetch_at)} atrás" %>
           <% end %>
         <% end %>
       </div>
