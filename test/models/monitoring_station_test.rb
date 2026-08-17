@@ -23,6 +23,16 @@ class MonitoringStationTest < ActiveSupport::TestCase
     assert_equal MonitoringStation.count, MonitoringStation.search_by_name(nil).count
   end
 
+  test "by_connection_status scope filters by connection_status" do
+    connected = MonitoringStation.by_connection_status("connected")
+    assert_includes connected, monitoring_stations(:cemaden_centro)
+    assert_not_includes connected, monitoring_stations(:estacao_belem)
+
+    disconnected = MonitoringStation.by_connection_status("disconnected")
+    assert_includes disconnected, monitoring_stations(:estacao_belem)
+    assert_not_includes disconnected, monitoring_stations(:cemaden_centro)
+  end
+
   # ── Connectivity ──
 
   test "connected and disconnected scopes filter by connection_status" do

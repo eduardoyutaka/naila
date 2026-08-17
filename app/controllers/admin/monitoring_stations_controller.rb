@@ -11,10 +11,11 @@ module Admin
       base_scope = policy_scope(MonitoringStation).includes(:neighborhood, :river, :sensors)
       @summary_counts = station_summary_counts(base_scope)
 
-      q = filter_params(:search, :status)
+      q = filter_params(:search, :status, :connection_status)
       scope = base_scope
-      scope = scope.search_by_name(q[:search]) if q[:search].present?
-      scope = scope.by_status(q[:status])      if q[:status].present?
+      scope = scope.search_by_name(q[:search])                 if q[:search].present?
+      scope = scope.by_status(q[:status])                      if q[:status].present?
+      scope = scope.by_connection_status(q[:connection_status]) if q[:connection_status].present?
 
       @pagy, @monitoring_stations = pagy(scope.order(:name))
     end
