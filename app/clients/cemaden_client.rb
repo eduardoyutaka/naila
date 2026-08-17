@@ -4,12 +4,15 @@ class CemadenClient < BaseClient
   # Fetches hourly accumulated precipitation for a single CEMADEN station.
   # station_code is the numeric idEstacao (e.g. "6873") used by the
   # MapaInterativoWS endpoint, stored on MonitoringStation#external_id.
+  #
+  # Returns nil when the fetch itself failed (HTTP error, timeout, etc.) so
+  # callers can distinguish "no connection" from "connected, nothing new" ([]).
   def call(station_code:)
     response = fetch do |conn|
       conn.get("/MapaInterativoWS/resources/horario/#{station_code}/#{FETCH_HOURS}")
     end
 
-    return [] unless response
+    return nil unless response
 
     parse_readings(response.body, station_code: station_code)
   end

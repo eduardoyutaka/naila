@@ -36,6 +36,14 @@ const SENSOR_STATUS_COLORS = {
   inactive:    chartTheme().sensor.offline,
 }
 
+// Connection status (is the station actually delivering data?) → text color
+// "unknown" (never polled) is a neutral zinc-500, matching the "untracked" basin convention.
+const CONNECTION_STATUS_COLORS = {
+  unknown:      "#71717a",
+  connected:    chartTheme().sensor.online,
+  disconnected: chartTheme().sensor.offline,
+}
+
 // CartoDB Voyager basemap — light, Google-Maps-like. Used in BOTH themes by design:
 // users expect a familiar light map even when the dashboard chrome is dark.
 const TILES_URL = "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
@@ -210,6 +218,7 @@ export default class extends Controller {
       feature.set("sensorName", sensor.name)
       feature.set("sensorTypes", sensor.sensor_types || [])
       feature.set("status", sensor.status)
+      feature.set("connectionStatus", sensor.connection_status)
       feature.set("neighborhood", sensor.neighborhood)
       feature.set("river", sensor.river)
       feature.set("lastReadingValue", sensor.last_reading_value)
@@ -350,6 +359,7 @@ export default class extends Controller {
     const name = feature.get("sensorName")
     const sensorTypes = feature.get("sensorTypes") || []
     const status = feature.get("status")
+    const connectionStatus = feature.get("connectionStatus")
     const neighborhood = feature.get("neighborhood")
     const lastValue = feature.get("lastReadingValue")
     const lastAt = feature.get("lastReadingAt")
@@ -365,7 +375,14 @@ export default class extends Controller {
       inactive: "Inativo",
     }
 
+    const connectionLabels = {
+      unknown: "Sem dados",
+      connected: "Conectado",
+      disconnected: "Desconectado",
+    }
+
     const statusColor = SENSOR_STATUS_COLORS[status] || chartTheme().sensor.online
+    const connectionColor = CONNECTION_STATUS_COLORS[connectionStatus] || CONNECTION_STATUS_COLORS.unknown
     const typesDisplay = sensorTypes.map(t => typeLabels[t] || t).join(", ")
 
     this.popupEl.textContent = ""
@@ -380,6 +397,15 @@ export default class extends Controller {
     statusSpan.style.color = statusColor
     statusSpan.textContent = statusLabels[status] || status
     this.popupEl.appendChild(statusSpan)
+
+    if (connectionStatus) {
+      this.popupEl.appendChild(document.createElement("br"))
+      this.popupEl.appendChild(document.createTextNode("Conectividade: "))
+      const connectionSpan = document.createElement("span")
+      connectionSpan.style.color = connectionColor
+      connectionSpan.textContent = connectionLabels[connectionStatus] || connectionStatus
+      this.popupEl.appendChild(connectionSpan)
+    }
 
     if (neighborhood) {
       this.popupEl.appendChild(document.createElement("br"))

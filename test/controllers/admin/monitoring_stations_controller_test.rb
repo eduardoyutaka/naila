@@ -18,16 +18,15 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /Estação Barigui/
   end
 
-  test "index shows summary cards with active and inactive counts" do
-    MonitoringStation.status_active.first.status_inactive!
-    active_count   = MonitoringStation.status_active.count
-    inactive_count = MonitoringStation.status_inactive.count
-    assert_operator inactive_count, :>=, 1
+  test "index shows summary cards with connected and disconnected counts" do
+    connected_count    = MonitoringStation.connection_status_connected.count
+    disconnected_count = MonitoringStation.connection_status_disconnected.count
+    assert_operator disconnected_count, :>=, 1
 
     get admin_monitoring_stations_path
     assert_select "[data-testid='summary-total-count']"
-    assert_select "[data-testid='summary-active-count']",   text: active_count.to_s
-    assert_select "[data-testid='summary-inactive-count']", text: inactive_count.to_s
+    assert_select "[data-testid='summary-connected-count']",    text: connected_count.to_s
+    assert_select "[data-testid='summary-disconnected-count']", text: disconnected_count.to_s
   end
 
   test "index shows sensor type badges" do
@@ -39,6 +38,22 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     get admin_monitoring_stations_path
     assert_select "span", text: "Ativo"
     assert_select "span", text: "Manutenção"
+  end
+
+  test "index shows connectivity indicators" do
+    get admin_monitoring_stations_path
+    assert_select "span", text: "Conectado"
+    assert_select "span", text: "Desconectado"
+  end
+
+  test "index shows 'Sem dados' for a station that has never been polled" do
+    MonitoringStation.create!(
+      external_id: "NUNCA-POLLED", name: "Estação Nunca Consultada",
+      data_source: "CEMADEN", river_basin: river_basins(:bacia_belem)
+    )
+
+    get admin_monitoring_stations_path
+    assert_select "span", text: "Sem dados"
   end
 
   test "index shows empty state when no stations exist" do

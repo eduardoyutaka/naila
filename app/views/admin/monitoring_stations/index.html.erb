@@ -21,12 +21,12 @@
       <div class="mt-2 text-3xl font-semibold tabular-nums text-zinc-950 dark:text-white" data-testid="summary-total-count"><%= @summary_counts[:total] %></div>
     </div>
     <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 p-4">
-      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Ativas</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online" data-testid="summary-active-count"><%= @summary_counts[:active] %></div>
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Conectadas</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-online" data-testid="summary-connected-count"><%= @summary_counts[:connected] %></div>
     </div>
     <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50 p-4">
-      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Inativas</p>
-      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-offline" data-testid="summary-inactive-count"><%= @summary_counts[:inactive] %></div>
+      <p class="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Desconectadas</p>
+      <div class="mt-2 text-3xl font-semibold tabular-nums text-sensor-offline" data-testid="summary-disconnected-count"><%= @summary_counts[:disconnected] %></div>
     </div>
   </div>
 
@@ -63,6 +63,7 @@
           <%= catalyst_th "Nome" %>
           <%= catalyst_th "Sensores" %>
           <%= catalyst_th "Status" %>
+          <%= catalyst_th "Conectividade" %>
           <%= catalyst_th "Localização" %>
           <%= catalyst_th "Última Leitura" %>
           <%= catalyst_th "Ações", class: "text-right" %>
@@ -104,6 +105,11 @@
                                end
               %>
               <%= catalyst_badge status_label, color: status_color %>
+            <% end %>
+
+            <%# Conectividade %>
+            <%= catalyst_td do %>
+              <%= connection_status_indicator(station.connection_status) %>
             <% end %>
 
             <%# Localização %>

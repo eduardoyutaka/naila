@@ -43,21 +43,21 @@ class CemadenClientTest < ActiveSupport::TestCase
     assert_in_delta 1.2, result.first[:value], 0.01
   end
 
-  test "call returns empty array on API error" do
+  test "call returns nil on API error" do
     stub_request(:get, %r{mapservices\.cemaden\.gov\.br/MapaInterativoWS/resources/horario/6877/\d+})
       .to_return(status: 500, body: "Error")
 
     result = @client.call(station_code: "6877")
 
-    assert_equal [], result
+    assert_nil result
   end
 
-  test "call returns empty array on connection error" do
+  test "call returns nil on connection error" do
     stub_request(:get, %r{mapservices\.cemaden\.gov\.br/MapaInterativoWS/resources/horario/6877/\d+})
       .to_timeout
 
     result = @client.call(station_code: "6877")
 
-    assert_equal [], result
+    assert_nil result
   end
 end
