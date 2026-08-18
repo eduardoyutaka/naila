@@ -304,12 +304,63 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_root_path
   end
 
-  test "show displays the severity change alongside the state change in the history timeline" do
+  test "show displays the severity change in the history timeline" do
     # Fixture alarm_transition: flood_alert_belem's history row records previous_severity: 0
     # (Vigilância), new_severity: 3 (Alarme).
     get admin_alarm_path(alarms(:flood_alert_belem))
     assert_select "[data-testid='alarm-history']" do
       assert_select "span", text: "Vigilância"
+    end
+  end
+
+  test "show never renders a state badge chain in the history timeline" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "ok", new_state: "alarm",
+      previous_severity: 0, new_severity: 2,
+      reason: "entered alarm", evaluated_at: Time.current
+    )
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='state-chain']", count: 0
+  end
+
+  test "show shows a Dados insuficientes badge instead of a bare dash for unknown severity" do
+    # A transition out of insufficient_data always has previous_severity: nil (its severity is
+    # never tracked) — the history row must explain that, not show an unexplained dash.
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: 0,
+      reason: "dados restabelecidos", evaluated_at: Time.current
+    )
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "span", text: "Dados insuficientes"
+      assert_select "span", text: "—", count: 0
+    end
+  end
+
+  test "show never renders an empty row, even when both severities are nil" do
+    # Stale rows from before "ok" always got an explicit severity of 0 can have
+    # previous_severity: nil AND new_severity: nil — the chain must still render.
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: nil,
+      reason: "legacy row", evaluated_at: Time.current
+    )
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "span", text: "Dados insuficientes", count: 2
     end
   end
 
@@ -320,9 +371,52 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "history page displays the severity change alongside the state change" do
+  test "history page displays the severity change" do
     get history_admin_alarm_path(alarms(:flood_alert_belem))
     assert_select "span", text: "Vigilância"
+  end
+
+  test "history page never renders a state badge chain" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "ok", new_state: "alarm",
+      previous_severity: 0, new_severity: 2,
+      reason: "entered alarm", evaluated_at: Time.current
+    )
+
+    get history_admin_alarm_path(alarm)
+
+    assert_select "[data-testid='state-chain']", count: 0
+  end
+
+  test "history page shows a Dados insuficientes badge instead of a bare dash for unknown severity" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: 0,
+      reason: "dados restabelecidos", evaluated_at: Time.current
+    )
+
+    get history_admin_alarm_path(alarm)
+
+    assert_select "span", text: "Dados insuficientes"
+    assert_select "span", text: "—", count: 0
+  end
+
+  test "history page never renders an empty row, even when both severities are nil" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: nil,
+      reason: "legacy row", evaluated_at: Time.current
+    )
+
+    get history_admin_alarm_path(alarm)
+
+    assert_select "span", text: "Dados insuficientes", count: 2
   end
 
 end
