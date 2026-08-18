@@ -98,7 +98,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     # email_admins_alerta fires at sev 2+ and targets admins
     # sms_all_roles_high fires at sev 3+ and targets everyone — not email
 
-    assert_enqueued_with(job: SendAlarmEmailJob, args: [ @alarm.id, users(:admin).id, 3 ]) do
+    assert_enqueued_with(job: SendAlarmEmailJob, args: [ @alarm.id, users(:admin).id, 3, { previous_severity: nil } ]) do
       AlarmActionExecutor.execute(@alarm, "alarm")
     end
   end
@@ -176,6 +176,68 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     assert_broadcasts("alarms", 1) do
       AlarmActionExecutor.execute(@alarm, "alarm")
     end
+  end
+
+  # ── episode_peak_severity — notify only on new highs, resolve on return to ok ──
+
+  test "does not enqueue jobs when severity drops below the episode peak" do
+    @alarm.update!(current_severity: 2)
+
+    assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
+      AlarmActionExecutor.execute(@alarm, "alarm", previous_peak: 3)
+    end
+  end
+
+  test "does not enqueue jobs when severity repeats the episode peak" do
+    @alarm.update!(current_severity: 3)
+
+    assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
+      AlarmActionExecutor.execute(@alarm, "alarm", previous_peak: 3)
+    end
+  end
+
+  test "enqueues jobs again when severity climbs past an old peak after a drop" do
+    @alarm.update!(current_severity: 4)
+
+    assert_enqueued_with(job: SendAlarmSmsJob, args: [ @alarm.id, users(:admin).id, 4, { previous_severity: nil } ]) do
+      AlarmActionExecutor.execute(@alarm, "alarm", previous_peak: 3)
+    end
+  end
+
+  test "sends a resolved notice when returning to ok after recipients were notified" do
+    @alarm.alarm_actions.create!(trigger_state: "ok", action_type: "notification", configuration: {})
+
+    assert_enqueued_with(job: SendAlarmEmailJob, args: [ @alarm.id, users(:admin).id, 0, { previous_severity: 3 } ]) do
+      AlarmActionExecutor.execute(@alarm, "ok", previous_peak: 3)
+    end
+  end
+
+  test "sends no resolved notice when returning to ok if nobody was ever notified" do
+    @alarm.alarm_actions.create!(trigger_state: "ok", action_type: "notification", configuration: {})
+
+    assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
+      AlarmActionExecutor.execute(@alarm, "ok", previous_peak: nil)
+    end
+  end
+
+  test "sends no resolved notice when there is no ok-triggered action configured" do
+    # Only the "alarm"-triggered action from setup exists — "ok" has no matching action,
+    # so nobody is configured to hear about the resolution, same as before this feature.
+    assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
+      AlarmActionExecutor.execute(@alarm, "ok", previous_peak: 3)
+    end
+  end
+
+  test "dispatches recipient notifications once even with two matching alarm-triggered actions" do
+    @alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification", configuration: {}, min_severity: 2)
+    @alarm.update!(current_severity: 3)
+
+    assert_broadcasts("alarms", 2) do
+      AlarmActionExecutor.execute(@alarm, "alarm")
+    end
+
+    email_jobs = enqueued_jobs.select { |j| j[:job] == SendAlarmEmailJob && j[:args][1] == users(:admin).id }
+    assert_equal 1, email_jobs.size, "admin should receive exactly one email even with two matching actions"
   end
 
 end

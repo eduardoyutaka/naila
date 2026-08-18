@@ -48,4 +48,10 @@ class SendAlarmSmsJobTest < ActiveJob::TestCase
     SendAlarmSmsJob.perform_now(@alarm.id, operator.id, 3)
     assert_empty SmsDispatcher.adapter.calls
   end
+
+  test "threads previous_severity through to the renderer" do
+    SendAlarmSmsJob.perform_now(@alarm.id, @user.id, 3, previous_severity: 2)
+
+    assert_includes SmsDispatcher.adapter.calls.first[:body], "Subiu para Alarme"
+  end
 end

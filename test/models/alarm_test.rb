@@ -343,6 +343,53 @@ class AlarmTest < ActiveSupport::TestCase
     assert_nil history.new_severity
   end
 
+  # ── episode_peak_severity ──
+
+  test "transition_to! sets episode_peak_severity on first entry into alarm" do
+    alarm = alarms(:precip_3h_belem)
+    assert_nil alarm.episode_peak_severity
+
+    alarm.transition_to!("alarm", reason: "breached", severity: 1)
+
+    assert_equal 1, alarm.reload.episode_peak_severity
+  end
+
+  test "transition_to! raises episode_peak_severity when severity climbs past it" do
+    alarm = alarms(:flood_alert_belem) # state: alarm, current_severity: 3
+    alarm.update!(episode_peak_severity: 3)
+
+    alarm.transition_to!("alarm", reason: "escalated", severity: 4)
+
+    assert_equal 4, alarm.reload.episode_peak_severity
+  end
+
+  test "transition_to! keeps episode_peak_severity unchanged when severity drops" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.update!(episode_peak_severity: 3)
+
+    alarm.transition_to!("alarm", reason: "downgraded", severity: 2)
+
+    assert_equal 3, alarm.reload.episode_peak_severity
+  end
+
+  test "transition_to! resets episode_peak_severity to nil when returning to ok" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.update!(episode_peak_severity: 3)
+
+    alarm.transition_to!("ok", reason: "recovered")
+
+    assert_nil alarm.reload.episode_peak_severity
+  end
+
+  test "transition_to! resets episode_peak_severity to nil when moving to insufficient_data" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.update!(episode_peak_severity: 3)
+
+    alarm.transition_to!("insufficient_data", reason: "sensor offline")
+
+    assert_nil alarm.reload.episode_peak_severity
+  end
+
   test "transition_to! is a no-op when state and severity are unchanged" do
     alarm = alarms(:precip_3h_belem)
     assert_equal "ok", alarm.state

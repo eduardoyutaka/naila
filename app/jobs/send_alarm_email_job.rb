@@ -5,11 +5,11 @@ class SendAlarmEmailJob < ApplicationJob
   retry_on Net::SMTPServerBusy, Net::OpenTimeout, Net::ReadTimeout,
            wait: :polynomially_longer, attempts: 5
 
-  def perform(alarm_id, user_id, severity)
+  def perform(alarm_id, user_id, severity, previous_severity: nil)
     alarm = Alarm.find_by(id: alarm_id)
     user  = User.find_by(id: user_id)
     return unless alarm && user&.active?
 
-    AlarmMailer.notification(alarm, user, severity).deliver_now
+    AlarmMailer.notification(alarm, user, severity, previous_severity: previous_severity).deliver_now
   end
 end

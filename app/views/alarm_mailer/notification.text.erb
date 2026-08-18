@@ -4,7 +4,11 @@ Alarme: <%= @severity_label %>
 
 Olá, <%= @user.name %>.
 
-O alarme "<%= @alarm.name %>" atingiu o nível <%= @severity_label %>.
+<% if @resolved %>O alarme "<%= @alarm.name %>" voltou ao estado de Vigilância. A situação foi normalizada.
+<% elsif @direction == :up %>O alarme "<%= @alarm.name %>" escalou de <%= @previous_severity_label %> para <%= @severity_label %>.
+<% elsif @direction == :down %>A severidade do alarme "<%= @alarm.name %>" reduziu de <%= @previous_severity_label %> para <%= @severity_label %>.
+<% else %>O alarme "<%= @alarm.name %>" atingiu o nível <%= @severity_label %>.
+<% end %>
 
 Motivo:
 <%= @alarm.state_reason %>

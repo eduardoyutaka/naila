@@ -44,4 +44,11 @@ class SendAlarmEmailJobTest < ActiveJob::TestCase
       SendAlarmEmailJob.perform_now(@alarm.id, inactive.id, 3)
     end
   end
+
+  test "threads previous_severity through to the mailer" do
+    SendAlarmEmailJob.perform_now(@alarm.id, @user.id, 3, previous_severity: 2)
+
+    delivered = ActionMailer::Base.deliveries.last
+    assert_match "Escalou", delivered.subject
+  end
 end

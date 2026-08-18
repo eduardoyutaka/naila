@@ -83,7 +83,10 @@ class Alarm < ApplicationRecord
     # Severity-only change while already in alarm state
     if state == "alarm" && new_state == "alarm" && current_severity != new_severity
       previous_severity = current_severity
-      update!(current_severity: new_severity, last_evaluated_at: Time.current, state_reason: reason)
+      previous_peak = episode_peak_severity
+      new_peak = [ previous_peak.to_i, new_severity.to_i ].max
+      update!(current_severity: new_severity, last_evaluated_at: Time.current, state_reason: reason,
+              episode_peak_severity: new_peak)
       alarm_state_histories.create!(
         previous_state: "alarm",
         new_state: "alarm",
@@ -93,7 +96,7 @@ class Alarm < ApplicationRecord
         datapoints: datapoints,
         evaluated_at: Time.current
       )
-      AlarmActionExecutor.execute(self, "alarm")
+      AlarmActionExecutor.execute(self, "alarm", previous_severity: previous_severity, previous_peak: previous_peak)
       return
     end
 
@@ -101,8 +104,12 @@ class Alarm < ApplicationRecord
 
     old_state = state
     previous_severity = current_severity
+    previous_peak = episode_peak_severity
+    # The episode's peak only exists while firing — entering/staying in "alarm" raises it
+    # (never lowers it), any other state ends the episode and clears it.
+    new_peak = new_state == "alarm" ? [ previous_peak.to_i, new_severity.to_i ].max : nil
     update!(state: new_state, current_severity: new_severity,
-            state_changed_at: Time.current, state_reason: reason)
+            state_changed_at: Time.current, state_reason: reason, episode_peak_severity: new_peak)
     alarm_state_histories.create!(
       previous_state: old_state,
       new_state: new_state,
@@ -112,7 +119,7 @@ class Alarm < ApplicationRecord
       datapoints: datapoints,
       evaluated_at: Time.current
     )
-    AlarmActionExecutor.execute(self, new_state)
+    AlarmActionExecutor.execute(self, new_state, previous_severity: previous_severity, previous_peak: previous_peak)
   end
 
   after_update_commit :broadcast_basin_alarm_severity, if: -> {

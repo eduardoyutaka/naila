@@ -9,17 +9,21 @@
     <%= form.hidden_field :action_type, value: "notification" %>
 
     <%= form.field_group do %>
-      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2"
+           data-controller="shared--conditional-field"
+           data-shared--conditional-field-show-value="<%= ["alarm"].to_json %>">
         <%= form.field do %>
           <%= form.label :trigger_state, "Gatilho (Estado)" %>
           <%= form.select :trigger_state,
-                AlarmAction::TRIGGER_STATES.map { |s| [t("enums.alarm_state.#{s}"), s] } %>
+                AlarmAction::TRIGGER_STATES.map { |s| [t("enums.alarm_state.#{s}"), s] },
+                {}, data: { "shared--conditional-field-target": "trigger", action: "change->shared--conditional-field#toggle" } %>
         <% end %>
-        <%= form.field do %>
+        <%= form.field data: { "shared--conditional-field-target": "field" } do %>
           <%= form.label :min_severity, "Severidade Mínima" %>
           <%= form.select :min_severity,
-                [["— Qualquer —", ""]] + (1..4).map { |s| ["#{s} — #{t("enums.severity.#{s}")}", s] } %>
-          <%= form.description "Disparar somente se a severidade atual atingir este nível." %>
+                [["— Qualquer —", ""]] + (1..4).map { |s| ["#{s} — #{t("enums.severity.#{s}")}", s] },
+                {}, data: { "shared--conditional-field-target": "input" } %>
+          <%= form.description "Aplicável apenas quando o Gatilho é Alarme — dispara somente se a severidade atual atingir este nível." %>
         <% end %>
       </div>
     <% end %>
