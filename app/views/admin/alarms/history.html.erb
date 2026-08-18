@@ -35,20 +35,23 @@
     <div class="divide-y divide-zinc-950/10 dark:divide-white/10">
       <% @state_histories.each do |history| %>
         <div class="px-4 py-3">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.previous_state] %>">
-              <%= t("enums.alarm_state.#{history.previous_state}") %>
-            </span>
-            <svg class="h-3 w-3 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-            </svg>
-            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.new_state] %>">
-              <%= t("enums.alarm_state.#{history.new_state}") %>
-            </span>
-            <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
-              <%= l(history.evaluated_at, format: :short) %>
-            </span>
-          </div>
+          <% state_changed = history.previous_state != history.new_state %>
+          <% if state_changed %>
+            <div class="flex items-center gap-2 mb-1" data-testid="state-chain">
+              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.previous_state] %>">
+                <%= t("enums.alarm_state.#{history.previous_state}") %>
+              </span>
+              <svg class="h-3 w-3 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.new_state] %>">
+                <%= t("enums.alarm_state.#{history.new_state}") %>
+              </span>
+              <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
+                <%= l(history.evaluated_at, format: :short) %>
+              </span>
+            </div>
+          <% end %>
           <% if history.previous_severity || history.new_severity %>
             <div class="flex items-center gap-2 mb-1">
               <%= history.previous_severity ? severity_badge(history.previous_severity) : content_tag(:span, "—", class: "text-xs text-zinc-500 dark:text-zinc-400") %>
@@ -56,6 +59,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
               <%= history.new_severity ? severity_badge(history.new_severity) : content_tag(:span, "—", class: "text-xs text-zinc-500 dark:text-zinc-400") %>
+              <% unless state_changed %>
+                <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
+                  <%= l(history.evaluated_at, format: :short) %>
+                </span>
+              <% end %>
             </div>
           <% end %>
           <div class="text-xs text-zinc-500 dark:text-zinc-400"><%= history.reason %></div>
