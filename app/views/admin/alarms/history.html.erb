@@ -1,13 +1,5 @@
 <% content_for(:title, "Naila — Histórico: #{@alarm.name}") %>
 
-<%
-  state_color = {
-    "ok"                => "bg-risk-normal/20 text-risk-normal",
-    "alarm"             => "bg-risk-high/20 text-risk-high",
-    "insufficient_data" => "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400"
-  }
-%>
-
 <%# ── Back Link ── %>
 <div class="mb-4">
   <%= link_to admin_alarm_path(@alarm), class: "inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-sky-500 transition-colors" do %>
@@ -24,7 +16,7 @@
 
 <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-900">
   <div class="flex items-center justify-between border-b border-zinc-950/10 dark:border-white/10 px-4 py-3">
-    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Histórico de Transições</h2>
+    <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Histórico de Severidade</h2>
     <span class="text-xs text-zinc-500 dark:text-zinc-400"><%= @state_histories.size %> registros</span>
   </div>
   <% if @state_histories.empty? %>
@@ -35,37 +27,16 @@
     <div class="divide-y divide-zinc-950/10 dark:divide-white/10">
       <% @state_histories.each do |history| %>
         <div class="px-4 py-3">
-          <% state_changed = history.previous_state != history.new_state %>
-          <% if state_changed %>
-            <div class="flex items-center gap-2 mb-1" data-testid="state-chain">
-              <span class="w-16 shrink-0 text-xs font-medium text-zinc-500 dark:text-zinc-400">Estado</span>
-              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.previous_state] %>">
-                <%= t("enums.alarm_state.#{history.previous_state}") %>
-              </span>
-              <svg class="h-3 w-3 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= state_color[history.new_state] %>">
-                <%= t("enums.alarm_state.#{history.new_state}") %>
-              </span>
-              <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
-                <%= l(history.evaluated_at, format: :short) %>
-              </span>
-            </div>
-          <% end %>
           <% if history.previous_severity || history.new_severity %>
             <div class="flex items-center gap-2 mb-1">
-              <span class="w-16 shrink-0 text-xs font-medium text-zinc-500 dark:text-zinc-400">Severidade</span>
               <%= assessment_level_badge(history.previous_severity) %>
               <svg class="h-3 w-3 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
               <%= assessment_level_badge(history.new_severity) %>
-              <% unless state_changed %>
-                <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
-                  <%= l(history.evaluated_at, format: :short) %>
-                </span>
-              <% end %>
+              <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
+                <%= l(history.evaluated_at, format: :short) %>
+              </span>
             </div>
           <% end %>
           <div class="text-xs text-zinc-500 dark:text-zinc-400"><%= history.reason %></div>
