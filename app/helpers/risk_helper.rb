@@ -1,5 +1,6 @@
 module RiskHelper
   SEVERITY_LABEL = {
+    0 => "Vigilância",
     1 => "Atenção",
     2 => "Alerta",
     3 => "Alarme",
@@ -15,6 +16,7 @@ module RiskHelper
   }.freeze
 
   SEVERITY_TEXT_CLASS = {
+    0 => "text-risk-normal",
     1 => "text-risk-attention",
     2 => "text-risk-alert",
     3 => "text-risk-high",
@@ -22,6 +24,7 @@ module RiskHelper
   }.freeze
 
   SEVERITY_BORDER_CLASS = {
+    0 => "border-l-risk-normal",
     1 => "border-l-risk-attention",
     2 => "border-l-risk-alert",
     3 => "border-l-risk-high",
@@ -29,6 +32,7 @@ module RiskHelper
   }.freeze
 
   SEVERITY_BADGE_CLASSES = {
+    0 => "bg-risk-normal/20 text-risk-normal",
     1 => "bg-risk-attention/20 text-risk-attention",
     2 => "bg-risk-alert/20 text-risk-alert",
     3 => "bg-risk-high/20 text-risk-high",
@@ -49,14 +53,6 @@ module RiskHelper
     2 => "Alerta",
     3 => "Alarme",
     4 => "Emergência"
-  }.freeze
-
-  ASSESSMENT_LEVEL_BADGE_CLASSES = {
-    0 => "bg-risk-normal/20 text-risk-normal",
-    1 => "bg-risk-attention/20 text-risk-attention",
-    2 => "bg-risk-alert/20 text-risk-alert",
-    3 => "bg-risk-high/20 text-risk-high",
-    4 => "bg-risk-emergency/20 text-risk-emergency"
   }.freeze
 
   # Assessment levels add the baseline 0 ("Vigilância") to the firing severities (1..4),
@@ -115,30 +111,30 @@ module RiskHelper
     4 => "bg-risk-emergency"
   }.freeze
 
+  # severity 0..4 only — nil is NOT coerced to 0. Vigilância and "no severity" (nil, e.g.
+  # insufficient_data) are different things and must never render as the same badge.
   def severity_badge(severity)
+    level = severity&.to_i
     tag.span(
-      SEVERITY_LABEL[severity.to_i],
-      class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{SEVERITY_BADGE_CLASSES[severity.to_i]}"
+      SEVERITY_LABEL[level],
+      class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{SEVERITY_BADGE_CLASSES[level]}"
     )
   end
 
-  # Full assessment scale (0..4): like severity_badge but includes the baseline
-  # "Vigilância" (0), shown when an alarm isn't firing (current_severity is nil).
+  # Like severity_badge, but nil (e.g. an insufficient_data alarm has no current_severity)
+  # renders as its own distinct "Dados insuficientes" badge instead of a blank one — nil must
+  # never be silently treated as 0/Vigilância, since "we don't know" isn't "confirmed calm".
   def assessment_level_badge(severity)
-    level = severity.to_i
-    tag.span(
-      ASSESSMENT_LEVEL_LABEL[level],
-      class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{ASSESSMENT_LEVEL_BADGE_CLASSES[level]}"
-    )
+    return tag.span("Dados insuficientes", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400") if severity.nil?
+
+    severity_badge(severity)
   end
 
   def alarm_severity_badge(severity, monitored: true)
     if !monitored
       tag.span("Não monitorada", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
-    elsif severity.to_i.zero?
-      tag.span("Vigilância", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-risk-normal/20 text-risk-normal")
     else
-      severity_badge(severity)
+      severity_badge(severity || 0)
     end
   end
 

@@ -1,14 +1,22 @@
 require "test_helper"
 
 class NotificationRulePreviewTest < ActiveSupport::TestCase
-  test "returns empty preview when alarm has no current_severity" do
-    alarm = alarms(:precip_3h_belem) # state: ok, no current_severity
+  test "returns empty preview when alarm has no current_severity (insufficient_data)" do
+    alarm = alarms(:disabled_alarm) # state: insufficient_data, current_severity nil
     preview = NotificationRulePreview.for_alarm(alarm)
 
     assert_not preview.fires_any?
     assert_equal 0, preview.rule_count
     assert_equal 0, preview.email_recipient_count
     assert_equal 0, preview.sms_recipient_count
+  end
+
+  test "returns empty preview at severity 0 (Vigilância) — no rule can target below severity 1" do
+    alarm = alarms(:precip_3h_belem) # state: ok, current_severity 0
+    preview = NotificationRulePreview.for_alarm(alarm)
+
+    assert_not preview.fires_any?
+    assert_equal 0, preview.rule_count
   end
 
   test "returns rule and recipient counts at a given severity" do

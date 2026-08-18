@@ -92,6 +92,15 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='alarm-state']", text: "OK"
   end
 
+  test "show displays a Vigilância severity badge for a calm (ok) alarm" do
+    # Previously current_severity was nil for "ok" alarms, so the header badge was blank.
+    # It's now explicitly 0, so the badge must render "Vigilância" instead of disappearing.
+    get admin_alarm_path(alarms(:precip_3h_belem))
+    assert_select ".mb-2.flex.flex-wrap.items-center.gap-2" do
+      assert_select "span", text: "Vigilância"
+    end
+  end
+
   test "show displays configuration section" do
     get admin_alarm_path(alarms(:precip_3h_belem))
     assert_select "[data-testid='alarm-config']"
@@ -274,11 +283,25 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_root_path
   end
 
+  test "show displays the severity change alongside the state change in the history timeline" do
+    # Fixture alarm_transition: flood_alert_belem's history row records previous_severity: 0
+    # (Vigilância), new_severity: 3 (Alarme).
+    get admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "span", text: "Vigilância"
+    end
+  end
+
   # ── History ──
 
   test "history renders successfully" do
     get history_admin_alarm_path(alarms(:precip_3h_belem))
     assert_response :success
+  end
+
+  test "history page displays the severity change alongside the state change" do
+    get history_admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "span", text: "Vigilância"
   end
 
 end

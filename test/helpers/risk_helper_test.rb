@@ -13,10 +13,21 @@ class RiskHelperTest < ActionView::TestCase
     assert_equal "",         comparison_symbol(nil)
   end
 
-  test "assessment_level_badge shows the Vigilância baseline for a nil/zero severity" do
-    assert_includes assessment_level_badge(nil), "Vigilância"
+  test "assessment_level_badge shows Vigilância for an explicit severity 0" do
     assert_includes assessment_level_badge(0), "Vigilância"
-    assert_includes assessment_level_badge(nil), "bg-risk-normal"
+    assert_includes assessment_level_badge(0), "bg-risk-normal"
+  end
+
+  test "assessment_level_badge shows a distinct label for nil (insufficient data)" do
+    # nil means "we don't have enough data to evaluate", not "confirmed calm" —
+    # conflating them would let an operator mistake a data outage for an all-clear.
+    assert_includes assessment_level_badge(nil), "Dados insuficientes"
+    assert_not_includes assessment_level_badge(nil), "Vigilância"
+  end
+
+  test "severity_badge labels the Vigilância baseline for an explicit severity 0" do
+    assert_includes severity_badge(0), "Vigilância"
+    assert_includes severity_badge(0), "bg-risk-normal"
   end
 
   test "assessment_level_badge labels the firing severities 1-4" do
