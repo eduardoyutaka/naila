@@ -94,6 +94,16 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     end
   end
 
+  test "does not enqueue any email/sms jobs at severity 0 (Vigilância)" do
+    # transition_to! now stores an explicit 0 for "ok" alarms — confirm this never reaches
+    # NotificationRule (min_severity is always >= 1, so nothing should ever fire at Vigilância).
+    @alarm.update!(current_severity: 0)
+
+    assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
+      AlarmActionExecutor.execute(@alarm, "ok")
+    end
+  end
+
   test "enqueues email job per recipient from enabled email rules on transition to alarm" do
     @alarm.update!(current_severity: 3)
     # email_admins_alerta fires at sev 2+ and targets admins

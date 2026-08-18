@@ -42,9 +42,13 @@ class Alarm < ApplicationRecord
   scope :by_state, ->(s) { where(state: s) }
   scope :by_enabled, ->(val) { where(enabled: val) }
   scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
+  # Alarms with a meaningful current_severity — "ok" (0, Vigilância) or "alarm" (1..4).
+  # Excludes "insufficient_data", whose current_severity is always nil (genuinely unknown,
+  # not "confirmed calm").
+  scope :evaluated, -> { where(state: %w[ok alarm]) }
 
   def self.max_severity_by_basin
-    in_alarm.where.not(river_basin_id: nil).group(:river_basin_id).maximum(:current_severity)
+    evaluated.where.not(river_basin_id: nil).group(:river_basin_id).maximum(:current_severity)
   end
 
   # ── State helpers ──
@@ -70,14 +74,21 @@ class Alarm < ApplicationRecord
   # ── State machine ──
 
   def transition_to!(new_state, reason:, datapoints: [], severity: nil)
-    new_severity = new_state == "alarm" ? severity : nil
+    new_severity = case new_state
+                   when "alarm" then severity
+                   when "ok"    then 0 # Vigilância — explicit, not the absence of a value
+                   else nil            # insufficient_data — genuinely unknown, not Vigilância
+                   end
 
     # Severity-only change while already in alarm state
     if state == "alarm" && new_state == "alarm" && current_severity != new_severity
+      previous_severity = current_severity
       update!(current_severity: new_severity, last_evaluated_at: Time.current, state_reason: reason)
       alarm_state_histories.create!(
         previous_state: "alarm",
         new_state: "alarm",
+        previous_severity: previous_severity,
+        new_severity: new_severity,
         reason: reason,
         datapoints: datapoints,
         evaluated_at: Time.current
@@ -89,11 +100,14 @@ class Alarm < ApplicationRecord
     return if state == new_state && current_severity == new_severity
 
     old_state = state
+    previous_severity = current_severity
     update!(state: new_state, current_severity: new_severity,
             state_changed_at: Time.current, state_reason: reason)
     alarm_state_histories.create!(
       previous_state: old_state,
       new_state: new_state,
+      previous_severity: previous_severity,
+      new_severity: new_severity,
       reason: reason,
       datapoints: datapoints,
       evaluated_at: Time.current

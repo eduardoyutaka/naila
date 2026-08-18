@@ -6,9 +6,9 @@ module Admin
       @river_basins = RiverBasin.active
       @active_alarms = Alarm.in_alarm.includes(:river_basin).order(current_severity: :desc, state_changed_at: :desc).limit(10)
       @recent_readings = SensorReading.recent.includes(sensor: :monitoring_station).limit(10)
-      @alarms_by_severity = Alarm.in_alarm.group(:current_severity).count
-      # Severity 0 ("Vigilância"): enabled alarms actively monitoring with no firing condition.
-      @alarms_by_severity[0] = Alarm.enabled.by_state("ok").count
+      # current_severity is now explicit (0 for "ok"/Vigilância, 1..4 for "alarm") — one
+      # query covers the whole 0..4 bucket set, no more hand-rolled synthesis of bucket 0.
+      @alarms_by_severity = Alarm.enabled.evaluated.group(:current_severity).count
       @active_sensors = Sensor.online.count
       @total_sensors = Sensor.count
       @monitoring_stations = MonitoringStation.where.not(location: nil).includes(:neighborhood, :river, :sensors)
