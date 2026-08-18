@@ -175,6 +175,16 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Vigilância/
   end
 
+  test "new form's metric dropdown drops the dead Score de Risco option and offers the newly wired metrics" do
+    get new_admin_alarm_path
+    assert_select "select[name='alarm[metric_name]']" do
+      assert_select "option", text: "Score de Risco", count: 0
+      assert_select "option", text: "Precipitação (24h)"
+      assert_select "option", text: "Temperatura"
+      assert_select "option", text: "Umidade relativa"
+    end
+  end
+
   test "edit form explains Vigilância as the implicit baseline below all threshold bands" do
     get edit_admin_alarm_path(alarms(:precip_3h_belem))
     assert_select "p", text: /Vigilância/

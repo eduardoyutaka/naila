@@ -65,6 +65,7 @@ module RiskHelper
     "precipitation_1h"  => "Precipitação (1h)",
     "precipitation_24h" => "Precipitação (24h)",
     "soil_moisture"     => "Umidade do solo",
+    "forecast_precip"   => "Previsão de Precipitação",
     "temperature"       => "Temperatura",
     "humidity"          => "Umidade relativa"
   }.freeze

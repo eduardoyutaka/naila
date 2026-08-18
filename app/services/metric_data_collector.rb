@@ -1,6 +1,14 @@
 class MetricDataCollector
   SEARCH_RADIUS_M = 5000
 
+  # Single source of truth for which metric_name values are actually wired up —
+  # drives the alarm form's dropdown (see admin/alarms/_form.html.erb) and
+  # Alarm#metric_name's inclusion validation, so the two can't drift apart.
+  SUPPORTED_METRICS = %w[
+    precipitation_1h precipitation_3h precipitation_24h
+    soil_moisture forecast_precip temperature humidity
+  ].freeze
+
   def self.collect(metric_name:, river_basin:, river: nil, period_start:, period_end:, statistic: nil)
     new(river_basin: river_basin, river: river).collect(metric_name, period_start, period_end, statistic)
   end
@@ -24,12 +32,16 @@ class MetricDataCollector
 
   def collect(metric_name, period_start, period_end, statistic = nil)
     case metric_name
-    when "precipitation_1h", "precipitation_3h"
+    when "precipitation_1h", "precipitation_3h", "precipitation_24h"
       collect_precipitation(period_start, period_end, statistic)
     when "soil_moisture"
       collect_soil_moisture(period_start, period_end)
     when "forecast_precip"
       collect_forecast_precip(period_start, period_end)
+    when "temperature"
+      collect_temperature(period_start, period_end, statistic)
+    when "humidity"
+      collect_humidity(period_start, period_end, statistic)
     end
   end
 
@@ -72,6 +84,30 @@ class MetricDataCollector
     return nil if forecasts.none?
 
     forecasts.maximum(:precipitation_mm)
+  end
+
+  def collect_temperature(period_start, period_end, statistic)
+    aggregate_observations(:temperature_c, period_start, period_end, statistic)
+  end
+
+  def collect_humidity(period_start, period_end, statistic)
+    aggregate_observations(:humidity_pct, period_start, period_end, statistic)
+  end
+
+  # WeatherObservation is a single citywide feed (no river_basin scoping) — unlike
+  # precipitation, "no observation in window" must return nil, not 0: a fabricated
+  # 0°C/0% would be a real, wrong value, not a plausible "nothing happened" default.
+  def aggregate_observations(column, period_start, period_end, statistic)
+    observations = WeatherObservation.where(observed_at: period_start..period_end)
+    return nil if observations.none?
+
+    case statistic
+    when "Sum" then observations.sum(column)
+    when "Maximum" then observations.maximum(column)
+    when "Minimum" then observations.minimum(column)
+    when "SampleCount" then observations.count.to_f
+    else observations.average(column)&.to_f
+    end
   end
 
   def apply_statistic(readings, statistic)

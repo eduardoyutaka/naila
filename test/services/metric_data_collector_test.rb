@@ -42,6 +42,67 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 23.8, result, 0.2
   end
 
+  # ── precipitation_24h ──
+
+  test "collects precipitation_24h sum for basin" do
+    # Same underlying collection as 1h/3h — the suffix is naming only, the window
+    # is whatever's passed in. Fixture readings within 24h: 12.5+8.2+3.1+5.7+15.3+2.0 = 46.8
+    result = MetricDataCollector.collect(
+      metric_name: "precipitation_24h",
+      river_basin: @basin,
+      period_start: 24.hours.ago,
+      period_end: Time.current
+    )
+    assert_in_delta 46.8, result, 0.2
+  end
+
+  # ── temperature ──
+
+  test "collects average temperature from weather observations in window" do
+    # Fixtures: owm_recent 20.5°C (15min ago), cemaden_station 19.8°C (30min ago)
+    result = MetricDataCollector.collect(
+      metric_name: "temperature",
+      river_basin: @basin,
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+    assert_in_delta 20.15, result, 0.05
+  end
+
+  test "collects maximum temperature when statistic is Maximum" do
+    result = MetricDataCollector.collect(
+      metric_name: "temperature",
+      river_basin: @basin,
+      period_start: 1.hour.ago,
+      period_end: Time.current,
+      statistic: "Maximum"
+    )
+    assert_in_delta 20.5, result, 0.01
+  end
+
+  test "temperature returns nil when no observations in window" do
+    result = MetricDataCollector.collect(
+      metric_name: "temperature",
+      river_basin: @basin,
+      period_start: 2.days.ago,
+      period_end: 1.day.ago
+    )
+    assert_nil result
+  end
+
+  # ── humidity ──
+
+  test "collects average humidity from weather observations in window" do
+    # Fixtures: owm_recent 78.0% (15min ago), cemaden_station 82.0% (30min ago)
+    result = MetricDataCollector.collect(
+      metric_name: "humidity",
+      river_basin: @basin,
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+    assert_in_delta 80.0, result, 0.05
+  end
+
   # ── unknown metric ──
 
   test "returns nil for unknown metric_name" do
@@ -104,5 +165,14 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
       statistic: alarm.statistic
     )
     assert_equal direct, latest[:value]
+  end
+
+  # ── metric list consistency ──
+
+  test "every supported metric has a display label, so nothing renders as a raw key" do
+    MetricDataCollector::SUPPORTED_METRICS.each do |metric_name|
+      assert RiskHelper::METRIC_NAME_LABEL.key?(metric_name),
+        "#{metric_name} is in SUPPORTED_METRICS but missing from RiskHelper::METRIC_NAME_LABEL"
+    end
   end
 end

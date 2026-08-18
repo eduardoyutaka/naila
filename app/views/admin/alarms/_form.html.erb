@@ -53,9 +53,7 @@
           <%= form.field do %>
             <%= form.label :metric_name, "Métrica" %>
             <%= form.select :metric_name,
-                  [["Precipitação 1h", "precipitation_1h"], ["Precipitação 3h", "precipitation_3h"],
-                   ["Score de Risco", "risk_score"],
-                   ["Umidade do Solo", "soil_moisture"], ["Previsão Precip.", "forecast_precip"]],
+                  MetricDataCollector::SUPPORTED_METRICS.map { |m| [RiskHelper::METRIC_NAME_LABEL[m], m] },
                   { include_blank: "— Selecione —" } %>
           <% end %>
           <%= form.field do %>
