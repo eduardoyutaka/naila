@@ -38,7 +38,6 @@ CREATE TABLE public.alarm_actions (
     trigger_state character varying NOT NULL,
     action_type character varying NOT NULL,
     configuration jsonb DEFAULT '{}'::jsonb NOT NULL,
-    enabled boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     min_severity integer
@@ -4450,6 +4449,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260818174950'),
 ('20260818010223'),
 ('20260817235908'),
 ('20260817213711'),

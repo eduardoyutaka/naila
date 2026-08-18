@@ -47,12 +47,6 @@ class AlarmActionTest < ActiveSupport::TestCase
 
   # ── Scopes ──
 
-  test "enabled scope returns only enabled actions" do
-    enabled = AlarmAction.enabled
-    assert_includes enabled, alarm_actions(:precip_alarm_websocket)
-    assert_not_includes enabled, alarm_actions(:disabled_action)
-  end
-
   test "for_state scope filters by trigger_state" do
     alarm_state_actions = AlarmAction.for_state("alarm")
     assert_includes alarm_state_actions, alarm_actions(:precip_alarm_websocket)

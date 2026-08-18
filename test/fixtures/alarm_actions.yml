@@ -5,7 +5,6 @@ precip_alarm_websocket:
   configuration:
     channels:
       - websocket
-  enabled: true
 
 precip_ok_websocket:
   alarm: precip_3h_belem
@@ -14,13 +13,3 @@ precip_ok_websocket:
   configuration:
     channels:
       - websocket
-  enabled: true
-
-disabled_action:
-  alarm: precip_3h_belem
-  trigger_state: alarm
-  action_type: notification
-  configuration:
-    channels:
-      - sms
-  enabled: false

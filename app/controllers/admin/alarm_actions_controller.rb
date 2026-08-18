@@ -4,7 +4,7 @@ module Admin
     before_action :set_alarm_action, only: [ :edit, :update, :destroy ]
 
     def new
-      @alarm_action = @alarm.alarm_actions.new(enabled: true)
+      @alarm_action = @alarm.alarm_actions.new
       authorize @alarm_action
     end
 
@@ -49,7 +49,7 @@ module Admin
     end
 
     def alarm_action_params
-      params.require(:alarm_action).permit(:trigger_state, :action_type, :min_severity, :enabled, configuration: {})
+      params.require(:alarm_action).permit(:trigger_state, :action_type, :min_severity, configuration: {})
     end
   end
 end

@@ -324,8 +324,8 @@ end
 Alarm.find_each do |alarm|
   next if alarm.alarm_actions.exists?
 
-  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification", enabled: true)
-  alarm.alarm_actions.create!(trigger_state: "ok",    action_type: "notification", enabled: true)
+  alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification")
+  alarm.alarm_actions.create!(trigger_state: "ok",    action_type: "notification")
 end
 
 # ============================================================
