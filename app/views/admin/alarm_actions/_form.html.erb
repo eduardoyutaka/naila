@@ -22,11 +22,6 @@
           <%= form.description "Disparar somente se a severidade atual atingir este nível." %>
         <% end %>
       </div>
-
-      <%= form.field do %>
-        <%= form.label :enabled, "Status" %>
-        <%= form.select :enabled, [[t("booleans.alarm_action_enabled.enabled"), true], [t("booleans.alarm_action_enabled.disabled"), false]] %>
-      <% end %>
     <% end %>
   </div>
 

@@ -7,6 +7,5 @@ class AlarmAction < ApplicationRecord
   validates :trigger_state, presence: true, inclusion: { in: TRIGGER_STATES }
   validates :action_type, presence: true, inclusion: { in: ACTION_TYPES }
 
-  scope :enabled, -> { where(enabled: true) }
   scope :for_state, ->(state) { where(trigger_state: state) }
 end

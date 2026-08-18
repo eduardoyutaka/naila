@@ -78,9 +78,6 @@ pt-BR:
     alarm_enabled:
       enabled: Ativado
       disabled: Desativado
-    alarm_action_enabled:
-      enabled: Ativada
-      disabled: Desativada
     notification_rule_enabled:
       enabled: Ativada
       disabled: Desativada

@@ -28,8 +28,7 @@ class Admin::AlarmActionsControllerTest < ActionDispatch::IntegrationTest
       post admin_alarm_alarm_actions_path(@alarm), params: {
         alarm_action: {
           trigger_state: "insufficient_data",
-          action_type: "notification",
-          enabled: true
+          action_type: "notification"
         }
       }
     end
@@ -49,7 +48,7 @@ class Admin::AlarmActionsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as users(:operator)
     assert_no_difference "AlarmAction.count" do
       post admin_alarm_alarm_actions_path(@alarm), params: {
-        alarm_action: { trigger_state: "alarm", action_type: "notification", enabled: true }
+        alarm_action: { trigger_state: "alarm", action_type: "notification" }
       }
     end
     assert_redirected_to admin_root_path
@@ -66,10 +65,10 @@ class Admin::AlarmActionsControllerTest < ActionDispatch::IntegrationTest
   test "update with valid params updates action and redirects" do
     action = alarm_actions(:precip_alarm_websocket)
     patch admin_alarm_alarm_action_path(@alarm, action), params: {
-      alarm_action: { enabled: false }
+      alarm_action: { min_severity: 3 }
     }
     assert_redirected_to admin_alarm_path(@alarm)
-    assert_not action.reload.enabled?
+    assert_equal 3, action.reload.min_severity
   end
 
   # ── Destroy ──

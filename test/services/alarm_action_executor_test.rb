@@ -10,8 +10,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     @alarm.alarm_actions.create!(
       trigger_state: "alarm",
       action_type: "notification",
-      configuration: {},
-      enabled: true
+      configuration: {}
     )
   end
 
@@ -35,20 +34,11 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     assert_nil payload["current_severity"]  # disabled_alarm has no current_severity
   end
 
-  test "skips disabled actions" do
-    @alarm.alarm_actions.update_all(enabled: false)
-
-    assert_no_broadcasts("alarms") do
-      AlarmActionExecutor.execute(@alarm, "alarm")
-    end
-  end
-
   test "executes ok state actions" do
     @alarm.alarm_actions.create!(
       trigger_state: "ok",
       action_type: "notification",
-      configuration: {},
-      enabled: true
+      configuration: {}
     )
 
     assert_broadcasts("alarms", 1) do
@@ -60,8 +50,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
     @alarm.alarm_actions.create!(
       trigger_state: "insufficient_data",
       action_type: "notification",
-      configuration: {},
-      enabled: true
+      configuration: {}
     )
 
     assert_broadcasts("alarms", 1) do

@@ -9,7 +9,7 @@ class AlarmActionExecutor
 
   def execute(new_state)
     current_sev = @alarm.current_severity
-    actions = @alarm.alarm_actions.enabled.for_state(new_state)
+    actions = @alarm.alarm_actions.for_state(new_state)
     actions.each do |action|
       next if action.min_severity.present? && (current_sev.nil? || current_sev < action.min_severity)
 
