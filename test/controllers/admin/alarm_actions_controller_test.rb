@@ -35,6 +35,16 @@ class Admin::AlarmActionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_alarm_path(@alarm)
   end
 
+  test "create with min_severity on a non-alarm trigger renders new with 422" do
+    assert_no_difference "AlarmAction.count" do
+      post admin_alarm_alarm_actions_path(@alarm), params: {
+        alarm_action: { trigger_state: "ok", action_type: "notification", min_severity: 2 }
+      }
+    end
+    assert_response :unprocessable_entity
+    assert_select "*", text: /só se aplica quando o gatilho é Alarme/
+  end
+
   test "create with invalid params renders new with 422" do
     assert_no_difference "AlarmAction.count" do
       post admin_alarm_alarm_actions_path(@alarm), params: {

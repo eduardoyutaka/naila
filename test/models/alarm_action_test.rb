@@ -45,6 +45,38 @@ class AlarmActionTest < ActiveSupport::TestCase
     assert_includes action.errors[:action_type], "não está incluído na lista"
   end
 
+  test "invalid with min_severity set when trigger_state is ok" do
+    # current_severity is always 0 when trigger_state is "ok" (transition_to!), so any
+    # min_severity (1-4) would make the gate permanently unreachable.
+    action = alarm_actions(:precip_ok_websocket)
+    action.min_severity = 2
+    assert_not action.valid?
+    assert_includes action.errors[:min_severity], "só se aplica quando o gatilho é Alarme"
+  end
+
+  test "invalid with min_severity set when trigger_state is insufficient_data" do
+    # current_severity is always nil for insufficient_data, so the gate would also be
+    # permanently unreachable.
+    action = AlarmAction.new(
+      alarm: alarms(:precip_3h_belem), trigger_state: "insufficient_data",
+      action_type: "notification", min_severity: 1
+    )
+    assert_not action.valid?
+    assert_includes action.errors[:min_severity], "só se aplica quando o gatilho é Alarme"
+  end
+
+  test "valid with min_severity set when trigger_state is alarm" do
+    action = alarm_actions(:precip_alarm_websocket)
+    action.min_severity = 3
+    assert action.valid?
+  end
+
+  test "valid with min_severity blank regardless of trigger_state" do
+    action = alarm_actions(:precip_ok_websocket)
+    action.min_severity = nil
+    assert action.valid?
+  end
+
   # ── Scopes ──
 
   test "for_state scope filters by trigger_state" do
