@@ -27,18 +27,16 @@
     <div class="divide-y divide-zinc-950/10 dark:divide-white/10">
       <% @state_histories.each do |history| %>
         <div class="px-4 py-3">
-          <% if history.previous_severity || history.new_severity %>
-            <div class="flex items-center gap-2 mb-1">
-              <%= assessment_level_badge(history.previous_severity) %>
-              <svg class="h-3 w-3 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-              <%= assessment_level_badge(history.new_severity) %>
-              <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
-                <%= l(history.evaluated_at, format: :short) %>
-              </span>
-            </div>
-          <% end %>
+          <div class="flex items-center gap-2 mb-1">
+            <%= assessment_level_badge(history.previous_severity) %>
+            <svg class="h-3 w-3 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+            <%= assessment_level_badge(history.new_severity) %>
+            <span class="text-xs tabular-nums text-zinc-500 dark:text-zinc-400 ml-auto">
+              <%= l(history.evaluated_at, format: :short) %>
+            </span>
+          </div>
           <div class="text-xs text-zinc-500 dark:text-zinc-400"><%= history.reason %></div>
         </div>
       <% end %>

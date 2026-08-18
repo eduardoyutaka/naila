@@ -346,6 +346,24 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show never renders an empty row, even when both severities are nil" do
+    # Stale rows from before "ok" always got an explicit severity of 0 can have
+    # previous_severity: nil AND new_severity: nil — the chain must still render.
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: nil,
+      reason: "legacy row", evaluated_at: Time.current
+    )
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "span", text: "Dados insuficientes", count: 2
+    end
+  end
+
   # ── History ──
 
   test "history renders successfully" do
@@ -385,6 +403,20 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "span", text: "Dados insuficientes"
     assert_select "span", text: "—", count: 0
+  end
+
+  test "history page never renders an empty row, even when both severities are nil" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: nil,
+      reason: "legacy row", evaluated_at: Time.current
+    )
+
+    get history_admin_alarm_path(alarm)
+
+    assert_select "span", text: "Dados insuficientes", count: 2
   end
 
 end
