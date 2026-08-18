@@ -57,6 +57,14 @@
      data-admin--map-flood-zones-value="<%= @flood_zones.map { |fz|
        { return_period: fz.return_period, geometry: fz.geometry ? RGeo::GeoJSON.encode(fz.geometry) : nil }
      }.to_json %>"
+     data-admin--map-i18n-value="<%= {
+       risk_level: { untracked: t("labels.not_monitored") }.merge(
+         %w[normal attention alert high_alert emergency].index_with { |lvl| t("enums.risk_level.#{lvl}") }
+       ),
+       sensor_type: %w[pluviometer weather_station].index_with { |s| t("enums.sensor_type.#{s}") },
+       monitoring_station_status: %w[active maintenance inactive].index_with { |s| t("enums.monitoring_station_status.#{s}") },
+       connection_status: %w[unknown connected disconnected].index_with { |s| t("enums.connection_status.#{s}") }
+     }.to_json %>"
      data-admin--map-center-value="[-49.2733, -25.4284]"
      data-admin--map-zoom-value="12"
      data-admin--map-admin--side-sheet-outlet="#sensor-side-sheet">

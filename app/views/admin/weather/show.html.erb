@@ -24,11 +24,7 @@
                               end %>
             <span class="ml-2 flex-shrink-0 h-2 w-2 rounded-full <%= status_color %>"></span>
           </div>
-          <% status_label = case source.status
-                            when "active"   then "Online"
-                            when "degraded" then "Degradado"
-                            else "Offline"
-                            end %>
+          <% status_label = t("enums.data_source_status.#{source.status}", default: t("enums.data_source_status.offline")) %>
           <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             <%= status_label %>
             <% if source.consecutive_failures > 0 %>

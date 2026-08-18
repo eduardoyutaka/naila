@@ -57,6 +57,9 @@ export default class extends Controller {
     floodZones:  { type: Array, default: [] },
     center: { type: Array, default: [-49.2733, -25.4284] },
     zoom: { type: Number, default: 12 },
+    // Server-sourced pt-BR labels (RiskHelper's I18n keys) — a single source of truth
+    // shared with the Ruby side instead of hand-copied JS label objects.
+    i18n: { type: Object, default: {} },
   }
 
   connect() {
@@ -327,14 +330,7 @@ export default class extends Controller {
     const alertSeverity = feature.get("alertSeverity")
     const riskLevel = basinRiskLevel(monitored, alertSeverity)
 
-    const riskLabels = {
-      untracked: "Não monitorada",
-      normal: "Vigilância",
-      attention: "Atenção",
-      alert: "Alerta",
-      high_alert: "Alarme",
-      emergency: "Emergência",
-    }
+    const riskLabels = this.i18nValue.risk_level || {}
 
     const label = !monitored ? "Status" : "Alarme"
     const color = (this.RISK_COLORS[riskLevel] || this.RISK_COLORS.normal).stroke
@@ -364,22 +360,9 @@ export default class extends Controller {
     const lastValue = feature.get("lastReadingValue")
     const lastAt = feature.get("lastReadingAt")
 
-    const typeLabels = {
-      pluviometer: "Pluviômetro",
-      weather_station: "Meteorológica",
-    }
-
-    const statusLabels = {
-      active: "Ativo",
-      maintenance: "Manutenção",
-      inactive: "Inativo",
-    }
-
-    const connectionLabels = {
-      unknown: "Sem dados",
-      connected: "Conectado",
-      disconnected: "Desconectado",
-    }
+    const typeLabels = this.i18nValue.sensor_type || {}
+    const statusLabels = this.i18nValue.monitoring_station_status || {}
+    const connectionLabels = this.i18nValue.connection_status || {}
 
     const statusColor = SENSOR_STATUS_COLORS[status] || chartTheme().sensor.online
     const connectionColor = CONNECTION_STATUS_COLORS[connectionStatus] || CONNECTION_STATUS_COLORS.unknown
