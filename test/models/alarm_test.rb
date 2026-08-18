@@ -7,7 +7,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "Test Alarm",
       alarm_type: "metric",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 3,
@@ -98,6 +98,23 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not alarm.valid?
   end
 
+  test "invalid with an unsupported metric_name" do
+    alarm = alarms(:precip_3h_belem)
+    # risk_score is leftover from the removed RiskEngine — MetricDataCollector has
+    # no branch for it, so it must not be a valid choice anymore.
+    alarm.metric_name = "risk_score"
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:metric_name], "não está incluído na lista"
+  end
+
+  test "valid with any metric_name MetricDataCollector actually supports" do
+    MetricDataCollector::SUPPORTED_METRICS.each do |metric_name|
+      alarm = alarms(:precip_3h_belem)
+      alarm.metric_name = metric_name
+      assert alarm.valid?, "expected #{metric_name} to be valid: #{alarm.errors.full_messages}"
+    end
+  end
+
   test "datapoints_to_alarm cannot exceed evaluation_periods" do
     alarm = alarms(:precip_3h_belem)
     alarm.datapoints_to_alarm = 5
@@ -116,7 +133,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "No Thresholds",
       alarm_type: "metric",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 1,

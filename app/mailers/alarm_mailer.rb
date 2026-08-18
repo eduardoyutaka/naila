@@ -1,16 +1,9 @@
 class AlarmMailer < ApplicationMailer
-  SEVERITY_LABELS = {
-    1 => "Atenção",
-    2 => "Alerta",
-    3 => "Alarme",
-    4 => "Emergência"
-  }.freeze
-
   def notification(alarm, user, severity)
     @alarm           = alarm
     @user            = user
     @severity        = severity.to_i
-    @severity_label  = SEVERITY_LABELS.fetch(@severity, "Alerta")
+    @severity_label  = I18n.t("enums.severity.#{@severity}", default: "Alerta")
     @alarm_url       = admin_alarm_url(alarm)
     @severity_color  = severity_color(@severity)
 

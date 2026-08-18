@@ -13,6 +13,14 @@ class Admin::AlarmActionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "new form's min_severity dropdown labels severity 3 consistently as Alarme, not Alto" do
+    get new_admin_alarm_alarm_action_path(@alarm)
+    assert_select "select[name='alarm_action[min_severity]']" do
+      assert_select "option", text: "3 — Alarme"
+      assert_select "option", text: "3 — Alto", count: 0
+    end
+  end
+
   # ── Create ──
 
   test "create with valid params creates action and redirects" do

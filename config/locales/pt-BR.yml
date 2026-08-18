@@ -1,4 +1,96 @@
 pt-BR:
+  enums:
+    severity:
+      "0": Vigilância
+      "1": Atenção
+      "2": Alerta
+      "3": Alarme
+      "4": Emergência
+    risk_level:
+      normal: Vigilância
+      attention: Atenção
+      alert: Alerta
+      high_alert: Alarme
+      emergency: Emergência
+    metric_name:
+      precipitation: Precipitação
+      forecast_precip: Previsão de Precipitação
+    reading_type:
+      precipitation: Precipitação
+      temperature: Temperatura
+      humidity: Umidade
+    sensor_type:
+      pluviometer: Pluviômetro
+      weather_station: Meteorológica
+    connection_status:
+      unknown: Sem dados
+      connected: Conectado
+      disconnected: Desconectado
+    statistic:
+      Average: Média
+      Sum: Soma
+      Minimum: Mínimo
+      Maximum: Máximo
+      SampleCount: Contagem de Amostras
+    alarm_state:
+      ok: OK
+      alarm: Alarme
+      insufficient_data: Dados Insuficientes
+    missing_data_treatment:
+      missing: Ausente
+      notBreaching: Não viola
+      breaching: Viola
+      ignore: Ignorar
+    monitoring_station_status:
+      active: Ativo
+      maintenance: Manutenção
+      inactive: Inativo
+    user_role:
+      admin: Administrador
+      coordinator: Coordenador
+      operator: Operador
+    notification_channel:
+      email: Email
+      sms: SMS
+    data_source_status:
+      active: Online
+      degraded: Degradado
+      offline: Offline
+    comparison_operator_label:
+      GreaterThanThreshold: Maior que
+      GreaterThanOrEqualToThreshold: Maior ou igual
+      LessThanThreshold: Menor que
+      LessThanOrEqualToThreshold: Menor ou igual
+  # Grammatical gender/verb-form varies by noun in Portuguese (Ativo vs Ativa vs Ativado/
+  # Ativada) — these can't share one generic "enabled" key, so each gets its own, using
+  # enabled/disabled as keys (NOT true/false — YAML parses bare true/false/yes/no as
+  # booleans even as hash keys, breaking dotted-path t() lookups).
+  booleans:
+    monitoring_station_active:
+      enabled: Ativo
+      disabled: Inativo
+    river_basin_active:
+      enabled: Ativa
+      disabled: Inativa
+    user_active:
+      enabled: Ativo
+      disabled: Inativo
+    alarm_enabled:
+      enabled: Ativado
+      disabled: Desativado
+    alarm_action_enabled:
+      enabled: Ativada
+      disabled: Desativada
+    notification_rule_enabled:
+      enabled: Ativada
+      disabled: Desativada
+  labels:
+    not_monitored: Não monitorada
+    insufficient_data_badge: Dados insuficientes
+    role_plural:
+      admin: Administradores
+      coordinator: Coordenadores
+      operator: Operadores
   errors:
     messages:
       blank: "não pode ficar em branco"

@@ -46,13 +46,13 @@
     </div>
     <div>
       <%= f.label :state, "Estado", class: "block text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1" %>
-      <%= f.select :state, options_for_select([["Todos", ""], ["OK", "ok"], ["Alarme", "alarm"], ["Insuficiente", "insufficient_data"]], params.dig(:q, :state)),
+      <%= f.select :state, options_for_select([["Todos", ""]] + Alarm::STATES.map { |s| [t("enums.alarm_state.#{s}"), s] }, params.dig(:q, :state)),
             {}, class: "rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
             data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
     </div>
     <div>
       <%= f.label :enabled, "Ativação", class: "block text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1" %>
-      <%= f.select :enabled, options_for_select([["Todos", ""], ["Ativo", "true"], ["Desativado", "false"]], params.dig(:q, :enabled)),
+      <%= f.select :enabled, options_for_select([["Todos", ""], [t("booleans.alarm_enabled.enabled"), "true"], [t("booleans.alarm_enabled.disabled"), "false"]], params.dig(:q, :enabled)),
             {}, class: "rounded-lg border border-zinc-950/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
             data: { controller: "shared--auto-submit", action: "change->shared--auto-submit#submit" } %>
     </div>
@@ -101,11 +101,7 @@
                               when "alarm"             then "red"
                               else "zinc"
                               end
-                state_label = case alarm.state
-                              when "ok"                then "OK"
-                              when "alarm"             then "Alarme"
-                              else "Insuficiente"
-                              end
+                state_label = t("enums.alarm_state.#{alarm.state}")
               %>
               <%= catalyst_badge state_label, color: state_color %>
             <% end %>
@@ -119,7 +115,7 @@
             <% end %>
 
             <%# Tipo %>
-            <%= catalyst_td(RiskHelper::METRIC_NAME_LABEL.fetch(alarm.metric_name, alarm.metric_name.humanize), class: "text-zinc-500 dark:text-zinc-300") %>
+            <%= catalyst_td(t("enums.metric_name.#{alarm.metric_name}", default: alarm.metric_name.humanize), class: "text-zinc-500 dark:text-zinc-300") %>
 
             <%# Severidade %>
             <%= catalyst_td do %>

@@ -10,7 +10,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "transitions metric alarm from ok to alarm when threshold breached" do
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 10.0,
       evaluation_periods: 1,
       datapoints_to_alarm: 1
@@ -26,7 +26,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "keeps metric alarm in ok when threshold not breached" do
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 100.0,  # very high, won't be breached
       evaluation_periods: 1,
       datapoints_to_alarm: 1
@@ -42,7 +42,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     alarm = create_metric_alarm(
       state: "alarm",
       state_changed_at: 1.hour.ago,
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 100.0,  # no longer breached
       evaluation_periods: 1,
       datapoints_to_alarm: 1
@@ -59,7 +59,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     basin = build_isolated_basin_with_pluviometer(readings: [[1.2, 5.minutes.ago], [1.1, 35.minutes.ago], [0.9, 2.hours.ago]])
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Maximum",
       threshold_value: 1.0,  # readings: 1.2 (5min) and 1.1 (35min) in separate 20min periods
       period_seconds: 1200,  # 20 min periods so readings fall in different periods
@@ -77,7 +77,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     basin = build_isolated_basin_with_pluviometer(readings: [[1.2, 5.minutes.ago], [1.1, 35.minutes.ago], [0.9, 2.hours.ago]])
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Maximum",
       threshold_value: 1.15,  # only 1.2 breaches; 1.1 and 0.9 don't
       period_seconds: 2400,
@@ -191,7 +191,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     basin = build_isolated_basin_with_pluviometer(readings: [[1.2, 5.minutes.ago], [1.1, 35.minutes.ago], [0.9, 2.hours.ago]])
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Maximum",
       comparison_operator: "LessThanThreshold",
       threshold_value: 2.0,  # 1.2 < 2.0 → breach
@@ -210,7 +210,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "sets current_severity to the highest breached threshold band" do
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 10.0,  # sev 1 band: >= 10mm (readings are ~20mm)
       severity: 1,
       evaluation_periods: 1,
@@ -229,7 +229,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "escalates to higher severity when higher band is also breached" do
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 5.0,  # sev 1 band: >= 5mm
       severity: 1,
       evaluation_periods: 1,
@@ -249,7 +249,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     alarm = create_metric_alarm(
       state: "alarm",
       current_severity: 2,
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 100.0,  # won't be breached
       severity: 2,
       evaluation_periods: 1,
@@ -266,7 +266,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     alarm = create_metric_alarm(
       state: "alarm",
       current_severity: 2,
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 5.0,   # sev 1: >= 5mm (readings ~20mm breaches this)
       severity: 1,
       evaluation_periods: 1,
@@ -310,7 +310,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "updates last_evaluated_at after evaluation" do
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 100.0,
       evaluation_periods: 1,
       datapoints_to_alarm: 1
@@ -325,7 +325,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "stores last_datapoints for debugging" do
     alarm = create_metric_alarm(
       state: "ok",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       threshold_value: 100.0,
       evaluation_periods: 1,
       datapoints_to_alarm: 1

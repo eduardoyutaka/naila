@@ -25,7 +25,7 @@ class Alarm < ApplicationRecord
   validates :alarm_type, presence: true, inclusion: { in: ALARM_TYPES }
   validates :state, presence: true, inclusion: { in: STATES }
 
-  validates :metric_name, presence: true
+  validates :metric_name, presence: true, inclusion: { in: MetricDataCollector::SUPPORTED_METRICS }
   validates :statistic, presence: true, inclusion: { in: STATISTICS }
   validates :period_seconds, presence: true, numericality: { greater_than: 0 }
   validates :evaluation_periods, presence: true, numericality: { greater_than: 0 }

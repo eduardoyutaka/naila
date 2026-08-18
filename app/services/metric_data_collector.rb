@@ -1,6 +1,11 @@
 class MetricDataCollector
   SEARCH_RADIUS_M = 5000
 
+  # Single source of truth for which metric_name values are actually wired up —
+  # drives the alarm form's dropdown (see admin/alarms/_form.html.erb) and
+  # Alarm#metric_name's inclusion validation, so the two can't drift apart.
+  SUPPORTED_METRICS = %w[precipitation forecast_precip].freeze
+
   def self.collect(metric_name:, river_basin:, river: nil, period_start:, period_end:, statistic: nil)
     new(river_basin: river_basin, river: river).collect(metric_name, period_start, period_end, statistic)
   end
@@ -24,10 +29,8 @@ class MetricDataCollector
 
   def collect(metric_name, period_start, period_end, statistic = nil)
     case metric_name
-    when "precipitation_1h", "precipitation_3h"
+    when "precipitation"
       collect_precipitation(period_start, period_end, statistic)
-    when "soil_moisture"
-      collect_soil_moisture(period_start, period_end)
     when "forecast_precip"
       collect_forecast_precip(period_start, period_end)
     end
@@ -44,27 +47,6 @@ class MetricDataCollector
                             .where(recorded_at: period_start..period_end)
 
     apply_statistic(readings, statistic || "Sum")
-  end
-
-  def collect_soil_moisture(period_start, period_end)
-    forecast = WeatherForecast.by_source("open_meteo")
-                              .where(valid_from: period_start..period_end)
-                              .order(issued_at: :desc)
-                              .first
-    raw = forecast&.raw_data || {}
-    if raw.key?("soil_moisture_avg")
-      return raw["soil_moisture_avg"].to_f
-    end
-
-    # Fallback: 72h accumulated precipitation / 100
-    sensors = Sensor.nearby_pluviometers(@river_basin)
-    return nil if sensors.none?
-
-    precip = SensorReading.where(sensor_id: sensors)
-                          .by_type("precipitation")
-                          .since(72.hours.ago)
-                          .sum(:value)
-    (precip / 100.0).clamp(0.0, 1.0)
   end
 
   def collect_forecast_precip(period_start, period_end)

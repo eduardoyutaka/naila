@@ -289,7 +289,7 @@ basins.each do |basin_name, basin|
       alarm_type: "metric",
       enabled: true,
       river_basin: basin,
-      metric_name: "precipitation_3h",
+      metric_name: "precipitation",
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 3,

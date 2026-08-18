@@ -15,7 +15,7 @@
 <div class="mb-8">
   <div class="mb-2 flex flex-wrap items-center gap-2">
     <%= alarm_severity_badge(@river_basin.alarm_severity, monitored: @river_basin.monitored?) %>
-    <%= catalyst_badge(@river_basin.active? ? "Ativa" : "Inativa", color: @river_basin.active? ? "green" : "zinc") %>
+    <%= catalyst_badge(@river_basin.active? ? t("booleans.river_basin_active.enabled") : t("booleans.river_basin_active.disabled"), color: @river_basin.active? ? "green" : "zinc") %>
   </div>
   <%= catalyst_heading @river_basin.name, level: 1 %>
   <% if @river_basin.description.present? %>

@@ -13,20 +13,19 @@
         <%= form.field do %>
           <%= form.label :trigger_state, "Gatilho (Estado)" %>
           <%= form.select :trigger_state,
-                [["Alarme", "alarm"], ["OK", "ok"], ["Dados Insuficientes", "insufficient_data"]] %>
+                AlarmAction::TRIGGER_STATES.map { |s| [t("enums.alarm_state.#{s}"), s] } %>
         <% end %>
         <%= form.field do %>
           <%= form.label :min_severity, "Severidade Mínima" %>
           <%= form.select :min_severity,
-                [["— Qualquer —", ""],
-                 ["1 — Atenção", 1], ["2 — Alerta", 2], ["3 — Alto", 3], ["4 — Emergência", 4]] %>
+                [["— Qualquer —", ""]] + (1..4).map { |s| ["#{s} — #{t("enums.severity.#{s}")}", s] } %>
           <%= form.description "Disparar somente se a severidade atual atingir este nível." %>
         <% end %>
       </div>
 
       <%= form.field do %>
         <%= form.label :enabled, "Status" %>
-        <%= form.select :enabled, [["Ativada", true], ["Desativada", false]] %>
+        <%= form.select :enabled, [[t("booleans.alarm_action_enabled.enabled"), true], [t("booleans.alarm_action_enabled.disabled"), false]] %>
       <% end %>
     <% end %>
   </div>

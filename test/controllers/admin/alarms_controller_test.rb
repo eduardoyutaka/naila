@@ -175,6 +175,17 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Vigilância/
   end
 
+  test "new form's metric dropdown offers exactly the two real metrics" do
+    get new_admin_alarm_path
+    assert_select "select[name='alarm[metric_name]']" do
+      assert_select "option", text: "Score de Risco", count: 0
+      assert_select "option", text: "Precipitação"
+      assert_select "option", text: "Previsão de Precipitação"
+      # include_blank + the 2 real options, nothing else
+      assert_select "option", count: 3
+    end
+  end
+
   test "edit form explains Vigilância as the implicit baseline below all threshold bands" do
     get edit_admin_alarm_path(alarms(:precip_3h_belem))
     assert_select "p", text: /Vigilância/
@@ -189,7 +200,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
           name: "Novo Alarme Teste",
           alarm_type: "metric",
           enabled: true,
-          metric_name: "precipitation_1h",
+          metric_name: "precipitation",
           statistic: "Sum",
           period_seconds: 3600,
           evaluation_periods: 1,
@@ -229,7 +240,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
         alarm: {
           name: "Alarme do Coordenador",
           alarm_type: "metric",
-          metric_name: "precipitation_1h",
+          metric_name: "precipitation",
           statistic: "Sum",
           period_seconds: 3600,
           evaluation_periods: 1,
