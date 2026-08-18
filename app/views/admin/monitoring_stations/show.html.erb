@@ -1,19 +1,15 @@
 <% content_for(:title, "Naila — #{@monitoring_station.name}") %>
 
 <%
-  status_label = case @monitoring_station.status
-                 when "active" then "Ativo"
-                 when "maintenance" then "Manutenção"
-                 when "inactive" then "Inativo"
-                 end
+  status_label = t("enums.monitoring_station_status.#{@monitoring_station.status}")
   status_color = case @monitoring_station.status
                  when "active" then "green"
                  when "maintenance" then "yellow"
                  when "inactive" then "red"
                  end
   chart_config = {
-    "precipitation" => { type: "bar",  color: "sensor-pluviometer", label: "Precipitação 24h" },
-    "temperature"   => { type: "line", color: "sensor-weather",     label: "Temperatura 24h" },
+    "precipitation" => { type: "bar",  color: "sensor-pluviometer", label: "#{t('enums.reading_type.precipitation')} 24h" },
+    "temperature"   => { type: "line", color: "sensor-weather",     label: "#{t('enums.reading_type.temperature')} 24h" },
   }
 %>
 
@@ -253,8 +249,7 @@
                 </div>
                 <span class="flex items-center gap-1.5 text-xs <%= sensor_status_css %>">
                   <span class="inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
-                  <% case sensor.status
-                     when "active" then %>Ativo<% when "maintenance" then %>Manutenção<% else %>Inativo<% end %>
+                  <%= t("enums.monitoring_station_status.#{sensor.status}", default: t("enums.monitoring_station_status.inactive")) %>
                 </span>
               </div>
             <% end %>
