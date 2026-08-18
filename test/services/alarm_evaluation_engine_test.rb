@@ -245,7 +245,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     assert_equal 2, alarm.current_severity
   end
 
-  test "transitions from alarm to ok clears current_severity" do
+  test "transitions from alarm to ok sets current_severity to 0 (Vigilância)" do
     alarm = create_metric_alarm(
       state: "alarm",
       current_severity: 2,
@@ -259,7 +259,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     AlarmEvaluationEngine.evaluate_alarm(alarm)
 
     assert_equal "ok", alarm.reload.state
-    assert_nil alarm.current_severity
+    assert_equal 0, alarm.current_severity
   end
 
   test "severity downgrade records history without changing state_changed_at" do
@@ -389,7 +389,11 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       period_seconds: 3600,
       missing_data_treatment: "missing"
     }
-    alarm = Alarm.new(defaults.merge(overrides))
+    merged = defaults.merge(overrides)
+    # Mirror the invariant transition_to! maintains: an "ok" alarm's current_severity
+    # is explicitly 0 (Vigilância), never nil, unless the test overrides it on purpose.
+    merged[:current_severity] = 0 if merged[:state] == "ok" && !merged.key?(:current_severity)
+    alarm = Alarm.new(merged)
     alarm.alarm_thresholds.build(
       severity: severity,
       comparison_operator: comparison_op,

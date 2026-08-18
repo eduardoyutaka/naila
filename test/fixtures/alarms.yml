@@ -3,6 +3,7 @@ precip_3h_belem:
   description: Alarme de precipitação acumulada em 3 horas
   alarm_type: metric
   state: ok
+  current_severity: 0
   state_changed_at: <%= 1.hour.ago.iso8601 %>
   state_reason: "0 of 3 evaluation periods breached threshold"
   enabled: true

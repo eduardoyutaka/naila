@@ -77,7 +77,9 @@ CREATE TABLE public.alarm_state_histories (
     datapoints jsonb DEFAULT '[]'::jsonb,
     evaluated_at timestamp(6) without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    previous_severity integer,
+    new_severity integer
 );
 
 
@@ -4448,6 +4450,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260817235908'),
 ('20260817213711'),
 ('20260817192414'),
 ('20260701000002'),

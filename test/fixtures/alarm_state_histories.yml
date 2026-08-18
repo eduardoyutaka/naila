@@ -2,6 +2,8 @@ alarm_transition:
   alarm: flood_alert_belem
   previous_state: ok
   new_state: alarm
+  previous_severity: 0
+  new_severity: 3
   reason: "2 of 3 evaluation periods breached threshold 60.0mm (values: [65.0, 62.0, 45.0])"
   datapoints: '[{"period":1,"value":65.0,"breaching":true},{"period":2,"value":62.0,"breaching":true},{"period":3,"value":45.0,"breaching":false}]'
   evaluated_at: <%= 30.minutes.ago.iso8601 %>
@@ -10,6 +12,8 @@ precip_alarm_to_ok:
   alarm: precip_3h_belem
   previous_state: alarm
   new_state: ok
+  previous_severity: 2
+  new_severity: 0
   reason: "0 of 3 evaluation periods breached threshold 40.0mm"
   datapoints: '[{"period":1,"value":12.3,"breaching":false},{"period":2,"value":8.1,"breaching":false},{"period":3,"value":5.0,"breaching":false}]'
   evaluated_at: <%= 1.hour.ago.iso8601 %>

@@ -245,18 +245,27 @@ class AlarmTest < ActiveSupport::TestCase
 
   test "transition_to! sets current_severity when transitioning to alarm" do
     alarm = alarms(:precip_3h_belem)
-    assert_nil alarm.current_severity
+    assert_equal 0, alarm.current_severity
 
     alarm.transition_to!("alarm", reason: "breached", severity: 3)
 
     assert_equal 3, alarm.reload.current_severity
   end
 
-  test "transition_to! clears current_severity when transitioning to ok" do
+  test "transition_to! sets current_severity to 0 (Vigilância) when transitioning to ok" do
     alarm = alarms(:flood_alert_belem)
     assert_equal 3, alarm.current_severity
 
     alarm.transition_to!("ok", reason: "recovered")
+
+    assert_equal 0, alarm.reload.current_severity
+  end
+
+  test "transition_to! leaves current_severity nil when transitioning to insufficient_data" do
+    alarm = alarms(:flood_alert_belem)
+    assert_equal 3, alarm.current_severity
+
+    alarm.transition_to!("insufficient_data", reason: "missing data")
 
     assert_nil alarm.reload.current_severity
   end
@@ -276,6 +285,8 @@ class AlarmTest < ActiveSupport::TestCase
     history = alarm.alarm_state_histories.order(created_at: :desc).first
     assert_equal "alarm", history.previous_state
     assert_equal "alarm", history.new_state
+    assert_equal 3, history.previous_severity
+    assert_equal 2, history.new_severity
   end
 
   test "transition_to! creates alarm_state_history record" do
@@ -288,9 +299,31 @@ class AlarmTest < ActiveSupport::TestCase
     history = alarm.alarm_state_histories.order(created_at: :desc).first
     assert_equal "ok", history.previous_state
     assert_equal "alarm", history.new_state
+    assert_equal 0, history.previous_severity
+    assert_equal 2, history.new_severity
     assert_equal "threshold breached", history.reason
     assert_equal [42.0], history.datapoints
     assert_not_nil history.evaluated_at
+  end
+
+  test "transition_to! records previous_severity/new_severity as 0 when settling back to ok" do
+    alarm = alarms(:flood_alert_belem)
+
+    alarm.transition_to!("ok", reason: "recovered")
+
+    history = alarm.alarm_state_histories.order(created_at: :desc).first
+    assert_equal 3, history.previous_severity
+    assert_equal 0, history.new_severity
+  end
+
+  test "transition_to! records nil new_severity when moving to insufficient_data" do
+    alarm = alarms(:flood_alert_belem)
+
+    alarm.transition_to!("insufficient_data", reason: "sensor offline")
+
+    history = alarm.alarm_state_histories.order(created_at: :desc).first
+    assert_equal 3, history.previous_severity
+    assert_nil history.new_severity
   end
 
   test "transition_to! is a no-op when state and severity are unchanged" do
