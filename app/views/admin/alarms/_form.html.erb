@@ -39,7 +39,7 @@
       <%# Status %>
       <%= form.field do %>
         <%= form.label :enabled, "Status" %>
-        <%= form.select :enabled, [["Ativado", true], ["Desativado", false]] %>
+        <%= form.select :enabled, [[t("booleans.alarm_enabled.enabled"), true], [t("booleans.alarm_enabled.disabled"), false]] %>
       <% end %>
     <% end %>
 
@@ -53,13 +53,13 @@
           <%= form.field do %>
             <%= form.label :metric_name, "Métrica" %>
             <%= form.select :metric_name,
-                  MetricDataCollector::SUPPORTED_METRICS.map { |m| [RiskHelper::METRIC_NAME_LABEL[m], m] },
+                  MetricDataCollector::SUPPORTED_METRICS.map { |m| [t("enums.metric_name.#{m}"), m] },
                   { include_blank: "— Selecione —" } %>
           <% end %>
           <%= form.field do %>
             <%= form.label :statistic, "Estatística" %>
             <%= form.select :statistic,
-                  %w[Average Sum Minimum Maximum SampleCount],
+                  Alarm::STATISTICS.map { |s| [t("enums.statistic.#{s}"), s] },
                   { include_blank: "— Selecione —" } %>
           <% end %>
         </div>
@@ -126,18 +126,16 @@
               <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][severity]"
                       aria-labelledby="th-severity"
                       class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-zinc-950/10 dark:border-white/10 dark:bg-white/5 focus:outline-hidden">
-                <option value="1">1 — Atenção</option>
-                <option value="2">2 — Alerta</option>
-                <option value="3">3 — Alarme</option>
-                <option value="4">4 — Emergência</option>
+                <% (1..4).each do |s| %>
+                  <option value="<%= s %>"><%= s %> — <%= t("enums.severity.#{s}") %></option>
+                <% end %>
               </select>
               <select name="alarm[alarm_thresholds_attributes][NEW_RECORD][comparison_operator]"
                       aria-labelledby="th-operator"
                       class="relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)] pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)] text-sm/6 dark:text-white dark:*:text-white border border-zinc-950/10 dark:border-white/10 dark:bg-white/5 focus:outline-hidden">
-                <option value="GreaterThanThreshold">Maior que</option>
-                <option value="GreaterThanOrEqualToThreshold" selected>Maior ou igual</option>
-                <option value="LessThanThreshold">Menor que</option>
-                <option value="LessThanOrEqualToThreshold">Menor ou igual</option>
+                <% %w[GreaterThanThreshold GreaterThanOrEqualToThreshold LessThanThreshold LessThanOrEqualToThreshold].each do |op| %>
+                  <option value="<%= op %>"<%= " selected".html_safe if op == "GreaterThanOrEqualToThreshold" %>><%= t("enums.comparison_operator_label.#{op}") %></option>
+                <% end %>
               </select>
               <input type="number" step="any" placeholder="0.0"
                      name="alarm[alarm_thresholds_attributes][NEW_RECORD][threshold_value]"
@@ -165,8 +163,7 @@
         <%= form.field do %>
           <%= form.label :missing_data_treatment, "Tratamento de Dados Ausentes" %>
           <%= form.select :missing_data_treatment,
-                [["Ausente", "missing"], ["Não viola", "notBreaching"],
-                 ["Viola", "breaching"], ["Ignorar", "ignore"]] %>
+                Alarm::MISSING_DATA_TREATMENTS.map { |v| [t("enums.missing_data_treatment.#{v}"), v] } %>
         <% end %>
       <% end %>
     </div>

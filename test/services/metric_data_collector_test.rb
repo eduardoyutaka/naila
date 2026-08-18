@@ -118,10 +118,17 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
 
   # ── metric list consistency ──
 
-  test "every supported metric has a display label, so nothing renders as a raw key" do
+  test "every supported metric has an I18n display label, so nothing renders as a raw key" do
     MetricDataCollector::SUPPORTED_METRICS.each do |metric_name|
-      assert RiskHelper::METRIC_NAME_LABEL.key?(metric_name),
-        "#{metric_name} is in SUPPORTED_METRICS but missing from RiskHelper::METRIC_NAME_LABEL"
+      assert I18n.exists?("enums.metric_name.#{metric_name}", "pt-BR"),
+        "#{metric_name} is in SUPPORTED_METRICS but missing from pt-BR.enums.metric_name"
+    end
+  end
+
+  test "every alarm statistic has an I18n display label" do
+    Alarm::STATISTICS.each do |statistic|
+      assert I18n.exists?("enums.statistic.#{statistic}", "pt-BR"),
+        "#{statistic} is in Alarm::STATISTICS but missing from pt-BR.enums.statistic"
     end
   end
 end

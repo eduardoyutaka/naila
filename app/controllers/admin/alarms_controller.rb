@@ -81,7 +81,7 @@ module Admin
 
     def assign_chart_data
       @chart_thresholds = @alarm.alarm_thresholds.order(:severity).map { |t|
-        { value: t.threshold_value, severity: t.severity, label: RiskHelper::SEVERITY_LABEL[t.severity] }
+        { value: t.threshold_value, severity: t.severity, label: I18n.t("enums.severity.#{t.severity}") }
       }
       @chart_unit = @alarm.alarm_thresholds.first&.unit
 

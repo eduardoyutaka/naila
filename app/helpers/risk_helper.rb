@@ -1,20 +1,4 @@
 module RiskHelper
-  SEVERITY_LABEL = {
-    0 => "Vigilância",
-    1 => "Atenção",
-    2 => "Alerta",
-    3 => "Alarme",
-    4 => "Emergência"
-  }.freeze
-
-  RISK_LEVEL_LABEL = {
-    "normal"     => "Vigilância",
-    "attention"  => "Atenção",
-    "alert"      => "Alerta",
-    "high_alert" => "Alarme",
-    "emergency"  => "Emergência"
-  }.freeze
-
   SEVERITY_TEXT_CLASS = {
     0 => "text-risk-normal",
     1 => "text-risk-attention",
@@ -47,44 +31,14 @@ module RiskHelper
     "emergency"  => "bg-risk-emergency/20 text-risk-emergency"
   }.freeze
 
-  ASSESSMENT_LEVEL_LABEL = {
-    0 => "Vigilância",
-    1 => "Atenção",
-    2 => "Alerta",
-    3 => "Alarme",
-    4 => "Emergência"
-  }.freeze
-
   # Assessment levels add the baseline 0 ("Vigilância") to the firing severities (1..4),
   # reusing the severity colors so the dashboard cards stay visually consistent.
   ASSESSMENT_LEVEL_TEXT_CLASS = SEVERITY_TEXT_CLASS.merge(0 => "text-risk-normal").freeze
   ASSESSMENT_LEVEL_BORDER_CLASS = SEVERITY_BORDER_CLASS.merge(0 => "border-l-risk-normal").freeze
 
-  METRIC_NAME_LABEL = {
-    "precipitation"   => "Precipitação",
-    "forecast_precip" => "Previsão de Precipitação"
-  }.freeze
-
-  READING_TYPE_LABEL = {
-    "precipitation" => "Precipitação",
-    "temperature"   => "Temperatura",
-    "humidity"      => "Umidade"
-  }.freeze
-
-  SENSOR_TYPE_LABEL = {
-    "pluviometer"     => "Pluviômetro",
-    "weather_station" => "Meteorológica"
-  }.freeze
-
   SENSOR_TYPE_BADGE_CLASSES = {
     "pluviometer"     => "bg-sensor-pluviometer/20 text-sensor-pluviometer",
     "weather_station" => "bg-sensor-weather/20 text-sensor-weather"
-  }.freeze
-
-  CONNECTION_STATUS_LABEL = {
-    "unknown"      => "Sem dados",
-    "connected"    => "Conectado",
-    "disconnected" => "Desconectado"
   }.freeze
 
   CONNECTION_STATUS_TEXT_CLASS = {
@@ -107,12 +61,16 @@ module RiskHelper
     4 => "bg-risk-emergency"
   }.freeze
 
+  # The full assessment scale (0..4) — not a translation, just the domain range used to
+  # iterate severity cards/badges in order. Labels come from I18n (enums.severity.*).
+  ASSESSMENT_LEVELS = (0..4).freeze
+
   # severity 0..4 only — nil is NOT coerced to 0. Vigilância and "no severity" (nil, e.g.
   # insufficient_data) are different things and must never render as the same badge.
   def severity_badge(severity)
     level = severity&.to_i
     tag.span(
-      SEVERITY_LABEL[level],
+      I18n.t("enums.severity.#{level}", default: nil),
       class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{SEVERITY_BADGE_CLASSES[level]}"
     )
   end
@@ -121,14 +79,14 @@ module RiskHelper
   # renders as its own distinct "Dados insuficientes" badge instead of a blank one — nil must
   # never be silently treated as 0/Vigilância, since "we don't know" isn't "confirmed calm".
   def assessment_level_badge(severity)
-    return tag.span("Dados insuficientes", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400") if severity.nil?
+    return tag.span(I18n.t("labels.insufficient_data_badge"), class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400") if severity.nil?
 
     severity_badge(severity)
   end
 
   def alarm_severity_badge(severity, monitored: true)
     if !monitored
-      tag.span("Não monitorada", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
+      tag.span(I18n.t("labels.not_monitored"), class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
     else
       severity_badge(severity || 0)
     end
@@ -136,7 +94,7 @@ module RiskHelper
 
   def sensor_type_badge(sensor_type)
     tag.span(
-      SENSOR_TYPE_LABEL[sensor_type.to_s],
+      I18n.t("enums.sensor_type.#{sensor_type}", default: sensor_type.to_s.humanize),
       class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{SENSOR_TYPE_BADGE_CLASSES[sensor_type.to_s]}"
     )
   end
@@ -146,14 +104,18 @@ module RiskHelper
   end
 
   def reading_type_label(reading_type)
-    READING_TYPE_LABEL[reading_type.to_s] || reading_type.to_s.humanize
+    I18n.t("enums.reading_type.#{reading_type}", default: reading_type.to_s.humanize)
+  end
+
+  def statistic_label(statistic)
+    I18n.t("enums.statistic.#{statistic}", default: statistic.to_s)
   end
 
   # Small colored dot + label pairing, shown next to the manual status badge
   # to surface whether a station is actually delivering data right now.
   def connection_status_indicator(connection_status)
     css_class = CONNECTION_STATUS_TEXT_CLASS[connection_status.to_s] || "text-sensor-offline"
-    label = CONNECTION_STATUS_LABEL[connection_status.to_s] || connection_status.to_s.humanize
+    label = I18n.t("enums.connection_status.#{connection_status}", default: connection_status.to_s.humanize)
 
     tag.span(class: "inline-flex items-center gap-1 text-xs #{css_class}") do
       tag.span(class: "inline-block h-1.5 w-1.5 rounded-full bg-current") + tag.span(label)

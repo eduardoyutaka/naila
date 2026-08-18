@@ -4,7 +4,8 @@
 
 <%# ── Summary Cards ── %>
 <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" data-testid="summary-cards">
-  <% RiskHelper::ASSESSMENT_LEVEL_LABEL.each do |severity, label| %>
+  <% RiskHelper::ASSESSMENT_LEVELS.each do |severity| %>
+    <% label = t("enums.severity.#{severity}") %>
     <% count = @alarms_by_severity.fetch(severity, 0) %>
     <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 border-l-4 bg-zinc-50 dark:bg-zinc-800/50 p-4 <%= RiskHelper::ASSESSMENT_LEVEL_BORDER_CLASS[severity] %> <%= count.zero? ? 'opacity-40' : '' %>">
       <div class="text-sm font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300"><%= label %></div>
@@ -63,14 +64,14 @@
     <h2 class="text-sm font-semibold text-zinc-950 dark:text-white">Mapa de Risco — Curitiba</h2>
     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400" data-testid="map-legend">
       <%# Severity is shown on the map by basin color only — keep all swatches as circles so the shape carries no extra meaning. %>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-normal"></span> Vigilância</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-attention"></span> Atenção</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> Alerta</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-high"></span> Alarme</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-emergency"></span> Emergência</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-normal"></span> <%= t("enums.severity.0") %></span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-attention"></span> <%= t("enums.severity.1") %></span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-alert"></span> <%= t("enums.severity.2") %></span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-high"></span> <%= t("enums.severity.3") %></span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-risk-emergency"></span> <%= t("enums.severity.4") %></span>
       <span class="h-3 w-px bg-white/10" aria-hidden="true"></span>
       <%# Pluviometer markers are blue diamonds on the map (RegularShape points:4, angle:0). %>
-      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-pluviometer"></span> Pluviômetro</span>
+      <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rotate-45 bg-sensor-pluviometer"></span> <%= t("enums.sensor_type.pluviometer") %></span>
     </div>
   </div>
   <% if @flood_zones.any? %>
@@ -210,7 +211,7 @@
                 <span class="h-3 w-3 rounded-full <%= dot_class %>"></span>
               <% end %>
             </div>
-            <span class="sr-only"><%= RiskHelper::SEVERITY_LABEL[alarm.current_severity] %>:</span>
+            <span class="sr-only"><%= t("enums.severity.#{alarm.current_severity}") %>:</span>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <%= link_to alarm.name, admin_alarm_path(alarm), class: "text-sm font-medium text-zinc-950 dark:text-white truncate hover:text-sky-500" %>
