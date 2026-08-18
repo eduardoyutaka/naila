@@ -34,29 +34,25 @@ class RiverBasin < ApplicationRecord
     severity = RISK_LEVEL_SEVERITIES[level.to_s]
     next all if severity.nil?
 
-    in_alarm_basins = Alarm.in_alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id)
-    if severity.zero?
-      # "Vigilância" = monitored (has an alarm configured) but nothing firing. Unmonitored
-      # basins have no alarms and render as "Não monitorada", so they are NOT Vigilância.
-      monitored_basins = Alarm.where.not(river_basin_id: nil).distinct.select(:river_basin_id)
-      where(id: monitored_basins).where.not(id: in_alarm_basins)
-    else
-      where(id: Alarm.in_alarm.where.not(river_basin_id: nil)
-        .group(:river_basin_id)
-        .having("MAX(current_severity) = ?", severity)
-        .select(:river_basin_id))
-    end
+    # Vigilância (0) and firing (1..4) are both read from Alarm#current_severity directly now
+    # that "ok" alarms store an explicit 0 — no more hand-rolled set-difference for severity 0.
+    # Basins monitored only by an "insufficient_data" alarm have no evaluated row and so match
+    # neither branch — genuinely unknown risk isn't the same as confirmed-calm Vigilância.
+    where(id: Alarm.evaluated.where.not(river_basin_id: nil)
+      .group(:river_basin_id)
+      .having("MAX(current_severity) = ?", severity)
+      .select(:river_basin_id))
   }
 
   scope :ordered_by_alarm_severity, -> {
     left_joins(:alarms).group("river_basins.id").order(
-      Arel.sql("MAX(CASE WHEN alarms.state = 'alarm' THEN alarms.current_severity END) DESC NULLS LAST"),
+      Arel.sql("MAX(CASE WHEN alarms.state IN ('ok', 'alarm') THEN alarms.current_severity END) DESC NULLS LAST"),
       :name
     )
   }
 
   def alarm_severity
-    Alarm.in_alarm.where(river_basin_id: id).maximum(:current_severity) || 0
+    Alarm.evaluated.where(river_basin_id: id).maximum(:current_severity) || 0
   end
 
   def monitored?
