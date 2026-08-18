@@ -42,8 +42,16 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
 
   test "index shows connectivity indicators" do
     get admin_monitoring_stations_path
-    assert_select "span", text: "Conectado"
-    assert_select "span", text: "Desconectado"
+    # Regexp match, not exact — a "connected" station may show the plain or the stale
+    # ("Conectado (sem leitura recente)") variant depending on its last reading.
+    assert_select "span", text: /Conectado/
+    assert_select "span", text: /Desconectado/
+  end
+
+  test "index flags a connected station with no recent reading as stale" do
+    # cemaden_centro: connection_status connected, but no sensor_readings fixture at all.
+    get admin_monitoring_stations_path
+    assert_select "span", text: "Conectado (sem leitura recente)"
   end
 
   test "index shows 'Sem dados' for a station that has never been polled" do
@@ -219,5 +227,10 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
   test "show full page contains back link" do
     get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
     assert_select "a[href='#{admin_monitoring_stations_path}']"
+  end
+
+  test "show full page flags a connected station with no recent reading as stale" do
+    get admin_monitoring_station_path(monitoring_stations(:cemaden_centro))
+    assert_select "span", text: "Conectado (sem leitura recente)"
   end
 end

@@ -71,4 +71,41 @@ class MonitoringStationTest < ActiveSupport::TestCase
 
     assert station.connection_status_unknown?
   end
+
+  # ── Staleness ──
+
+  test "stale? is true when connected with no readings at all" do
+    station = monitoring_stations(:cemaden_centro) # connected, no sensor_readings fixture
+    assert station.connection_status_connected?
+    assert_nil station.last_reading
+
+    assert station.stale?
+  end
+
+  test "stale? is true when connected but the last reading is older than the threshold" do
+    station = monitoring_stations(:cemaden_centro)
+    sensors(:pluv_cemaden_centro).sensor_readings.create!(
+      value: 1.0, unit: "mm", reading_type: "precipitation",
+      recorded_at: (MonitoringStation::STALE_THRESHOLD + 1.hour).ago
+    )
+
+    assert station.stale?
+  end
+
+  test "stale? is false when connected with a recent reading" do
+    station = monitoring_stations(:estacao_belem) # has a reading from 10 minutes ago
+    station.connection_status = "connected"
+
+    assert_not station.stale?
+  end
+
+  test "stale? is false when disconnected or unknown, regardless of reading age" do
+    disconnected = monitoring_stations(:estacao_belem) # already disconnected, has readings
+    assert disconnected.connection_status_disconnected?
+    assert_not disconnected.stale?
+
+    unknown = monitoring_stations(:cemaden_centro)
+    unknown.connection_status = "unknown"
+    assert_not unknown.stale?
+  end
 end

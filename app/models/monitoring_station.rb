@@ -39,6 +39,17 @@ class MonitoringStation < ApplicationRecord
     sensor_readings.recent.first
   end
 
+  # A "connected" station means the last fetch attempt succeeded — it says nothing about
+  # whether the upstream source actually sent usable data. A station can stay "connected"
+  # indefinitely while its physical sensor is dead upstream (see: CEMADEN station outages).
+  # Staleness only applies to connected stations — disconnected/unknown already flag the
+  # problem their own way.
+  STALE_THRESHOLD = 6.hours
+
+  def stale?
+    connection_status_connected? && (last_reading.nil? || last_reading.recorded_at < STALE_THRESHOLD.ago)
+  end
+
   def record_fetch_success!
     update!(connection_status: "connected", last_successful_fetch_at: Time.current)
   end

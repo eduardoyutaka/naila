@@ -87,6 +87,7 @@ pt-BR:
   labels:
     not_monitored: Não monitorada
     insufficient_data_badge: Dados insuficientes
+    connected_stale: Conectado (sem leitura recente)
     role_plural:
       admin: Administradores
       coordinator: Coordenadores
