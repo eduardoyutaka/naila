@@ -35,4 +35,31 @@ class RiskHelperTest < ActionView::TestCase
     assert_includes assessment_level_badge(3), "Alarme"
     assert_includes assessment_level_badge(4), "Emergência"
   end
+
+  test "connection_status_indicator shows the plain Conectado badge when not stale" do
+    html = connection_status_indicator("connected", stale: false)
+    assert_includes html, "Conectado"
+    assert_not_includes html, "sem leitura recente"
+    assert_includes html, "text-sensor-online"
+  end
+
+  test "connection_status_indicator defaults to not stale when the flag is omitted" do
+    assert_includes connection_status_indicator("connected"), "Conectado"
+  end
+
+  test "connection_status_indicator shows the amber stale variant when connected and stale" do
+    html = connection_status_indicator("connected", stale: true)
+    assert_includes html, "Conectado (sem leitura recente)"
+    assert_includes html, "text-risk-attention"
+  end
+
+  test "connection_status_indicator ignores the stale flag for disconnected/unknown" do
+    disconnected = connection_status_indicator("disconnected", stale: true)
+    assert_includes disconnected, "Desconectado"
+    assert_not_includes disconnected, "sem leitura recente"
+
+    unknown = connection_status_indicator("unknown", stale: true)
+    assert_includes unknown, "Sem dados"
+    assert_not_includes unknown, "sem leitura recente"
+  end
 end

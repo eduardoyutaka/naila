@@ -113,9 +113,16 @@ module RiskHelper
 
   # Small colored dot + label pairing, shown next to the manual status badge
   # to surface whether a station is actually delivering data right now.
-  def connection_status_indicator(connection_status)
-    css_class = CONNECTION_STATUS_TEXT_CLASS[connection_status.to_s] || "text-sensor-offline"
-    label = I18n.t("enums.connection_status.#{connection_status}", default: connection_status.to_s.humanize)
+  # stale: true only changes anything when connection_status is "connected" — a station
+  # that's genuinely disconnected/unknown already communicates the problem on its own.
+  def connection_status_indicator(connection_status, stale: false)
+    if connection_status.to_s == "connected" && stale
+      css_class = "text-risk-attention"
+      label = I18n.t("labels.connected_stale")
+    else
+      css_class = CONNECTION_STATUS_TEXT_CLASS[connection_status.to_s] || "text-sensor-offline"
+      label = I18n.t("enums.connection_status.#{connection_status}", default: connection_status.to_s.humanize)
+    end
 
     tag.span(class: "inline-flex items-center gap-1 text-xs #{css_class}") do
       tag.span(class: "inline-block h-1.5 w-1.5 rounded-full bg-current") + tag.span(label)
