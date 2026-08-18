@@ -7,7 +7,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "Test Alarm",
       alarm_type: "metric",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 3,
@@ -133,7 +133,7 @@ class AlarmTest < ActiveSupport::TestCase
     alarm = Alarm.new(
       name: "No Thresholds",
       alarm_type: "metric",
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 1,

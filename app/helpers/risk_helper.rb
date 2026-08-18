@@ -61,13 +61,8 @@ module RiskHelper
   ASSESSMENT_LEVEL_BORDER_CLASS = SEVERITY_BORDER_CLASS.merge(0 => "border-l-risk-normal").freeze
 
   METRIC_NAME_LABEL = {
-    "precipitation_3h"  => "Precipitação (3h)",
-    "precipitation_1h"  => "Precipitação (1h)",
-    "precipitation_24h" => "Precipitação (24h)",
-    "soil_moisture"     => "Umidade do solo",
-    "forecast_precip"   => "Previsão de Precipitação",
-    "temperature"       => "Temperatura",
-    "humidity"          => "Umidade relativa"
+    "precipitation"   => "Precipitação",
+    "forecast_precip" => "Previsão de Precipitação"
   }.freeze
 
   READING_TYPE_LABEL = {

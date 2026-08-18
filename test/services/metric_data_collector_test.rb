@@ -5,12 +5,12 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     @basin = river_basins(:bacia_belem)
   end
 
-  # ── precipitation_1h ──
+  # ── precipitation ──
 
-  test "collects precipitation_1h sum for basin" do
+  test "collects precipitation sum for basin over a 1h window" do
     # Fixture readings in last 1h: 12.5 (10min ago) + 8.2 (40min ago) = 20.7
     result = MetricDataCollector.collect(
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       river_basin: @basin,
       period_start: 1.hour.ago,
       period_end: Time.current
@@ -18,9 +18,9 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 20.7, result, 0.1
   end
 
-  test "precipitation_1h returns 0 when no readings in window" do
+  test "precipitation returns 0 when no readings in window" do
     result = MetricDataCollector.collect(
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       river_basin: @basin,
       period_start: 2.days.ago,
       period_end: 1.day.ago
@@ -28,13 +28,11 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 0.0, result, 0.01
   end
 
-  # ── precipitation_3h ──
-
-  test "collects precipitation_3h sum for basin" do
+  test "collects precipitation sum for basin over a 3h window" do
     # Fixture readings within 3h window: 12.5 + 8.2 + 3.1 = 23.8
     # (5.7 at exactly 3h ago may fall outside the range boundary)
     result = MetricDataCollector.collect(
-      metric_name: "precipitation_3h",
+      metric_name: "precipitation",
       river_basin: @basin,
       period_start: 3.hours.ago,
       period_end: Time.current
@@ -42,65 +40,16 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 23.8, result, 0.2
   end
 
-  # ── precipitation_24h ──
-
-  test "collects precipitation_24h sum for basin" do
-    # Same underlying collection as 1h/3h — the suffix is naming only, the window
-    # is whatever's passed in. Fixture readings within 24h: 12.5+8.2+3.1+5.7+15.3+2.0 = 46.8
+  test "collects precipitation sum for basin over a 24h window" do
+    # The window is whatever's passed in — precipitation isn't split by period length.
+    # Fixture readings within 24h: 12.5+8.2+3.1+5.7+15.3+2.0 = 46.8
     result = MetricDataCollector.collect(
-      metric_name: "precipitation_24h",
+      metric_name: "precipitation",
       river_basin: @basin,
       period_start: 24.hours.ago,
       period_end: Time.current
     )
     assert_in_delta 46.8, result, 0.2
-  end
-
-  # ── temperature ──
-
-  test "collects average temperature from weather observations in window" do
-    # Fixtures: owm_recent 20.5°C (15min ago), cemaden_station 19.8°C (30min ago)
-    result = MetricDataCollector.collect(
-      metric_name: "temperature",
-      river_basin: @basin,
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-    assert_in_delta 20.15, result, 0.05
-  end
-
-  test "collects maximum temperature when statistic is Maximum" do
-    result = MetricDataCollector.collect(
-      metric_name: "temperature",
-      river_basin: @basin,
-      period_start: 1.hour.ago,
-      period_end: Time.current,
-      statistic: "Maximum"
-    )
-    assert_in_delta 20.5, result, 0.01
-  end
-
-  test "temperature returns nil when no observations in window" do
-    result = MetricDataCollector.collect(
-      metric_name: "temperature",
-      river_basin: @basin,
-      period_start: 2.days.ago,
-      period_end: 1.day.ago
-    )
-    assert_nil result
-  end
-
-  # ── humidity ──
-
-  test "collects average humidity from weather observations in window" do
-    # Fixtures: owm_recent 78.0% (15min ago), cemaden_station 82.0% (30min ago)
-    result = MetricDataCollector.collect(
-      metric_name: "humidity",
-      river_basin: @basin,
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-    assert_in_delta 80.0, result, 0.05
   end
 
   # ── unknown metric ──
@@ -119,7 +68,7 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
 
   test "applies Sum statistic to precipitation readings" do
     result = MetricDataCollector.collect(
-      metric_name: "precipitation_1h",
+      metric_name: "precipitation",
       river_basin: @basin,
       period_start: 1.hour.ago,
       period_end: Time.current,
