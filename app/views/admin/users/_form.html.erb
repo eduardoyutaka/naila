@@ -30,7 +30,7 @@
 
       <%= form.field do %>
         <%= form.label :role, "Cargo" %>
-        <%= form.select :role, [["Operador", "operator"], ["Coordenador", "coordinator"], ["Administrador", "admin"]] %>
+        <%= form.select :role, %w[operator coordinator admin].map { |r| [t("enums.user_role.#{r}"), r] } %>
       <% end %>
 
       <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">

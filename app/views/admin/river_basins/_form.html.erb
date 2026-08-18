@@ -21,7 +21,7 @@
         <% end %>
         <%= form.field do %>
           <%= form.label :active, "Status" %>
-          <%= form.select :active, [["Ativa", true], ["Inativa", false]] %>
+          <%= form.select :active, [[t("booleans.river_basin_active.enabled"), true], [t("booleans.river_basin_active.disabled"), false]] %>
         <% end %>
       </div>
 
