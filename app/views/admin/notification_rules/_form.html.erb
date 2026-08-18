@@ -25,17 +25,12 @@
       <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
         <%= form.field do %>
           <%= form.label :channel, "Canal" %>
-          <%= form.select :channel, [ [ "Email", "email" ], [ "SMS", "sms" ] ] %>
+          <%= form.select :channel, NotificationRule::CHANNELS.map { |c| [t("enums.notification_channel.#{c}"), c] } %>
         <% end %>
 
         <%= form.field do %>
           <%= form.label :min_severity, "Severidade mínima" %>
-          <%= form.select :min_severity, [
-                [ "Atenção (1)", 1 ],
-                [ "Alerta (2)", 2 ],
-                [ "Alarme (3)", 3 ],
-                [ "Emergência (4)", 4 ]
-              ] %>
+          <%= form.select :min_severity, (1..4).map { |s| ["#{t("enums.severity.#{s}")} (#{s})", s] } %>
           <%= form.description "A regra dispara quando a severidade do alarme for igual ou superior a este nível." %>
         <% end %>
       </div>
@@ -73,7 +68,7 @@
         <% if active_users.any? %>
           <div class="flex max-h-72 flex-col gap-3 overflow-y-auto">
             <%= form.collection_check_boxes :user_ids, active_users, :id, :name do |b| %>
-              <% role_label = { "admin" => "Administrador", "coordinator" => "Coordenador", "operator" => "Operador" }[b.object.role] %>
+              <% role_label = t("enums.user_role.#{b.object.role}") %>
               <% role_color = { "admin" => "purple", "coordinator" => "blue", "operator" => "zinc" }[b.object.role] %>
               <label class="flex cursor-pointer items-start gap-3">
                 <%= b.check_box(class: "mt-0.5 size-4 rounded-[0.3125rem] border border-zinc-950/15 bg-white shadow-sm checked:border-transparent checked:bg-white dark:bg-zinc-900 focus:outline-2 focus:outline-offset-2 focus:outline-blue-500 dark:bg-white/5 dark:border-white/15 dark:checked:bg-zinc-600") %>
@@ -100,7 +95,7 @@
       <%# ── Status ── %>
       <%= form.field do %>
         <%= form.label :enabled, "Status" %>
-        <%= form.select :enabled, [ [ "Ativada", "true" ], [ "Desativada", "false" ] ] %>
+        <%= form.select :enabled, [[t("booleans.notification_rule_enabled.enabled"), "true"], [t("booleans.notification_rule_enabled.disabled"), "false"]] %>
       <% end %>
     <% end %>
   </div>

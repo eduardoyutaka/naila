@@ -33,9 +33,9 @@ class NotificationRule < ApplicationRecord
 
   def targeted_role_labels
     labels = []
-    labels << "Administradores" if target_admins
-    labels << "Coordenadores"   if target_coordinators
-    labels << "Operadores"      if target_operators
+    labels << I18n.t("labels.role_plural.admin")       if target_admins
+    labels << I18n.t("labels.role_plural.coordinator")  if target_coordinators
+    labels << I18n.t("labels.role_plural.operator")     if target_operators
     labels
   end
 
