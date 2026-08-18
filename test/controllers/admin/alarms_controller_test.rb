@@ -170,6 +170,16 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "new form explains Vigilância as the implicit baseline below all threshold bands" do
+    get new_admin_alarm_path
+    assert_select "p", text: /Vigilância/
+  end
+
+  test "edit form explains Vigilância as the implicit baseline below all threshold bands" do
+    get edit_admin_alarm_path(alarms(:precip_3h_belem))
+    assert_select "p", text: /Vigilância/
+  end
+
   # ── Create ──
 
   test "create with valid params creates alarm and redirects" do
