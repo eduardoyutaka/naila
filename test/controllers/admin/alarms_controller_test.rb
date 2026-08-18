@@ -343,6 +343,27 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='state-chain']", count: 1
   end
 
+  test "show labels the state and severity chains and shows a Dados insuficientes badge instead of a bare dash" do
+    # A transition out of insufficient_data always has previous_severity: nil (its severity is
+    # never tracked) — the history row must explain that, not show an unexplained dash.
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: 0,
+      reason: "dados restabelecidos", evaluated_at: Time.current
+    )
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "span", text: "Estado"
+      assert_select "span", text: "Severidade"
+      assert_select "span", text: "Dados insuficientes"
+      assert_select "span", text: "—", count: 0
+    end
+  end
+
   # ── History ──
 
   test "history renders successfully" do
@@ -353,6 +374,23 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
   test "history page displays the severity change alongside the state change" do
     get history_admin_alarm_path(alarms(:flood_alert_belem))
     assert_select "span", text: "Vigilância"
+  end
+
+  test "history page labels the state and severity chains and shows a Dados insuficientes badge instead of a bare dash" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "insufficient_data", new_state: "ok",
+      previous_severity: nil, new_severity: 0,
+      reason: "dados restabelecidos", evaluated_at: Time.current
+    )
+
+    get history_admin_alarm_path(alarm)
+
+    assert_select "span", text: "Estado"
+    assert_select "span", text: "Severidade"
+    assert_select "span", text: "Dados insuficientes"
+    assert_select "span", text: "—", count: 0
   end
 
   test "history page suppresses the redundant state chain for a severity-only row" do
