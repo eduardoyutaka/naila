@@ -5,14 +5,14 @@ class SendAlarmSmsJob < ApplicationJob
   retry_on SmsDispatcher::TransientError,
            wait: :polynomially_longer, attempts: 5
 
-  def perform(alarm_id, user_id, severity)
+  def perform(alarm_id, user_id, severity, previous_severity: nil)
     alarm = Alarm.find_by(id: alarm_id)
     user  = User.find_by(id: user_id)
     return unless alarm && user&.active? && user.phone_number.present?
 
     SmsDispatcher.deliver(
       to: user.phone_number,
-      body: AlarmSmsRenderer.render(alarm, severity)
+      body: AlarmSmsRenderer.render(alarm, severity, previous_severity: previous_severity)
     )
   end
 end

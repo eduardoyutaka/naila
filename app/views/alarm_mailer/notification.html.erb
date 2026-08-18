@@ -30,7 +30,15 @@
 
       <h1><%= @alarm.name %></h1>
       <p>Olá, <%= @user.name %>.</p>
-      <p>O alarme acima atingiu o nível <strong><%= @severity_label %></strong>. Confira o motivo do disparo e acompanhe a situação no painel.</p>
+      <% if @resolved %>
+        <p>O alarme acima voltou ao estado de <strong>Vigilância</strong>. A situação foi normalizada.</p>
+      <% elsif @direction == :up %>
+        <p>O alarme acima <strong>escalou</strong> de <%= @previous_severity_label %> para <strong><%= @severity_label %></strong>. Confira o motivo do disparo e acompanhe a situação no painel.</p>
+      <% elsif @direction == :down %>
+        <p>A severidade do alarme acima <strong>reduziu</strong> de <%= @previous_severity_label %> para <strong><%= @severity_label %></strong>. Acompanhe a situação no painel.</p>
+      <% else %>
+        <p>O alarme acima atingiu o nível <strong><%= @severity_label %></strong>. Confira o motivo do disparo e acompanhe a situação no painel.</p>
+      <% end %>
 
       <div class="reason"><%= @alarm.state_reason %></div>
 
