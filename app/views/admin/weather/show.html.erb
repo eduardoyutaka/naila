@@ -126,7 +126,7 @@
           <%= l(@forecast_from, format: :short) %> → <%= l(@forecast_to, format: :short) %>
         </p>
       </div>
-      <%= render "range_form", frame: "weather_forecast", scope: :forecast,
+      <%= render "shared/admin/range_form", action: admin_weather_path, frame: "weather_forecast", scope: :forecast,
             from: @forecast_from, to: @forecast_to, min: @forecast_bounds[0], max: @forecast_bounds[1],
             source_param: "forecast_source", source_options: source_options, selected_source: @forecast_source %>
     </div>
@@ -161,7 +161,7 @@
           <%= l(@comparison_from, format: :short) %> → <%= l(@comparison_to, format: :short) %>
         </p>
       </div>
-      <%= render "range_form", frame: "weather_comparison", scope: :comparison, from: @comparison_from, to: @comparison_to, min: @comparison_bounds[0], max: @comparison_bounds[1] %>
+      <%= render "shared/admin/range_form", action: admin_weather_path, frame: "weather_comparison", scope: :comparison, from: @comparison_from, to: @comparison_to, min: @comparison_bounds[0], max: @comparison_bounds[1] %>
     </div>
     <% if @observations_in_range.any? || @comparison_forecasts.any? %>
       <%
