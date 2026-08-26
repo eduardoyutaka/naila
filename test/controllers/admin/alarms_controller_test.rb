@@ -130,11 +130,72 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
   test "show spans a 48h chart window for an hourly alarm, not just its evaluation window" do
     # period_seconds: 3600 previously gave (evaluation_periods * 4).clamp(12, 48) == 12
-    # periods (12h) for this fixture — too narrow to survive a realistic multi-day outage.
-    get admin_alarm_path(alarms(:flood_alert_belem))
+    # periods (12h) — too narrow to survive a realistic multi-day outage. Uses an isolated
+    # basin with data older than 48h so the real-data bounds don't clamp the window down
+    # (flood_alert_belem's own fixture readings only span the last 12h).
+    suffix = SecureRandom.hex(4)
+    basin = RiverBasin.create!(name: "Window Test Basin #{suffix}", active: true)
+    station = MonitoringStation.create!(
+      external_id: "WINDOW-TEST-#{suffix}", name: "Window Test Station #{suffix}",
+      data_source: "TEST", status: :active, river_basin: basin
+    )
+    sensor = Sensor.create!(
+      monitoring_station: station, sensor_type: :pluviometer, external_id: "WINDOW-TEST-PLUV-#{suffix}",
+      unit: "mm", reading_type: "precipitation", status: :active
+    )
+    # One reading older than 48h keeps the real-data bounds wide enough that the 48h
+    # default window isn't clamped down (see flood_alert_belem, whose own fixture
+    # readings only span 12h and would shrink the window if reused for this test).
+    # One reading inside the window ensures the chart branch renders (not the empty state).
+    SensorReading.create!(sensor: sensor, value: 5.0, unit: "mm", reading_type: "precipitation", recorded_at: 5.days.ago)
+    SensorReading.create!(sensor: sensor, value: 3.0, unit: "mm", reading_type: "precipitation", recorded_at: 10.minutes.ago)
+
+    alarm = Alarm.new(
+      name: "Window Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
+      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1,
+      missing_data_treatment: "missing"
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get admin_alarm_path(alarm)
+
     assert_select "[data-admin--reading-chart-readings-value]" do |elements|
       readings = JSON.parse(elements.first["data-admin--reading-chart-readings-value"])
       assert_equal 48, readings.length
+    end
+  end
+
+  test "show honours an explicit range param and clamps it to real data bounds" do
+    suffix = SecureRandom.hex(4)
+    basin = RiverBasin.create!(name: "Range Test Basin #{suffix}", active: true)
+    station = MonitoringStation.create!(
+      external_id: "RANGE-TEST-#{suffix}", name: "Range Test Station #{suffix}",
+      data_source: "TEST", status: :active, river_basin: basin
+    )
+    sensor = Sensor.create!(
+      monitoring_station: station, sensor_type: :pluviometer, external_id: "RANGE-TEST-PLUV-#{suffix}",
+      unit: "mm", reading_type: "precipitation", status: :active
+    )
+    SensorReading.create!(sensor: sensor, value: 5.0, unit: "mm", reading_type: "precipitation", recorded_at: 5.days.ago)
+
+    alarm = Alarm.new(
+      name: "Range Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
+      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1,
+      missing_data_treatment: "missing"
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get admin_alarm_path(alarm, range: { from: 6.days.ago.iso8601, to: 4.days.ago.iso8601 })
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "input[name='range[from]'][min][max]"
+      assert_select "input[name='range[to]'][min][max]"
     end
   end
 

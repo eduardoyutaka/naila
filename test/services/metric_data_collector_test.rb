@@ -143,6 +143,37 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_equal direct, latest[:value]
   end
 
+  # ── history_series_for_range ──
+
+  test "history_series_for_range buckets at the alarm's period_seconds when the range fits under max_points" do
+    alarm = alarms(:flood_alert_belem) # period_seconds: 3600
+    to = Time.current
+
+    series = MetricDataCollector.history_series_for_range(alarm: alarm, from: to - 3.hours, to: to)
+
+    assert_equal 3, series.length
+    gaps = series.each_cons(2).map { |a, b| b[:period_end] - a[:period_end] }
+    assert gaps.all? { |g| (g - alarm.period_seconds).abs < 1 }, "expected #{alarm.period_seconds}s gaps, got #{gaps}"
+  end
+
+  test "history_series_for_range coarsens bucket size to stay within max_points for a wide range" do
+    alarm = alarms(:flood_alert_belem) # period_seconds: 3600
+
+    series = MetricDataCollector.history_series_for_range(alarm: alarm, from: 30.days.ago, to: Time.current, max_points: 96)
+
+    assert_operator series.length, :<=, 96
+    gaps = series.each_cons(2).map { |a, b| b[:period_end] - a[:period_end] }
+    assert gaps.all? { |g| g >= alarm.period_seconds }, "no bucket should be finer than period_seconds, got #{gaps}"
+  end
+
+  test "history_series_for_range never buckets finer than the alarm's period_seconds even for a narrow range" do
+    alarm = alarms(:flood_alert_belem) # period_seconds: 3600
+
+    series = MetricDataCollector.history_series_for_range(alarm: alarm, from: 30.minutes.ago, to: Time.current, max_points: 1000)
+
+    assert_equal 1, series.length
+  end
+
   # ── metric list consistency ──
 
   test "every supported metric has an I18n display label, so nothing renders as a raw key" do

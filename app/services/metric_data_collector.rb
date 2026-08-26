@@ -22,6 +22,23 @@ class MetricDataCollector
     }.reverse
   end
 
+  # Like history_series, but bucketed over an explicit [from, to] range instead of a
+  # fixed period count walked back from now — for a user-picked chart window. Bucket
+  # size is never finer than the alarm's own period_seconds (no fabricated resolution)
+  # and coarsens automatically once the range would otherwise exceed max_points buckets,
+  # so a wide range doesn't render hundreds of bars.
+  def self.history_series_for_range(alarm:, from:, to:, max_points: 96)
+    bucket_seconds = [ alarm.period_seconds, ((to - from) / max_points).ceil ].max
+    periods = ((to - from) / bucket_seconds).ceil
+    collector = new(river_basin: alarm.river_basin, river: alarm.river)
+
+    (0...periods).map { |i|
+      period_end = [ to - (i * bucket_seconds), from ].max
+      value = collector.collect(alarm.metric_name, period_end - bucket_seconds, period_end, alarm.statistic)
+      { period_end: period_end, value: value }
+    }.reverse
+  end
+
   def initialize(river_basin:, river: nil)
     @river_basin = river_basin
     @river = river

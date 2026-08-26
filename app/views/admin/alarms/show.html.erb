@@ -40,33 +40,44 @@
   <div class="lg:col-span-2 space-y-6">
 
     <%# Histórico da Métrica %>
-    <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="alarm-history">
-      <div class="flex items-center justify-between border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
-        <%= catalyst_subheading "Histórico da Métrica" %>
-        <span class="text-xs text-zinc-500 dark:text-zinc-400">
-          <%= @chart_readings.length %> períodos de <%= distance_of_time_in_words(@alarm.period_seconds) %>
-        </span>
-      </div>
-      <%# 0.0 is real data ("confirmed calm") — only a genuinely missing (nil) value means no data. %>
-      <% if @chart_readings.any? { |_, v| !v.nil? } %>
-        <div class="px-6 py-4"
-             data-controller="admin--reading-chart"
-             data-admin--reading-chart-readings-value="<%= @chart_readings.to_json %>"
-             data-admin--reading-chart-unit-value="<%= @chart_unit %>"
-             data-admin--reading-chart-chart-type-value="bar"
-             data-admin--reading-chart-color-value="#0ea5e9"
-             data-admin--reading-chart-thresholds-value="<%= @chart_thresholds.to_json %>">
-          <div data-admin--reading-chart-target="chart" class="h-48 w-full"></div>
-        </div>
-      <% else %>
-        <div class="px-6 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          <p>Sem dados no período.</p>
-          <% if @last_known_reading_at %>
-            <p class="mt-1 text-xs">Última leitura: há <%= time_ago_in_words(@last_known_reading_at) %></p>
+    <%= turbo_frame_tag "alarm_metric_chart_#{@alarm.id}" do %>
+      <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="alarm-history">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
+          <div>
+            <%= catalyst_subheading "Histórico da Métrica" %>
+            <% if @chart_from %>
+              <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
+                <%= l(@chart_from, format: :short) %> → <%= l(@chart_to, format: :short) %>
+              </p>
+            <% end %>
+          </div>
+          <% if @chart_from %>
+            <%= render "shared/admin/range_form", action: admin_alarm_path(@alarm),
+                  frame: "alarm_metric_chart_#{@alarm.id}", scope: :range,
+                  from: @chart_from, to: @chart_to, min: @chart_bounds&.first, max: @chart_bounds&.last %>
           <% end %>
         </div>
-      <% end %>
-    </div>
+        <%# 0.0 is real data ("confirmed calm") — only a genuinely missing (nil) value means no data. %>
+        <% if @chart_readings.any? { |_, v| !v.nil? } %>
+          <div class="px-6 py-4"
+               data-controller="admin--reading-chart"
+               data-admin--reading-chart-readings-value="<%= @chart_readings.to_json %>"
+               data-admin--reading-chart-unit-value="<%= @chart_unit %>"
+               data-admin--reading-chart-chart-type-value="bar"
+               data-admin--reading-chart-color-value="#0ea5e9"
+               data-admin--reading-chart-thresholds-value="<%= @chart_thresholds.to_json %>">
+            <div data-admin--reading-chart-target="chart" class="h-48 w-full"></div>
+          </div>
+        <% else %>
+          <div class="px-6 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+            <p>Sem dados no período.</p>
+            <% if @last_known_reading_at %>
+              <p class="mt-1 text-xs">Última leitura: há <%= time_ago_in_words(@last_known_reading_at) %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
 
     <%# Avaliação Atual %>
     <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="alarm-evaluation">
