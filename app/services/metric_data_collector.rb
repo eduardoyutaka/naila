@@ -40,7 +40,7 @@ class MetricDataCollector
 
   def collect_precipitation(period_start, period_end, statistic)
     sensors = Sensor.nearby_pluviometers(@river_basin)
-    return 0.0 if sensors.none?
+    return nil if sensors.none?
 
     readings = SensorReading.where(sensor_id: sensors)
                             .by_type("precipitation")
@@ -56,13 +56,19 @@ class MetricDataCollector
     forecasts.maximum(:precipitation_mm)
   end
 
+  # nil means "no data" (not "confirmed zero") for every statistic except
+  # SampleCount, where a count of 0 readings is itself a real, meaningful
+  # answer — AlarmEvaluationEngine relies on this nil to trigger
+  # missing_data_treatment instead of silently evaluating "0mm, all clear".
   def apply_statistic(readings, statistic)
+    return readings.count.to_f if statistic == "SampleCount"
+    return nil unless readings.exists?
+
     case statistic
     when "Sum" then readings.sum(:value)
-    when "Average" then readings.average(:value)&.to_f || 0.0
-    when "Maximum" then readings.maximum(:value) || 0.0
-    when "Minimum" then readings.minimum(:value) || 0.0
-    when "SampleCount" then readings.count.to_f
+    when "Average" then readings.average(:value).to_f
+    when "Maximum" then readings.maximum(:value)
+    when "Minimum" then readings.minimum(:value)
     else readings.sum(:value)
     end
   end

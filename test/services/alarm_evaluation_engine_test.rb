@@ -93,10 +93,11 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
 
   # ── Missing data treatment ──
 
-  # Missing-data tests use the forecast_precip metric because MetricDataCollector
-  # returns nil for it when no forecasts exist in a period — the signal the
-  # engine needs to treat a period as missing. Precipitation always returns 0.0
-  # for empty windows, which would never look "missing" to the engine.
+  # Most missing-data tests use the forecast_precip metric because it's the
+  # simplest way to control which periods have data. Precipitation signals
+  # "missing" the same way (MetricDataCollector returns nil, not 0.0, when
+  # there are no readings in the window) — see the precipitation-specific
+  # test below, which is the actual real-world scenario (e.g. a CEMADEN outage).
   test "missing data treatment 'breaching' counts missing periods as breaching" do
     WeatherForecast.delete_all
     basin = RiverBasin.create!(name: "Missing-breaching #{SecureRandom.hex(4)}", active: true)
@@ -148,6 +149,26 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       period_seconds: 60,
       evaluation_periods: 3,
       datapoints_to_alarm: 2,
+      missing_data_treatment: "missing",
+      river_basin: basin
+    )
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "insufficient_data", alarm.reload.state
+  end
+
+  test "precipitation with no readings in window transitions to insufficient_data" do
+    # The real-world scenario: an upstream outage (e.g. CEMADEN) leaves a station's
+    # sensor with no new readings. This must not evaluate as "0mm, all clear".
+    basin = build_isolated_basin_with_pluviometer(readings: [])
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "precipitation",
+      statistic: "Sum",
+      threshold_value: 10.0,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1,
       missing_data_treatment: "missing",
       river_basin: basin
     )

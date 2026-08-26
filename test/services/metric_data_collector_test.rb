@@ -18,12 +18,39 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 20.7, result, 0.1
   end
 
-  test "precipitation returns 0 when no readings in window" do
+  test "precipitation returns nil when no readings in window" do
+    # nil, not 0.0, is what signals "missing" to AlarmEvaluationEngine's
+    # missing_data_treatment — a flat 0.0 here would masquerade as "confirmed
+    # no rain" during e.g. a CEMADEN outage, when really we have no idea.
     result = MetricDataCollector.collect(
       metric_name: "precipitation",
       river_basin: @basin,
       period_start: 2.days.ago,
       period_end: 1.day.ago
+    )
+    assert_nil result
+  end
+
+  test "precipitation returns nil when the basin has no pluviometer sensors nearby" do
+    basin = RiverBasin.create!(name: "Sem sensores #{SecureRandom.hex(4)}", active: true)
+    result = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: basin,
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+    assert_nil result
+  end
+
+  test "SampleCount still returns 0.0 (not nil) when no readings in window" do
+    # Unlike Sum/Average/Maximum/Minimum, a count of 0 readings is a real,
+    # meaningful answer — not an "unknown" case.
+    result = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: @basin,
+      period_start: 2.days.ago,
+      period_end: 1.day.ago,
+      statistic: "SampleCount"
     )
     assert_in_delta 0.0, result, 0.01
   end
