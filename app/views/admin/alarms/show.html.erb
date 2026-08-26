@@ -39,15 +39,16 @@
   <%# ── Left Column ── %>
   <div class="lg:col-span-2 space-y-6">
 
-    <%# Histórico do Métrico %>
+    <%# Histórico da Métrica %>
     <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="alarm-history">
       <div class="flex items-center justify-between border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
-        <%= catalyst_subheading "Histórico do Métrico" %>
+        <%= catalyst_subheading "Histórico da Métrica" %>
         <span class="text-xs text-zinc-500 dark:text-zinc-400">
           <%= @chart_readings.length %> períodos de <%= distance_of_time_in_words(@alarm.period_seconds) %>
         </span>
       </div>
-      <% if @chart_readings.any? && @chart_readings.any? { |_, v| v.to_f.positive? } %>
+      <%# 0.0 is real data ("confirmed calm") — only a genuinely missing (nil) value means no data. %>
+      <% if @chart_readings.any? { |_, v| !v.nil? } %>
         <div class="px-6 py-4"
              data-controller="admin--reading-chart"
              data-admin--reading-chart-readings-value="<%= @chart_readings.to_json %>"

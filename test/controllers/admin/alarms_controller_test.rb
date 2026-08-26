@@ -128,6 +128,51 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show renders the chart (not the empty state) when readings are confirmed zero, not missing" do
+    # A pluviometer with no rain reports real 0.0 readings — that's data, not an
+    # absence of it. Only a genuinely missing period (nil) should hit the empty state.
+    suffix = SecureRandom.hex(4)
+    basin = RiverBasin.create!(name: "Chart Test Basin #{suffix}", active: true)
+    station = MonitoringStation.create!(
+      external_id: "CHART-TEST-#{suffix}", name: "Chart Test Station #{suffix}",
+      data_source: "TEST", status: :active, river_basin: basin
+    )
+    sensor = Sensor.create!(
+      monitoring_station: station, sensor_type: :pluviometer, external_id: "CHART-TEST-PLUV-#{suffix}",
+      unit: "mm", reading_type: "precipitation", status: :active
+    )
+    SensorReading.create!(sensor: sensor, value: 0.0, unit: "mm", reading_type: "precipitation", recorded_at: 10.minutes.ago)
+
+    alarm = Alarm.new(
+      name: "Chart Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
+      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1,
+      missing_data_treatment: "missing"
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "[data-controller~='admin--reading-chart']"
+      assert_select "div", text: /Sem dados no período/, count: 0
+    end
+  end
+
+  test "show renders the empty state when there is no chart data at all" do
+    alarm = alarms(:disabled_alarm) # no river_basin set
+    assert alarm.river_basin.blank?, "fixture precondition"
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "[data-controller~='admin--reading-chart']", count: 0
+      assert_select "div", text: /Sem dados no período/
+    end
+  end
+
   test "show renders the current evaluation card with per-tier breach counts" do
     get admin_alarm_path(alarms(:flood_alert_belem))
     assert_select "[data-testid='alarm-evaluation']" do
