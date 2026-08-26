@@ -128,6 +128,16 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show spans a 48h chart window for an hourly alarm, not just its evaluation window" do
+    # period_seconds: 3600 previously gave (evaluation_periods * 4).clamp(12, 48) == 12
+    # periods (12h) for this fixture — too narrow to survive a realistic multi-day outage.
+    get admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "[data-admin--reading-chart-readings-value]" do |elements|
+      readings = JSON.parse(elements.first["data-admin--reading-chart-readings-value"])
+      assert_equal 48, readings.length
+    end
+  end
+
   test "show renders the chart (not the empty state) when readings are confirmed zero, not missing" do
     # A pluviometer with no rain reports real 0.0 readings — that's data, not an
     # absence of it. Only a genuinely missing period (nil) should hit the empty state.
@@ -170,6 +180,41 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='alarm-history']" do
       assert_select "[data-controller~='admin--reading-chart']", count: 0
       assert_select "div", text: /Sem dados no período/
+      assert_select "p", text: /Última leitura/, count: 0
+    end
+  end
+
+  test "show shows the last known reading time when the chart window is fully empty" do
+    # A station whose last reading predates the whole 48h chart window (a long outage) —
+    # the empty state should say when data was last actually received, not leave it blank.
+    suffix = SecureRandom.hex(4)
+    basin = RiverBasin.create!(name: "Stale Chart Basin #{suffix}", active: true)
+    station = MonitoringStation.create!(
+      external_id: "STALE-CHART-#{suffix}", name: "Stale Chart Station #{suffix}",
+      data_source: "TEST", status: :active, river_basin: basin
+    )
+    sensor = Sensor.create!(
+      monitoring_station: station, sensor_type: :pluviometer, external_id: "STALE-CHART-PLUV-#{suffix}",
+      unit: "mm", reading_type: "precipitation", status: :active
+    )
+    SensorReading.create!(sensor: sensor, value: 5.0, unit: "mm", reading_type: "precipitation", recorded_at: 3.days.ago)
+
+    alarm = Alarm.new(
+      name: "Stale Chart Alarm #{suffix}", alarm_type: "metric", enabled: true,
+      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1,
+      missing_data_treatment: "missing"
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "[data-controller~='admin--reading-chart']", count: 0
+      assert_select "div", text: /Sem dados no período/
+      assert_select "p", text: /Última leitura/
     end
   end
 

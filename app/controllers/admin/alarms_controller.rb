@@ -79,20 +79,36 @@ module Admin
       @alarm = Alarm.find(params[:id])
     end
 
+    CHART_WINDOW = 48.hours
+    MIN_CHART_PERIODS = 12
+    MAX_CHART_PERIODS = 96
+
     def assign_chart_data
       @chart_thresholds = @alarm.alarm_thresholds.order(:severity).map { |t|
         { value: t.threshold_value, severity: t.severity, label: I18n.t("enums.severity.#{t.severity}") }
       }
       @chart_unit = @alarm.alarm_thresholds.first&.unit
+      @last_known_reading_at = last_known_reading_at
 
       if @alarm.river_basin.blank? || @alarm.alarm_thresholds.empty?
         @chart_readings = []
         return
       end
 
-      periods = (@alarm.evaluation_periods * 4).clamp(12, 48)
+      periods = (CHART_WINDOW / @alarm.period_seconds.seconds).to_i.clamp(MIN_CHART_PERIODS, MAX_CHART_PERIODS)
       series = MetricDataCollector.history_series(alarm: @alarm, periods: periods)
       @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
+    end
+
+    # Mirrors the sensors MetricDataCollector#collect_precipitation actually reads from
+    # (radius-based Sensor.nearby_pluviometers, not the basin's "designated" 1:1
+    # monitoring_station, which can be a different, currently-silent station).
+    def last_known_reading_at
+      return nil unless @alarm.metric_name == "precipitation" && @alarm.river_basin.present?
+
+      SensorReading.where(sensor_id: Sensor.nearby_pluviometers(@alarm.river_basin))
+                   .by_type("precipitation")
+                   .maximum(:recorded_at)
     end
 
     def alarm_summary_counts(scope)
