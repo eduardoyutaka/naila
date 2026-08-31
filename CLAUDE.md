@@ -53,12 +53,12 @@ Basin and dashboard status are **derived from alarm state**, not from a separate
 
 ### Sensor Data
 
-Model hierarchy: `RiverBasin (1:1) → MonitoringStation → Sensor (1:many) → SensorReading`
+Model hierarchy: `RiverBasin (1:1 home) → MonitoringStation → Sensor (1:many) → SensorReading`
 
-- Each river basin has one monitoring station; each station has multiple sensors (pluviometer, weather_station).
+- Each river basin has one *home* monitoring station (`monitoring_stations.river_basin_id`, ownership/cascade-delete, admin display); each station has multiple sensors (pluviometer, weather_station). This home relationship is a design convention (enforced in seeds + admin UI), not a DB unique constraint — test fixtures may have multiple stations per basin for job testing.
+- Separately, `RiverBasin#configured_monitoring_stations` (through `RiverBasinMonitoringStation`) is what actually feeds a basin's metrics/alarms — `MetricDataCollector` reads `river_basin.configured_sensors`, not the home station. A station auto-configures for its own home basin on create, but can also be explicitly configured for additional basins (shared station), managed via the basin edit form's "Estações Configuradas" checklist. Don't confuse the two: `river_basin.monitoring_station` (ownership) can silently diverge from `river_basin.configured_monitoring_stations` (what alarms actually read) if someone reassigns a station's home basin without updating its configuration.
 - `sensor_readings.sensor_id` is the FK — not `monitoring_station_id`. Traverse readings via `station.sensor_readings` (through association) or `sensor.sensor_readings`.
 - `SensorReading` table uses raw SQL migration for PostgreSQL `PARTITION BY RANGE` (monthly partitions). This is intentional — Rails DSL doesn't support table partitioning. Any schema changes to `sensor_readings` must use `execute "ALTER TABLE ..."` raw SQL, not Rails column helpers.
-- The 1:1 RiverBasin↔MonitoringStation relationship is a design convention (enforced in seeds + admin UI), not a DB unique constraint — test fixtures may have multiple stations per basin for job testing.
 
 ### Frontend Stack (no build step)
 
