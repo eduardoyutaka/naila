@@ -1,6 +1,4 @@
 class MetricDataCollector
-  SEARCH_RADIUS_M = 5000
-
   # Single source of truth for which metric_name values are actually wired up —
   # drives the alarm form's dropdown (see admin/alarms/_form.html.erb) and
   # Alarm#metric_name's inclusion validation, so the two can't drift apart.
@@ -56,7 +54,7 @@ class MetricDataCollector
   private
 
   def collect_precipitation(period_start, period_end, statistic)
-    sensors = Sensor.nearby_pluviometers(@river_basin)
+    sensors = @river_basin.configured_sensors.sensor_type_pluviometer.status_active
     return nil if sensors.none?
 
     readings = SensorReading.where(sensor_id: sensors)

@@ -122,4 +122,13 @@ class MonitoringStationTest < ActiveSupport::TestCase
     assert_includes station.configured_for_basins, river_basins(:bacia_belem)
     assert_includes station.configured_for_basins, river_basins(:bacia_barigui)
   end
+
+  test "creating a station auto-configures it to feed its own home basin" do
+    station = MonitoringStation.create!(
+      external_id: "TEST-AUTOCONFIG", name: "Estação Auto-config",
+      data_source: "CEMADEN", river_basin: river_basins(:bacia_barigui)
+    )
+
+    assert_includes river_basins(:bacia_barigui).configured_monitoring_stations, station
+  end
 end
