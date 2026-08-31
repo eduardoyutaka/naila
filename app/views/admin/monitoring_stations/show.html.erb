@@ -205,6 +205,17 @@
         <% end %>
       </div>
 
+      <% if @monitoring_station.configured_for_basins.any? %>
+        <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="configured-for-basins">
+          <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
+            <%= catalyst_subheading "Bacias Configuradas" %>
+          </div>
+          <div class="px-6 py-4 text-sm text-zinc-950 dark:text-white">
+            <%= @monitoring_station.configured_for_basins.pluck(:name).join(", ") %>
+          </div>
+        </div>
+      <% end %>
+
       <% if @monitoring_station.neighborhood || @monitoring_station.river || @monitoring_station.location %>
         <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
           <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">

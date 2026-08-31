@@ -57,6 +57,9 @@
 
         <%= catalyst_dt "Rios" %>
         <%= catalyst_dd @river_basin.rivers.any? ? @river_basin.rivers.pluck(:name).join(", ") : "—" %>
+
+        <%= catalyst_dt "Estações Configuradas" %>
+        <%= catalyst_dd @river_basin.configured_monitoring_stations.any? ? @river_basin.configured_monitoring_stations.pluck(:name).join(", ") : "—" %>
       <% end %>
     </div>
 

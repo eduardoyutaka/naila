@@ -79,9 +79,14 @@ module Admin
     end
 
     def river_basin_params
-      params.require(:river_basin).permit(
-        :name, :description, :area_km2, :active, :geometry_geojson
+      permitted = params.require(:river_basin).permit(
+        :name, :description, :area_km2, :active, :geometry_geojson,
+        configured_monitoring_station_ids: []
       )
+      if permitted.key?(:configured_monitoring_station_ids)
+        permitted[:configured_monitoring_station_ids] = Array(permitted[:configured_monitoring_station_ids]).reject(&:blank?)
+      end
+      permitted
     end
   end
 end
