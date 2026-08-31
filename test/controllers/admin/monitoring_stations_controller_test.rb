@@ -233,4 +233,15 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     get admin_monitoring_station_path(monitoring_stations(:cemaden_centro))
     assert_select "span", text: "Conectado (sem leitura recente)"
   end
+
+  test "show full page lists the basins this station is configured to feed" do
+    river_basins(:bacia_barigui).configured_monitoring_stations << monitoring_stations(:estacao_belem)
+
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem))
+
+    assert_select "[data-testid='configured-for-basins']" do
+      assert_select "*", text: /Bacia do Rio Belém/
+      assert_select "*", text: /Bacia do Rio Barigui/
+    end
+  end
 end

@@ -106,6 +106,13 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='weather-context']"
   end
 
+  test "show lists configured monitoring stations" do
+    get admin_river_basin_path(river_basins(:bacia_belem))
+    assert_select "[data-testid='basin-details']" do
+      assert_select "*", text: /Estação Belém/
+    end
+  end
+
   # ── New ──
 
   test "new renders successfully" do
@@ -182,12 +189,32 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "edit displays a checklist of monitoring stations to configure" do
+    get edit_admin_river_basin_path(river_basins(:bacia_barigui))
+    assert_select "input[type='checkbox'][name='river_basin[configured_monitoring_station_ids][]']",
+      count: MonitoringStation.count
+  end
+
   test "update with valid params updates basin and redirects" do
     patch admin_river_basin_path(river_basins(:bacia_barigui)), params: {
       river_basin: { name: "Bacia Barigui Atualizada" }
     }
     assert_redirected_to admin_river_basin_path(river_basins(:bacia_barigui))
     assert_equal "Bacia Barigui Atualizada", river_basins(:bacia_barigui).reload.name
+  end
+
+  test "update can add an extra configured monitoring station, shared with another basin" do
+    shared_station = monitoring_stations(:estacao_belem)
+    basin = river_basins(:bacia_barigui)
+    existing_ids = basin.configured_monitoring_station_ids
+
+    patch admin_river_basin_path(basin), params: {
+      river_basin: { configured_monitoring_station_ids: existing_ids + [ shared_station.id ] }
+    }
+
+    assert_includes basin.reload.configured_monitoring_stations, shared_station
+    assert_includes river_basins(:bacia_belem).configured_monitoring_stations, shared_station,
+      "the station should still feed its original basin too"
   end
 
   test "operator cannot update river basins" do

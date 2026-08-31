@@ -533,6 +533,38 @@ ALTER SEQUENCE public.regions_id_seq OWNED BY public.regions.id;
 
 
 --
+-- Name: river_basin_monitoring_stations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.river_basin_monitoring_stations (
+    id bigint NOT NULL,
+    river_basin_id bigint NOT NULL,
+    monitoring_station_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: river_basin_monitoring_stations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.river_basin_monitoring_stations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: river_basin_monitoring_stations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.river_basin_monitoring_stations_id_seq OWNED BY public.river_basin_monitoring_stations.id;
+
+
+--
 -- Name: river_basins; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1919,6 +1951,13 @@ ALTER TABLE ONLY public.regions ALTER COLUMN id SET DEFAULT nextval('public.regi
 
 
 --
+-- Name: river_basin_monitoring_stations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.river_basin_monitoring_stations ALTER COLUMN id SET DEFAULT nextval('public.river_basin_monitoring_stations_id_seq'::regclass);
+
+
+--
 -- Name: river_basins id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2168,6 +2207,14 @@ ALTER TABLE ONLY public.notification_rules
 
 ALTER TABLE ONLY public.regions
     ADD CONSTRAINT regions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: river_basin_monitoring_stations river_basin_monitoring_stations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.river_basin_monitoring_stations
+    ADD CONSTRAINT river_basin_monitoring_stations_pkey PRIMARY KEY (id);
 
 
 --
@@ -2531,6 +2578,13 @@ ALTER TABLE ONLY public.weather_observations
 
 
 --
+-- Name: idx_basin_station_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_basin_station_uniqueness ON public.river_basin_monitoring_stations USING btree (river_basin_id, monitoring_station_id);
+
+
+--
 -- Name: idx_weather_fc_dedup; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2773,6 +2827,20 @@ CREATE INDEX index_regions_on_boundary ON public.regions USING gist (boundary);
 --
 
 CREATE UNIQUE INDEX index_regions_on_code ON public.regions USING btree (code);
+
+
+--
+-- Name: index_river_basin_monitoring_stations_on_monitoring_station_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_river_basin_monitoring_stations_on_monitoring_station_id ON public.river_basin_monitoring_stations USING btree (monitoring_station_id);
+
+
+--
+-- Name: index_river_basin_monitoring_stations_on_river_basin_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_river_basin_monitoring_stations_on_river_basin_id ON public.river_basin_monitoring_stations USING btree (river_basin_id);
 
 
 --
@@ -4260,6 +4328,14 @@ ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PAR
 
 
 --
+-- Name: river_basin_monitoring_stations fk_rails_0c3b795205; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.river_basin_monitoring_stations
+    ADD CONSTRAINT fk_rails_0c3b795205 FOREIGN KEY (monitoring_station_id) REFERENCES public.monitoring_stations(id);
+
+
+--
 -- Name: sensors fk_rails_0d0b7ffa32; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4345,6 +4421,14 @@ ALTER TABLE ONLY public.solid_queue_blocked_executions
 
 ALTER TABLE ONLY public.flood_zones
     ADD CONSTRAINT fk_rails_5fd5bc5f87 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
+
+
+--
+-- Name: river_basin_monitoring_stations fk_rails_66b3dc9fa5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.river_basin_monitoring_stations
+    ADD CONSTRAINT fk_rails_66b3dc9fa5 FOREIGN KEY (river_basin_id) REFERENCES public.river_basins(id);
 
 
 --
@@ -4450,6 +4534,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260831012141'),
 ('20260818195012'),
 ('20260818193850'),
 ('20260818184054'),

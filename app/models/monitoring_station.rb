@@ -5,6 +5,13 @@ class MonitoringStation < ApplicationRecord
   has_many :sensors, dependent: :destroy
   has_many :sensor_readings, through: :sensors
 
+  # Mirror of RiverBasin#configured_monitoring_stations — every basin this
+  # station is configured to feed, not just its home river_basin.
+  has_many :river_basin_monitoring_stations, dependent: :destroy
+  has_many :configured_for_basins, through: :river_basin_monitoring_stations, source: :river_basin
+
+  after_create :configure_for_home_basin
+
   validates :external_id, :name, :data_source, presence: true
   validates :external_id, uniqueness: { scope: :data_source }
 
@@ -56,5 +63,14 @@ class MonitoringStation < ApplicationRecord
 
   def record_fetch_failure!
     update!(connection_status: "disconnected", last_failed_fetch_at: Time.current)
+  end
+
+  private
+
+  # A newly created station starts out configured to feed its own home basin —
+  # the least-surprising default. Additional (or fewer) configured basins are
+  # then managed explicitly via river_basin_monitoring_stations.
+  def configure_for_home_basin
+    river_basin_monitoring_stations.create!(river_basin_id: river_basin_id) if river_basin_id
   end
 end

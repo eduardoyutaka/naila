@@ -1,0 +1,13 @@
+# Backfilled 1:1 pairs mirroring each station's home river_basin — the shape every
+# existing station gets after the migration's data backfill.
+belem_cemaden_centro:
+  river_basin: bacia_belem
+  monitoring_station: cemaden_centro
+
+belem_estacao_belem:
+  river_basin: bacia_belem
+  monitoring_station: estacao_belem
+
+barigui_estacao_barigui:
+  river_basin: bacia_barigui
+  monitoring_station: estacao_barigui

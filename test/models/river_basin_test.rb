@@ -64,4 +64,26 @@ class RiverBasinTest < ActiveSupport::TestCase
     assert_equal RiverBasin.count, RiverBasin.search_by_name("").count
     assert_equal RiverBasin.count, RiverBasin.search_by_name(nil).count
   end
+
+  # ── Configured monitoring stations ──
+
+  test "configured_monitoring_stations returns stations joined through river_basin_monitoring_stations" do
+    assert_equal [ monitoring_stations(:estacao_barigui) ], river_basins(:bacia_barigui).configured_monitoring_stations.to_a
+  end
+
+  test "a station can be configured for more than one basin" do
+    shared_station = monitoring_stations(:estacao_belem)
+    river_basins(:bacia_barigui).configured_monitoring_stations << shared_station
+
+    assert_includes river_basins(:bacia_belem).configured_monitoring_stations, shared_station
+    assert_includes river_basins(:bacia_barigui).configured_monitoring_stations, shared_station
+  end
+
+  test "configured_sensors reads through configured_monitoring_stations, not the home monitoring_station" do
+    basin = RiverBasin.create!(name: "Bacia Sem Estação Própria")
+    assert_empty basin.configured_sensors
+
+    basin.configured_monitoring_stations << monitoring_stations(:estacao_belem)
+    assert_includes basin.configured_sensors, sensors(:pluv_belem)
+  end
 end

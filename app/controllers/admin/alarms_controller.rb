@@ -102,13 +102,13 @@ module Admin
       @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
     end
 
-    # Mirrors the sensors MetricDataCollector#collect_precipitation actually reads from
-    # (radius-based Sensor.nearby_pluviometers, not the basin's "designated" 1:1
-    # monitoring_station, which can be a different, currently-silent station).
+    # Mirrors the sensors MetricDataCollector#collect_precipitation actually reads from —
+    # the basin's configured_sensors, not its home monitoring_station.
     def precipitation_readings
       return nil unless @alarm.metric_name == "precipitation" && @alarm.river_basin.present?
 
-      SensorReading.where(sensor_id: Sensor.nearby_pluviometers(@alarm.river_basin)).by_type("precipitation")
+      sensors = @alarm.river_basin.configured_sensors.sensor_type_pluviometer.status_active
+      SensorReading.where(sensor_id: sensors).by_type("precipitation")
     end
 
     def alarm_summary_counts(scope)

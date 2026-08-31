@@ -5,6 +5,14 @@ class RiverBasin < ApplicationRecord
   has_many :sensors, through: :monitoring_stations
   has_many :sensor_readings, through: :sensors
   has_many :alarms, dependent: :nullify
+
+  # Which station(s) actually feed this basin's metrics/alarms — distinct from
+  # #monitoring_stations above, which is ownership (a station's home basin). A
+  # station can be configured here for more than one basin; MetricDataCollector
+  # reads through this association, not the home FK.
+  has_many :river_basin_monitoring_stations, dependent: :destroy
+  has_many :configured_monitoring_stations, through: :river_basin_monitoring_stations, source: :monitoring_station
+  has_many :configured_sensors, through: :configured_monitoring_stations, source: :sensors
   has_many :evacuation_routes, dependent: :destroy
   has_many :flood_zones, dependent: :destroy
 

@@ -31,7 +31,7 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_nil result
   end
 
-  test "precipitation returns nil when the basin has no pluviometer sensors nearby" do
+  test "precipitation returns nil when the basin has no configured monitoring stations" do
     basin = RiverBasin.create!(name: "Sem sensores #{SecureRandom.hex(4)}", active: true)
     result = MetricDataCollector.collect(
       metric_name: "precipitation",
@@ -40,6 +40,29 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
       period_end: Time.current
     )
     assert_nil result
+  end
+
+  test "a station configured for two basins feeds both independently" do
+    # bacia_barigui's own station (estacao_barigui) is under maintenance/no readings —
+    # sharing bacia_belem's station makes it start reading real precipitation too,
+    # with no effect on bacia_belem's own numbers.
+    river_basins(:bacia_barigui).configured_monitoring_stations << monitoring_stations(:estacao_belem)
+
+    shared_result = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: river_basins(:bacia_barigui),
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+    original_result = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: @basin,
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+
+    assert_in_delta 20.7, shared_result, 0.1
+    assert_equal original_result, shared_result
   end
 
   test "SampleCount still returns 0.0 (not nil) when no readings in window" do
