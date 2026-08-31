@@ -247,6 +247,51 @@ class AlarmTest < ActiveSupport::TestCase
     assert_empty AlarmStateHistory.where(id: history_ids)
   end
 
+  # ── effective_monitoring_stations ──
+
+  test "effective_monitoring_stations falls back to the basin's configured stations when none are scoped" do
+    alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem
+    assert_equal alarm.river_basin.configured_monitoring_stations.to_a, alarm.effective_monitoring_stations.to_a
+  end
+
+  test "effective_monitoring_stations reads only the explicitly scoped stations, not the whole basin" do
+    alarm = alarms(:precip_3h_belem)
+    station = monitoring_stations(:estacao_belem)
+    alarm.monitoring_stations << station
+
+    assert_equal [ station ], alarm.effective_monitoring_stations.to_a
+  end
+
+  test "effective_monitoring_stations is empty for a basin-less alarm with no explicit stations" do
+    alarm = alarms(:disabled_alarm) # no river_basin
+    assert_empty alarm.effective_monitoring_stations
+  end
+
+  # ── Scoped station validation ──
+
+  test "invalid when a scoped station isn't configured for the alarm's basin" do
+    alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem, configured: cemaden_centro + estacao_belem
+    alarm.monitoring_stations << monitoring_stations(:estacao_barigui) # configured for bacia_barigui, not bacia_belem
+
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:monitoring_stations], "deve pertencer às estações configuradas da bacia"
+  end
+
+  test "invalid when stations are scoped but the alarm has no river_basin" do
+    alarm = alarms(:disabled_alarm)
+    alarm.monitoring_stations << monitoring_stations(:estacao_belem)
+
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:monitoring_stations], "deve pertencer às estações configuradas da bacia"
+  end
+
+  test "valid when a scoped station is configured for the alarm's basin" do
+    alarm = alarms(:precip_3h_belem)
+    alarm.monitoring_stations << monitoring_stations(:estacao_belem)
+
+    assert alarm.valid?
+  end
+
   # ── State Machine: transition_to! ──
 
   test "transition_to! changes state" do

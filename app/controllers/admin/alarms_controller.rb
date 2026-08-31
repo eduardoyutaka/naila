@@ -103,11 +103,13 @@ module Admin
     end
 
     # Mirrors the sensors MetricDataCollector#collect_precipitation actually reads from —
-    # the basin's configured_sensors, not its home monitoring_station.
+    # the alarm's effective_monitoring_stations (its own scope if set, else the whole
+    # basin's configured_sensors).
     def precipitation_readings
       return nil unless @alarm.metric_name == "precipitation" && @alarm.river_basin.present?
 
-      sensors = @alarm.river_basin.configured_sensors.sensor_type_pluviometer.status_active
+      sensors = Sensor.where(monitoring_station: @alarm.effective_monitoring_stations)
+                      .sensor_type_pluviometer.status_active
       SensorReading.where(sensor_id: sensors).by_type("precipitation")
     end
 
@@ -121,13 +123,18 @@ module Admin
     end
 
     def alarm_params
-      params.require(:alarm).permit(
+      permitted = params.require(:alarm).permit(
         :name, :description, :alarm_type, :enabled,
         :river_basin_id, :river_id,
         :metric_name, :statistic, :period_seconds, :evaluation_periods,
         :datapoints_to_alarm, :missing_data_treatment,
-        alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]
+        alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ],
+        monitoring_station_ids: []
       )
+      if permitted.key?(:monitoring_station_ids)
+        permitted[:monitoring_station_ids] = Array(permitted[:monitoring_station_ids]).reject(&:blank?)
+      end
+      permitted
     end
   end
 end

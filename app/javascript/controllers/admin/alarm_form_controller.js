@@ -1,10 +1,34 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit"]
+  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationRow"]
 
   connect() {
     this.#updateSubmitState()
+    this.filterStations()
+  }
+
+  // Shows only the station checkboxes configured for the currently selected basin
+  // (unchecking + hiding the rest), so the list narrows as soon as a basin is picked.
+  // With no basin selected, every configured station stays visible — the alarm's own
+  // basin-membership validation is the actual source of truth at save time.
+  filterStations() {
+    if (!this.hasStationRowTarget) return
+
+    const basinSelect = this.element.querySelector("select[name='alarm[river_basin_id]']")
+    const basinId = basinSelect?.value
+
+    this.stationRowTargets.forEach(row => {
+      if (!basinId) {
+        row.hidden = false
+        return
+      }
+
+      const basinIds = JSON.parse(row.dataset.basinIds || "[]").map(String)
+      const matches = basinIds.includes(basinId)
+      row.hidden = !matches
+      if (!matches) row.querySelector("input[type=checkbox]").checked = false
+    })
   }
 
   addThreshold() {

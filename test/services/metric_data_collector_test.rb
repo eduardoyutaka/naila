@@ -102,6 +102,39 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 46.8, result, 0.2
   end
 
+  test "collecting with an explicit monitoring_stations scope reads only that station" do
+    # bacia_belem is configured with both cemaden_centro (no readings fixture) and
+    # estacao_belem (12.5+8.2 = 20.7 in the last hour) — scoping to just cemaden_centro
+    # should see nothing, proving the scope actually narrows the query.
+    scoped_to_empty_station = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: @basin,
+      monitoring_stations: [ monitoring_stations(:cemaden_centro) ],
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+    scoped_to_data_station = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: @basin,
+      monitoring_stations: [ monitoring_stations(:estacao_belem) ],
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+
+    assert_nil scoped_to_empty_station
+    assert_in_delta 20.7, scoped_to_data_station, 0.1
+  end
+
+  test "omitting monitoring_stations preserves the basin-wide default" do
+    result = MetricDataCollector.collect(
+      metric_name: "precipitation",
+      river_basin: @basin,
+      period_start: 1.hour.ago,
+      period_end: Time.current
+    )
+    assert_in_delta 20.7, result, 0.1
+  end
+
   # ── unknown metric ──
 
   test "returns nil for unknown metric_name" do
