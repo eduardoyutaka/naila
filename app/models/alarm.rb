@@ -17,6 +17,11 @@ class Alarm < ApplicationRecord
   has_many :alarm_actions, dependent: :destroy
   has_many :alarm_state_histories, dependent: :destroy
 
+  # Optional narrowing of which of the basin's configured stations this alarm
+  # reads — see #effective_monitoring_stations.
+  has_many :alarm_monitoring_stations, dependent: :destroy
+  has_many :monitoring_stations, through: :alarm_monitoring_stations
+
   accepts_nested_attributes_for :alarm_thresholds, allow_destroy: true, reject_if: :all_blank
 
   # ── Validations ──
@@ -33,6 +38,7 @@ class Alarm < ApplicationRecord
   validates :missing_data_treatment, inclusion: { in: MISSING_DATA_TREATMENTS }, allow_nil: true
   validate :datapoints_cannot_exceed_evaluation_periods, if: -> { datapoints_to_alarm.present? && evaluation_periods.present? }
   validate :metric_alarm_requires_threshold_band
+  validate :monitoring_stations_must_be_configured_for_basin
 
   # ── Scopes ──
 
@@ -69,6 +75,14 @@ class Alarm < ApplicationRecord
 
   def metric?
     alarm_type == "metric"
+  end
+
+  # The stations this alarm actually reads. An explicit selection (monitoring_stations)
+  # narrows down to just those; with none selected, it falls back to every station
+  # configured for the alarm's basin (see RiverBasin#configured_monitoring_stations) —
+  # the same basin-wide behavior alarms had before scoping existed.
+  def effective_monitoring_stations
+    monitoring_stations.presence || river_basin&.configured_monitoring_stations || MonitoringStation.none
   end
 
   # ── State machine ──
@@ -147,6 +161,15 @@ class Alarm < ApplicationRecord
   def metric_alarm_requires_threshold_band
     if alarm_thresholds.reject(&:marked_for_destruction?).empty?
       errors.add(:base, "deve ter ao menos uma faixa de limiar")
+    end
+  end
+
+  def monitoring_stations_must_be_configured_for_basin
+    return if monitoring_stations.empty?
+
+    configured_ids = river_basin ? river_basin.configured_monitoring_station_ids : []
+    unless monitoring_stations.map(&:id).all? { |id| configured_ids.include?(id) }
+      errors.add(:monitoring_stations, "deve pertencer às estações configuradas da bacia")
     end
   end
 end
