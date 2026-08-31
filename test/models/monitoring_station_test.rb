@@ -108,4 +108,18 @@ class MonitoringStationTest < ActiveSupport::TestCase
     unknown.connection_status = "unknown"
     assert_not unknown.stale?
   end
+
+  # ── Configured basins (mirror of RiverBasin#configured_monitoring_stations) ──
+
+  test "configured_for_basins returns basins this station is configured to feed" do
+    assert_equal [ river_basins(:bacia_belem) ], monitoring_stations(:estacao_belem).configured_for_basins.to_a
+  end
+
+  test "configured_for_basins includes every basin sharing this station, not just its home basin" do
+    station = monitoring_stations(:estacao_belem) # home basin: bacia_belem
+    river_basins(:bacia_barigui).configured_monitoring_stations << station
+
+    assert_includes station.configured_for_basins, river_basins(:bacia_belem)
+    assert_includes station.configured_for_basins, river_basins(:bacia_barigui)
+  end
 end

@@ -5,6 +5,11 @@ class MonitoringStation < ApplicationRecord
   has_many :sensors, dependent: :destroy
   has_many :sensor_readings, through: :sensors
 
+  # Mirror of RiverBasin#configured_monitoring_stations — every basin this
+  # station is configured to feed, not just its home river_basin.
+  has_many :river_basin_monitoring_stations, dependent: :destroy
+  has_many :configured_for_basins, through: :river_basin_monitoring_stations, source: :river_basin
+
   validates :external_id, :name, :data_source, presence: true
   validates :external_id, uniqueness: { scope: :data_source }
 
