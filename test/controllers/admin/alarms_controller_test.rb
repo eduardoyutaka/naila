@@ -342,6 +342,12 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Vigilância/
   end
 
+  test "edit displays a checklist of stations configured for some basin" do
+    get edit_admin_alarm_path(alarms(:precip_3h_belem))
+    configured_station_count = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.count
+    assert_select "input[type='checkbox'][name='alarm[monitoring_station_ids][]']", count: configured_station_count
+  end
+
   # ── Create ──
 
   test "create with valid params creates alarm and redirects" do
@@ -419,6 +425,30 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     }
     assert_redirected_to admin_alarm_path(alarm)
     assert_equal "Alarme Atualizado", alarm.reload.name
+  end
+
+  test "update can scope the alarm to a specific station configured for its basin" do
+    alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem
+    station = monitoring_stations(:estacao_belem) # configured for bacia_belem
+
+    patch admin_alarm_path(alarm), params: {
+      alarm: { monitoring_station_ids: [ station.id ] }
+    }
+
+    assert_redirected_to admin_alarm_path(alarm)
+    assert_equal [ station ], alarm.reload.monitoring_stations.to_a
+  end
+
+  test "update rejects a station not configured for the alarm's basin" do
+    alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem
+    foreign_station = monitoring_stations(:estacao_barigui) # configured for bacia_barigui
+
+    patch admin_alarm_path(alarm), params: {
+      alarm: { monitoring_station_ids: [ foreign_station.id ] }
+    }
+
+    assert_response :unprocessable_entity
+    assert_empty alarm.reload.monitoring_stations
   end
 
   test "operator cannot update alarms" do
