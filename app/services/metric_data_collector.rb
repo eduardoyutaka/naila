@@ -4,14 +4,15 @@ class MetricDataCollector
   # Alarm#metric_name's inclusion validation, so the two can't drift apart.
   SUPPORTED_METRICS = %w[precipitation forecast_precip].freeze
 
-  def self.collect(metric_name:, river_basin:, river: nil, period_start:, period_end:, statistic: nil)
-    new(river_basin: river_basin, river: river).collect(metric_name, period_start, period_end, statistic)
+  def self.collect(metric_name:, river_basin:, monitoring_stations: nil, river: nil, period_start:, period_end:, statistic: nil)
+    new(river_basin: river_basin, monitoring_stations: monitoring_stations, river: river)
+      .collect(metric_name, period_start, period_end, statistic)
   end
 
   def self.history_series(alarm:, periods:)
     now = Time.current
     length = alarm.period_seconds.seconds
-    collector = new(river_basin: alarm.river_basin, river: alarm.river)
+    collector = new(river_basin: alarm.river_basin, monitoring_stations: alarm.monitoring_stations, river: alarm.river)
 
     (0...periods).map { |i|
       period_end = now - (i * length)
@@ -28,7 +29,7 @@ class MetricDataCollector
   def self.history_series_for_range(alarm:, from:, to:, max_points: 96)
     bucket_seconds = [ alarm.period_seconds, ((to - from) / max_points).ceil ].max
     periods = ((to - from) / bucket_seconds).ceil
-    collector = new(river_basin: alarm.river_basin, river: alarm.river)
+    collector = new(river_basin: alarm.river_basin, monitoring_stations: alarm.monitoring_stations, river: alarm.river)
 
     (0...periods).map { |i|
       period_end = [ to - (i * bucket_seconds), from ].max
@@ -37,8 +38,9 @@ class MetricDataCollector
     }.reverse
   end
 
-  def initialize(river_basin:, river: nil)
+  def initialize(river_basin:, monitoring_stations: nil, river: nil)
     @river_basin = river_basin
+    @monitoring_stations = monitoring_stations
     @river = river
   end
 
@@ -54,7 +56,7 @@ class MetricDataCollector
   private
 
   def collect_precipitation(period_start, period_end, statistic)
-    sensors = @river_basin.configured_sensors.sensor_type_pluviometer.status_active
+    sensors = effective_sensors
     return nil if sensors.none?
 
     readings = SensorReading.where(sensor_id: sensors)
@@ -62,6 +64,13 @@ class MetricDataCollector
                             .where(recorded_at: period_start..period_end)
 
     apply_statistic(readings, statistic || "Sum")
+  end
+
+  # Explicit stations (alarm-level scoping) win when present; otherwise every
+  # sensor configured for the basin (see RiverBasin#configured_sensors).
+  def effective_sensors
+    scope = @monitoring_stations.presence ? Sensor.where(monitoring_station: @monitoring_stations) : @river_basin.configured_sensors
+    scope.sensor_type_pluviometer.status_active
   end
 
   def collect_forecast_precip(period_start, period_end)

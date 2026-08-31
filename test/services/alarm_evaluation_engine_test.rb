@@ -23,6 +23,24 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     assert_equal 1, alarm.alarm_state_histories.count
   end
 
+  test "an alarm scoped to a single station only reads that station's data" do
+    # bacia_belem is configured with both cemaden_centro (no readings fixture) and
+    # estacao_belem (~20.7mm in the last hour) — scoping this alarm to the empty
+    # station only should evaluate as insufficient_data, not pick up the other one.
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "precipitation",
+      threshold_value: 10.0,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+    alarm.monitoring_stations << monitoring_stations(:cemaden_centro)
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "insufficient_data", alarm.reload.state
+  end
+
   test "keeps metric alarm in ok when threshold not breached" do
     alarm = create_metric_alarm(
       state: "ok",

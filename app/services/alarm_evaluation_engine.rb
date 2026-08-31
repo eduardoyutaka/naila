@@ -42,6 +42,7 @@ class AlarmEvaluationEngine
       value = MetricDataCollector.collect(
         metric_name: @alarm.metric_name,
         river_basin: @alarm.river_basin,
+        monitoring_stations: @alarm.monitoring_stations,
         river: @alarm.river,
         period_start: period_start,
         period_end: period_end,
