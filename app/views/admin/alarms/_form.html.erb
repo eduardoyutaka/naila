@@ -37,32 +37,21 @@
       </div>
       <%= form.description "Selecione apenas um escopo, ou deixe ambos vazios para escopo global." %>
 
-      <%# Estações — narrows which of the basin's configured stations this alarm reads. %>
-      <div class="flex flex-col gap-4 rounded-lg border border-zinc-950/10 bg-zinc-50 p-4 dark:border-white/10 dark:bg-zinc-800">
-        <div>
-          <p class="text-sm font-semibold text-zinc-950 dark:text-white">Estações</p>
-          <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-            Restrinja este alarme a uma ou mais estações configuradas para a bacia selecionada
-            acima. Deixe tudo desmarcado para usar todas as estações configuradas da bacia.
-          </p>
-        </div>
-
-        <% configured_stations = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.order(:name) %>
-        <% if configured_stations.any? %>
-          <div data-admin--alarm-form-target="stationList" class="flex max-h-72 flex-col gap-3 overflow-y-auto">
-            <%= form.collection_check_boxes :monitoring_station_ids, configured_stations, :id, :name do |b| %>
-              <label class="flex cursor-pointer items-center gap-3"
-                     data-admin--alarm-form-target="stationRow"
-                     data-basin-ids="<%= b.object.configured_for_basins.pluck(:id).to_json %>">
-                <%= b.check_box(class: "size-4 rounded-[0.3125rem] border border-zinc-950/15 bg-white shadow-sm checked:border-transparent checked:bg-white dark:bg-zinc-900 focus:outline-2 focus:outline-offset-2 focus:outline-blue-500 dark:bg-white/5 dark:border-white/15 dark:checked:bg-zinc-600") %>
-                <span class="text-sm text-zinc-950 dark:text-white"><%= b.object.name %></span>
-              </label>
-            <% end %>
-          </div>
-        <% else %>
-          <p class="text-sm text-zinc-500 dark:text-zinc-400">Nenhuma estação configurada em nenhuma bacia ainda.</p>
+      <%# Estação — narrows this alarm to a single one of the basin's configured stations. %>
+      <% configured_stations = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.order(:name) %>
+      <% if configured_stations.any? %>
+        <% station_options = configured_stations.map { |s|
+             [ s.name, s.id, { data: { "admin--alarm-form-target": "stationOption", basin_ids: s.configured_for_basins.pluck(:id).to_json } } ]
+           } %>
+        <%= form.field do %>
+          <%= form.label :monitoring_station_id, "Estação" %>
+          <%= form.select :monitoring_station_id,
+                options_for_select(station_options, alarm.monitoring_station_id),
+                { include_blank: "— Todas as estações da bacia —" },
+                data: { "admin--alarm-form-target": "stationSelect" } %>
         <% end %>
-      </div>
+        <%= form.description "Restrinja este alarme a uma única estação configurada para a bacia selecionada acima. Deixe em branco para usar todas as estações configuradas da bacia." %>
+      <% end %>
 
       <%# Status %>
       <%= form.field do %>

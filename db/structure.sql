@@ -64,38 +64,6 @@ ALTER SEQUENCE public.alarm_actions_id_seq OWNED BY public.alarm_actions.id;
 
 
 --
--- Name: alarm_monitoring_stations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.alarm_monitoring_stations (
-    id bigint NOT NULL,
-    alarm_id bigint NOT NULL,
-    monitoring_station_id bigint NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: alarm_monitoring_stations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.alarm_monitoring_stations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: alarm_monitoring_stations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.alarm_monitoring_stations_id_seq OWNED BY public.alarm_monitoring_stations.id;
-
-
---
 -- Name: alarm_state_histories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -200,7 +168,8 @@ CREATE TABLE public.alarms (
     alert_value double precision,
     high_alert_value double precision,
     emergency_value double precision,
-    episode_peak_severity integer
+    episode_peak_severity integer,
+    monitoring_station_id bigint
 );
 
 
@@ -1899,13 +1868,6 @@ ALTER TABLE ONLY public.alarm_actions ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: alarm_monitoring_stations id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alarm_monitoring_stations ALTER COLUMN id SET DEFAULT nextval('public.alarm_monitoring_stations_id_seq'::regclass);
-
-
---
 -- Name: alarm_state_histories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2142,14 +2104,6 @@ ALTER TABLE ONLY public.weather_observations ALTER COLUMN id SET DEFAULT nextval
 
 ALTER TABLE ONLY public.alarm_actions
     ADD CONSTRAINT alarm_actions_pkey PRIMARY KEY (id);
-
-
---
--- Name: alarm_monitoring_stations alarm_monitoring_stations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alarm_monitoring_stations
-    ADD CONSTRAINT alarm_monitoring_stations_pkey PRIMARY KEY (id);
 
 
 --
@@ -2625,13 +2579,6 @@ ALTER TABLE ONLY public.weather_observations
 
 
 --
--- Name: idx_alarm_station_uniqueness; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_alarm_station_uniqueness ON public.alarm_monitoring_stations USING btree (alarm_id, monitoring_station_id);
-
-
---
 -- Name: idx_basin_station_uniqueness; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2664,20 +2611,6 @@ CREATE INDEX index_alarm_actions_on_alarm_id ON public.alarm_actions USING btree
 --
 
 CREATE INDEX index_alarm_actions_on_alarm_id_and_trigger_state ON public.alarm_actions USING btree (alarm_id, trigger_state);
-
-
---
--- Name: index_alarm_monitoring_stations_on_alarm_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alarm_monitoring_stations_on_alarm_id ON public.alarm_monitoring_stations USING btree (alarm_id);
-
-
---
--- Name: index_alarm_monitoring_stations_on_monitoring_station_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alarm_monitoring_stations_on_monitoring_station_id ON public.alarm_monitoring_stations USING btree (monitoring_station_id);
 
 
 --
@@ -2727,6 +2660,13 @@ CREATE INDEX index_alarms_on_current_severity ON public.alarms USING btree (curr
 --
 
 CREATE INDEX index_alarms_on_enabled_and_alarm_type ON public.alarms USING btree (enabled, alarm_type);
+
+
+--
+-- Name: index_alarms_on_monitoring_station_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_monitoring_station_id ON public.alarms USING btree (monitoring_station_id);
 
 
 --
@@ -4396,14 +4336,6 @@ ALTER INDEX public.index_sensor_readings_on_sensor_id_and_recorded_at ATTACH PAR
 
 
 --
--- Name: alarm_monitoring_stations fk_rails_00af7f2801; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alarm_monitoring_stations
-    ADD CONSTRAINT fk_rails_00af7f2801 FOREIGN KEY (alarm_id) REFERENCES public.alarms(id);
-
-
---
 -- Name: river_basin_monitoring_stations fk_rails_0c3b795205; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4417,14 +4349,6 @@ ALTER TABLE ONLY public.river_basin_monitoring_stations
 
 ALTER TABLE ONLY public.sensors
     ADD CONSTRAINT fk_rails_0d0b7ffa32 FOREIGN KEY (monitoring_station_id) REFERENCES public.monitoring_stations(id);
-
-
---
--- Name: alarm_monitoring_stations fk_rails_0faeb81f4d; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alarm_monitoring_stations
-    ADD CONSTRAINT fk_rails_0faeb81f4d FOREIGN KEY (monitoring_station_id) REFERENCES public.monitoring_stations(id);
 
 
 --
@@ -4580,6 +4504,14 @@ ALTER TABLE ONLY public.solid_queue_scheduled_executions
 
 
 --
+-- Name: alarms fk_rails_cec9564d21; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms
+    ADD CONSTRAINT fk_rails_cec9564d21 FOREIGN KEY (monitoring_station_id) REFERENCES public.monitoring_stations(id);
+
+
+--
 -- Name: notification_rule_users fk_rails_e7feafc408; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4618,6 +4550,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260831023016'),
 ('20260831020257'),
 ('20260831012141'),
 ('20260818195012'),

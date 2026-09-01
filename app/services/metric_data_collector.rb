@@ -12,7 +12,7 @@ class MetricDataCollector
   def self.history_series(alarm:, periods:)
     now = Time.current
     length = alarm.period_seconds.seconds
-    collector = new(river_basin: alarm.river_basin, monitoring_stations: alarm.monitoring_stations, river: alarm.river)
+    collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station), river: alarm.river)
 
     (0...periods).map { |i|
       period_end = now - (i * length)
@@ -29,7 +29,7 @@ class MetricDataCollector
   def self.history_series_for_range(alarm:, from:, to:, max_points: 96)
     bucket_seconds = [ alarm.period_seconds, ((to - from) / max_points).ceil ].max
     periods = ((to - from) / bucket_seconds).ceil
-    collector = new(river_basin: alarm.river_basin, monitoring_stations: alarm.monitoring_stations, river: alarm.river)
+    collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station), river: alarm.river)
 
     (0...periods).map { |i|
       period_end = [ to - (i * bucket_seconds), from ].max
