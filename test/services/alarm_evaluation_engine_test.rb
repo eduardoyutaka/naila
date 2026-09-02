@@ -34,7 +34,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       evaluation_periods: 1,
       datapoints_to_alarm: 1
     )
-    alarm.monitoring_stations << monitoring_stations(:cemaden_centro)
+    alarm.update!(monitoring_station: monitoring_stations(:cemaden_centro))
 
     AlarmEvaluationEngine.evaluate_alarm(alarm)
 

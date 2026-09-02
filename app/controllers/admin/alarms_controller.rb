@@ -123,18 +123,13 @@ module Admin
     end
 
     def alarm_params
-      permitted = params.require(:alarm).permit(
+      params.require(:alarm).permit(
         :name, :description, :alarm_type, :enabled,
-        :river_basin_id, :river_id,
+        :river_basin_id, :river_id, :monitoring_station_id,
         :metric_name, :statistic, :period_seconds, :evaluation_periods,
         :datapoints_to_alarm, :missing_data_treatment,
-        alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ],
-        monitoring_station_ids: []
+        alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]
       )
-      if permitted.key?(:monitoring_station_ids)
-        permitted[:monitoring_station_ids] = Array(permitted[:monitoring_station_ids]).reject(&:blank?)
-      end
-      permitted
     end
   end
 end

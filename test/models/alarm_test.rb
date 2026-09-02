@@ -254,40 +254,40 @@ class AlarmTest < ActiveSupport::TestCase
     assert_equal alarm.river_basin.configured_monitoring_stations.to_a, alarm.effective_monitoring_stations.to_a
   end
 
-  test "effective_monitoring_stations reads only the explicitly scoped stations, not the whole basin" do
+  test "effective_monitoring_stations reads only the explicitly scoped station, not the whole basin" do
     alarm = alarms(:precip_3h_belem)
     station = monitoring_stations(:estacao_belem)
-    alarm.monitoring_stations << station
+    alarm.monitoring_station = station
 
-    assert_equal [ station ], alarm.effective_monitoring_stations.to_a
+    assert_equal [ station ], alarm.effective_monitoring_stations
   end
 
-  test "effective_monitoring_stations is empty for a basin-less alarm with no explicit stations" do
+  test "effective_monitoring_stations is empty for a basin-less alarm with no explicit station" do
     alarm = alarms(:disabled_alarm) # no river_basin
     assert_empty alarm.effective_monitoring_stations
   end
 
   # ── Scoped station validation ──
 
-  test "invalid when a scoped station isn't configured for the alarm's basin" do
+  test "invalid when the scoped station isn't configured for the alarm's basin" do
     alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem, configured: cemaden_centro + estacao_belem
-    alarm.monitoring_stations << monitoring_stations(:estacao_barigui) # configured for bacia_barigui, not bacia_belem
+    alarm.monitoring_station = monitoring_stations(:estacao_barigui) # configured for bacia_barigui, not bacia_belem
 
     assert_not alarm.valid?
-    assert_includes alarm.errors[:monitoring_stations], "deve pertencer às estações configuradas da bacia"
+    assert_includes alarm.errors[:monitoring_station], "deve pertencer às estações configuradas da bacia"
   end
 
-  test "invalid when stations are scoped but the alarm has no river_basin" do
+  test "invalid when a station is scoped but the alarm has no river_basin" do
     alarm = alarms(:disabled_alarm)
-    alarm.monitoring_stations << monitoring_stations(:estacao_belem)
+    alarm.monitoring_station = monitoring_stations(:estacao_belem)
 
     assert_not alarm.valid?
-    assert_includes alarm.errors[:monitoring_stations], "deve pertencer às estações configuradas da bacia"
+    assert_includes alarm.errors[:monitoring_station], "deve pertencer às estações configuradas da bacia"
   end
 
-  test "valid when a scoped station is configured for the alarm's basin" do
+  test "valid when the scoped station is configured for the alarm's basin" do
     alarm = alarms(:precip_3h_belem)
-    alarm.monitoring_stations << monitoring_stations(:estacao_belem)
+    alarm.monitoring_station = monitoring_stations(:estacao_belem)
 
     assert alarm.valid?
   end

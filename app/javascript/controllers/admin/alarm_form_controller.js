@@ -1,34 +1,38 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationRow"]
+  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationSelect", "stationOption"]
 
   connect() {
     this.#updateSubmitState()
     this.filterStations()
   }
 
-  // Shows only the station checkboxes configured for the currently selected basin
-  // (unchecking + hiding the rest), so the list narrows as soon as a basin is picked.
-  // With no basin selected, every configured station stays visible — the alarm's own
-  // basin-membership validation is the actual source of truth at save time.
+  // Shows only the station options configured for the currently selected basin
+  // (hiding + deselecting the rest if the selection falls out of scope), so the
+  // dropdown narrows as soon as a basin is picked. With no basin selected, every
+  // configured station stays visible — the alarm's own basin-membership validation
+  // is the actual source of truth at save time.
   filterStations() {
-    if (!this.hasStationRowTarget) return
+    if (!this.hasStationOptionTarget) return
 
     const basinSelect = this.element.querySelector("select[name='alarm[river_basin_id]']")
     const basinId = basinSelect?.value
+    let selectedHidden = false
 
-    this.stationRowTargets.forEach(row => {
+    this.stationOptionTargets.forEach(option => {
       if (!basinId) {
-        row.hidden = false
+        option.hidden = false
         return
       }
 
-      const basinIds = JSON.parse(row.dataset.basinIds || "[]").map(String)
+      const basinIds = JSON.parse(option.dataset.basinIds || "[]").map(String)
       const matches = basinIds.includes(basinId)
-      row.hidden = !matches
-      if (!matches) row.querySelector("input[type=checkbox]").checked = false
+      option.hidden = !matches
+      if (!matches && option.selected) selectedHidden = true
     })
+
+    if (selectedHidden && this.hasStationSelectTarget) this.stationSelectTarget.value = ""
   }
 
   addThreshold() {
