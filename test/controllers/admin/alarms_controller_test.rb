@@ -73,6 +73,13 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
   end
 
+  test "index filters by severity" do
+    get admin_alarms_path(q: { severity: "3" })
+    assert_response :success
+    assert_select "td", text: /Alerta de Enchente Belém/
+    assert_select "td", text: /Precipitação 3h Bacia Belém/, count: 0
+  end
+
   test "index shows clear filters link when filters return no results" do
     get admin_alarms_path(q: { search: "nonexistent" })
     assert_response :success

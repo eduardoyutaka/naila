@@ -12,11 +12,12 @@ module Admin
       base_scope = policy_scope(Alarm).includes(:river_basin, :river)
       @summary_counts = alarm_summary_counts(base_scope)
 
-      q = filter_params(:search, :state, :enabled)
+      q = filter_params(:search, :state, :enabled, :severity)
       scope = base_scope
       scope = scope.search_by_name(q[:search]) if q[:search].present?
       scope = scope.by_state(q[:state])        if q[:state].present?
       scope = scope.by_enabled(q[:enabled])    if q[:enabled].present?
+      scope = scope.by_severity(q[:severity])  if q[:severity].present?
 
       @pagy, @alarms = pagy(scope.order(enabled: :desc, name: :asc))
     end

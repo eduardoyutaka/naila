@@ -46,6 +46,7 @@ class Alarm < ApplicationRecord
   scope :in_alarm, -> { where(state: "alarm") }
   scope :by_state, ->(s) { where(state: s) }
   scope :by_enabled, ->(val) { where(enabled: val) }
+  scope :by_severity, ->(val) { where(current_severity: val) }
   scope :search_by_name, ->(term) { where("name ILIKE ?", "%#{sanitize_sql_like(term)}%") if term.present? }
   # Alarms with a meaningful current_severity — "ok" (0, Vigilância) or "alarm" (1..4).
   # Excludes "insufficient_data", whose current_severity is always nil (genuinely unknown,
