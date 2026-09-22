@@ -76,26 +76,14 @@ class AlarmEvaluationEngine
   def determine_state(datapoints)
     missing_count = datapoints.count { |dp| dp["breaching_severity"].nil? }
     total = datapoints.size
-    treatment = @alarm.missing_data_treatment || "missing"
 
-    return ["insufficient_data", nil] if missing_count == total && treatment == "missing"
+    return ["insufficient_data", nil] if missing_count == total
 
-    # Find the highest severity with enough breaching periods
+    # Find the highest severity with enough breaching periods. Missing periods
+    # never count as breaching — an outage should never look like a worsening
+    # reading.
     [4, 3, 2, 1].each do |sev|
-      effective_breaching = 0
-
-      datapoints.each do |dp|
-        if dp["breaching_severity"].nil?
-          case treatment
-          when "breaching"    then effective_breaching += 1
-          when "notBreaching" then nil
-          when "ignore", "missing" then next
-          end
-        else
-          effective_breaching += 1 if dp["breaching_severity"] >= sev
-        end
-      end
-
+      effective_breaching = datapoints.count { |dp| dp["breaching_severity"] && dp["breaching_severity"] >= sev }
       return ["alarm", sev] if effective_breaching >= @alarm.datapoints_to_alarm
     end
 

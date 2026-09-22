@@ -33,8 +33,7 @@ module Admin
 
     def new
       @alarm = Alarm.new(alarm_type: "metric", enabled: true,
-                         evaluation_periods: 1, datapoints_to_alarm: 1,
-                         missing_data_treatment: "missing")
+                         evaluation_periods: 1, datapoints_to_alarm: 1)
       authorize @alarm
       @alarm.alarm_thresholds.build(severity: 1)
     end
@@ -128,7 +127,7 @@ module Admin
         :name, :description, :alarm_type, :enabled,
         :river_basin_id, :river_id, :monitoring_station_id,
         :metric_name, :statistic, :period_seconds, :evaluation_periods,
-        :datapoints_to_alarm, :missing_data_treatment,
+        :datapoints_to_alarm,
         alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]
       )
     end

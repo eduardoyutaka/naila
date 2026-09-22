@@ -92,12 +92,6 @@ class AlarmTest < ActiveSupport::TestCase
     assert_not alarm.valid?
   end
 
-  test "invalid with unknown missing_data_treatment" do
-    alarm = alarms(:precip_3h_belem)
-    alarm.missing_data_treatment = "unknown"
-    assert_not alarm.valid?
-  end
-
   test "invalid with an unsupported metric_name" do
     alarm = alarms(:precip_3h_belem)
     # risk_score is leftover from the removed RiskEngine — MetricDataCollector has

@@ -82,8 +82,8 @@ class MetricDataCollector
 
   # nil means "no data" (not "confirmed zero") for every statistic except
   # SampleCount, where a count of 0 readings is itself a real, meaningful
-  # answer — AlarmEvaluationEngine relies on this nil to trigger
-  # missing_data_treatment instead of silently evaluating "0mm, all clear".
+  # answer — AlarmEvaluationEngine relies on this nil to treat the period as
+  # missing instead of silently evaluating "0mm, all clear".
   def apply_statistic(readings, statistic)
     return readings.count.to_f if statistic == "SampleCount"
     return nil unless readings.exists?

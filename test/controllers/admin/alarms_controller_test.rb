@@ -160,8 +160,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     alarm = Alarm.new(
       name: "Window Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
       river_basin: basin, metric_name: "precipitation", statistic: "Sum",
-      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1,
-      missing_data_treatment: "missing"
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
                                   threshold_value: 10.0, unit: "mm")
@@ -191,8 +190,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     alarm = Alarm.new(
       name: "Range Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
       river_basin: basin, metric_name: "precipitation", statistic: "Sum",
-      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1,
-      missing_data_treatment: "missing"
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
                                   threshold_value: 10.0, unit: "mm")
@@ -224,8 +222,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     alarm = Alarm.new(
       name: "Chart Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
       river_basin: basin, metric_name: "precipitation", statistic: "Sum",
-      period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1,
-      missing_data_treatment: "missing"
+      period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
                                   threshold_value: 10.0, unit: "mm")
@@ -270,8 +267,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     alarm = Alarm.new(
       name: "Stale Chart Alarm #{suffix}", alarm_type: "metric", enabled: true,
       river_basin: basin, metric_name: "precipitation", statistic: "Sum",
-      period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1,
-      missing_data_treatment: "missing"
+      period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
                                   threshold_value: 10.0, unit: "mm")
@@ -372,7 +368,6 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
           period_seconds: 3600,
           evaluation_periods: 1,
           datapoints_to_alarm: 1,
-          missing_data_treatment: "missing",
           alarm_thresholds_attributes: {
             "0" => { severity: 2, comparison_operator: "GreaterThanThreshold", threshold_value: 50.0, unit: "mm" }
           }
@@ -412,7 +407,6 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
           period_seconds: 3600,
           evaluation_periods: 1,
           datapoints_to_alarm: 1,
-          missing_data_treatment: "missing",
           alarm_thresholds_attributes: {
             "0" => { severity: 1, comparison_operator: "GreaterThanThreshold", threshold_value: 10.0, unit: "mm" }
           }

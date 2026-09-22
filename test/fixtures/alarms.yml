@@ -13,7 +13,6 @@ precip_3h_belem:
   period_seconds: 3600
   evaluation_periods: 3
   datapoints_to_alarm: 2
-  missing_data_treatment: missing
   last_evaluated_at: <%= 10.minutes.ago.iso8601 %>
   last_datapoints:
     - period: 1
@@ -42,7 +41,6 @@ flood_alert_belem:
   period_seconds: 3600
   evaluation_periods: 3
   datapoints_to_alarm: 2
-  missing_data_treatment: missing
   last_evaluated_at: <%= 5.minutes.ago.iso8601 %>
   last_datapoints:
     - period: 1
@@ -66,4 +64,3 @@ disabled_alarm:
   period_seconds: 3600
   evaluation_periods: 1
   datapoints_to_alarm: 1
-  missing_data_treatment: notBreaching

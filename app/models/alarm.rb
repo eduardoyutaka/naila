@@ -6,7 +6,6 @@ class Alarm < ApplicationRecord
     GreaterThanThreshold LessThanThreshold
     GreaterThanOrEqualToThreshold LessThanOrEqualToThreshold
   ].freeze
-  MISSING_DATA_TREATMENTS = %w[missing notBreaching breaching ignore].freeze
 
   # ── Associations ──
 
@@ -34,7 +33,6 @@ class Alarm < ApplicationRecord
   validates :period_seconds, presence: true, numericality: { greater_than: 0 }
   validates :evaluation_periods, presence: true, numericality: { greater_than: 0 }
   validates :datapoints_to_alarm, presence: true, numericality: { greater_than: 0 }
-  validates :missing_data_treatment, inclusion: { in: MISSING_DATA_TREATMENTS }, allow_nil: true
   validate :datapoints_cannot_exceed_evaluation_periods, if: -> { datapoints_to_alarm.present? && evaluation_periods.present? }
   validate :metric_alarm_requires_threshold_band
   validate :monitoring_station_must_be_configured_for_basin

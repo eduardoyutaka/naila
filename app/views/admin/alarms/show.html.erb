@@ -204,7 +204,6 @@
             </div>
           <% end %>
         <% end %>
-        <%= catalyst_dt "Dados Ausentes" %><%= catalyst_dd(t("enums.missing_data_treatment.#{@alarm.missing_data_treatment}", default: @alarm.missing_data_treatment)) %>
         <%= catalyst_dt "Escopo" %><%= catalyst_dd(@alarm.river&.name || @alarm.river_basin&.name || "Global") %>
       <% end %>
     </div>

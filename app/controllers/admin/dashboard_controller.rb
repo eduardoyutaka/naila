@@ -9,8 +9,8 @@ module Admin
       # current_severity is now explicit (0 for "ok"/Vigilância, 1..4 for "alarm") — one
       # query covers the whole 0..4 bucket set, no more hand-rolled synthesis of bucket 0.
       @alarms_by_severity = Alarm.enabled.evaluated.group(:current_severity).count
-      @active_sensors = Sensor.online.count
-      @total_sensors = Sensor.count
+      @connected_stations = MonitoringStation.connection_status_connected.count
+      @total_stations = MonitoringStation.count
       @monitoring_stations = MonitoringStation.where.not(location: nil).includes(:neighborhood, :river, :sensors)
       @active_alarm_severity_by_basin = Alarm.max_severity_by_basin
       @flood_zones = FloodZone.order(:return_period)

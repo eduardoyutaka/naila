@@ -36,11 +36,6 @@ pt-BR:
       ok: OK
       alarm: Alarme
       insufficient_data: Dados Insuficientes
-    missing_data_treatment:
-      missing: Ausente
-      notBreaching: Não viola
-      breaching: Viola
-      ignore: Ignorar
     monitoring_station_status:
       active: Ativo
       maintenance: Manutenção

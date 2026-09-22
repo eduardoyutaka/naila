@@ -156,7 +156,6 @@ CREATE TABLE public.alarms (
     period_seconds integer,
     evaluation_periods integer,
     datapoints_to_alarm integer,
-    missing_data_treatment character varying DEFAULT 'missing'::character varying,
     last_evaluated_at timestamp(6) without time zone,
     last_datapoints jsonb DEFAULT '[]'::jsonb,
     created_at timestamp(6) without time zone NOT NULL,
@@ -4550,6 +4549,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260922232913'),
 ('20260831023016'),
 ('20260831020257'),
 ('20260831012141'),

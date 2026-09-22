@@ -294,7 +294,6 @@ basins.each do |basin_name, basin|
       period_seconds: 3600,
       evaluation_periods: 3,
       datapoints_to_alarm: 2,
-      missing_data_treatment: "missing",
       state: "insufficient_data"
     )
     precip_bands.each do |band|

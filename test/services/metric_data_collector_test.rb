@@ -19,9 +19,9 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
   end
 
   test "precipitation returns nil when no readings in window" do
-    # nil, not 0.0, is what signals "missing" to AlarmEvaluationEngine's
-    # missing_data_treatment — a flat 0.0 here would masquerade as "confirmed
-    # no rain" during e.g. a CEMADEN outage, when really we have no idea.
+    # nil, not 0.0, is what signals "missing" to AlarmEvaluationEngine —
+    # a flat 0.0 here would masquerade as "confirmed no rain" during e.g.
+    # a CEMADEN outage, when really we have no idea.
     result = MetricDataCollector.collect(
       metric_name: "precipitation",
       river_basin: @basin,

@@ -109,36 +109,26 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     assert_equal "ok", alarm.reload.state
   end
 
-  # ── Missing data treatment ──
+  # ── Missing data ──
 
   # Most missing-data tests use the forecast_precip metric because it's the
   # simplest way to control which periods have data. Precipitation signals
   # "missing" the same way (MetricDataCollector returns nil, not 0.0, when
   # there are no readings in the window) — see the precipitation-specific
   # test below, which is the actual real-world scenario (e.g. a CEMADEN outage).
-  test "missing data treatment 'breaching' counts missing periods as breaching" do
+  test "missing periods are never counted as breaching" do
     WeatherForecast.delete_all
-    basin = RiverBasin.create!(name: "Missing-breaching #{SecureRandom.hex(4)}", active: true)
-    alarm = create_metric_alarm(
-      state: "ok",
-      metric_name: "forecast_precip",
-      statistic: "Maximum",
-      threshold_value: 100.0,
-      period_seconds: 60,
-      evaluation_periods: 3,
-      datapoints_to_alarm: 2,
-      missing_data_treatment: "breaching",
-      river_basin: basin
+    basin = RiverBasin.create!(name: "Missing-not-breaching #{SecureRandom.hex(4)}", active: true)
+    # One forecast in period 1 (0-1min ago) below threshold; periods 2 and 3 have no data.
+    # Without the old "breaching" treatment, these missing periods must not push the
+    # alarm to fire even though 2 of 3 periods are missing.
+    WeatherForecast.create!(
+      source: "open_meteo",
+      issued_at: 1.hour.ago,
+      valid_from: 30.seconds.ago,
+      valid_until: 30.seconds.from_now,
+      precipitation_mm: 10.0
     )
-
-    AlarmEvaluationEngine.evaluate_alarm(alarm)
-
-    assert_equal "alarm", alarm.reload.state
-  end
-
-  test "missing data treatment 'notBreaching' counts missing periods as ok" do
-    WeatherForecast.delete_all
-    basin = RiverBasin.create!(name: "Missing-notbreaching #{SecureRandom.hex(4)}", active: true)
     alarm = create_metric_alarm(
       state: "ok",
       metric_name: "forecast_precip",
@@ -147,7 +137,6 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       period_seconds: 60,
       evaluation_periods: 3,
       datapoints_to_alarm: 2,
-      missing_data_treatment: "notBreaching",
       river_basin: basin
     )
 
@@ -156,7 +145,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     assert_equal "ok", alarm.reload.state
   end
 
-  test "all periods missing with treatment 'missing' transitions to insufficient_data" do
+  test "all periods missing transitions to insufficient_data" do
     WeatherForecast.delete_all
     basin = RiverBasin.create!(name: "Missing-insufficient #{SecureRandom.hex(4)}", active: true)
     alarm = create_metric_alarm(
@@ -167,7 +156,6 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       period_seconds: 60,
       evaluation_periods: 3,
       datapoints_to_alarm: 2,
-      missing_data_treatment: "missing",
       river_basin: basin
     )
 
@@ -187,7 +175,6 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       threshold_value: 10.0,
       evaluation_periods: 1,
       datapoints_to_alarm: 1,
-      missing_data_treatment: "missing",
       river_basin: basin
     )
 
@@ -196,9 +183,9 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     assert_equal "insufficient_data", alarm.reload.state
   end
 
-  test "missing data treatment 'ignore' skips missing periods" do
+  test "missing periods are skipped, not counted against the threshold, when some periods have data" do
     WeatherForecast.delete_all
-    basin = RiverBasin.create!(name: "Missing-ignore #{SecureRandom.hex(4)}", active: true)
+    basin = RiverBasin.create!(name: "Missing-partial #{SecureRandom.hex(4)}", active: true)
     # One forecast in period 1 (0-2h ago); periods 2 (2-4h) and 3 (4-6h) empty
     WeatherForecast.create!(
       source: "open_meteo",
@@ -215,7 +202,6 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       period_seconds: 7200,
       evaluation_periods: 3,
       datapoints_to_alarm: 1,
-      missing_data_treatment: "ignore",
       river_basin: basin
     )
 
@@ -425,8 +411,7 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
       alarm_type: "metric",
       river_basin: @basin,
       statistic: "Sum",
-      period_seconds: 3600,
-      missing_data_treatment: "missing"
+      period_seconds: 3600
     }
     merged = defaults.merge(overrides)
     # Mirror the invariant transition_to! maintains: an "ok" alarm's current_severity

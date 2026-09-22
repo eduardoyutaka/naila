@@ -175,13 +175,6 @@
             </div>
           </template>
         </div>
-
-        <%# Missing data %>
-        <%= form.field do %>
-          <%= form.label :missing_data_treatment, "Tratamento de Dados Ausentes" %>
-          <%= form.select :missing_data_treatment,
-                Alarm::MISSING_DATA_TREATMENTS.map { |v| [t("enums.missing_data_treatment.#{v}"), v] } %>
-        <% end %>
       <% end %>
     </div>
 
