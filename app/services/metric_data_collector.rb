@@ -22,18 +22,26 @@ class MetricDataCollector
   end
 
   # Like history_series, but bucketed over an explicit [from, to] range instead of a
-  # fixed period count walked back from now — for a user-picked chart window. Bucket
-  # size is never finer than the alarm's own period_seconds (no fabricated resolution)
-  # and coarsens automatically once the range would otherwise exceed max_points buckets,
-  # so a wide range doesn't render hundreds of bars.
-  def self.history_series_for_range(alarm:, from:, to:, max_points: 96)
-    bucket_seconds = [ alarm.period_seconds, ((to - from) / max_points).ceil ].max
-    periods = ((to - from) / bucket_seconds).ceil
+  # fixed period count walked back from now — for a user-picked chart window.
+  #
+  # Each point is a rolling accumulation over the alarm's own period_seconds (the same
+  # window the alarm itself evaluates), sampled every `step_seconds` — decoupled from
+  # period_seconds so a long-period alarm (e.g. a 24h rolling precipitation sum) still
+  # renders several overlapping points instead of collapsing the whole chart window
+  # into a single bucket. The step never goes finer than period_seconds itself (no
+  # fabricated resolution below what the alarm evaluates), and coarsens automatically
+  # once the range would otherwise exceed max_points points, so a wide range doesn't
+  # render hundreds of bars.
+  def self.history_series_for_range(alarm:, from:, to:, step_seconds: 1.hour.to_i, max_points: 96)
+    window_seconds = alarm.period_seconds
+    step = [ window_seconds, step_seconds ].min
+    step = [ step, ((to - from) / max_points).ceil ].max
+    periods = ((to - from) / step).ceil
     collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station), river: alarm.river)
 
     (0...periods).map { |i|
-      period_end = [ to - (i * bucket_seconds), from ].max
-      value = collector.collect(alarm.metric_name, period_end - bucket_seconds, period_end, alarm.statistic)
+      period_end = [ to - (i * step), from ].max
+      value = collector.collect(alarm.metric_name, period_end - window_seconds, period_end, alarm.statistic)
       { period_end: period_end, value: value }
     }.reverse
   end

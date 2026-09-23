@@ -230,6 +230,36 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_equal 1, series.length
   end
 
+  # ── history_series_for_range: rolling window for long-period alarms ──
+
+  test "history_series_for_range samples a long-period alarm hourly instead of collapsing to one bucket" do
+    # A 24h rolling-sum alarm over the default-sized 48h chart window used to collapse
+    # to a single bucket (bucket_seconds == period_seconds >= half the window). It must
+    # now resample at the default hourly step instead.
+    alarm = Alarm.new(river_basin: @basin, metric_name: "precipitation", statistic: "Sum", period_seconds: 24.hours.to_i)
+    to = Time.current
+
+    series = MetricDataCollector.history_series_for_range(alarm: alarm, from: to - 48.hours, to: to)
+
+    assert_equal 48, series.length
+    gaps = series.each_cons(2).map { |a, b| b[:period_end] - a[:period_end] }
+    assert gaps.all? { |g| (g - 1.hour).abs < 1 }, "expected hourly steps, got #{gaps}"
+  end
+
+  test "history_series_for_range's rolling points each cover the alarm's full period_seconds window, not just the step" do
+    alarm = Alarm.new(river_basin: @basin, metric_name: "precipitation", statistic: "Sum", period_seconds: 24.hours.to_i)
+    to = Time.current
+
+    series = MetricDataCollector.history_series_for_range(alarm: alarm, from: to - 48.hours, to: to)
+    latest = series.last
+
+    direct = MetricDataCollector.collect(
+      metric_name: "precipitation", river_basin: @basin,
+      period_start: latest[:period_end] - 24.hours, period_end: latest[:period_end], statistic: "Sum"
+    )
+    assert_equal direct, latest[:value]
+  end
+
   # ── metric list consistency ──
 
   test "every supported metric has an I18n display label, so nothing renders as a raw key" do
