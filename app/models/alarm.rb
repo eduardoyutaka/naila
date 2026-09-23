@@ -37,6 +37,11 @@ class Alarm < ApplicationRecord
   validate :metric_alarm_requires_threshold_band
   validate :monitoring_station_must_be_configured_for_basin
   validate :forecast_source_required_for_forecast_metric
+  validate :river_must_belong_to_selected_basin
+
+  # A river always belongs to exactly one basin — so scoping to a river alone already
+  # implies its basin; the "select only one" hint on the alarm form relies on this.
+  before_validation :derive_river_basin_from_river
 
   # ── Scopes ──
 
@@ -79,10 +84,13 @@ class Alarm < ApplicationRecord
   # The stations this alarm actually reads. An explicit monitoring_station narrows
   # down to just that one; with none selected, it falls back to every station
   # configured for the alarm's basin (see RiverBasin#configured_monitoring_stations) —
-  # the same basin-wide behavior alarms had before scoping existed.
+  # the same basin-wide behavior alarms had before scoping existed. A scoped river
+  # narrows that basin-wide set further, to just the stations on that river.
   def effective_monitoring_stations
     return [ monitoring_station ] if monitoring_station
-    river_basin&.configured_monitoring_stations || MonitoringStation.none
+
+    stations = river_basin&.configured_monitoring_stations || MonitoringStation.none
+    river ? stations.where(river_id: river.id) : stations
   end
 
   # ── State machine ──
@@ -171,6 +179,19 @@ class Alarm < ApplicationRecord
     unless configured_ids.include?(monitoring_station.id)
       errors.add(:monitoring_station, "deve pertencer às estações configuradas da bacia")
     end
+  end
+
+  def derive_river_basin_from_river
+    self.river_basin_id ||= river&.river_basin_id
+  end
+
+  # Catches a contradictory explicit pairing (the river form field, if set, must agree
+  # with whichever basin is explicitly selected) — derive_river_basin_from_river only
+  # fills river_basin_id in when it was left blank, so a real conflict still surfaces here.
+  def river_must_belong_to_selected_basin
+    return unless river && river_basin
+
+    errors.add(:river, "deve pertencer à bacia selecionada") if river.river_basin_id != river_basin_id
   end
 
   # forecast_precip has no monitoring_station/river_basin data dependency (see

@@ -35,7 +35,7 @@
                 { include_blank: "— Nenhum —" } %>
         <% end %>
       </div>
-      <%= form.description "Selecione apenas um escopo, ou deixe ambos vazios para escopo global." %>
+      <%= form.description "Bacia inclui todas as suas estações configuradas; Rio restringe às estações daquele rio (a bacia é preenchida automaticamente). Selecione apenas um, ou deixe ambos vazios para escopo global." %>
 
       <%# Estação — narrows this alarm to a single one of the basin's configured stations. %>
       <% configured_stations = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.order(:name) %>

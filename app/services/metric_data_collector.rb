@@ -91,10 +91,18 @@ class MetricDataCollector
     apply_statistic(readings, statistic || "Sum")
   end
 
-  # Explicit stations (alarm-level scoping) win when present; otherwise every
-  # sensor configured for the basin (see RiverBasin#configured_sensors).
+  # Explicit stations (alarm-level scoping) win when present; otherwise every sensor
+  # configured for the basin (see RiverBasin#configured_sensors), narrowed further to
+  # the scoped river's stations when one is set (mirrors Alarm#effective_monitoring_stations).
   def effective_sensors
-    scope = @monitoring_stations.presence ? Sensor.where(monitoring_station: @monitoring_stations) : @river_basin.configured_sensors
+    scope = if @monitoring_stations.presence
+      Sensor.where(monitoring_station: @monitoring_stations)
+    elsif @river
+      @river_basin.configured_sensors.where(monitoring_station: @river.monitoring_stations)
+    else
+      @river_basin.configured_sensors
+    end
+
     scope.sensor_type_pluviometer.status_active
   end
 
