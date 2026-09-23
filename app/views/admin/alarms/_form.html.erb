@@ -22,35 +22,29 @@
       <% end %>
 
       <%# Escopo %>
-      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <%= form.field do %>
-          <%= form.label :river_basin_id, "Bacia Hidrográfica" %>
-          <%= form.collection_select :river_basin_id, RiverBasin.order(:name), :id, :name,
-                { include_blank: "— Nenhuma —" },
-                data: { action: "change->admin--alarm-form#filterStations" } %>
-        <% end %>
-        <%= form.field do %>
-          <%= form.label :river_id, "Rio" %>
-          <%= form.collection_select :river_id, River.order(:name), :id, :name,
-                { include_blank: "— Nenhum —" } %>
-        <% end %>
-      </div>
-      <%= form.description "Bacia inclui todas as suas estações configuradas; Rio restringe às estações daquele rio (a bacia é preenchida automaticamente). Selecione apenas um, ou deixe ambos vazios para escopo global." %>
+      <%= form.field do %>
+        <%= form.label :river_basin_id, "Bacia Hidrográfica" %>
+        <%= form.collection_select :river_basin_id, RiverBasin.order(:name), :id, :name,
+              { include_blank: "— Nenhuma —" },
+              data: { action: "change->admin--alarm-form#filterStations" } %>
+      <% end %>
+      <%= form.description "Alarmes de Precipitação exigem uma estação abaixo (escolhida entre as configuradas para a bacia); deixe em branco para escopo global (usado por outras métricas, como Previsão de Precipitação)." %>
 
-      <%# Estação — narrows this alarm to a single one of the basin's configured stations. %>
+      <%# Estação — required for precipitation (a pooled multi-station reading isn't a
+          meaningful accumulated value); irrelevant for forecast_precip, which has no
+          station dependency at all — hidden for that metric by toggleStationField. %>
       <% configured_stations = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.order(:name) %>
       <% if configured_stations.any? %>
         <% station_options = configured_stations.map { |s|
              [ s.name, s.id, { data: { "admin--alarm-form-target": "stationOption", basin_ids: s.configured_for_basins.pluck(:id).to_json } } ]
            } %>
-        <%= form.field do %>
+        <%= form.field data: { "admin--alarm-form-target": "stationField" }, hidden: alarm.metric_name != "precipitation" do %>
           <%= form.label :monitoring_station_id, "Estação" %>
           <%= form.select :monitoring_station_id,
                 options_for_select(station_options, alarm.monitoring_station_id),
-                { include_blank: "— Todas as estações da bacia —" },
+                { include_blank: "— Selecione —" },
                 data: { "admin--alarm-form-target": "stationSelect" } %>
         <% end %>
-        <%= form.description "Restrinja este alarme a uma única estação configurada para a bacia selecionada acima. Deixe em branco para usar todas as estações configuradas da bacia." %>
       <% end %>
 
       <%# Status %>
@@ -72,7 +66,7 @@
             <%= form.select :metric_name,
                   MetricDataCollector::SUPPORTED_METRICS.map { |m| [t("enums.metric_name.#{m}"), m] },
                   { include_blank: "— Selecione —" },
-                  data: { action: "change->admin--alarm-form#toggleForecastSourceField" } %>
+                  data: { action: "change->admin--alarm-form#toggleForecastSourceField change->admin--alarm-form#toggleStationField" } %>
           <% end %>
           <%= form.field do %>
             <%= form.label :statistic, "Estatística" %>

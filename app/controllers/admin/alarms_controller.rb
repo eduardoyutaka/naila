@@ -9,7 +9,7 @@ module Admin
     before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history ]
 
     def index
-      base_scope = policy_scope(Alarm).includes(:river_basin, :river)
+      base_scope = policy_scope(Alarm).includes(:river_basin)
       @summary_counts = alarm_summary_counts(base_scope)
 
       q = filter_params(:search, :state, :enabled, :severity)
@@ -136,7 +136,7 @@ module Admin
     def alarm_params
       params.require(:alarm).permit(
         :name, :description, :alarm_type, :enabled,
-        :river_basin_id, :river_id, :monitoring_station_id,
+        :river_basin_id, :monitoring_station_id,
         :metric_name, :forecast_source, :statistic, :period_seconds, :evaluation_periods,
         :datapoints_to_alarm,
         alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]

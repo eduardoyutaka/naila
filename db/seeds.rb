@@ -289,6 +289,7 @@ basins.each do |basin_name, basin|
       alarm_type: "metric",
       enabled: true,
       river_basin: basin,
+      monitoring_station: basin.monitoring_stations.first,
       metric_name: "precipitation",
       statistic: "Sum",
       period_seconds: 3600,

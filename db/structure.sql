@@ -150,7 +150,6 @@ CREATE TABLE public.alarms (
     state_reason text,
     enabled boolean DEFAULT true NOT NULL,
     river_basin_id bigint,
-    river_id bigint,
     metric_name character varying,
     statistic character varying,
     period_seconds integer,
@@ -2684,13 +2683,6 @@ CREATE INDEX index_alarms_on_river_basin_id_and_state ON public.alarms USING btr
 
 
 --
--- Name: index_alarms_on_river_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_alarms_on_river_id ON public.alarms USING btree (river_id);
-
-
---
 -- Name: index_alarms_on_state; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4384,14 +4376,6 @@ ALTER TABLE ONLY public.solid_queue_recurring_executions
 
 
 --
--- Name: alarms fk_rails_354fe3b1fd; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.alarms
-    ADD CONSTRAINT fk_rails_354fe3b1fd FOREIGN KEY (river_id) REFERENCES public.rivers(id) ON DELETE SET NULL;
-
-
---
 -- Name: solid_queue_failed_executions fk_rails_39bbc7a631; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4550,6 +4534,8 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260923025400'),
+('20260923025340'),
 ('20260923021303'),
 ('20260923012127'),
 ('20260923005658'),

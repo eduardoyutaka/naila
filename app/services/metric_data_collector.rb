@@ -4,8 +4,8 @@ class MetricDataCollector
   # Alarm#metric_name's inclusion validation, so the two can't drift apart.
   SUPPORTED_METRICS = %w[precipitation forecast_precip].freeze
 
-  def self.collect(metric_name:, river_basin:, monitoring_stations: nil, river: nil, forecast_source: nil, period_start:, period_end:, statistic: nil)
-    new(river_basin: river_basin, monitoring_stations: monitoring_stations, river: river, forecast_source: forecast_source)
+  def self.collect(metric_name:, river_basin:, monitoring_stations: nil, forecast_source: nil, period_start:, period_end:, statistic: nil)
+    new(river_basin: river_basin, monitoring_stations: monitoring_stations, forecast_source: forecast_source)
       .collect(metric_name, period_start, period_end, statistic)
   end
 
@@ -13,7 +13,7 @@ class MetricDataCollector
     now = Time.current
     length = alarm.period_seconds.seconds
     collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station),
-                     river: alarm.river, forecast_source: alarm.forecast_source)
+                     forecast_source: alarm.forecast_source)
 
     (0...periods).map { |i|
       period_end = now - (i * length)
@@ -45,7 +45,7 @@ class MetricDataCollector
     step = [ step, ((to - from) / max_points).ceil ].max
     periods = ((to - from) / step).ceil
     collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station),
-                     river: alarm.river, forecast_source: alarm.forecast_source)
+                     forecast_source: alarm.forecast_source)
 
     points = (0...periods).map { |i|
       if direction == :forward
@@ -62,10 +62,9 @@ class MetricDataCollector
     direction == :forward ? points : points.reverse
   end
 
-  def initialize(river_basin:, monitoring_stations: nil, river: nil, forecast_source: nil)
+  def initialize(river_basin:, monitoring_stations: nil, forecast_source: nil)
     @river_basin = river_basin
     @monitoring_stations = monitoring_stations
-    @river = river
     @forecast_source = forecast_source
   end
 
@@ -91,18 +90,12 @@ class MetricDataCollector
     apply_statistic(readings, statistic || "Sum")
   end
 
-  # Explicit stations (alarm-level scoping) win when present; otherwise every sensor
-  # configured for the basin (see RiverBasin#configured_sensors), narrowed further to
-  # the scoped river's stations when one is set (mirrors Alarm#effective_monitoring_stations).
+  # Explicit stations (alarm-level scoping) win when present; otherwise every
+  # sensor configured for the basin (see RiverBasin#configured_sensors) — generic
+  # fallback, though a precipitation alarm can never actually reach it in practice
+  # (see Alarm#monitoring_station_required_for_precipitation).
   def effective_sensors
-    scope = if @monitoring_stations.presence
-      Sensor.where(monitoring_station: @monitoring_stations)
-    elsif @river
-      @river_basin.configured_sensors.where(monitoring_station: @river.monitoring_stations)
-    else
-      @river_basin.configured_sensors
-    end
-
+    scope = @monitoring_stations.presence ? Sensor.where(monitoring_station: @monitoring_stations) : @river_basin.configured_sensors
     scope.sensor_type_pluviometer.status_active
   end
 

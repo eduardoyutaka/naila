@@ -6,8 +6,12 @@ class Admin::Alarms::StatusesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update enables a disabled alarm" do
-    alarm = alarms(:disabled_alarm)
-    assert_not alarm.enabled?
+    # precip_3h_belem, not disabled_alarm — disabled_alarm has no monitoring_station on
+    # purpose (used elsewhere for the basin-less edge case), so it can't pass full
+    # validation on update! the way a real disabled precipitation alarm would.
+    alarm = alarms(:precip_3h_belem)
+    alarm.update_column(:enabled, false)
+
     patch admin_alarm_status_path(alarm), params: { enabled: "true" }
     assert_redirected_to admin_alarm_path(alarm)
     assert alarm.reload.enabled?

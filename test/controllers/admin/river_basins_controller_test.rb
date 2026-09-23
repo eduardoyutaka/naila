@@ -33,6 +33,7 @@ class Admin::RiverBasinsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index shows empty state when no basins exist" do
+    Alarm.destroy_all # precipitation alarms hold a monitoring_station_id FK
     RiverBasin.destroy_all
     get admin_river_basins_path
     assert_select "div", text: /Nenhuma bacia hidrográfica encontrada/

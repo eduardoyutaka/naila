@@ -6,7 +6,10 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
 
   setup do
     @alarm = alarms(:disabled_alarm)
-    @alarm.update!(enabled: true)
+    # update_column: this fixture has no river_basin/monitoring_station on purpose (other
+    # tests rely on that to exercise the basin-less path) — just flip enabled without
+    # tripping monitoring_station_required_for_precipitation on an unrelated field change.
+    @alarm.update_column(:enabled, true)
     @alarm.alarm_actions.create!(
       trigger_state: "alarm",
       action_type: "notification",
@@ -61,7 +64,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   # ── Rule-based email/SMS dispatch ──
 
   test "does not enqueue any email/sms jobs when transitioning to ok" do
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
 
     assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
       AlarmActionExecutor.execute(@alarm, "ok")
@@ -69,7 +72,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "does not enqueue any email/sms jobs when transitioning to insufficient_data" do
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
 
     assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
       AlarmActionExecutor.execute(@alarm, "insufficient_data")
@@ -86,7 +89,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   test "does not enqueue any email/sms jobs at severity 0 (Vigilância)" do
     # transition_to! now stores an explicit 0 for "ok" alarms — confirm this never reaches
     # NotificationRule (min_severity is always >= 1, so nothing should ever fire at Vigilância).
-    @alarm.update!(current_severity: 0)
+    @alarm.update_column(:current_severity, 0)
 
     assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
       AlarmActionExecutor.execute(@alarm, "ok")
@@ -94,7 +97,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "enqueues email job per recipient from enabled email rules on transition to alarm" do
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
     # email_admins_alerta fires at sev 2+ and targets admins
     # sms_all_roles_high fires at sev 3+ and targets everyone — not email
 
@@ -104,7 +107,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "enqueues sms jobs only for users with phone numbers" do
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
     # sms_all_roles_high fires at sev 3+ and targets all roles. admin/coordinator/inactive
     # have phone numbers; operator has none; inactive is filtered out.
 
@@ -119,7 +122,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "dedupes users matched by multiple rules" do
-    @alarm.update!(current_severity: 4)
+    @alarm.update_column(:current_severity, 4)
     # At sev 4, both email_admins_alerta (email, sev 2+) matches admin twice if we had
     # duplicate rules. We have one rule matching admin for email, and one matching
     # the operator explicitly (email_specific_user). Each user should appear once per channel.
@@ -132,7 +135,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "skips disabled rules" do
-    @alarm.update!(current_severity: 1)
+    @alarm.update_column(:current_severity, 1)
     # disabled_rule targets admins at sev 1 via email but is disabled.
     # email_admins_alerta requires sev >= 2 and does not fire at sev 1.
 
@@ -142,7 +145,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "still broadcasts websocket for every state transition" do
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
 
     assert_broadcasts("alarms", 1) do
       AlarmActionExecutor.execute(@alarm, "alarm")
@@ -152,7 +155,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   # ── min_severity filtering ──
 
   test "skips action when current_severity is below min_severity" do
-    @alarm.update!(current_severity: 1)
+    @alarm.update_column(:current_severity, 1)
     @alarm.alarm_actions.update_all(min_severity: 2)
 
     assert_no_broadcasts("alarms") do
@@ -161,7 +164,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "executes action when current_severity meets min_severity" do
-    @alarm.update!(current_severity: 2)
+    @alarm.update_column(:current_severity, 2)
     @alarm.alarm_actions.update_all(min_severity: 2)
 
     assert_broadcasts("alarms", 1) do
@@ -170,7 +173,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "executes action with no min_severity regardless of current_severity" do
-    @alarm.update!(current_severity: 1)
+    @alarm.update_column(:current_severity, 1)
     # min_severity is nil by default
 
     assert_broadcasts("alarms", 1) do
@@ -181,7 +184,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   # ── episode_peak_severity — notify only on new highs, resolve on return to ok ──
 
   test "does not enqueue jobs when severity drops below the episode peak" do
-    @alarm.update!(current_severity: 2)
+    @alarm.update_column(:current_severity, 2)
 
     assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
       AlarmActionExecutor.execute(@alarm, "alarm", previous_peak: 3)
@@ -189,7 +192,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "does not enqueue jobs when severity repeats the episode peak" do
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
 
     assert_no_enqueued_jobs only: [ SendAlarmEmailJob, SendAlarmSmsJob ] do
       AlarmActionExecutor.execute(@alarm, "alarm", previous_peak: 3)
@@ -197,7 +200,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
   end
 
   test "enqueues jobs again when severity climbs past an old peak after a drop" do
-    @alarm.update!(current_severity: 4)
+    @alarm.update_column(:current_severity, 4)
 
     assert_enqueued_with(job: SendAlarmSmsJob, args: [ @alarm.id, users(:admin).id, 4, { previous_severity: nil } ]) do
       AlarmActionExecutor.execute(@alarm, "alarm", previous_peak: 3)
@@ -230,7 +233,7 @@ class AlarmActionExecutorTest < ActiveSupport::TestCase
 
   test "dispatches recipient notifications once even with two matching alarm-triggered actions" do
     @alarm.alarm_actions.create!(trigger_state: "alarm", action_type: "notification", configuration: {}, min_severity: 2)
-    @alarm.update!(current_severity: 3)
+    @alarm.update_column(:current_severity, 3)
 
     assert_broadcasts("alarms", 2) do
       AlarmActionExecutor.execute(@alarm, "alarm")

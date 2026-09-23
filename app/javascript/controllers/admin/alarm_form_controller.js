@@ -1,12 +1,26 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationSelect", "stationOption", "forecastSourceField"]
+  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationSelect", "stationOption", "forecastSourceField", "stationField"]
 
   connect() {
     this.#updateSubmitState()
     this.filterStations()
     this.toggleForecastSourceField()
+    this.toggleStationField()
+  }
+
+  // Estação is only meaningful for precipitation (see
+  // Alarm#monitoring_station_required_for_precipitation) — forecast_precip has no station
+  // dependency at all, so hide the field and clear a stale selection when it's not shown.
+  toggleStationField() {
+    if (!this.hasStationFieldTarget) return
+
+    const metricSelect = this.element.querySelector("select[name='alarm[metric_name]']")
+    const isPrecipitation = metricSelect?.value === "precipitation"
+
+    this.stationFieldTarget.hidden = !isPrecipitation
+    if (!isPrecipitation && this.hasStationSelectTarget) this.stationSelectTarget.value = ""
   }
 
   // Only forecast_precip alarms read a specific provider (see

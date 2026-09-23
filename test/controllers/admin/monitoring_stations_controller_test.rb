@@ -65,6 +65,7 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index shows empty state when no stations exist" do
+    Alarm.destroy_all # precipitation alarms hold a monitoring_station_id FK
     MonitoringStation.destroy_all
     get admin_monitoring_stations_path
     assert_select "div", text: /Nenhuma estação encontrada/

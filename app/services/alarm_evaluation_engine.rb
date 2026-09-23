@@ -54,7 +54,6 @@ class AlarmEvaluationEngine
         metric_name: @alarm.metric_name,
         river_basin: @alarm.river_basin,
         monitoring_stations: Array(@alarm.monitoring_station),
-        river: @alarm.river,
         forecast_source: @alarm.forecast_source,
         period_start: period_start,
         period_end: period_end,

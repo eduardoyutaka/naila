@@ -513,6 +513,17 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     # forecast_precip requires a forecast_source — default it so tests that only care
     # about unrelated behavior (e.g. missing-data semantics) don't need to specify one.
     merged[:forecast_source] ||= "open_meteo" if merged[:metric_name] == "forecast_precip"
+    # precipitation requires a monitoring_station — default to the station most of these
+    # tests' fixture readings actually live on (@basin has two configured stations, so
+    # it can't be auto-picked), or the sole station on an isolated single-station basin
+    # (see build_isolated_basin_with_pluviometer).
+    if merged[:metric_name] == "precipitation" && !merged.key?(:monitoring_station)
+      merged[:monitoring_station] = if merged[:river_basin] == @basin
+        monitoring_stations(:estacao_belem)
+      else
+        merged[:river_basin]&.configured_monitoring_stations&.first
+      end
+    end
     alarm = Alarm.new(merged)
     alarm.alarm_thresholds.build(
       severity: severity,

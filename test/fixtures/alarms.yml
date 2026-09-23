@@ -8,6 +8,7 @@ precip_3h_belem:
   state_reason: "0 of 3 evaluation periods breached threshold"
   enabled: true
   river_basin: bacia_belem
+  monitoring_station: estacao_belem
   metric_name: precipitation
   statistic: Sum
   period_seconds: 3600
@@ -35,7 +36,7 @@ flood_alert_belem:
   state_reason: "2 of 3 evaluation periods breached threshold 60.0mm (severity 3)"
   enabled: true
   river_basin: bacia_belem
-  river: belem
+  monitoring_station: estacao_belem
   metric_name: precipitation
   statistic: Sum
   period_seconds: 3600

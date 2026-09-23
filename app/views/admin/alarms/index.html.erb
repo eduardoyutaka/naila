@@ -129,7 +129,7 @@
             <% end %>
 
             <%# Escopo %>
-            <%= catalyst_td (alarm.river&.name || alarm.river_basin&.name || "Global"), class: "text-zinc-500 dark:text-zinc-300" %>
+            <%= catalyst_td (alarm.river_basin&.name || "Global"), class: "text-zinc-500 dark:text-zinc-300" %>
 
             <%# Avaliado %>
             <%= catalyst_td class: "text-zinc-500 dark:text-zinc-300" do %>

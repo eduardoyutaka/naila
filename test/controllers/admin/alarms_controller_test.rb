@@ -159,7 +159,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     alarm = Alarm.new(
       name: "Window Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
-      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      river_basin: basin, monitoring_station: station, metric_name: "precipitation", statistic: "Sum",
       period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
@@ -214,7 +214,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     alarm = Alarm.new(
       name: "Range Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
-      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      river_basin: basin, monitoring_station: station, metric_name: "precipitation", statistic: "Sum",
       period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
@@ -246,7 +246,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     alarm = Alarm.new(
       name: "Chart Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
-      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      river_basin: basin, monitoring_station: station, metric_name: "precipitation", statistic: "Sum",
       period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
@@ -291,7 +291,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     alarm = Alarm.new(
       name: "Stale Chart Alarm #{suffix}", alarm_type: "metric", enabled: true,
-      river_basin: basin, metric_name: "precipitation", statistic: "Sum",
+      river_basin: basin, monitoring_station: station, metric_name: "precipitation", statistic: "Sum",
       period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1
     )
     alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
@@ -399,6 +399,8 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
           alarm_type: "metric",
           enabled: true,
           metric_name: "precipitation",
+          river_basin_id: river_basins(:bacia_belem).id,
+          monitoring_station_id: monitoring_stations(:estacao_belem).id,
           statistic: "Sum",
           period_seconds: 3600,
           evaluation_periods: 1,
@@ -481,6 +483,8 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
           name: "Alarme do Coordenador",
           alarm_type: "metric",
           metric_name: "precipitation",
+          river_basin_id: river_basins(:bacia_belem).id,
+          monitoring_station_id: monitoring_stations(:estacao_belem).id,
           statistic: "Sum",
           period_seconds: 3600,
           evaluation_periods: 1,
@@ -530,7 +534,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :unprocessable_entity
-    assert_nil alarm.reload.monitoring_station
+    assert_equal monitoring_stations(:estacao_belem), alarm.reload.monitoring_station # unchanged from the fixture
   end
 
   test "operator cannot update alarms" do

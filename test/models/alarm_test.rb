@@ -11,7 +11,9 @@ class AlarmTest < ActiveSupport::TestCase
       statistic: "Sum",
       period_seconds: 3600,
       evaluation_periods: 3,
-      datapoints_to_alarm: 2
+      datapoints_to_alarm: 2,
+      river_basin: river_basins(:bacia_belem),
+      monitoring_station: monitoring_stations(:estacao_belem)
     )
     alarm.alarm_thresholds.build(
       severity: 2,
@@ -131,6 +133,23 @@ class AlarmTest < ActiveSupport::TestCase
     assert_includes alarm.errors[:forecast_source], "só se aplica a alarmes de previsão"
   end
 
+  test "precipitation alarm requires a monitoring_station" do
+    # A pooled multi-station sum/average isn't a meaningful accumulated value —
+    # precipitation alarms must name exactly one station.
+    alarm = alarms(:precip_3h_belem)
+    alarm.monitoring_station = nil
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:monitoring_station], "é obrigatória para alarmes de precipitação"
+  end
+
+  test "forecast_precip alarm does not require a monitoring_station" do
+    alarm = alarms(:precip_3h_belem)
+    alarm.metric_name = "forecast_precip"
+    alarm.forecast_source = "open_meteo"
+    alarm.monitoring_station = nil
+    assert alarm.valid?, alarm.errors.full_messages.to_s
+  end
+
   test "valid with any metric_name MetricDataCollector actually supports" do
     MetricDataCollector::SUPPORTED_METRICS.each do |metric_name|
       alarm = alarms(:precip_3h_belem)
@@ -223,34 +242,6 @@ class AlarmTest < ActiveSupport::TestCase
     assert_nil alarms(:disabled_alarm).river_basin
   end
 
-  test "belongs to river optionally" do
-    assert_equal rivers(:belem), alarms(:flood_alert_belem).river
-    assert_nil alarms(:precip_3h_belem).river
-  end
-
-  test "river_basin auto-derives from river when left blank" do
-    alarm = Alarm.new(
-      name: "River-only scope", alarm_type: "metric", metric_name: "precipitation",
-      statistic: "Sum", period_seconds: 3600, evaluation_periods: 1, datapoints_to_alarm: 1,
-      river: rivers(:belem)
-    )
-    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
-      threshold_value: 10.0, unit: "mm")
-
-    assert alarm.valid?
-    assert_equal river_basins(:bacia_belem), alarm.river_basin
-  end
-
-  test "invalid when the selected river belongs to a different basin than the explicitly selected one" do
-    alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem
-    alarm.river = rivers(:belem)     # river_basin: bacia_belem too — consistent, sanity check first
-    assert alarm.valid?, alarm.errors.full_messages.to_s
-
-    alarm.river_basin = river_basins(:bacia_barigui) # now mismatched with rivers(:belem)'s own basin
-    assert_not alarm.valid?
-    assert_includes alarm.errors[:river], "deve pertencer à bacia selecionada"
-  end
-
   test "has many alarm_thresholds" do
     thresholds = alarms(:flood_alert_belem).alarm_thresholds
     assert_includes thresholds, alarm_thresholds(:flood_belem_sev2)
@@ -298,8 +289,11 @@ class AlarmTest < ActiveSupport::TestCase
   # ── effective_monitoring_stations ──
 
   test "effective_monitoring_stations falls back to the basin's configured stations when none are scoped" do
-    alarm = alarms(:precip_3h_belem) # river_basin: bacia_belem
-    assert_equal alarm.river_basin.configured_monitoring_stations.to_a, alarm.effective_monitoring_stations.to_a
+    # A generic, metric-agnostic fallback on the method itself — an unsaved instance,
+    # since a real precipitation alarm can never actually have no station (see
+    # #monitoring_station_required_for_precipitation).
+    alarm = Alarm.new(river_basin: river_basins(:bacia_belem))
+    assert_equal river_basins(:bacia_belem).configured_monitoring_stations.to_a, alarm.effective_monitoring_stations.to_a
   end
 
   test "effective_monitoring_stations reads only the explicitly scoped station, not the whole basin" do
@@ -313,21 +307,6 @@ class AlarmTest < ActiveSupport::TestCase
   test "effective_monitoring_stations is empty for a basin-less alarm with no explicit station" do
     alarm = alarms(:disabled_alarm) # no river_basin
     assert_empty alarm.effective_monitoring_stations
-  end
-
-  test "effective_monitoring_stations narrows to the scoped river's stations, not the whole basin" do
-    alarm = alarms(:precip_3h_belem) # configured: cemaden_centro (no river) + estacao_belem (river: belem)
-    alarm.river = rivers(:belem)
-
-    assert_equal [ monitoring_stations(:estacao_belem) ], alarm.effective_monitoring_stations.to_a
-  end
-
-  test "an explicit monitoring_station still wins over a scoped river" do
-    alarm = alarms(:precip_3h_belem)
-    alarm.river = rivers(:belem)
-    alarm.monitoring_station = monitoring_stations(:cemaden_centro)
-
-    assert_equal [ monitoring_stations(:cemaden_centro) ], alarm.effective_monitoring_stations
   end
 
   # ── Scoped station validation ──

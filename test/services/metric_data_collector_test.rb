@@ -125,33 +125,6 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_in_delta 20.7, scoped_to_data_station, 0.1
   end
 
-  test "collecting with a river scope (no explicit station) narrows to that river's stations" do
-    # estacao_belem (river: belem, 20.7mm) is on the river; cemaden_centro (no river,
-    # no readings fixture) isn't — a river scope must exclude it from the basin-wide pool.
-    result = MetricDataCollector.collect(
-      metric_name: "precipitation",
-      river_basin: @basin,
-      river: rivers(:belem),
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-
-    assert_in_delta 20.7, result, 0.1
-  end
-
-  test "an explicit monitoring_stations scope wins over a river scope" do
-    result = MetricDataCollector.collect(
-      metric_name: "precipitation",
-      river_basin: @basin,
-      river: rivers(:belem),
-      monitoring_stations: [ monitoring_stations(:cemaden_centro) ],
-      period_start: 1.hour.ago,
-      period_end: Time.current
-    )
-
-    assert_nil result
-  end
-
   test "omitting monitoring_stations preserves the basin-wide default" do
     result = MetricDataCollector.collect(
       metric_name: "precipitation",
@@ -266,7 +239,7 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     direct = MetricDataCollector.collect(
       metric_name: alarm.metric_name,
       river_basin: alarm.river_basin,
-      river: alarm.river,
+      monitoring_stations: Array(alarm.monitoring_station),
       period_start: latest[:period_end] - alarm.period_seconds.seconds,
       period_end: latest[:period_end],
       statistic: alarm.statistic
