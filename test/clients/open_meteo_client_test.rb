@@ -8,7 +8,7 @@ class OpenMeteoClientTest < ActiveSupport::TestCase
     @fixture = file_fixture("open_meteo_forecast_response.json").read
   end
 
-  test "call returns forecast attribute hashes grouped in 3-hour buckets" do
+  test "call returns forecast attribute hashes for each hour" do
     stub_request(:get, /api\.open-meteo\.com\/v1\/forecast/)
       .to_return(status: 200, body: @fixture, headers: { "Content-Type" => "application/json" })
 
@@ -25,19 +25,30 @@ class OpenMeteoClientTest < ActiveSupport::TestCase
     assert_kind_of Numeric, forecast[:precipitation_probability]
   end
 
-  test "call groups hourly data into 3-hour buckets" do
+  test "call returns one forecast per hour, matching OpenWeatherMap's granularity" do
     stub_request(:get, /api\.open-meteo\.com\/v1\/forecast/)
       .to_return(status: 200, body: @fixture, headers: { "Content-Type" => "application/json" })
 
     result = @client.call
 
-    # 9 hours = 3 buckets of 3 hours each
-    assert_equal 3, result.size
+    # 9 hours in the fixture → 9 hourly forecasts, not 3-hour buckets
+    assert_equal 9, result.size
 
-    # First bucket: hours 0-2 → precipitation sum = 0.0 + 0.5 + 1.2 = 1.7
-    assert_in_delta 1.7, result[0][:precipitation_mm], 0.01
-    # Max probability in first bucket: 50
-    assert_equal 50, result[0][:precipitation_probability]
+    # Third hour: precipitation 1.2mm, probability 50%
+    assert_in_delta 1.2, result[2][:precipitation_mm], 0.01
+    assert_equal 50, result[2][:precipitation_probability]
+    assert_equal result[2][:valid_from] + 1.hour, result[2][:valid_until]
+  end
+
+  test "call defaults a missing (nil) precipitation reading to 0.0 instead of raising" do
+    fixture = JSON.parse(@fixture)
+    fixture["hourly"]["precipitation"][2] = nil
+    stub_request(:get, /api\.open-meteo\.com\/v1\/forecast/)
+      .to_return(status: 200, body: fixture.to_json, headers: { "Content-Type" => "application/json" })
+
+    result = @client.call
+
+    assert_equal 0.0, result[2][:precipitation_mm]
   end
 
   test "call stores raw data in each forecast hash" do

@@ -1,7 +1,6 @@
 class OpenMeteoClient < BaseClient
   LATITUDE = -25.4284
   LONGITUDE = -49.2733
-  BUCKET_HOURS = 3
   HOURLY_PARAMS = "precipitation,precipitation_probability,temperature_2m,soil_moisture_0_to_7cm,weather_code"
 
   def call
@@ -31,32 +30,24 @@ class OpenMeteoClient < BaseClient
     probability = hourly["precipitation_probability"] || []
     temperature = hourly["temperature_2m"] || []
     soil_moisture = hourly["soil_moisture_0_to_7cm"] || []
+    weather_code = hourly["weather_code"] || []
 
-    times.each_slice(BUCKET_HOURS).with_index.map do |bucket_times, _index|
-      offset = bucket_times.first ? times.index(bucket_times.first) : 0
-      bucket_size = bucket_times.size
-
-      precip_slice = precipitation[offset, bucket_size] || []
-      prob_slice = probability[offset, bucket_size] || []
-      temp_slice = temperature[offset, bucket_size] || []
-      soil_slice = soil_moisture[offset, bucket_size] || []
-
-      valid_from = Time.zone.parse(bucket_times.first)
-      valid_until = valid_from + BUCKET_HOURS.hours
+    times.each_with_index.map do |time, i|
+      valid_from = Time.zone.parse(time)
+      valid_until = valid_from + 1.hour
 
       {
         source: "open_meteo",
         issued_at: Time.current,
         valid_from: valid_from,
         valid_until: valid_until,
-        precipitation_mm: precip_slice.sum.round(2),
-        precipitation_probability: prob_slice.max || 0,
-        temperature_max_c: temp_slice.max,
-        temperature_min_c: temp_slice.min,
+        precipitation_mm: (precipitation[i] || 0.0).round(2),
+        precipitation_probability: probability[i] || 0,
+        temperature_max_c: temperature[i],
+        temperature_min_c: temperature[i],
         raw_data: {
-          "soil_moisture_avg" => soil_slice.any? ? (soil_slice.sum / soil_slice.size).round(4) : nil,
-          "hours" => bucket_times.size,
-          "weather_codes" => hourly["weather_code"]&.slice(offset, bucket_size)
+          "soil_moisture_avg" => soil_moisture[i]&.round(4),
+          "weather_codes" => [ weather_code[i] ].compact
         }
       }
     end

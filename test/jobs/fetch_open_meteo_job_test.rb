@@ -12,7 +12,7 @@ class FetchOpenMeteoJobTest < ActiveSupport::TestCase
     stub_request(:get, /api\.open-meteo\.com\/v1\/forecast/)
       .to_return(status: 200, body: @fixture, headers: { "Content-Type" => "application/json" })
 
-    assert_difference "WeatherForecast.count", 3 do
+    assert_difference "WeatherForecast.count", 9 do
       FetchOpenMeteoJob.perform_now
     end
 
