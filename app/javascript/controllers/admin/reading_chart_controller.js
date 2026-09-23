@@ -54,7 +54,9 @@ export default class extends Controller {
         formatter: (params) => {
           const p = params[0]
           if (!p) return ""
-          return `${spTime(p.axisValue)}<br/><strong>${p.value} ${unit}</strong>`
+          const val = Array.isArray(p.value) ? p.value[1] : p.value
+          const display = (val === null || val === undefined) ? "Sem dados" : `${val} ${unit}`
+          return `${spTime(p.axisValue)}<br/><strong>${display}</strong>`
         },
       },
       grid: { top: 8, right: 8, bottom: 24, left: 36 },
