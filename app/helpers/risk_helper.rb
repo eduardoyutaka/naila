@@ -78,10 +78,24 @@ module RiskHelper
   # Like severity_badge, but nil (e.g. an insufficient_data alarm has no current_severity)
   # renders as its own distinct "Dados insuficientes" badge instead of a blank one — nil must
   # never be silently treated as 0/Vigilância, since "we don't know" isn't "confirmed calm".
-  def assessment_level_badge(severity)
-    return tag.span(I18n.t("labels.insufficient_data_badge"), class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400") if severity.nil?
+  #
+  # `state:` disambiguates a nil severity for alarm_state_histories rows predating
+  # per-transition severity tracking (see 20260817235908_add_severity_to_alarm_state_histories):
+  # those rows have nil severity regardless of whether the real state was "ok", "alarm", or
+  # truly "insufficient_data". "ok" always meant severity 0, so it renders as Vigilância; an
+  # "alarm" row's exact 1-4 tier was never captured and can't be recovered, so it renders a
+  # neutral "Alarme" badge instead of falsely implying "Dados insuficientes".
+  def assessment_level_badge(severity, state: nil)
+    return severity_badge(severity) unless severity.nil?
 
-    severity_badge(severity)
+    case state
+    when "ok"
+      severity_badge(0)
+    when "alarm"
+      tag.span(I18n.t("enums.alarm_state.alarm"), class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
+    else
+      tag.span(I18n.t("labels.insufficient_data_badge"), class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400")
+    end
   end
 
   def alarm_severity_badge(severity, monitored: true)

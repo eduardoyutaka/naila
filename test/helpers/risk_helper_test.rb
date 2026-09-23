@@ -25,6 +25,22 @@ class RiskHelperTest < ActionView::TestCase
     assert_not_includes assessment_level_badge(nil), "Vigilância"
   end
 
+  test "assessment_level_badge with state: 'ok' shows Vigilância instead of Dados insuficientes for a nil severity" do
+    # alarm_state_histories rows predating per-transition severity tracking have nil severity
+    # regardless of the real state — "ok" has always meant severity 0, so it's recoverable.
+    assert_includes assessment_level_badge(nil, state: "ok"), "Vigilância"
+    assert_not_includes assessment_level_badge(nil, state: "ok"), "Dados insuficientes"
+  end
+
+  test "assessment_level_badge with state: 'alarm' shows a neutral Alarme badge for a nil severity" do
+    # The exact 1-4 tier for a legacy "alarm" row was never captured and can't be recovered —
+    # must not imply a fake tier (any bg-risk-* color) or claim "Dados insuficientes".
+    badge = assessment_level_badge(nil, state: "alarm")
+    assert_includes badge, "Alarme"
+    assert_not_includes badge, "Dados insuficientes"
+    assert_not_includes badge, "bg-risk-"
+  end
+
   test "severity_badge labels the Vigilância baseline for an explicit severity 0" do
     assert_includes severity_badge(0), "Vigilância"
     assert_includes severity_badge(0), "bg-risk-normal"

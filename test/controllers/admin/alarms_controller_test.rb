@@ -531,9 +531,10 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "show never renders an empty row, even when both severities are nil" do
+  test "show renders the real state for a legacy nil-severity row instead of a blank dash" do
     # Stale rows from before "ok" always got an explicit severity of 0 can have
-    # previous_severity: nil AND new_severity: nil — the chain must still render.
+    # previous_severity: nil AND new_severity: nil — "ok" is still recoverable via state,
+    # so only the genuinely-insufficient side should read Dados Insuficientes.
     alarm = alarms(:flood_alert_belem)
     alarm.alarm_state_histories.destroy_all
     alarm.alarm_state_histories.create!(
@@ -545,7 +546,28 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     get admin_alarm_path(alarm)
 
     assert_select "[data-testid='alarm-history']" do
-      assert_select "span", text: "Dados insuficientes", count: 2
+      assert_select "span", text: "Dados insuficientes", count: 1
+      assert_select "span", text: "Vigilância", count: 1
+    end
+  end
+
+  test "show shows a neutral Alarme badge for a legacy alarm-state row with no recoverable severity" do
+    # A legacy "ok -> alarm" row has no way to recover the exact 1-4 tier — must not claim
+    # Dados Insuficientes (that's specifically for insufficient_data) or a fake tier color.
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "ok", new_state: "alarm",
+      previous_severity: nil, new_severity: nil,
+      reason: "legacy row", evaluated_at: Time.current
+    )
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "span", text: "Vigilância", count: 1
+      assert_select "span", text: "Alarme", count: 1
+      assert_select "span", text: "Dados insuficientes", count: 0
     end
   end
 
@@ -590,7 +612,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "span", text: "—", count: 0
   end
 
-  test "history page never renders an empty row, even when both severities are nil" do
+  test "history page renders the real state for a legacy nil-severity row instead of a blank dash" do
     alarm = alarms(:flood_alert_belem)
     alarm.alarm_state_histories.destroy_all
     alarm.alarm_state_histories.create!(
@@ -601,7 +623,24 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     get history_admin_alarm_path(alarm)
 
-    assert_select "span", text: "Dados insuficientes", count: 2
+    assert_select "span", text: "Dados insuficientes", count: 1
+    assert_select "span", text: "Vigilância", count: 1
+  end
+
+  test "history page shows a neutral Alarme badge for a legacy alarm-state row with no recoverable severity" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.alarm_state_histories.destroy_all
+    alarm.alarm_state_histories.create!(
+      previous_state: "ok", new_state: "alarm",
+      previous_severity: nil, new_severity: nil,
+      reason: "legacy row", evaluated_at: Time.current
+    )
+
+    get history_admin_alarm_path(alarm)
+
+    assert_select "span", text: "Vigilância", count: 1
+    assert_select "span", text: "Alarme", count: 1
+    assert_select "span", text: "Dados insuficientes", count: 0
   end
 
 end
