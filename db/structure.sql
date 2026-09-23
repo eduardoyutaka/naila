@@ -4549,6 +4549,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260923012127'),
 ('20260923005658'),
 ('20260922232913'),
 ('20260831023016'),
