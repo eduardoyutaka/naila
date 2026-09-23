@@ -94,11 +94,22 @@ module Admin
         return
       end
 
-      @chart_bounds = precipitation_readings ? [ precipitation_readings.minimum(:recorded_at), Time.current ] : nil
-      @chart_from, @chart_to = parse_range(params[:range],
-        default_from: DEFAULT_CHART_WINDOW.ago, default_to: Time.current, bounds: @chart_bounds)
+      if @alarm.metric_name == "forecast_precip"
+        # A forecast alarm evaluates ahead of now (see AlarmEvaluationEngine#collect_period_datapoints)
+        # — the chart must look the same direction, or it'd tell a backward story for an
+        # alarm that reacts to what's coming, not what already happened.
+        forecast_max = WeatherForecast.by_source(@alarm.forecast_source).maximum(:valid_until)
+        @chart_bounds = [ Time.current, forecast_max || DEFAULT_CHART_WINDOW.from_now ]
+        @chart_from, @chart_to = parse_range(params[:range],
+          default_from: Time.current, default_to: DEFAULT_CHART_WINDOW.from_now, bounds: @chart_bounds)
+        series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: @chart_from, to: @chart_to, direction: :forward)
+      else
+        @chart_bounds = precipitation_readings ? [ precipitation_readings.minimum(:recorded_at), Time.current ] : nil
+        @chart_from, @chart_to = parse_range(params[:range],
+          default_from: DEFAULT_CHART_WINDOW.ago, default_to: Time.current, bounds: @chart_bounds)
+        series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: @chart_from, to: @chart_to)
+      end
 
-      series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: @chart_from, to: @chart_to)
       @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
     end
 
@@ -126,7 +137,7 @@ module Admin
       params.require(:alarm).permit(
         :name, :description, :alarm_type, :enabled,
         :river_basin_id, :river_id, :monitoring_station_id,
-        :metric_name, :statistic, :period_seconds, :evaluation_periods,
+        :metric_name, :forecast_source, :statistic, :period_seconds, :evaluation_periods,
         :datapoints_to_alarm,
         alarm_thresholds_attributes: [ :id, :severity, :comparison_operator, :threshold_value, :unit, :_destroy ]
       )

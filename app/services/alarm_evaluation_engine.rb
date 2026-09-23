@@ -30,20 +30,32 @@ class AlarmEvaluationEngine
 
   private
 
+  # forecast_precip looks ahead instead of back — "period 1" is the soonest upcoming
+  # window, not the most recent past one — since a forecast alarm promises to catch
+  # what's coming, not what already happened (see MetricDataCollector#collect_forecast_precip,
+  # which has no way to express "the last N hours" for data that's inherently about the
+  # future). Every other metric keeps the existing look-back behavior.
   def collect_period_datapoints
     now = Time.current
     periods = @alarm.evaluation_periods
     period_length = @alarm.period_seconds.seconds
+    forecast = @alarm.metric_name == "forecast_precip"
 
     (0...periods).map do |i|
-      period_end = now - (i * period_length)
-      period_start = period_end - period_length
+      if forecast
+        period_start = now + (i * period_length)
+        period_end = period_start + period_length
+      else
+        period_end = now - (i * period_length)
+        period_start = period_end - period_length
+      end
 
       value = MetricDataCollector.collect(
         metric_name: @alarm.metric_name,
         river_basin: @alarm.river_basin,
         monitoring_stations: Array(@alarm.monitoring_station),
         river: @alarm.river,
+        forecast_source: @alarm.forecast_source,
         period_start: period_start,
         period_end: period_end,
         statistic: @alarm.statistic

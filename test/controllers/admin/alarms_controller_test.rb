@@ -174,6 +174,31 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show renders a forward-looking chart window for a forecast_precip alarm" do
+    suffix = SecureRandom.hex(4)
+    basin = RiverBasin.create!(name: "Forecast Window Test Basin #{suffix}", active: true)
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 1.hour.from_now, valid_until: 2.hours.from_now, precipitation_mm: 5.0)
+
+    alarm = Alarm.new(
+      name: "Forecast Window Test Alarm #{suffix}", alarm_type: "metric", enabled: true,
+      river_basin: basin, metric_name: "forecast_precip", forecast_source: "open_meteo", statistic: "Maximum",
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-admin--reading-chart-readings-value]" do |elements|
+      readings = JSON.parse(elements.first["data-admin--reading-chart-readings-value"])
+      timestamps = readings.map { |ts, _| Time.iso8601(ts) }
+      assert timestamps.all? { |t| t >= Time.current - 1.minute }, "expected every point to be now or later, got #{timestamps}"
+      assert_equal timestamps.sort, timestamps
+    end
+  end
+
   test "show honours an explicit range param and clamps it to real data bounds" do
     suffix = SecureRandom.hex(4)
     basin = RiverBasin.create!(name: "Range Test Basin #{suffix}", active: true)
@@ -354,6 +379,16 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "new form includes a forecast_source field, hidden unless forecast_precip is selected" do
+    get new_admin_alarm_path
+    assert_select "[data-admin--alarm-form-target='forecastSourceField'][hidden]" do
+      assert_select "select[name='alarm[forecast_source]']" do
+        assert_select "option", text: "Open-Meteo"
+        assert_select "option", text: "OpenWeatherMap"
+      end
+    end
+  end
+
   # ── Create ──
 
   test "create with valid params creates alarm and redirects" do
@@ -376,6 +411,49 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to admin_alarm_path(Alarm.last)
     assert_equal 1, Alarm.last.alarm_thresholds.count
+  end
+
+  test "create a forecast_precip alarm with a forecast_source" do
+    assert_difference "Alarm.count", 1 do
+      post admin_alarms_path, params: {
+        alarm: {
+          name: "Alerta de Previsão Teste",
+          alarm_type: "metric",
+          enabled: true,
+          metric_name: "forecast_precip",
+          forecast_source: "open_meteo",
+          statistic: "Maximum",
+          period_seconds: 3600,
+          evaluation_periods: 3,
+          datapoints_to_alarm: 1,
+          alarm_thresholds_attributes: {
+            "0" => { severity: 2, comparison_operator: "GreaterThanThreshold", threshold_value: 20.0, unit: "mm" }
+          }
+        }
+      }
+    end
+    assert_redirected_to admin_alarm_path(Alarm.last)
+    assert_equal "open_meteo", Alarm.last.forecast_source
+  end
+
+  test "create a forecast_precip alarm without a forecast_source renders new with 422" do
+    assert_no_difference "Alarm.count" do
+      post admin_alarms_path, params: {
+        alarm: {
+          name: "Alerta de Previsão Sem Origem",
+          alarm_type: "metric",
+          metric_name: "forecast_precip",
+          statistic: "Maximum",
+          period_seconds: 3600,
+          evaluation_periods: 3,
+          datapoints_to_alarm: 1,
+          alarm_thresholds_attributes: {
+            "0" => { severity: 2, comparison_operator: "GreaterThanThreshold", threshold_value: 20.0, unit: "mm" }
+          }
+        }
+      }
+    end
+    assert_response :unprocessable_entity
   end
 
   test "create with invalid params renders new with 422" do

@@ -168,7 +168,8 @@ CREATE TABLE public.alarms (
     high_alert_value double precision,
     emergency_value double precision,
     episode_peak_severity integer,
-    monitoring_station_id bigint
+    monitoring_station_id bigint,
+    forecast_source character varying
 );
 
 
@@ -4549,6 +4550,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260923021303'),
 ('20260923012127'),
 ('20260923005658'),
 ('20260922232913'),

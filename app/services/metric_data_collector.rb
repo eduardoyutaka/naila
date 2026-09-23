@@ -4,15 +4,16 @@ class MetricDataCollector
   # Alarm#metric_name's inclusion validation, so the two can't drift apart.
   SUPPORTED_METRICS = %w[precipitation forecast_precip].freeze
 
-  def self.collect(metric_name:, river_basin:, monitoring_stations: nil, river: nil, period_start:, period_end:, statistic: nil)
-    new(river_basin: river_basin, monitoring_stations: monitoring_stations, river: river)
+  def self.collect(metric_name:, river_basin:, monitoring_stations: nil, river: nil, forecast_source: nil, period_start:, period_end:, statistic: nil)
+    new(river_basin: river_basin, monitoring_stations: monitoring_stations, river: river, forecast_source: forecast_source)
       .collect(metric_name, period_start, period_end, statistic)
   end
 
   def self.history_series(alarm:, periods:)
     now = Time.current
     length = alarm.period_seconds.seconds
-    collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station), river: alarm.river)
+    collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station),
+                     river: alarm.river, forecast_source: alarm.forecast_source)
 
     (0...periods).map { |i|
       period_end = now - (i * length)
@@ -32,24 +33,40 @@ class MetricDataCollector
   # fabricated resolution below what the alarm evaluates), and coarsens automatically
   # once the range would otherwise exceed max_points points, so a wide range doesn't
   # render hundreds of bars.
-  def self.history_series_for_range(alarm:, from:, to:, step_seconds: 1.hour.to_i, max_points: 96)
+  #
+  # `direction: :backward` (default) accumulates each point over the window ending at
+  # it — correct for an observed metric like precipitation. `direction: :forward`
+  # accumulates over the window starting at it instead, mirroring a forecast_precip
+  # alarm's own look-ahead evaluation (see AlarmEvaluationEngine#collect_period_datapoints)
+  # — otherwise the chart would tell a backward story for an alarm that evaluates forward.
+  def self.history_series_for_range(alarm:, from:, to:, direction: :backward, step_seconds: 1.hour.to_i, max_points: 96)
     window_seconds = alarm.period_seconds
     step = [ window_seconds, step_seconds ].min
     step = [ step, ((to - from) / max_points).ceil ].max
     periods = ((to - from) / step).ceil
-    collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station), river: alarm.river)
+    collector = new(river_basin: alarm.river_basin, monitoring_stations: Array(alarm.monitoring_station),
+                     river: alarm.river, forecast_source: alarm.forecast_source)
 
-    (0...periods).map { |i|
-      period_end = [ to - (i * step), from ].max
-      value = collector.collect(alarm.metric_name, period_end - window_seconds, period_end, alarm.statistic)
-      { period_end: period_end, value: value }
-    }.reverse
+    points = (0...periods).map { |i|
+      if direction == :forward
+        period_start = [ from + (i * step), to ].min
+        value = collector.collect(alarm.metric_name, period_start, period_start + window_seconds, alarm.statistic)
+        { period_end: period_start, value: value }
+      else
+        period_end = [ to - (i * step), from ].max
+        value = collector.collect(alarm.metric_name, period_end - window_seconds, period_end, alarm.statistic)
+        { period_end: period_end, value: value }
+      end
+    }
+
+    direction == :forward ? points : points.reverse
   end
 
-  def initialize(river_basin:, monitoring_stations: nil, river: nil)
+  def initialize(river_basin:, monitoring_stations: nil, river: nil, forecast_source: nil)
     @river_basin = river_basin
     @monitoring_stations = monitoring_stations
     @river = river
+    @forecast_source = forecast_source
   end
 
   def collect(metric_name, period_start, period_end, statistic = nil)
@@ -83,6 +100,7 @@ class MetricDataCollector
 
   def collect_forecast_precip(period_start, period_end)
     forecasts = WeatherForecast.where(valid_from: period_start..period_end)
+    forecasts = forecasts.by_source(@forecast_source) if @forecast_source
     return nil if forecasts.none?
 
     forecasts.maximum(:precipitation_mm)

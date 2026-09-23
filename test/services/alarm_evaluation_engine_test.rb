@@ -119,14 +119,14 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "missing periods are never counted as breaching" do
     WeatherForecast.delete_all
     basin = RiverBasin.create!(name: "Missing-not-breaching #{SecureRandom.hex(4)}", active: true)
-    # One forecast in period 1 (0-1min ago) below threshold; periods 2 and 3 have no data.
-    # Without the old "breaching" treatment, these missing periods must not push the
-    # alarm to fire even though 2 of 3 periods are missing.
+    # One forecast in period 1 (the next minute) below threshold; periods 2 and 3
+    # (further ahead) have no data. Without the old "breaching" treatment, these
+    # missing periods must not push the alarm to fire even though 2 of 3 are missing.
     WeatherForecast.create!(
       source: "open_meteo",
-      issued_at: 1.hour.ago,
-      valid_from: 30.seconds.ago,
-      valid_until: 30.seconds.from_now,
+      issued_at: Time.current,
+      valid_from: 10.seconds.from_now,
+      valid_until: 70.seconds.from_now,
       precipitation_mm: 10.0
     )
     alarm = create_metric_alarm(
@@ -186,12 +186,12 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
   test "missing periods are skipped, not counted against the threshold, when some periods have data" do
     WeatherForecast.delete_all
     basin = RiverBasin.create!(name: "Missing-partial #{SecureRandom.hex(4)}", active: true)
-    # One forecast in period 1 (0-2h ago); periods 2 (2-4h) and 3 (4-6h) empty
+    # One forecast in period 1 (the next 2h); periods 2 (2-4h ahead) and 3 (4-6h ahead) empty
     WeatherForecast.create!(
       source: "open_meteo",
-      issued_at: 1.hour.ago,
-      valid_from: 30.minutes.ago,
-      valid_until: 30.minutes.from_now,
+      issued_at: Time.current,
+      valid_from: 30.minutes.from_now,
+      valid_until: 90.minutes.from_now,
       precipitation_mm: 0.55
     )
     alarm = create_metric_alarm(
@@ -228,6 +228,99 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     AlarmEvaluationEngine.evaluate_alarm(alarm)
 
     assert_equal "alarm", alarm.reload.state
+  end
+
+  # ── Forecast look-ahead ──
+
+  test "forecast_precip fires from a future forecast breach, not a past one" do
+    WeatherForecast.delete_all
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 1.hour.ago, valid_until: Time.current, precipitation_mm: 90.0)
+    # Real, non-breaching data actually inside the look-ahead window — proves the
+    # past breach above is ignored rather than the state just reflecting missing data.
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 30.minutes.from_now, valid_until: 90.minutes.from_now, precipitation_mm: 5.0)
+
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "forecast_precip",
+      forecast_source: "open_meteo",
+      statistic: "Maximum",
+      threshold_value: 50.0,
+      period_seconds: 3600,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    # The only breaching forecast is in the past — a look-ahead alarm must ignore it.
+    assert_equal "ok", alarm.reload.state
+  end
+
+  test "forecast_precip fires when an upcoming forecast breaches the threshold" do
+    WeatherForecast.delete_all
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 30.minutes.from_now, valid_until: 90.minutes.from_now, precipitation_mm: 90.0)
+
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "forecast_precip",
+      forecast_source: "open_meteo",
+      statistic: "Maximum",
+      threshold_value: 50.0,
+      period_seconds: 3600,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "alarm", alarm.reload.state
+  end
+
+  test "forecast_precip only reads its configured provider, ignoring a breach from the other" do
+    WeatherForecast.delete_all
+    WeatherForecast.create!(source: "open_weather_map", issued_at: Time.current,
+      valid_from: 30.minutes.from_now, valid_until: 90.minutes.from_now, precipitation_mm: 90.0)
+    # Real, non-breaching data from the alarm's actual configured provider — proves the
+    # other provider's breach is ignored rather than the state just reflecting missing data.
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 30.minutes.from_now, valid_until: 90.minutes.from_now, precipitation_mm: 5.0)
+
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "forecast_precip",
+      forecast_source: "open_meteo",
+      statistic: "Maximum",
+      threshold_value: 50.0,
+      period_seconds: 3600,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "ok", alarm.reload.state
+  end
+
+  test "forecast_precip is insufficient_data when its provider has no forecast in the upcoming window" do
+    WeatherForecast.delete_all
+
+    alarm = create_metric_alarm(
+      state: "ok",
+      metric_name: "forecast_precip",
+      forecast_source: "open_meteo",
+      statistic: "Maximum",
+      threshold_value: 50.0,
+      period_seconds: 3600,
+      evaluation_periods: 1,
+      datapoints_to_alarm: 1
+    )
+
+    AlarmEvaluationEngine.evaluate_alarm(alarm)
+
+    assert_equal "insufficient_data", alarm.reload.state
   end
 
   # ── Multi-threshold band evaluation ──
@@ -417,6 +510,9 @@ class AlarmEvaluationEngineTest < ActiveSupport::TestCase
     # Mirror the invariant transition_to! maintains: an "ok" alarm's current_severity
     # is explicitly 0 (Vigilância), never nil, unless the test overrides it on purpose.
     merged[:current_severity] = 0 if merged[:state] == "ok" && !merged.key?(:current_severity)
+    # forecast_precip requires a forecast_source — default it so tests that only care
+    # about unrelated behavior (e.g. missing-data semantics) don't need to specify one.
+    merged[:forecast_source] ||= "open_meteo" if merged[:metric_name] == "forecast_precip"
     alarm = Alarm.new(merged)
     alarm.alarm_thresholds.build(
       severity: severity,

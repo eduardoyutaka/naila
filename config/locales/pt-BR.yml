@@ -15,6 +15,9 @@ pt-BR:
     metric_name:
       precipitation: Precipitação
       forecast_precip: Previsão de Precipitação
+    forecast_source:
+      open_meteo: Open-Meteo
+      open_weather_map: OpenWeatherMap
     reading_type:
       precipitation: Precipitação
       temperature: Temperatura

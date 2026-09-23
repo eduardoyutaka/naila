@@ -147,6 +147,54 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
     assert_nil result
   end
 
+  # ── forecast_precip ──
+
+  test "forecast_precip pools every provider's forecasts when no forecast_source is given" do
+    WeatherForecast.delete_all
+    from = 1.hour.from_now
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: from, valid_until: from + 1.hour, precipitation_mm: 5.0)
+    WeatherForecast.create!(source: "open_weather_map", issued_at: Time.current,
+      valid_from: from, valid_until: from + 1.hour, precipitation_mm: 12.0)
+
+    result = MetricDataCollector.collect(
+      metric_name: "forecast_precip", river_basin: @basin,
+      period_start: from, period_end: from + 1.hour
+    )
+
+    assert_equal 12.0, result
+  end
+
+  test "forecast_precip filters to a single provider when forecast_source is given" do
+    WeatherForecast.delete_all
+    from = 1.hour.from_now
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: from, valid_until: from + 1.hour, precipitation_mm: 5.0)
+    WeatherForecast.create!(source: "open_weather_map", issued_at: Time.current,
+      valid_from: from, valid_until: from + 1.hour, precipitation_mm: 12.0)
+
+    result = MetricDataCollector.collect(
+      metric_name: "forecast_precip", river_basin: @basin, forecast_source: "open_meteo",
+      period_start: from, period_end: from + 1.hour
+    )
+
+    assert_equal 5.0, result
+  end
+
+  test "forecast_precip returns nil when the requested provider has no forecasts in the window" do
+    WeatherForecast.delete_all
+    from = 1.hour.from_now
+    WeatherForecast.create!(source: "open_weather_map", issued_at: Time.current,
+      valid_from: from, valid_until: from + 1.hour, precipitation_mm: 12.0)
+
+    result = MetricDataCollector.collect(
+      metric_name: "forecast_precip", river_basin: @basin, forecast_source: "open_meteo",
+      period_start: from, period_end: from + 1.hour
+    )
+
+    assert_nil result
+  end
+
   # ── applying statistic ──
 
   test "applies Sum statistic to precipitation readings" do
@@ -258,6 +306,28 @@ class MetricDataCollectorTest < ActiveSupport::TestCase
       period_start: latest[:period_end] - 24.hours, period_end: latest[:period_end], statistic: "Sum"
     )
     assert_equal direct, latest[:value]
+  end
+
+  test "history_series_for_range with direction: :forward accumulates ahead of each point instead of behind it" do
+    WeatherForecast.delete_all
+    from = Time.current
+    to = from + 3.hours
+    # A forecast in the second hour only — should show up in the point that looks
+    # ahead into that hour, not in the point right before it.
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: from + 1.hour, valid_until: from + 2.hours, precipitation_mm: 8.0)
+
+    alarm = Alarm.new(river_basin: @basin, metric_name: "forecast_precip", forecast_source: "open_meteo",
+      statistic: "Maximum", period_seconds: 1.hour.to_i)
+
+    series = MetricDataCollector.history_series_for_range(alarm: alarm, from: from, to: to, direction: :forward)
+
+    # Ascending order (soonest point first), unlike the default backward direction.
+    timestamps = series.map { |pt| pt[:period_end] }
+    assert_equal timestamps.sort, timestamps
+
+    hit = series.find { |pt| pt[:value] == 8.0 }
+    assert hit, "expected the forecast to surface in a forward-looking point"
   end
 
   # ── metric list consistency ──

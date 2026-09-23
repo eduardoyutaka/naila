@@ -71,7 +71,8 @@
             <%= form.label :metric_name, "Métrica" %>
             <%= form.select :metric_name,
                   MetricDataCollector::SUPPORTED_METRICS.map { |m| [t("enums.metric_name.#{m}"), m] },
-                  { include_blank: "— Selecione —" } %>
+                  { include_blank: "— Selecione —" },
+                  data: { action: "change->admin--alarm-form#toggleForecastSourceField" } %>
           <% end %>
           <%= form.field do %>
             <%= form.label :statistic, "Estatística" %>
@@ -80,6 +81,15 @@
                   { include_blank: "— Selecione —" } %>
           <% end %>
         </div>
+
+        <%# Origem da Previsão — only meaningful for forecast_precip (see MetricDataCollector#collect_forecast_precip) %>
+        <%= form.field data: { "admin--alarm-form-target": "forecastSourceField" }, hidden: alarm.metric_name != "forecast_precip" do %>
+          <%= form.label :forecast_source, "Origem da Previsão" %>
+          <%= form.select :forecast_source,
+                WeatherForecast::FORECAST_SOURCES.map { |s| [t("enums.forecast_source.#{s}"), s] },
+                { include_blank: "— Selecione —" } %>
+          <%= form.description "Obrigatório para alarmes de Previsão de Precipitação — cada alarme lê exatamente um provedor." %>
+        <% end %>
 
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
           <%= form.field do %>

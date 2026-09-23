@@ -101,10 +101,41 @@ class AlarmTest < ActiveSupport::TestCase
     assert_includes alarm.errors[:metric_name], "não está incluído na lista"
   end
 
+  test "forecast_precip alarm requires a forecast_source" do
+    alarm = alarms(:precip_3h_belem)
+    alarm.metric_name = "forecast_precip"
+    alarm.forecast_source = nil
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:forecast_source], "é obrigatório para alarmes de previsão"
+  end
+
+  test "forecast_precip alarm rejects an unknown forecast_source" do
+    alarm = alarms(:precip_3h_belem)
+    alarm.metric_name = "forecast_precip"
+    alarm.forecast_source = "weather_underground"
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:forecast_source], "inválido"
+  end
+
+  test "forecast_precip alarm is valid with a real forecast_source" do
+    alarm = alarms(:precip_3h_belem)
+    alarm.metric_name = "forecast_precip"
+    alarm.forecast_source = "open_meteo"
+    assert alarm.valid?
+  end
+
+  test "a non-forecast alarm rejects a forecast_source" do
+    alarm = alarms(:precip_3h_belem) # metric_name: precipitation
+    alarm.forecast_source = "open_meteo"
+    assert_not alarm.valid?
+    assert_includes alarm.errors[:forecast_source], "só se aplica a alarmes de previsão"
+  end
+
   test "valid with any metric_name MetricDataCollector actually supports" do
     MetricDataCollector::SUPPORTED_METRICS.each do |metric_name|
       alarm = alarms(:precip_3h_belem)
       alarm.metric_name = metric_name
+      alarm.forecast_source = "open_meteo" if metric_name == "forecast_precip"
       assert alarm.valid?, "expected #{metric_name} to be valid: #{alarm.errors.full_messages}"
     end
   end

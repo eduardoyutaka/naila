@@ -36,6 +36,7 @@ class Alarm < ApplicationRecord
   validate :datapoints_cannot_exceed_evaluation_periods, if: -> { datapoints_to_alarm.present? && evaluation_periods.present? }
   validate :metric_alarm_requires_threshold_band
   validate :monitoring_station_must_be_configured_for_basin
+  validate :forecast_source_required_for_forecast_metric
 
   # ── Scopes ──
 
@@ -169,6 +170,21 @@ class Alarm < ApplicationRecord
     configured_ids = river_basin ? river_basin.configured_monitoring_station_ids : []
     unless configured_ids.include?(monitoring_station.id)
       errors.add(:monitoring_station, "deve pertencer às estações configuradas da bacia")
+    end
+  end
+
+  # forecast_precip has no monitoring_station/river_basin data dependency (see
+  # MetricDataCollector#collect_forecast_precip) — forecast_source is what actually
+  # scopes which provider's data it reads, so it's required exactly there and nowhere else.
+  def forecast_source_required_for_forecast_metric
+    if metric_name == "forecast_precip"
+      if forecast_source.blank?
+        errors.add(:forecast_source, "é obrigatório para alarmes de previsão")
+      elsif !WeatherForecast::FORECAST_SOURCES.include?(forecast_source)
+        errors.add(:forecast_source, "inválido")
+      end
+    elsif forecast_source.present?
+      errors.add(:forecast_source, "só se aplica a alarmes de previsão")
     end
   end
 end

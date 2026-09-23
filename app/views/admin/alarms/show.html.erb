@@ -186,6 +186,9 @@
       </div>
       <%= catalyst_dl class: "px-6" do %>
         <%= catalyst_dt "Métrica" %><%= catalyst_dd @alarm.metric_name %>
+        <% if @alarm.forecast_source.present? %>
+          <%= catalyst_dt "Origem da Previsão" %><%= catalyst_dd t("enums.forecast_source.#{@alarm.forecast_source}") %>
+        <% end %>
         <%= catalyst_dt "Estatística" %><%= catalyst_dd @alarm.statistic %>
         <%= catalyst_dt "Período" %><%= catalyst_dd "#{@alarm.period_seconds}s" %>
         <%= catalyst_dt "Avaliação" %><%= catalyst_dd "#{@alarm.datapoints_to_alarm} de #{@alarm.evaluation_periods} períodos" %>
