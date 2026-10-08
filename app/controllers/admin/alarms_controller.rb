@@ -6,7 +6,7 @@ module Admin
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
 
-    before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history ]
+    before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history, :metric_history ]
 
     def index
       base_scope = policy_scope(Alarm).includes(:river_basin)
@@ -73,6 +73,22 @@ module Admin
       @state_histories = @alarm.alarm_state_histories.order(evaluated_at: :desc)
     end
 
+    def metric_history
+      authorize @alarm
+
+      if @alarm.river_basin.blank? || @alarm.alarm_thresholds.empty?
+        from = to = nil
+        series = []
+      else
+        from, to, series = chart_series_and_range
+      end
+
+      send_data metric_history_csv(series),
+        filename: metric_history_filename(from, to),
+        type: "text/csv; charset=utf-8",
+        disposition: "attachment"
+    end
+
 
     private
 
@@ -94,23 +110,52 @@ module Admin
         return
       end
 
+      @chart_from, @chart_to, series = chart_series_and_range
+      @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
+    end
+
+    # Shared by the HTML chart (assign_chart_data) and the CSV export (metric_history) so the
+    # forecast_precip (forward-looking) vs precipitation (backward-looking) branch has one home.
+    def chart_series_and_range
       if @alarm.metric_name == "forecast_precip"
         # A forecast alarm evaluates ahead of now (see AlarmEvaluationEngine#collect_period_datapoints)
         # — the chart must look the same direction, or it'd tell a backward story for an
         # alarm that reacts to what's coming, not what already happened.
         forecast_max = WeatherForecast.by_source(@alarm.forecast_source).maximum(:valid_until)
         @chart_bounds = [ Time.current, forecast_max || DEFAULT_CHART_WINDOW.from_now ]
-        @chart_from, @chart_to = parse_range(params[:range],
+        from, to = parse_range(params[:range],
           default_from: Time.current, default_to: DEFAULT_CHART_WINDOW.from_now, bounds: @chart_bounds)
-        series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: @chart_from, to: @chart_to, direction: :forward)
+        series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: from, to: to, direction: :forward)
       else
         @chart_bounds = precipitation_readings ? [ precipitation_readings.minimum(:recorded_at), Time.current ] : nil
-        @chart_from, @chart_to = parse_range(params[:range],
+        from, to = parse_range(params[:range],
           default_from: DEFAULT_CHART_WINDOW.ago, default_to: Time.current, bounds: @chart_bounds)
-        series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: @chart_from, to: @chart_to)
+        series = MetricDataCollector.history_series_for_range(alarm: @alarm, from: from, to: to)
+      end
+      [ from, to, series ]
+    end
+
+    # pt-BR/Excel-friendly: ";" separator, "," decimal, DD/MM/YYYY HH:MM timestamps (reuses
+    # the existing time.formats.short locale key). nil means "no data for this period" (not
+    # 0.0, which is a confirmed calm reading — same convention as the chart) and is written
+    # as an empty cell, never the literal "nil".
+    def metric_history_csv(series)
+      unit = @alarm.alarm_thresholds.first&.unit
+      value_header = unit.present? ? "Valor (#{unit})" : "Valor"
+
+      csv_body = CSV.generate(col_sep: ";") do |csv|
+        csv << [ "Data/Hora", value_header ]
+        series.each do |pt|
+          csv << [ I18n.l(pt[:period_end], format: :short), pt[:value]&.to_s&.tr(".", ",") ]
+        end
       end
 
-      @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
+      "\xEF\xBB\xBF".dup.force_encoding(csv_body.encoding) + csv_body
+    end
+
+    def metric_history_filename(from, to)
+      range_part = from && to ? "#{from.strftime('%Y%m%d')}-#{to.strftime('%Y%m%d')}" : "sem-dados"
+      "historico_#{@alarm.name.parameterize}_#{range_part}.csv"
     end
 
     # Mirrors the sensors MetricDataCollector#collect_precipitation actually reads from —

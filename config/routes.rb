@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       resource :status, only: [ :update ], module: :alarms
       member do
         get :history
+        get :metric_history
       end
     end
     resources :river_basins, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]

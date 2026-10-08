@@ -52,9 +52,14 @@
             <% end %>
           </div>
           <% if @chart_from %>
-            <%= render "shared/admin/range_form", action: admin_alarm_path(@alarm),
-                  frame: "alarm_metric_chart_#{@alarm.id}", scope: :range,
-                  from: @chart_from, to: @chart_to, min: @chart_bounds&.first, max: @chart_bounds&.last %>
+            <div class="flex flex-wrap items-center gap-2">
+              <%= render "shared/admin/range_form", action: admin_alarm_path(@alarm),
+                    frame: "alarm_metric_chart_#{@alarm.id}", scope: :range,
+                    from: @chart_from, to: @chart_to, min: @chart_bounds&.first, max: @chart_bounds&.last %>
+              <%= catalyst_button_link "Exportar CSV",
+                    href: metric_history_admin_alarm_path(@alarm, range: { from: @chart_from.iso8601, to: @chart_to.iso8601 }),
+                    variant: :outline %>
+            </div>
           <% end %>
         </div>
         <%# 0.0 is real data ("confirmed calm") — only a genuinely missing (nil) value means no data. %>

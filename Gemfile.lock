@@ -114,6 +114,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    csv (3.3.6)
     database_cleaner-active_record (2.2.2)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0)
@@ -485,6 +486,7 @@ DEPENDENCIES
   bundler-audit
   capybara (~> 3.0)
   chartkick (~> 5.0)
+  csv
   database_cleaner-active_record (~> 2.0)
   debug
   faker (~> 3.0)
