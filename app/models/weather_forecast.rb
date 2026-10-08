@@ -10,6 +10,11 @@ class WeatherForecast < ApplicationRecord
   # started before the window but are still in effect (e.g. the in-progress hour).
   scope :overlapping, ->(from, to) { where("valid_from <= ? AND valid_until >= ?", to, from) }
   scope :by_source, ->(source) { where(source: source) }
+  # Excludes legacy 3-hour-bucket rows from before Open-Meteo switched to hourly
+  # (8c699cd). Those rows store a 3-hour accumulated precipitation_mm under the
+  # same column as post-switch hourly values, so mixing them into a chart spanning
+  # that switchover would plot incomparable magnitudes on the same mm axis.
+  scope :one_hour_window, -> { where("valid_until - valid_from = INTERVAL '1 hour'") }
   scope :ordered_timeline, -> { order(valid_from: :asc) }
   scope :in_last, ->(duration) { where("issued_at >= ?", duration.ago) }
 

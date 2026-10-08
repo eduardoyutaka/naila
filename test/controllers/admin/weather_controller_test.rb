@@ -191,6 +191,23 @@ class Admin::WeatherControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name=forecast_source] option[selected][value=?]", "open_weather_map"
   end
 
+  test "comparison chart excludes legacy 3-hour-bucket open_meteo forecasts" do
+    legacy_bucket = WeatherForecast.create!(
+      source: "open_meteo", issued_at: 10.hours.ago,
+      valid_from: 10.hours.ago, valid_until: 7.hours.ago,
+      precipitation_mm: 12.0
+    )
+
+    get admin_weather_path
+    assert_response :success
+
+    el = css_select("[data-admin--timeseries-series-value]").first
+    series = JSON.parse(el["data-admin--timeseries-series-value"])
+    open_meteo_series = series.find { |s| s["name"] == "Open-Meteo" }
+    points = open_meteo_series ? open_meteo_series["data"].map(&:first) : []
+    refute_includes points, legacy_bucket.valid_from.iso8601
+  end
+
   test "an invalid forecast_source falls back to a stable default" do
     get admin_weather_path, params: { forecast_source: "bogus" }
     assert_response :success

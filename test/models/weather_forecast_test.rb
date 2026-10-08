@@ -55,6 +55,18 @@ class WeatherForecastTest < ActiveSupport::TestCase
     assert_not_includes WeatherForecast.current.valid_in_next(6.hours), weather_forecasts(:open_meteo_expired)
   end
 
+  # ── one_hour_window ──
+
+  test "one_hour_window excludes legacy 3-hour-bucket forecasts" do
+    from = Time.zone.parse("2026-06-09 12:00")
+    hourly = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: from, valid_until: from + 1.hour)
+    legacy_bucket = WeatherForecast.create!(source: "open_meteo", issued_at: from, valid_from: from, valid_until: from + 3.hours)
+
+    result = WeatherForecast.one_hour_window
+    assert_includes result, hourly
+    assert_not_includes result, legacy_bucket
+  end
+
   # ── map_timeline ──
 
   test "map_timeline returns array of hashes with expected keys" do

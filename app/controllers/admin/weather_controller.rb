@@ -26,7 +26,7 @@ module Admin
       # Section 4 — observed precipitation vs forecast over the comparison range
       @observations_in_range = WeatherObservation.where(observed_at: @comparison_from..@comparison_to)
                                                  .order(observed_at: :asc)
-      @comparison_forecasts = WeatherForecast.overlapping(@comparison_from, @comparison_to).ordered_timeline
+      @comparison_forecasts = WeatherForecast.overlapping(@comparison_from, @comparison_to).one_hour_window.ordered_timeline
 
       # Section 3 — forecast bars/probability over the forecast range, scoped to
       # the selected provider (with a stable default so it never flips on its own).
