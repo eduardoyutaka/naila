@@ -56,9 +56,16 @@
               <%= render "shared/admin/range_form", action: admin_alarm_path(@alarm),
                     frame: "alarm_metric_chart_#{@alarm.id}", scope: :range,
                     from: @chart_from, to: @chart_to, min: @chart_bounds&.first, max: @chart_bounds&.last %>
-              <%= catalyst_button_link "Exportar CSV",
-                    href: metric_history_admin_alarm_path(@alarm, range: { from: @chart_from.iso8601, to: @chart_to.iso8601 }),
-                    variant: :outline %>
+              <%# data-turbo="false": this link sits inside a turbo-frame, and Turbo would
+                  otherwise intercept the click and try to swap the CSV response into the
+                  frame instead of letting the browser download it. %>
+              <%= catalyst_button_link href: metric_history_admin_alarm_path(@alarm, range: { from: @chart_from.iso8601, to: @chart_to.iso8601 }),
+                    variant: :outline, data: { turbo: false }, aria: { label: "Exportar CSV" }, title: "Exportar CSV" do %>
+                <svg data-slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                CSV
+              <% end %>
             </div>
           <% end %>
         </div>
