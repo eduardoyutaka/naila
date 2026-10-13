@@ -87,6 +87,16 @@ class Alarm < ApplicationRecord
     river_basin&.configured_monitoring_stations || MonitoringStation.none
   end
 
+  # Highest-severity threshold band this value breaches, or 0 if none. Sorted in Ruby
+  # (not .order, a SQL call) so it works the same whether alarm_thresholds is already
+  # loaded from the DB or just .build'd in memory on an unsaved Alarm.
+  def breaching_severity_for(value)
+    alarm_thresholds.sort_by { |t| -t.severity }.each do |threshold|
+      return threshold.severity if threshold.breached_by?(value)
+    end
+    0
+  end
+
   # ── State machine ──
 
   def transition_to!(new_state, reason:, datapoints: [], severity: nil)

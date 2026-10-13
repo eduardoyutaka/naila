@@ -67,8 +67,8 @@ gem "chartkick", "~> 5.0"
 # Time-series grouping [https://github.com/ankane/groupdate]
 gem "groupdate", "~> 6.0"
 
-# CSV export — Ruby 3.4 bundled gem, not auto-available under Bundler
-gem "csv"
+# XLSX export with cell styling/coloring [https://github.com/caxlsx/caxlsx]
+gem "caxlsx"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

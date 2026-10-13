@@ -725,7 +725,20 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "span", text: "Dados insuficientes", count: 0
   end
 
-  # ── Metric History CSV Export ──
+  # ── Metric History XLSX Export ──
+
+  # Pulls every inline string cell out of the generated .xlsx (caxlsx writes string
+  # cells as inlineStr, not a shared-strings table) so tests can assert on the alarm
+  # name/description/threshold legend text without a full XLSX reader.
+  def xlsx_strings(body)
+    strings = []
+    Zip::File.open_buffer(body) do |zip|
+      entry = zip.glob("xl/worksheets/sheet1.xml").first
+      next unless entry
+      strings = Nokogiri::XML(entry.get_input_stream.read).css("is t").map(&:text)
+    end
+    strings
+  end
 
   test "metric_history requires authentication" do
     reset!
@@ -739,38 +752,43 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "metric_history returns a CSV response with attachment headers" do
+  test "metric_history returns an XLSX response with attachment headers" do
     get metric_history_admin_alarm_path(alarms(:flood_alert_belem))
     assert_response :success
-    assert_equal "text/csv", @response.media_type
+    assert_equal "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", @response.media_type
     assert_match(/attachment/, @response.headers["Content-Disposition"])
-    assert_match(/\.csv/, @response.headers["Content-Disposition"])
+    assert_match(/\.xlsx/, @response.headers["Content-Disposition"])
   end
 
-  test "metric_history formats the body as pt-BR/Excel-friendly CSV" do
-    get metric_history_admin_alarm_path(alarms(:flood_alert_belem))
-    body = @response.body.delete_prefix("\xEF\xBB\xBF".dup.force_encoding(@response.body.encoding))
-    lines = body.split("\n")
-    assert_equal "Data/Hora;Valor (mm)", lines.first.strip
-    lines[1..].each do |line|
-      assert_match(/\A\d{2}\/\d{2}\/\d{4} \d{2}:\d{2};([\d,]*)\z/, line.strip)
-    end
+  test "metric_history embeds the alarm name, description and threshold legend" do
+    alarm = alarms(:flood_alert_belem)
+    get metric_history_admin_alarm_path(alarm)
+    assert_response :success
+
+    strings = xlsx_strings(@response.body)
+    assert_includes strings, alarm.name
+    assert_includes strings, alarm.description
+    assert_includes strings, I18n.t("enums.severity.2")
+    assert_includes strings, I18n.t("enums.severity.3")
+    assert_includes strings, "Data/Hora"
+    assert_includes strings, "Valor (mm)"
   end
 
   test "metric_history respects an explicit range param" do
     get metric_history_admin_alarm_path(alarms(:flood_alert_belem),
       range: { from: 6.hours.ago.iso8601, to: 1.hour.ago.iso8601 })
     assert_response :success
-    assert_operator @response.body.force_encoding("UTF-8").split("\n").length, :>, 1
+    strings = xlsx_strings(@response.body)
+    assert_includes strings, "Período"
   end
 
   test "metric_history supports a forecast_precip alarm" do
-    basin = RiverBasin.create!(name: "Forecast CSV Basin", active: true)
+    basin = RiverBasin.create!(name: "Forecast XLSX Basin", active: true)
     WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
       valid_from: 1.hour.from_now, valid_until: 2.hours.from_now, precipitation_mm: 5.0)
 
     alarm = Alarm.new(
-      name: "Forecast CSV Alarm", alarm_type: "metric", enabled: true,
+      name: "Forecast XLSX Alarm", alarm_type: "metric", enabled: true,
       river_basin: basin, metric_name: "forecast_precip", forecast_source: "open_meteo", statistic: "Maximum",
       period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
     )
@@ -780,18 +798,16 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
     get metric_history_admin_alarm_path(alarm)
     assert_response :success
-    assert_equal "text/csv", @response.media_type
+    assert_equal "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", @response.media_type
   end
 
-  test "metric_history writes an empty-but-valid CSV when the alarm has no river basin" do
+  test "metric_history writes an empty-but-valid XLSX when the alarm has no river basin" do
     get metric_history_admin_alarm_path(alarms(:disabled_alarm))
     assert_response :success
-    body = @response.body.force_encoding("UTF-8")
-    body = body.delete_prefix("\xEF\xBB\xBF".dup.force_encoding("UTF-8"))
-    lines = body.split("\n")
-    assert_equal "Data/Hora;Valor (mm)", lines.first.strip
-    assert_equal 1, lines.length
-    refute_match(/nil/, body)
+    strings = xlsx_strings(@response.body)
+    assert_includes strings, alarms(:disabled_alarm).name
+    assert_includes strings, "Data/Hora"
+    assert_not_includes strings, "Período"
   end
 
 end

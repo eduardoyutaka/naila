@@ -83,9 +83,11 @@ module Admin
         from, to, series = chart_series_and_range
       end
 
-      send_data metric_history_csv(series),
+      package = AlarmMetricHistoryExport.build(alarm: @alarm, series: series, from: from, to: to)
+
+      send_data package.to_stream.read,
         filename: metric_history_filename(from, to),
-        type: "text/csv; charset=utf-8",
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         disposition: "attachment"
     end
 
@@ -135,27 +137,9 @@ module Admin
       [ from, to, series ]
     end
 
-    # pt-BR/Excel-friendly: ";" separator, "," decimal, DD/MM/YYYY HH:MM timestamps (reuses
-    # the existing time.formats.short locale key). nil means "no data for this period" (not
-    # 0.0, which is a confirmed calm reading — same convention as the chart) and is written
-    # as an empty cell, never the literal "nil".
-    def metric_history_csv(series)
-      unit = @alarm.alarm_thresholds.first&.unit
-      value_header = unit.present? ? "Valor (#{unit})" : "Valor"
-
-      csv_body = CSV.generate(col_sep: ";") do |csv|
-        csv << [ "Data/Hora", value_header ]
-        series.each do |pt|
-          csv << [ I18n.l(pt[:period_end], format: :short), pt[:value]&.to_s&.tr(".", ",") ]
-        end
-      end
-
-      "\xEF\xBB\xBF".dup.force_encoding(csv_body.encoding) + csv_body
-    end
-
     def metric_history_filename(from, to)
       range_part = from && to ? "#{from.strftime('%Y%m%d')}-#{to.strftime('%Y%m%d')}" : "sem-dados"
-      "historico_#{@alarm.name.parameterize}_#{range_part}.csv"
+      "historico_#{@alarm.name.parameterize}_#{range_part}.xlsx"
     end
 
     # Mirrors the sensors MetricDataCollector#collect_precipitation actually reads from —

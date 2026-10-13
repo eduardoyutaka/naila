@@ -517,4 +517,32 @@ class AlarmTest < ActiveSupport::TestCase
   test "metric? returns true for metric type" do
     assert alarms(:precip_3h_belem).metric?
   end
+
+  # ── breaching_severity_for ──
+
+  test "breaching_severity_for returns 0 when no threshold is breached" do
+    alarm = Alarm.new
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 100.0, unit: "mm")
+    assert_equal 0, alarm.breaching_severity_for(5.0)
+  end
+
+  test "breaching_severity_for returns the highest breached band" do
+    alarm = Alarm.new
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.alarm_thresholds.build(severity: 2, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 25.0, unit: "mm")
+    assert_equal 1, alarm.breaching_severity_for(15.0)
+    assert_equal 2, alarm.breaching_severity_for(30.0)
+    assert_equal 0, alarm.breaching_severity_for(5.0)
+  end
+
+  test "breaching_severity_for supports LessThanThreshold bands" do
+    alarm = Alarm.new
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "LessThanThreshold",
+                                  threshold_value: 2.0, unit: "mm")
+    assert_equal 1, alarm.breaching_severity_for(1.0)
+    assert_equal 0, alarm.breaching_severity_for(2.0)
+  end
 end

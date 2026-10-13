@@ -60,26 +60,8 @@ class AlarmEvaluationEngine
         statistic: @alarm.statistic
       )
 
-      breaching_severity = value.nil? ? nil : evaluate_threshold_bands(value)
+      breaching_severity = value.nil? ? nil : @alarm.breaching_severity_for(value)
       { "period" => i + 1, "value" => value, "breaching_severity" => breaching_severity }
-    end
-  end
-
-  # Returns the highest severity whose threshold is breached, or 0 if none.
-  def evaluate_threshold_bands(value)
-    @alarm.alarm_thresholds.order(severity: :desc).each do |threshold|
-      return threshold.severity if threshold_breached?(value, threshold)
-    end
-    0
-  end
-
-  def threshold_breached?(value, threshold)
-    case threshold.comparison_operator
-    when "GreaterThanThreshold"           then value > threshold.threshold_value
-    when "GreaterThanOrEqualToThreshold"  then value >= threshold.threshold_value
-    when "LessThanThreshold"             then value < threshold.threshold_value
-    when "LessThanOrEqualToThreshold"    then value <= threshold.threshold_value
-    else false
     end
   end
 
