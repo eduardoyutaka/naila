@@ -1,4 +1,5 @@
 require "test_helper"
+require "zip"
 
 class AlarmMetricHistoryExportTest < ActiveSupport::TestCase
   setup do
@@ -80,5 +81,28 @@ class AlarmMetricHistoryExportTest < ActiveSupport::TestCase
 
     assert_not_includes values.flatten.compact, I18n.t("enums.severity.1")
     assert_includes values, [ "Data/Hora", "Valor" ]
+  end
+
+  # ── Column sizing ──
+
+  test "the data columns keep a fixed, readable width regardless of how long the alarm name/description are" do
+    @alarm.name = "A" * 120
+    @alarm.description = "B" * 200
+
+    cols = AlarmMetricHistoryExport.build(alarm: @alarm, series: @series, from: @from, to: @to)
+      .workbook.worksheets.first.column_info
+
+    assert_operator cols[0].width, :<=, 30, "column A should fit the Data/Hora column, not the free-text header"
+    assert_operator cols[1].width, :<=, 30
+  end
+
+  test "merges the free-text header rows across both columns so long text doesn't widen column A alone" do
+    data = AlarmMetricHistoryExport.build(alarm: @alarm, series: @series, from: @from, to: @to).to_stream.read
+    sheet_xml = nil
+    Zip::File.open_buffer(data) { |z| sheet_xml = z.read("xl/worksheets/sheet1.xml") }
+    merges = Nokogiri::XML(sheet_xml).css("mergeCell").map { |m| m["ref"] }
+
+    assert_includes merges, "A1:B1" # alarm name
+    assert_includes merges, "A2:B2" # alarm description
   end
 end

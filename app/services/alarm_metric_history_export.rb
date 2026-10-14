@@ -32,6 +32,13 @@ class AlarmMetricHistoryExport
     @to = to
   end
 
+  # Fixed, data-table-sized widths — wide enough for "dd/mm/yyyy hh:mm" and typical
+  # legend/value text. Axlsx's automatic bestFit sizes a column to its single longest
+  # cell, so without this an arbitrarily long alarm name/description (one free-text
+  # cell, merged across both columns) would balloon column A to fit that one line
+  # instead of the actual data table underneath it.
+  COLUMN_WIDTHS = [ 20, 16 ].freeze
+
   def build
     package = Axlsx::Package.new
     package.workbook.add_worksheet(name: "Histórico") do |sheet|
@@ -39,6 +46,7 @@ class AlarmMetricHistoryExport
       add_header(sheet)
       add_threshold_legend(sheet)
       add_data_table(sheet)
+      sheet.column_widths(*COLUMN_WIDTHS)
     end
     package
   end
@@ -47,7 +55,13 @@ class AlarmMetricHistoryExport
 
   def add_header(sheet)
     sheet.add_row [ @alarm.name ], style: @styles.add_style(b: true, sz: 13)
-    sheet.add_row [ @alarm.description ], style: @styles.add_style(i: true, fg_color: "6B7280") if @alarm.description.present?
+    sheet.merge_cells("A#{sheet.rows.size}:B#{sheet.rows.size}")
+
+    if @alarm.description.present?
+      sheet.add_row [ @alarm.description ], style: @styles.add_style(i: true, fg_color: "6B7280")
+      sheet.merge_cells("A#{sheet.rows.size}:B#{sheet.rows.size}")
+    end
+
     sheet.add_row []
 
     if @from && @to
@@ -60,6 +74,8 @@ class AlarmMetricHistoryExport
     return if @alarm.alarm_thresholds.empty?
 
     sheet.add_row [ "Limiares" ], style: @styles.add_style(b: true)
+    sheet.merge_cells("A#{sheet.rows.size}:B#{sheet.rows.size}")
+
     @alarm.alarm_thresholds.sort_by(&:severity).each do |threshold|
       legend_style = @styles.add_style(bg_color: SEVERITY_COLORS[threshold.severity], fg_color: "FFFFFF", b: true)
       sheet.add_row [
