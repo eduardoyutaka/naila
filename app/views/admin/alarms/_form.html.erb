@@ -21,52 +21,22 @@
         <%= form.text_area :description, rows: 2, placeholder: "Descrição opcional..." %>
       <% end %>
 
-      <%# Escopo %>
-      <%= form.field do %>
-        <%= form.label :river_basin_id, "Bacia Hidrográfica" %>
-        <%= form.collection_select :river_basin_id, RiverBasin.order(:name), :id, :name,
-              { include_blank: "— Nenhuma —" },
-              data: { action: "change->admin--alarm-form#filterStations" } %>
-      <% end %>
-      <%= form.description "Alarmes de Precipitação exigem uma estação abaixo (escolhida entre as configuradas para a bacia); deixe em branco para escopo global (usado por outras métricas, como Previsão de Precipitação)." %>
-
-      <%# Estação — required for precipitation (a pooled multi-station reading isn't a
-          meaningful accumulated value); irrelevant for forecast_precip, which has no
-          station dependency at all — hidden for that metric by toggleStationField. %>
-      <% configured_stations = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.order(:name) %>
-      <% if configured_stations.any? %>
-        <% station_options = configured_stations.map { |s|
-             [ s.name, s.id, { data: { "admin--alarm-form-target": "stationOption", basin_ids: s.configured_for_basins.pluck(:id).to_json } } ]
-           } %>
-        <%= form.field data: { "admin--alarm-form-target": "stationField" }, hidden: alarm.metric_name != "precipitation" do %>
-          <%= form.label :monitoring_station_id, "Estação" %>
-          <%= form.select :monitoring_station_id,
-                options_for_select(station_options, alarm.monitoring_station_id),
-                { include_blank: "— Selecione —" },
-                data: { "admin--alarm-form-target": "stationSelect" } %>
-        <% end %>
-      <% end %>
-
       <%# Status %>
       <%= form.field do %>
         <%= form.label :enabled, "Status" %>
         <%= form.select :enabled, [[t("booleans.alarm_enabled.enabled"), true], [t("booleans.alarm_enabled.disabled"), false]] %>
       <% end %>
-    <% end %>
 
-    <%# ── Metric fields ── %>
-    <div>
-      <%= catalyst_divider(soft: true, class: "my-8") %>
-      <%= catalyst_subheading "Configuração de Métrica" %>
-
-      <%= form.field_group class: "mt-6" do %>
+      <%# Métrica drives which of Estação / Origem da Previsão applies below — mutually
+          exclusive, one trigger toggles between them (see shared--conditional-field). %>
+      <div data-controller="shared--conditional-field">
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <%= form.field do %>
             <%= form.label :metric_name, "Métrica" %>
             <%= form.select :metric_name,
                   MetricDataCollector::SUPPORTED_METRICS.map { |m| [t("enums.metric_name.#{m}"), m] },
                   { include_blank: "— Selecione —" },
-                  data: { action: "change->admin--alarm-form#toggleForecastSourceField change->admin--alarm-form#toggleStationField" } %>
+                  data: { "shared--conditional-field-target": "trigger", action: "change->shared--conditional-field#toggle" } %>
           <% end %>
           <%= form.field do %>
             <%= form.label :statistic, "Estatística" %>
@@ -76,32 +46,69 @@
           <% end %>
         </div>
 
+        <%# Bacia Hidrográfica — always visible: required and filters the station choice
+            below for precipitation, optional/global for other metrics like forecast_precip
+            (see Alarm.max_severity_by_basin / broadcast_basin_alarm_severity). %>
+        <%= form.field class: "mt-8" do %>
+          <%= form.label :river_basin_id, "Bacia Hidrográfica" %>
+          <%= form.collection_select :river_basin_id, RiverBasin.order(:name), :id, :name,
+                { include_blank: "— Nenhuma —" },
+                data: { action: "change->admin--alarm-form#filterStations" } %>
+        <% end %>
+        <%= form.description "Alarmes de Precipitação exigem uma estação abaixo (escolhida entre as configuradas para a bacia); deixe em branco para escopo global (usado por outras métricas, como Previsão de Precipitação)." %>
+
+        <%# Estação — required for precipitation (a pooled multi-station reading isn't a
+            meaningful accumulated value); irrelevant for forecast_precip, which has no
+            station dependency at all. %>
+        <% configured_stations = MonitoringStation.joins(:river_basin_monitoring_stations).distinct.order(:name) %>
+        <% if configured_stations.any? %>
+          <% station_options = configured_stations.map { |s|
+               [ s.name, s.id, { data: { "admin--alarm-form-target": "stationOption", basin_ids: s.configured_for_basins.pluck(:id).to_json } } ]
+             } %>
+          <%= form.field class: "mt-8",
+                hidden: alarm.metric_name != "precipitation",
+                data: { "shared--conditional-field-target": "field",
+                        "shared--conditional-field-show-value": ["precipitation"].to_json } do %>
+            <%= form.label :monitoring_station_id, "Estação" %>
+            <%= form.select :monitoring_station_id,
+                  options_for_select(station_options, alarm.monitoring_station_id),
+                  { include_blank: "— Selecione —" },
+                  data: { "admin--alarm-form-target": "stationSelect" } %>
+          <% end %>
+        <% end %>
+
         <%# Origem da Previsão — only meaningful for forecast_precip (see MetricDataCollector#collect_forecast_precip) %>
-        <%= form.field data: { "admin--alarm-form-target": "forecastSourceField" }, hidden: alarm.metric_name != "forecast_precip" do %>
+        <%= form.field class: "mt-8",
+              hidden: alarm.metric_name != "forecast_precip",
+              data: { "shared--conditional-field-target": "field",
+                      "shared--conditional-field-show-value": ["forecast_precip"].to_json } do %>
           <%= form.label :forecast_source, "Origem da Previsão" %>
           <%= form.select :forecast_source,
                 WeatherForecast::FORECAST_SOURCES.map { |s| [t("enums.forecast_source.#{s}"), s] },
                 { include_blank: "— Selecione —" } %>
           <%= form.description "Obrigatório para alarmes de Previsão de Precipitação — cada alarme lê exatamente um provedor." %>
         <% end %>
+      </div>
 
-        <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
-          <%= form.field do %>
-            <%= form.label :period_seconds, "Período (s)" %>
-            <%= form.number_field :period_seconds, min: 60, placeholder: "3600" %>
-          <% end %>
-          <%= form.field do %>
-            <%= form.label :evaluation_periods, "Períodos de Avaliação" %>
-            <%= form.number_field :evaluation_periods, min: 1, placeholder: "3" %>
-          <% end %>
-          <%= form.field do %>
-            <%= form.label :datapoints_to_alarm, "Datapoints p/ Alarme" %>
-            <%= form.number_field :datapoints_to_alarm, min: 1, placeholder: "2" %>
-          <% end %>
-        </div>
+      <%# Período / Avaliação / Datapoints %>
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <%= form.field do %>
+          <%= form.label :period_seconds, "Período (s)" %>
+          <%= form.number_field :period_seconds, min: 60, placeholder: "3600" %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :evaluation_periods, "Períodos de Avaliação" %>
+          <%= form.number_field :evaluation_periods, min: 1, placeholder: "3" %>
+        <% end %>
+        <%= form.field do %>
+          <%= form.label :datapoints_to_alarm, "Datapoints p/ Alarme" %>
+          <%= form.number_field :datapoints_to_alarm, min: 1, placeholder: "2" %>
+        <% end %>
+      </div>
 
-        <%# Threshold bands %>
-        <div>
+      <%# Threshold bands %>
+      <div>
+        <%= catalyst_divider(soft: true, class: "mb-6") %>
           <div class="flex items-center justify-between mb-3">
             <span class="text-sm/6 font-medium text-zinc-950 dark:text-white">Faixas de Limiar</span>
             <button type="button"
@@ -180,7 +187,6 @@
           </template>
         </div>
       <% end %>
-    </div>
 
   </div>
 

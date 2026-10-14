@@ -1,42 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationSelect", "stationOption", "forecastSourceField", "stationField"]
+  static targets = ["thresholdList", "thresholdTemplate", "emptyWarning", "submit", "stationSelect", "stationOption"]
 
   connect() {
     this.#updateSubmitState()
     this.filterStations()
-    this.toggleForecastSourceField()
-    this.toggleStationField()
-  }
-
-  // Estação is only meaningful for precipitation (see
-  // Alarm#monitoring_station_required_for_precipitation) — forecast_precip has no station
-  // dependency at all, so hide the field and clear a stale selection when it's not shown.
-  toggleStationField() {
-    if (!this.hasStationFieldTarget) return
-
-    const metricSelect = this.element.querySelector("select[name='alarm[metric_name]']")
-    const isPrecipitation = metricSelect?.value === "precipitation"
-
-    this.stationFieldTarget.hidden = !isPrecipitation
-    if (!isPrecipitation && this.hasStationSelectTarget) this.stationSelectTarget.value = ""
-  }
-
-  // Only forecast_precip alarms read a specific provider (see
-  // MetricDataCollector#collect_forecast_precip) — hide the field otherwise, and clear
-  // it when hidden so a stale value can't linger on an unrelated metric.
-  toggleForecastSourceField() {
-    if (!this.hasForecastSourceFieldTarget) return
-
-    const metricSelect = this.element.querySelector("select[name='alarm[metric_name]']")
-    const isForecast = metricSelect?.value === "forecast_precip"
-
-    this.forecastSourceFieldTarget.hidden = !isForecast
-    if (!isForecast) {
-      const select = this.forecastSourceFieldTarget.querySelector("select[name='alarm[forecast_source]']")
-      if (select) select.value = ""
-    }
   }
 
   // Shows only the station options configured for the currently selected basin
