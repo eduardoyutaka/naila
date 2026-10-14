@@ -168,7 +168,9 @@ CREATE TABLE public.alarms (
     emergency_value double precision,
     episode_peak_severity integer,
     monitoring_station_id bigint,
-    forecast_source character varying
+    forecast_source character varying,
+    acknowledged_at timestamp(6) without time zone,
+    acknowledged_by_id bigint
 );
 
 
@@ -2641,6 +2643,13 @@ CREATE UNIQUE INDEX index_alarm_thresholds_on_alarm_id_and_severity ON public.al
 
 
 --
+-- Name: index_alarms_on_acknowledged_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alarms_on_acknowledged_by_id ON public.alarms USING btree (acknowledged_by_id);
+
+
+--
 -- Name: index_alarms_on_alarm_type; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4408,6 +4417,14 @@ ALTER TABLE ONLY public.solid_queue_blocked_executions
 
 
 --
+-- Name: alarms fk_rails_5a04f71778; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alarms
+    ADD CONSTRAINT fk_rails_5a04f71778 FOREIGN KEY (acknowledged_by_id) REFERENCES public.users(id);
+
+
+--
 -- Name: flood_zones fk_rails_5fd5bc5f87; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4534,6 +4551,7 @@ ALTER TABLE public.sensor_readings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261014001104'),
 ('20261008153906'),
 ('20260923025400'),
 ('20260923025340'),

@@ -25,6 +25,9 @@
     <% unless @alarm.enabled? %>
       <%= catalyst_badge t("booleans.alarm_enabled.disabled"), color: "yellow" %>
     <% end %>
+    <% if @alarm.acknowledged? %>
+      <%= catalyst_badge "Reconhecido", color: "sky", data: { testid: "alarm-acknowledged" } %>
+    <% end %>
   </div>
   <%= catalyst_heading @alarm.name, level: 1 %>
   <% if @alarm.description.present? %>
@@ -326,6 +329,24 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
             </svg>
             Editar Alarme
+          <% end %>
+        <% end %>
+        <% if @alarm.alarm? && policy(@alarm).update? %>
+          <% if @alarm.acknowledged? %>
+            <div class="rounded-lg border border-zinc-950/10 dark:border-white/10 px-4 py-2.5 text-sm" data-testid="acknowledgment-info">
+              <span class="text-zinc-500 dark:text-zinc-400">Reconhecido por</span>
+              <strong class="text-zinc-950 dark:text-white"><%= @alarm.acknowledged_by&.name || "—" %></strong>
+              <span class="text-zinc-500 dark:text-zinc-400">há <%= time_ago_in_words(@alarm.acknowledged_at) %></span>
+            </div>
+            <%= button_to admin_alarm_acknowledgment_path(@alarm), method: :patch, params: { acknowledged: "false" },
+                  class: "flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-950/10 dark:border-white/10 px-4 py-2.5 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-950/5 dark:hover:bg-white/5 transition-colors" do %>
+              Remover Reconhecimento
+            <% end %>
+          <% else %>
+            <%= button_to admin_alarm_acknowledgment_path(@alarm), method: :patch, params: { acknowledged: "true" },
+                  class: "flex w-full items-center justify-center gap-2 rounded-lg border border-sky-500/30 bg-sky-500/10 px-4 py-2.5 text-sm font-medium text-sky-400 hover:bg-sky-500/20 transition-colors" do %>
+              Reconhecer Alarme
+            <% end %>
           <% end %>
         <% end %>
         <% if policy(@alarm).update? && !@alarm.enabled? %>

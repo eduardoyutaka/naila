@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     resources :alarms do
       resources :alarm_actions, only: [ :new, :create, :edit, :update, :destroy ]
       resource :status, only: [ :update ], module: :alarms
+      resource :acknowledgment, only: [ :update ], module: :alarms
       member do
         get :history
         get :metric_history

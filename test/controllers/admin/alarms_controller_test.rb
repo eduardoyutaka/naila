@@ -113,6 +113,33 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='alarm-config']"
   end
 
+  # ── Acknowledgment ──
+
+  test "show offers to acknowledge a firing, unacknowledged alarm" do
+    get admin_alarm_path(alarms(:flood_alert_belem))
+    assert_select "form[action=?]", admin_alarm_acknowledgment_path(alarms(:flood_alert_belem)) do
+      assert_select "input[name='acknowledged'][value='true']"
+    end
+  end
+
+  test "show hides the acknowledge button for an alarm that isn't firing" do
+    get admin_alarm_path(alarms(:precip_3h_belem)) # state: ok
+    assert_select "form[action=?]", admin_alarm_acknowledgment_path(alarms(:precip_3h_belem)), count: 0
+  end
+
+  test "show displays who acknowledged a firing alarm and offers to remove it" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.acknowledge!(users(:coordinator))
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-acknowledged']", text: "Reconhecido"
+    assert_select "[data-testid='acknowledgment-info']", text: /Bruno Costa/
+    assert_select "form[action=?]", admin_alarm_acknowledgment_path(alarm) do
+      assert_select "input[name='acknowledged'][value='false']"
+    end
+  end
+
   test "show displays the translated metric label, not the raw enum value" do
     get admin_alarm_path(alarms(:precip_3h_belem))
     assert_select "[data-testid='alarm-config']" do

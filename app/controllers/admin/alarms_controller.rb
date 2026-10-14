@@ -9,7 +9,7 @@ module Admin
     before_action :set_alarm, only: [ :show, :edit, :update, :destroy, :history, :metric_history ]
 
     def index
-      base_scope = policy_scope(Alarm).includes(:river_basin)
+      base_scope = policy_scope(Alarm).includes(:river_basin, :acknowledged_by)
       @summary_counts = alarm_summary_counts(base_scope)
 
       q = filter_params(:search, :state, :enabled, :severity)

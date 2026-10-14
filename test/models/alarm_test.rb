@@ -477,6 +477,66 @@ class AlarmTest < ActiveSupport::TestCase
     assert_nil alarm.reload.episode_peak_severity
   end
 
+  # ── acknowledgment ──
+
+  test "acknowledge! sets acknowledged_at and acknowledged_by on a firing alarm" do
+    alarm = alarms(:flood_alert_belem) # state: alarm
+    user = users(:coordinator)
+
+    alarm.acknowledge!(user)
+
+    assert alarm.acknowledged?
+    assert_equal user, alarm.acknowledged_by
+    assert_not_nil alarm.acknowledged_at
+  end
+
+  test "acknowledge! is a no-op on an alarm that isn't firing" do
+    alarm = alarms(:precip_3h_belem) # state: ok
+
+    alarm.acknowledge!(users(:coordinator))
+
+    assert_not alarm.acknowledged?
+  end
+
+  test "unacknowledge! clears acknowledged_at and acknowledged_by" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.acknowledge!(users(:coordinator))
+
+    alarm.unacknowledge!
+
+    assert_not alarm.acknowledged?
+    assert_nil alarm.acknowledged_by
+  end
+
+  test "transition_to! preserves acknowledgment across a severity-only change within the same episode" do
+    alarm = alarms(:flood_alert_belem) # state: alarm, current_severity: 3
+    alarm.acknowledge!(users(:coordinator))
+
+    alarm.transition_to!("alarm", reason: "escalated", severity: 4)
+
+    assert alarm.reload.acknowledged?
+  end
+
+  test "transition_to! clears acknowledgment when the episode ends by returning to ok" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.acknowledge!(users(:coordinator))
+
+    alarm.transition_to!("ok", reason: "recovered")
+
+    alarm.reload
+    assert_not alarm.acknowledged?
+    assert_nil alarm.acknowledged_by
+  end
+
+  test "transition_to! clears acknowledgment when the episode ends by moving to insufficient_data" do
+    alarm = alarms(:flood_alert_belem)
+    alarm.acknowledge!(users(:coordinator))
+
+    alarm.transition_to!("insufficient_data", reason: "sensor offline")
+
+    assert_not alarm.reload.acknowledged?
+  end
+
   test "transition_to! is a no-op when state and severity are unchanged" do
     alarm = alarms(:precip_3h_belem)
     assert_equal "ok", alarm.state

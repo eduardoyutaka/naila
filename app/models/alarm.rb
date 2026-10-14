@@ -19,6 +19,8 @@ class Alarm < ApplicationRecord
   # see #effective_monitoring_stations.
   belongs_to :monitoring_station, optional: true
 
+  belongs_to :acknowledged_by, class_name: "User", optional: true
+
   accepts_nested_attributes_for :alarm_thresholds, allow_destroy: true, reject_if: :all_blank
 
   # ── Validations ──
@@ -97,6 +99,21 @@ class Alarm < ApplicationRecord
     0
   end
 
+  def acknowledged?
+    acknowledged_at.present?
+  end
+
+  # Only meaningful while the alarm is actually firing — acknowledging a calm alarm
+  # doesn't mean anything (see #transition_to!, which clears this when the episode ends).
+  def acknowledge!(user)
+    return unless alarm?
+    update!(acknowledged_at: Time.current, acknowledged_by: user)
+  end
+
+  def unacknowledge!
+    update!(acknowledged_at: nil, acknowledged_by: nil)
+  end
+
   # ── State machine ──
 
   def transition_to!(new_state, reason:, datapoints: [], severity: nil)
@@ -132,10 +149,13 @@ class Alarm < ApplicationRecord
     previous_severity = current_severity
     previous_peak = episode_peak_severity
     # The episode's peak only exists while firing — entering/staying in "alarm" raises it
-    # (never lowers it), any other state ends the episode and clears it.
+    # (never lowers it), any other state ends the episode and clears it. Acknowledgment
+    # follows the same episode boundary — it's cleared right alongside the peak.
     new_peak = new_state == "alarm" ? [ previous_peak.to_i, new_severity.to_i ].max : nil
+    ack_reset = new_state == "alarm" ? {} : { acknowledged_at: nil, acknowledged_by: nil }
     update!(state: new_state, current_severity: new_severity,
-            state_changed_at: Time.current, state_reason: reason, episode_peak_severity: new_peak)
+            state_changed_at: Time.current, state_reason: reason, episode_peak_severity: new_peak,
+            **ack_reset)
     alarm_state_histories.create!(
       previous_state: old_state,
       new_state: new_state,

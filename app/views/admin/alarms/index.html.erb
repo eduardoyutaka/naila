@@ -110,6 +110,13 @@
                 state_label = t("enums.alarm_state.#{alarm.state}")
               %>
               <%= catalyst_badge state_label, color: state_color %>
+              <% if alarm.acknowledged? %>
+                <span class="ml-1 inline-flex" title="<%= "Reconhecido por #{alarm.acknowledged_by&.name}" %>" data-testid="alarm-row-acknowledged">
+                  <svg class="h-4 w-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+              <% end %>
             <% end %>
 
             <%# Nome %>
