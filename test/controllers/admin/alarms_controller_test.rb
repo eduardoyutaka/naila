@@ -199,6 +199,34 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show renders forecast chart data for a forecast_precip alarm with no river_basin" do
+    # river_basin is irrelevant to forecast_precip (no station/basin dependency at all — see
+    # MetricDataCollector#collect_forecast_precip), and the alarm form itself tells users to
+    # leave it blank for this metric. The chart must still render.
+    suffix = SecureRandom.hex(4)
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 1.hour.from_now, valid_until: 2.hours.from_now, precipitation_mm: 5.0)
+
+    alarm = Alarm.new(
+      name: "Forecast No Basin #{suffix}", alarm_type: "metric", enabled: true,
+      metric_name: "forecast_precip", forecast_source: "open_meteo", statistic: "Maximum",
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get admin_alarm_path(alarm)
+
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "div", text: /Sem dados no período/, count: 0
+      assert_select "[data-admin--reading-chart-readings-value]" do |elements|
+        readings = JSON.parse(elements.first["data-admin--reading-chart-readings-value"])
+        refute_empty readings
+      end
+    end
+  end
+
   test "show honours an explicit range param and clamps it to real data bounds" do
     suffix = SecureRandom.hex(4)
     basin = RiverBasin.create!(name: "Range Test Basin #{suffix}", active: true)
@@ -740,6 +768,16 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     strings
   end
 
+  def xlsx_row_count(body)
+    count = 0
+    Zip::File.open_buffer(body) do |zip|
+      entry = zip.glob("xl/worksheets/sheet1.xml").first
+      next unless entry
+      count = Nokogiri::XML(entry.get_input_stream.read).css("row").size
+    end
+    count
+  end
+
   test "metric_history requires authentication" do
     reset!
     get metric_history_admin_alarm_path(alarms(:flood_alert_belem))
@@ -799,6 +837,25 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     get metric_history_admin_alarm_path(alarm)
     assert_response :success
     assert_equal "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", @response.media_type
+  end
+
+  test "metric_history exports real data for a forecast_precip alarm with no river_basin" do
+    WeatherForecast.create!(source: "open_meteo", issued_at: Time.current,
+      valid_from: 1.hour.from_now, valid_until: 2.hours.from_now, precipitation_mm: 5.0)
+
+    alarm = Alarm.new(
+      name: "Forecast No Basin Export", alarm_type: "metric", enabled: true,
+      metric_name: "forecast_precip", forecast_source: "open_meteo", statistic: "Maximum",
+      period_seconds: 3600, evaluation_periods: 3, datapoints_to_alarm: 1
+    )
+    alarm.alarm_thresholds.build(severity: 1, comparison_operator: "GreaterThanOrEqualToThreshold",
+                                  threshold_value: 10.0, unit: "mm")
+    alarm.save!
+
+    get metric_history_admin_alarm_path(alarm)
+    assert_response :success
+    assert_no_match(/sem-dados/, @response.headers["Content-Disposition"])
+    assert_operator xlsx_row_count(@response.body), :>, 1
   end
 
   test "metric_history writes an empty-but-valid XLSX when the alarm has no river basin" do

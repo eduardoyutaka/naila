@@ -76,11 +76,11 @@ module Admin
     def metric_history
       authorize @alarm
 
-      if @alarm.river_basin.blank? || @alarm.alarm_thresholds.empty?
+      if chart_data_available?
+        from, to, series = chart_series_and_range
+      else
         from = to = nil
         series = []
-      else
-        from, to, series = chart_series_and_range
       end
 
       package = AlarmMetricHistoryExport.build(alarm: @alarm, series: series, from: from, to: to)
@@ -107,13 +107,23 @@ module Admin
       @chart_unit = @alarm.alarm_thresholds.first&.unit
       @last_known_reading_at = precipitation_readings&.maximum(:recorded_at)
 
-      if @alarm.river_basin.blank? || @alarm.alarm_thresholds.empty?
+      if !chart_data_available?
         @chart_readings = []
         return
       end
 
       @chart_from, @chart_to, series = chart_series_and_range
       @chart_readings = series.map { |pt| [ pt[:period_end].iso8601, pt[:value] ] }
+    end
+
+    # Precipitation alarms need a river_basin to know which sensors to read (see
+    # MetricDataCollector#effective_sensors) — forecast_precip has no such dependency
+    # (see MetricDataCollector#collect_forecast_precip), so it only ever needs its
+    # own thresholds configured.
+    def chart_data_available?
+      return false if @alarm.alarm_thresholds.empty?
+      return false if @alarm.metric_name == "precipitation" && @alarm.river_basin.blank?
+      true
     end
 
     # Shared by the HTML chart (assign_chart_data) and the CSV export (metric_history) so the
