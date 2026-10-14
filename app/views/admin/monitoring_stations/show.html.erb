@@ -13,7 +13,10 @@
   }
 %>
 
-<% if turbo_frame_request? %>
+<%# turbo_frame_request_id, not turbo_frame_request? — the range_form below sets its own
+    Turbo-Frame header (station_readings_<id>) on submit, which must fall through to the
+    full-page branch (where that frame actually lives), not render this side-sheet branch. %>
+<% if turbo_frame_request_id == "sensor_detail" %>
 <%= turbo_frame_tag "sensor_detail" do %>
   <%# ════════════════════════════════════════════════════════════ %>
   <%# SIDE-SHEET LAYOUT — keep compact, avoid changing this block %>

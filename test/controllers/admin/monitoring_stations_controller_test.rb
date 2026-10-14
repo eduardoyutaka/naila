@@ -255,6 +255,16 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#station_readings_#{station.id}"
   end
 
+  # Reproduces the real browser request: the range_form's own data-turbo-frame sets this
+  # header on submission, so this must NOT be confused with the map's "sensor_detail" frame.
+  test "submitting the range form (its own Turbo-Frame header) returns the matching frame" do
+    station = monitoring_stations(:estacao_belem)
+    get admin_monitoring_station_path(station, range: { from: 8.hours.ago.iso8601, to: 5.hours.ago.iso8601 }),
+        headers: { "Turbo-Frame" => "station_readings_#{station.id}" }
+    assert_response :success
+    assert_select "turbo-frame#station_readings_#{station.id}"
+  end
+
   test "show full page renders the empty state when the selected range has no readings" do
     get admin_monitoring_station_path(monitoring_stations(:estacao_belem),
           range: { from: 10.days.ago.iso8601, to: 9.days.ago.iso8601 })

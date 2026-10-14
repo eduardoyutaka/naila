@@ -25,9 +25,12 @@ module Admin
       authorize @monitoring_station
       @readings_bounds = readings_bounds
 
-      if turbo_frame_request?
+      if turbo_frame_request_id == "sensor_detail"
         # Side-sheet (map click) is a fixed, compact 24h preview — never affected by a
         # ?range param, even if one happens to be present from the full page's own request.
+        # turbo_frame_request? alone isn't enough here: the range_form below sets its own
+        # Turbo-Frame header (station_readings_<id>), so it would also count as "a turbo
+        # frame request" without this check — it's the frame's id that distinguishes them.
         @readings_from, @readings_to = 24.hours.ago, Time.current
       else
         @readings_from, @readings_to = parse_range(params[:range],
