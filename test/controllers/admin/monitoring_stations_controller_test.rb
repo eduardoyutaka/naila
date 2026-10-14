@@ -245,4 +245,42 @@ class Admin::MonitoringStationsControllerTest < ActionDispatch::IntegrationTest
       assert_select "*", text: /Bacia do Rio Barigui/
     end
   end
+
+  # ── Show (full-page range filter) ──
+
+  test "show full page honours an explicit range param" do
+    station = monitoring_stations(:estacao_belem)
+    get admin_monitoring_station_path(station, range: { from: 8.hours.ago.iso8601, to: 5.hours.ago.iso8601 })
+    assert_response :success
+    assert_select "turbo-frame#station_readings_#{station.id}"
+  end
+
+  test "show full page renders the empty state when the selected range has no readings" do
+    get admin_monitoring_station_path(monitoring_stations(:estacao_belem),
+          range: { from: 10.days.ago.iso8601, to: 9.days.ago.iso8601 })
+    assert_select "*", text: /Nenhuma leitura disponível no período selecionado/
+  end
+
+  test "show full page clamps the range form inputs to real data bounds" do
+    station = monitoring_stations(:estacao_belem)
+    get admin_monitoring_station_path(station)
+    assert_select "turbo-frame#station_readings_#{station.id}" do
+      assert_select "input[name='range[from]'][min][max]"
+      assert_select "input[name='range[to]'][min][max]"
+    end
+  end
+
+  test "show side sheet ignores a range param and always shows the fixed 24h window" do
+    station = monitoring_stations(:estacao_belem)
+    get admin_monitoring_station_path(station, range: { from: 10.days.ago.iso8601, to: 9.days.ago.iso8601 }),
+        headers: { "Turbo-Frame" => "sensor_detail" }
+    assert_select "turbo-frame#sensor_detail" do
+      assert_select "[data-testid='reading-chart-precipitation']"
+    end
+  end
+
+  test "show full page renders without bounds when the station has no readings at all" do
+    get admin_monitoring_station_path(monitoring_stations(:cemaden_centro))
+    assert_response :success
+  end
 end

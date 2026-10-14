@@ -8,8 +8,8 @@
                  when "inactive" then "red"
                  end
   chart_config = {
-    "precipitation" => { type: "bar",  color: "sensor-pluviometer", label: "#{t('enums.reading_type.precipitation')} 24h" },
-    "temperature"   => { type: "line", color: "sensor-weather",     label: "#{t('enums.reading_type.temperature')} 24h" },
+    "precipitation" => { type: "bar",  color: "sensor-pluviometer", label: t("enums.reading_type.precipitation") },
+    "temperature"   => { type: "line", color: "sensor-weather",     label: t("enums.reading_type.temperature") },
   }
 %>
 
@@ -268,34 +268,44 @@
         </div>
       <% end %>
 
-      <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
-        <div class="border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
-          <%= catalyst_subheading "Leituras 24h" %>
-        </div>
-        <div class="p-6 space-y-6">
-          <% if @readings_by_type.any? %>
-            <% @readings_by_type.each do |reading_type, readings| %>
-              <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: "#{reading_type_label(reading_type)} 24h" } %>
-              <div>
-                <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300"><%= config[:label] %></div>
-                <div data-testid="reading-chart-<%= reading_type %>"
-                     data-controller="admin--reading-chart"
-                     data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
-                     data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
-                     data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
-                     data-admin--reading-chart-color-value="<%= config[:color] %>"
-                     data-admin--reading-chart-thresholds-value="[]">
-                  <div data-admin--reading-chart-target="chart" class="h-40 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800"></div>
+      <%= turbo_frame_tag "station_readings_#{@monitoring_station.id}" do %>
+        <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
+            <div>
+              <%= catalyst_subheading "Leituras" %>
+              <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
+                <%= l(@readings_from, format: :short) %> → <%= l(@readings_to, format: :short) %>
+              </p>
+            </div>
+            <%= render "shared/admin/range_form", action: admin_monitoring_station_path(@monitoring_station),
+                  frame: "station_readings_#{@monitoring_station.id}", scope: :range,
+                  from: @readings_from, to: @readings_to, min: @readings_bounds&.first, max: @readings_bounds&.last %>
+          </div>
+          <div class="p-6 space-y-6">
+            <% if @readings_by_type.any? %>
+              <% @readings_by_type.each do |reading_type, readings| %>
+                <% config = chart_config[reading_type] || { type: "line", color: "#3b82f6", label: reading_type_label(reading_type) } %>
+                <div>
+                  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-300"><%= config[:label] %></div>
+                  <div data-testid="reading-chart-<%= reading_type %>"
+                       data-controller="admin--reading-chart"
+                       data-admin--reading-chart-readings-value="<%= readings.map { |r| [r.recorded_at.iso8601, r.value] }.to_json %>"
+                       data-admin--reading-chart-unit-value="<%= readings.first.unit %>"
+                       data-admin--reading-chart-chart-type-value="<%= config[:type] %>"
+                       data-admin--reading-chart-color-value="<%= config[:color] %>"
+                       data-admin--reading-chart-thresholds-value="[]">
+                    <div data-admin--reading-chart-target="chart" class="h-40 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800"></div>
+                  </div>
                 </div>
+              <% end %>
+            <% else %>
+              <div class="py-4 text-center">
+                <%= catalyst_text "Nenhuma leitura disponível no período selecionado." %>
               </div>
             <% end %>
-          <% else %>
-            <div class="py-4 text-center">
-              <%= catalyst_text "Nenhuma leitura disponível nas últimas 24 horas." %>
-            </div>
-          <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
     </div>
 
     <div class="space-y-6">

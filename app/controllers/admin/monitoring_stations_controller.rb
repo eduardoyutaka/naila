@@ -1,6 +1,7 @@
 module Admin
   class MonitoringStationsController < BaseController
     include Filterable
+    include RangeParsable
 
     skip_after_action :verify_authorized, only: :index
     after_action :verify_policy_scoped, only: :index
@@ -22,8 +23,19 @@ module Admin
 
     def show
       authorize @monitoring_station
+      @readings_bounds = readings_bounds
+
+      if turbo_frame_request?
+        # Side-sheet (map click) is a fixed, compact 24h preview — never affected by a
+        # ?range param, even if one happens to be present from the full page's own request.
+        @readings_from, @readings_to = 24.hours.ago, Time.current
+      else
+        @readings_from, @readings_to = parse_range(params[:range],
+          default_from: 24.hours.ago, default_to: Time.current, bounds: @readings_bounds)
+      end
+
       @readings_by_type = @monitoring_station.sensor_readings
-                                         .since(24.hours.ago)
+                                         .between(@readings_from, @readings_to)
                                          .order(recorded_at: :asc)
                                          .group_by(&:reading_type)
     end
@@ -69,6 +81,11 @@ module Admin
     end
 
     private
+
+    def readings_bounds
+      earliest = @monitoring_station.sensor_readings.minimum(:recorded_at)
+      earliest ? [ earliest, Time.current ] : nil
+    end
 
     def set_monitoring_station
       @monitoring_station = MonitoringStation.includes(:neighborhood, :river, :sensors).find(params[:id])

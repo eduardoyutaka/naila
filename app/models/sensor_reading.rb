@@ -6,5 +6,6 @@ class SensorReading < ApplicationRecord
 
   scope :recent, -> { order(recorded_at: :desc) }
   scope :since, ->(time) { where("recorded_at >= ?", time) }
+  scope :between, ->(from, to) { where(recorded_at: from..to) }
   scope :by_type, ->(type) { where(reading_type: type) }
 end
