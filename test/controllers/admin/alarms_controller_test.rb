@@ -113,6 +113,21 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='alarm-config']"
   end
 
+  test "show displays the translated metric label, not the raw enum value" do
+    get admin_alarm_path(alarms(:precip_3h_belem))
+    assert_select "[data-testid='alarm-config']" do
+      assert_select "*", text: "Precipitação"
+      assert_select "*", text: "precipitation", count: 0
+    end
+  end
+
+  test "show displays the translated metric label on the metric history card" do
+    get admin_alarm_path(alarms(:precip_3h_belem))
+    assert_select "[data-testid='alarm-history']" do
+      assert_select "*", text: "Precipitação"
+    end
+  end
+
   test "show displays actions section" do
     get admin_alarm_path(alarms(:precip_3h_belem))
     assert_select "[data-testid='alarm-actions']"

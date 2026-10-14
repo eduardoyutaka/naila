@@ -40,11 +40,14 @@
   <div class="lg:col-span-2 space-y-6">
 
     <%# Histórico da Métrica %>
-    <%= turbo_frame_tag "alarm_metric_chart_#{@alarm.id}" do %>
+    <%= turbo_frame_tag "alarm_metric_chart_#{@alarm.id}", class: "block" do %>
       <div class="rounded-xl border border-zinc-950/10 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/50" data-testid="alarm-history">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 dark:border-white/10 px-6 py-4">
           <div>
-            <%= catalyst_subheading "Histórico da Métrica" %>
+            <div class="flex items-center gap-2">
+              <%= catalyst_subheading "Histórico da Métrica" %>
+              <%= catalyst_badge t("enums.metric_name.#{@alarm.metric_name}", default: @alarm.metric_name.humanize), color: "sky" %>
+            </div>
             <% if @chart_from %>
               <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 tabular-nums">
                 <%= l(@chart_from, format: :short) %> → <%= l(@chart_to, format: :short) %>
@@ -197,7 +200,7 @@
         <%= catalyst_subheading "Configuração" %>
       </div>
       <%= catalyst_dl class: "px-6" do %>
-        <%= catalyst_dt "Métrica" %><%= catalyst_dd @alarm.metric_name %>
+        <%= catalyst_dt "Métrica" %><%= catalyst_dd t("enums.metric_name.#{@alarm.metric_name}", default: @alarm.metric_name.humanize) %>
         <% if @alarm.forecast_source.present? %>
           <%= catalyst_dt "Origem da Previsão" %><%= catalyst_dd t("enums.forecast_source.#{@alarm.forecast_source}") %>
         <% end %>
