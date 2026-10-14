@@ -18,7 +18,7 @@
                 {}, data: { "shared--conditional-field-target": "trigger", action: "change->shared--conditional-field#toggle" } %>
         <% end %>
         <%= form.field data: { "shared--conditional-field-target": "field",
-                                "shared--conditional-field-show-value": ["alarm"].to_json } do %>
+                                "show-value": ["alarm"].to_json } do %>
           <%= form.label :min_severity, "Severidade Mínima" %>
           <%= form.select :min_severity,
                 [["— Qualquer —", ""]] + (1..4).map { |s| ["#{s} — #{t("enums.severity.#{s}")}", s] },

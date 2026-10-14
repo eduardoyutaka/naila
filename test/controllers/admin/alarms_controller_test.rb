@@ -381,7 +381,7 @@ class Admin::AlarmsControllerTest < ActionDispatch::IntegrationTest
 
   test "new form includes a forecast_source field, hidden unless forecast_precip is selected" do
     get new_admin_alarm_path
-    assert_select "[data-shared--conditional-field-target='field'][data-shared--conditional-field-show-value='[\"forecast_precip\"]'][hidden]" do
+    assert_select "[data-shared--conditional-field-target='field'][data-show-value='[\"forecast_precip\"]'][hidden]" do
       assert_select "select[name='alarm[forecast_source]']" do
         assert_select "option", text: "Open-Meteo"
         assert_select "option", text: "OpenWeatherMap"

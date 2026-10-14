@@ -68,7 +68,7 @@
           <%= form.field class: "mt-8",
                 hidden: alarm.metric_name != "precipitation",
                 data: { "shared--conditional-field-target": "field",
-                        "shared--conditional-field-show-value": ["precipitation"].to_json } do %>
+                        "show-value": ["precipitation"].to_json } do %>
             <%= form.label :monitoring_station_id, "Estação" %>
             <%= form.select :monitoring_station_id,
                   options_for_select(station_options, alarm.monitoring_station_id),
@@ -81,7 +81,7 @@
         <%= form.field class: "mt-8",
               hidden: alarm.metric_name != "forecast_precip",
               data: { "shared--conditional-field-target": "field",
-                      "shared--conditional-field-show-value": ["forecast_precip"].to_json } do %>
+                      "show-value": ["forecast_precip"].to_json } do %>
           <%= form.label :forecast_source, "Origem da Previsão" %>
           <%= form.select :forecast_source,
                 WeatherForecast::FORECAST_SOURCES.map { |s| [t("enums.forecast_source.#{s}"), s] },
